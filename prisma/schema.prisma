@@ -1,0 +1,422 @@
+// Dharma Calendar - Prisma Schema
+// Prisma 7 met PostgreSQL
+// 
+// CHANGELOG:
+// - v1.2.0: Paksha enum toegevoegd, visibleEventTypes nu EventType[]
+// - v1.1.0: Theme model verwijderd (themes nu in TypeScript config)
+// - v1.0.0: Category als aparte tabel met FK relatie
+// - v1.0.0: Event.name is nu @unique voor upsert support
+// - v1.0.0: EventOccurrence unique constraint op (eventId, date)
+// - v1.0.0: spanDays verwijderd (afleiden uit endDate)
+// - v1.0.0: Default locatie: Den Haag (52.0705, 4.3007)
+// - v1.0.0: @db.Date type voor pure datums (geen tijd component)
+// - v1.0.0: Migraties i.p.v. db push voor productie
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================
+// ENUMS
+// ============================================
+
+enum EventType {
+  FESTIVAL
+  PUJA
+  VRAT
+  JAYANTI
+  TITHI
+  SANKRANTI
+  ECLIPSE
+  OTHER
+}
+
+enum RecurrenceType {
+  NONE
+  YEARLY_LUNAR
+  YEARLY_SOLAR
+  MONTHLY_LUNAR
+  MONTHLY_SOLAR
+}
+
+/// Event rule type for auto-generation from naming catalog
+enum RuleType {
+  TITHI              // Match specific tithi (Ekadashi, Purnima, etc.)
+  SOLAR              // Match Sankranti (solar transitions)
+  NAKSHATRA          // Match nakshatra
+  TITHI_NAKSHATRA    // Both tithi AND nakshatra
+  WEEKDAY_TITHI      // Specific weekday + tithi
+  CUSTOM             // Complex rules
+}
+
+enum Importance {
+  MAJOR
+  MODERATE
+  MINOR
+}
+
+enum CalendarView {
+  month
+  week
+  day
+  agenda
+}
+
+/// Lunar fortnight (half of lunar month)
+enum Paksha {
+  SHUKLA  // Waxing moon (bright fortnight)
+  KRISHNA // Waning moon (dark fortnight)
+}
+
+enum Tithi {
+  PRATIPADA_SHUKLA
+  DWITIYA_SHUKLA
+  TRITIYA_SHUKLA
+  CHATURTHI_SHUKLA
+  PANCHAMI_SHUKLA
+  SHASHTHI_SHUKLA
+  SAPTAMI_SHUKLA
+  ASHTAMI_SHUKLA
+  NAVAMI_SHUKLA
+  DASHAMI_SHUKLA
+  EKADASHI_SHUKLA
+  DWADASHI_SHUKLA
+  TRAYODASHI_SHUKLA
+  CHATURDASHI_SHUKLA
+  PURNIMA
+  PRATIPADA_KRISHNA
+  DWITIYA_KRISHNA
+  TRITIYA_KRISHNA
+  CHATURTHI_KRISHNA
+  PANCHAMI_KRISHNA
+  SHASHTHI_KRISHNA
+  SAPTAMI_KRISHNA
+  ASHTAMI_KRISHNA
+  NAVAMI_KRISHNA
+  DASHAMI_KRISHNA
+  EKADASHI_KRISHNA
+  DWADASHI_KRISHNA
+  TRAYODASHI_KRISHNA
+  CHATURDASHI_KRISHNA
+  AMAVASYA
+}
+
+enum Nakshatra {
+  ASHWINI
+  BHARANI
+  KRITTIKA
+  ROHINI
+  MRIGASHIRA
+  ARDRA
+  PUNARVASU
+  PUSHYA
+  ASHLESHA
+  MAGHA
+  PURVA_PHALGUNI
+  UTTARA_PHALGUNI
+  HASTA
+  CHITRA
+  SWATI
+  VISHAKHA
+  ANURADHA
+  JYESHTHA
+  MULA
+  PURVA_ASHADHA
+  UTTARA_ASHADHA
+  SHRAVANA
+  DHANISHTA
+  SHATABHISHA
+  PURVA_BHADRAPADA
+  UTTARA_BHADRAPADA
+  REVATI
+}
+
+enum Maas {
+  CHAITRA
+  VAISHAKHA
+  JYESHTHA
+  ASHADHA
+  SHRAVANA
+  BHADRAPADA
+  ASHWIN
+  KARTIK
+  MARGASHIRSHA
+  PAUSHA
+  MAGHA
+  PHALGUNA
+}
+
+enum MoonPhaseType {
+  NEW_MOON
+  WAXING_CRESCENT
+  FIRST_QUARTER
+  WAXING_GIBBOUS
+  FULL_MOON
+  WANING_GIBBOUS
+  LAST_QUARTER
+  WANING_CRESCENT
+}
+
+/// Zodiac signs (Rashi) - 12 signs of 30° each
+enum Rashi {
+  MESHA          // Aries (0°-30°)
+  VRISHABHA      // Taurus (30°-60°)
+  MITHUNA        // Gemini (60°-90°)
+  KARKA          // Cancer (90°-120°)
+  SIMHA          // Leo (120°-150°)
+  KANYA          // Virgo (150°-180°)
+  TULA           // Libra (180°-210°)
+  VRISHCHIKA     // Scorpio (210°-240°)
+  DHANU          // Sagittarius (240°-270°)
+  MAKARA         // Capricorn (270°-300°)
+  KUMBHA         // Aquarius (300°-330°)
+  MEENA          // Pisces (330°-360°/0°)
+}
+
+/// Solar transitions between zodiac signs (Sankranti)
+enum Sankranti {
+  MESHA_SANKRANTI       // Sun enters Aries (Mesha) - Solar New Year
+  VRISHABHA_SANKRANTI   // Sun enters Taurus (Vrishabha)
+  MITHUNA_SANKRANTI     // Sun enters Gemini (Mithuna)
+  KARKA_SANKRANTI       // Sun enters Cancer (Karka)
+  SIMHA_SANKRANTI       // Sun enters Leo (Simha)
+  KANYA_SANKRANTI       // Sun enters Virgo (Kanya)
+  TULA_SANKRANTI        // Sun enters Libra (Tula)
+  VRISHCHIKA_SANKRANTI  // Sun enters Scorpio (Vrishchika)
+  DHANU_SANKRANTI       // Sun enters Sagittarius (Dhanu)
+  MAKARA_SANKRANTI      // Sun enters Capricorn (Makara) - Makar Sankranti
+  KUMBHA_SANKRANTI      // Sun enters Aquarius (Kumbha)
+  MEENA_SANKRANTI       // Sun enters Pisces (Meena)
+}
+
+// ============================================
+// MODELS
+// ============================================
+
+/// Category for events (deity-based)
+/// Definition source of truth: src/config/categories.ts
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique  // Internal name: "ganesha", "shiva", etc.
+  displayName String             // Display name: "Ganesha", "Shiva", etc.
+  icon        String             // Emoji icon
+  color       String             // oklch color string
+  description String?
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  events Event[]
+
+  @@index([name])
+  @@index([sortOrder])
+}
+
+/// Master event definition
+model Event {
+  id             String         @id @default(cuid())
+  name           String         @unique
+  description    String?
+  eventType      EventType      @default(OTHER)
+  recurrenceType RecurrenceType @default(NONE)
+  importance     Importance     @default(MODERATE)
+  categoryId     String?
+  category       Category?      @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  tithi          Tithi?
+  nakshatra      Nakshatra?
+  maas           Maas?
+  sankranti      Sankranti?     // Match solar transition (e.g., MAKARA_SANKRANTI)
+  isAdhikaOnly   Boolean        @default(false)  // Only match Adhika (intercalary) months
+  includeAdhika  Boolean        @default(false)  // Match both regular and Adhika months
+
+  // Rule engine fields for auto-generation
+  ruleType       RuleType?      // Rule type (TITHI, SOLAR, etc.)
+  ruleConfig     Json?          // Rule-specific configuration
+  namingKey      String?        // Link to naming catalog (unique key)
+  autoGenerated  Boolean        @default(false)  // Auto-generated from naming catalog
+
+  // Parent-child relationship for event series (e.g., Navratri with 9 days)
+  parentEventId  String?
+  parentEvent    Event?         @relation("EventSeries", fields: [parentEventId], references: [id], onDelete: Cascade)
+  childEvents    Event[]        @relation("EventSeries")
+
+  tags           String[]       @default([])
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  occurrences EventOccurrence[]
+
+  @@index([eventType])
+  @@index([categoryId])
+  @@index([parentEventId])
+  @@index([tags], type: Gin)
+}
+
+/// Specific occurrence of an event on a date
+model EventOccurrence {
+  id        String    @id @default(cuid())
+  eventId   String
+  date      DateTime  @db.Date  // Pure date, no time component
+  endDate   DateTime? @db.Date  // Pure date, no time component
+  startTime String?             // HH:mm format (e.g., "09:00")
+  endTime   String?             // HH:mm format (e.g., "17:00")
+  notes     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, date])  // Prevent duplicate occurrences
+  @@index([date])
+  @@index([endDate])
+}
+
+/// Daily astronomical/lunar information
+/// This is the source of truth for lunar data per day
+model DailyInfo {
+  id               String        @id @default(cuid())
+  date             DateTime      @unique @db.Date  // Pure date
+  locationName     String        @default("Den Haag")
+  locationLat      Float         @default(52.078525871758096)
+  locationLon      Float         @default(4.331036597783044)
+  sunrise          String?       // HH:mm format
+  sunset           String?       // HH:mm format
+  moonrise         String?       // HH:mm format
+  moonset          String?       // HH:mm format
+  moonPhasePercent Int           @default(0)  // 0-100
+  moonPhaseType    MoonPhaseType?
+  isWaxing         Boolean       @default(true)
+
+  // Panchanga elements with their end times (from Swiss Ephemeris)
+  tithi            Tithi?
+  tithiEndTime     String?       // HH:mm format - when tithi ends on this day
+  nakshatra        Nakshatra?
+  nakshatraEndTime String?       // HH:mm format - when nakshatra ends
+  yogaName         String?       // Yoga name (e.g., "Vyaghata")
+  yogaEndTime      String?       // HH:mm format
+  karanaName       String?       // Karana name (e.g., "Balava")
+  karanaType       String?       // Karana type (e.g., "Movable")
+  karanaEndTime    String?       // HH:mm format
+
+  maas             Maas?
+  paksha           Paksha?       // Lunar fortnight (Shukla/Krishna)
+  isAdhika         Boolean       @default(false)  // Adhika (intercalary) month flag
+
+  // Solar transitions (Sankranti)
+  sankranti        Sankranti?    // Solar transition that occurs on this day (if any)
+  sankrantiTime    String?       // HH:mm format - when the transition occurs
+
+  // =========================================================================
+  // DRIK PANCHANG EXTENDED FIELDS
+  // =========================================================================
+
+  // Lunar Month (Maas) - Amanta/Purnimanta
+  maasName         String?       // Sanskrit name (e.g., "Pausha", "Magha")
+  maasType         String?       // "Amanta" or "Purnimanta"
+  lunarDay         Int?          // Day number within lunar month (1-30)
+
+  // Hindu Calendar Years
+  vikramaSamvatYear Int?         // Vikrama Samvat year (Gregorian + 57)
+  vikramaSamvatName String?      // Year name from 60-year cycle
+  shakaSamvatYear   Int?         // Shaka Samvat year (Gregorian - 78)
+  shakaSamvatName   String?      // Year name from 60-year cycle
+  samvatsaraName    String?      // Samvatsara name (60-year cycle)
+  samvatsaraNumber  Int?         // Position in 60-year cycle (1-60)
+
+  // Sun/Moon Signs (Rashi) - Sidereal
+  sunSignNumber     Int?         // 1-12 (Mesha to Meena)
+  sunSignName       String?      // Sanskrit name
+  sunSignUpto       String?      // HH:mm:ss when sun transitions to next sign
+  moonSignNumber    Int?         // 1-12 (Mesha to Meena)
+  moonSignName      String?      // Sanskrit name
+  moonSignUpto      String?      // HH:mm:ss when moon transitions to next sign
+
+  // Pravishte/Gate - Days since Sankranti
+  daysSinceSankranti    Int?     // Days since last solar ingress
+  currentRashi          String?  // Current solar rashi
+  lastSankrantiDate     DateTime? @db.Date  // Date of last Sankranti
+
+  // Multiple Transitions (if elements end before next sunrise)
+  nextTithiNumber       Int?     // Next tithi number
+  nextTithiName         String?  // Next tithi name
+  nextTithiPaksha       String?  // Next tithi paksha
+  nextTithiEndTime      String?  // HH:mm:ss format
+  nextNakshatraNumber   Int?     // Next nakshatra number
+  nextNakshatraName     String?  // Next nakshatra name
+  nextNakshatraPada     Int?     // Next nakshatra pada (1-4)
+  nextNakshatraEndTime  String?  // HH:mm:ss format
+  nextYogaNumber        Int?     // Next yoga number
+  nextYogaName          String?  // Next yoga name
+  nextYogaEndTime       String?  // HH:mm:ss format
+  nextKaranaNumber      Int?     // Next karana number
+  nextKaranaName        String?  // Next karana name
+  nextKaranaType        String?  // Next karana type
+  nextKaranaEndTime     String?  // HH:mm:ss format
+
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  @@index([date])
+  @@index([tithi])
+}
+
+/// Lunar events (eclipses, special tithis) - Reserved for future use
+model LunarEvent {
+  id          String   @id @default(cuid())
+  date        DateTime @db.Date
+  eventType   String   // "SOLAR_ECLIPSE", "LUNAR_ECLIPSE", etc.
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([date])
+}
+
+/// Moon phase data for display - Reserved for future use
+model MoonPhase {
+  id           String        @id @default(cuid())
+  date         DateTime      @unique @db.Date
+  phase        MoonPhaseType
+  illumination Float         // 0.0 - 1.0
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([date])
+}
+
+// ============================================
+// NOTE: Theme model removed in v1.1.0
+// Themes are now defined in src/config/themes.ts
+// UserPreference.currentTheme stores the theme name (string reference)
+// ============================================
+
+/// User preferences (single-user for now)
+model UserPreference {
+  id                     String       @id @default("default")
+  // Theme - references theme name from src/config/themes.ts
+  currentTheme           String       @default("spiritual-minimal")
+  // Calendar
+  defaultView            CalendarView @default(month)
+  weekStartsOn           Int          @default(1) // 0=Sunday, 1=Monday
+  // Location (for sun/moon calculations)
+  timezone               String       @default("Europe/Amsterdam")
+  locationName           String       @default("Den Haag")
+  locationLat            Float        @default(52.0705)
+  locationLon            Float        @default(4.3007)
+  // Visibility filters
+  // Note: visibleEventTypes uses EventType enum for type safety
+  // Note: visibleCategories contains Category IDs (CUIDs) - validated at application level
+  visibleEventTypes      EventType[]  @default([])  // Empty = show all
+  visibleCategories      String[]     @default([])  // Empty = show all (Category IDs)
+  // Notifications (future)
+  notificationsEnabled   Boolean      @default(false)
+  notificationDaysBefore Int          @default(1)
+  // Timestamps
+  createdAt              DateTime     @default(now())
+  updatedAt              DateTime     @updatedAt
+}

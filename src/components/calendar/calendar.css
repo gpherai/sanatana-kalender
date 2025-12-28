@@ -1,0 +1,302 @@
+/* Dharma Calendar - react-big-calendar overrides */
+
+.dharma-calendar {
+  font-family: inherit;
+}
+
+/* Header row */
+.dharma-calendar .rbc-header {
+  padding: 8px 4px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--theme-calendar-header-text);
+  border-bottom: 1px solid var(--theme-calendar-border);
+}
+
+/* Date cells */
+.dharma-calendar .rbc-date-cell {
+  padding: 4px 8px;
+  text-align: right;
+  font-size: 0.875rem;
+}
+
+.dharma-calendar .rbc-date-cell > a {
+  color: var(--theme-calendar-date-text);
+}
+
+/* Today highlight - theme aware */
+.dharma-calendar .rbc-today {
+  background-color: var(--theme-calendar-today-bg) !important;
+}
+
+.dharma-calendar .rbc-today .rbc-date-cell > a {
+  background-color: var(--theme-primary);
+  color: var(--theme-calendar-today-text);
+  border-radius: 9999px;
+  padding: 2px 6px;
+}
+
+/* Off-range dates (other months) */
+.dharma-calendar .rbc-off-range {
+  color: var(--theme-calendar-off-range-text);
+}
+
+.dharma-calendar .rbc-off-range-bg {
+  background-color: var(--theme-calendar-off-range-bg);
+}
+
+/* Weekend styling */
+.dharma-calendar .rbc-day-bg:nth-child(6),
+.dharma-calendar .rbc-day-bg:nth-child(7) {
+  background-color: var(--theme-calendar-weekend-bg);
+}
+
+/* ============================================
+   MOON PHASE DAY STYLING
+   ============================================ */
+
+/* Full Moon Day - Golden glow */
+.dharma-calendar .full-moon-day {
+  background: linear-gradient(
+    135deg,
+    var(--theme-calendar-full-moon-bg-start) 0%,
+    var(--theme-calendar-full-moon-bg-end) 100%
+  ) !important;
+  position: relative;
+}
+
+.dharma-calendar .full-moon-day::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at 70% 30%,
+    var(--theme-calendar-full-moon-glow) 0%,
+    transparent 50%
+  );
+  pointer-events: none;
+}
+
+/* New Moon Day - Mystical purple */
+.dharma-calendar .new-moon-day {
+  background: linear-gradient(
+    135deg,
+    var(--theme-calendar-new-moon-bg-start) 0%,
+    var(--theme-calendar-new-moon-bg-end) 100%
+  ) !important;
+}
+
+/* Event styling - theme aware */
+.dharma-calendar .rbc-event {
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-size: 0.75rem;
+  border: none !important;
+  outline: none !important;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.dharma-calendar .rbc-event:hover {
+  transform: scale(1.02);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+}
+
+.dharma-calendar .rbc-event:focus {
+  outline: 2px solid var(--theme-primary) !important;
+  outline-offset: 1px;
+}
+
+.dharma-calendar .rbc-event-content {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* More events popup trigger - theme aware */
+.dharma-calendar .rbc-show-more {
+  color: var(--theme-primary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: transparent;
+  margin-top: 2px;
+  transition: opacity 0.15s ease;
+}
+
+.dharma-calendar .rbc-show-more:hover {
+  opacity: 0.8;
+}
+
+/* Month view row */
+.dharma-calendar .rbc-month-row {
+  min-height: 100px;
+}
+
+/* Borders */
+.dharma-calendar .rbc-month-view,
+.dharma-calendar .rbc-time-view {
+  border: 1px solid var(--theme-calendar-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.dharma-calendar .rbc-day-bg + .rbc-day-bg,
+.dharma-calendar .rbc-month-row + .rbc-month-row {
+  border-color: var(--theme-calendar-border-subtle);
+}
+
+/* Week view */
+.dharma-calendar .rbc-time-header-content {
+  border-left: none;
+}
+
+.dharma-calendar .rbc-time-content {
+  border-top: 1px solid var(--theme-calendar-border);
+}
+
+/* Agenda view */
+.dharma-calendar .rbc-agenda-view table {
+  border: none;
+}
+
+.dharma-calendar .rbc-agenda-date-cell,
+.dharma-calendar .rbc-agenda-time-cell {
+  padding: 8px 12px;
+  white-space: nowrap;
+}
+
+.dharma-calendar .rbc-agenda-event-cell {
+  padding: 8px 12px;
+}
+
+/* Popup overlay */
+.dharma-calendar .rbc-overlay {
+  background-color: var(--theme-calendar-popup-bg);
+  border: 1px solid var(--theme-calendar-border);
+  border-radius: 12px;
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.2);
+  padding: 8px;
+  z-index: 100;
+}
+
+.dharma-calendar .rbc-overlay-header {
+  padding: 8px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--theme-calendar-border);
+  margin-bottom: 8px;
+}
+
+/* ============================================
+   DARK MODE OVERRIDES
+   ============================================ */
+
+.dark .dharma-calendar .rbc-header {
+  color: var(--theme-calendar-header-text);
+  border-bottom-color: var(--theme-calendar-border);
+}
+
+.dark .dharma-calendar .rbc-date-cell > a {
+  color: var(--theme-calendar-date-text);
+}
+
+.dark .dharma-calendar .rbc-today {
+  background-color: var(--theme-calendar-today-bg) !important;
+}
+
+.dark .dharma-calendar .rbc-off-range {
+  color: var(--theme-calendar-off-range-text);
+}
+
+.dark .dharma-calendar .rbc-off-range-bg {
+  background-color: var(--theme-calendar-off-range-bg);
+}
+
+.dark .dharma-calendar .rbc-day-bg:nth-child(6),
+.dark .dharma-calendar .rbc-day-bg:nth-child(7) {
+  background-color: var(--theme-calendar-weekend-bg);
+}
+
+/* Full Moon - Dark Mode */
+.dark .dharma-calendar .full-moon-day {
+  background: linear-gradient(
+    135deg,
+    var(--theme-calendar-full-moon-bg-start) 0%,
+    var(--theme-calendar-full-moon-bg-end) 100%
+  ) !important;
+}
+
+.dark .dharma-calendar .full-moon-day::before {
+  background: radial-gradient(
+    ellipse at 70% 30%,
+    var(--theme-calendar-full-moon-glow) 0%,
+    transparent 50%
+  );
+}
+
+/* New Moon - Dark Mode */
+.dark .dharma-calendar .new-moon-day {
+  background: linear-gradient(
+    135deg,
+    var(--theme-calendar-new-moon-bg-start) 0%,
+    var(--theme-calendar-new-moon-bg-end) 100%
+  ) !important;
+}
+
+.dark .dharma-calendar .rbc-month-view,
+.dark .dharma-calendar .rbc-time-view {
+  border-color: var(--theme-calendar-border);
+}
+
+.dark .dharma-calendar .rbc-day-bg + .rbc-day-bg,
+.dark .dharma-calendar .rbc-month-row + .rbc-month-row {
+  border-color: var(--theme-calendar-border-subtle);
+}
+
+.dark .dharma-calendar .rbc-time-content {
+  border-top-color: var(--theme-calendar-border);
+}
+
+.dark .dharma-calendar .rbc-overlay {
+  background-color: var(--theme-calendar-popup-bg);
+  border-color: var(--theme-calendar-border);
+}
+
+.dark .dharma-calendar .rbc-overlay-header {
+  border-bottom-color: var(--theme-calendar-border);
+}
+
+/* Agenda view dark mode */
+.dark .dharma-calendar .rbc-agenda-view {
+  color: var(--theme-calendar-agenda-text);
+}
+
+.dark .dharma-calendar .rbc-agenda-date-cell,
+.dark .dharma-calendar .rbc-agenda-time-cell,
+.dark .dharma-calendar .rbc-agenda-event-cell {
+  border-color: var(--theme-calendar-border);
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes moonPulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+}
+
+/* For full moon day header emoji */
+.full-moon-day .rbc-date-cell span:last-child {
+  animation: moonPulse 3s ease-in-out infinite;
+}

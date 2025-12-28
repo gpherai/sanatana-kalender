@@ -1,0 +1,98 @@
+{
+  "name": "kalender-site",
+  "version": "0.10.0",
+  "private": true,
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "validate": "npm run format:check && npm run lint && npm run type-check",
+    "prepare": "husky",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:migrate:reset": "prisma migrate reset",
+    "db:seed": "tsx --tsconfig tsconfig.json src/scripts/seed.ts",
+    "generate:css": "tsx --tsconfig tsconfig.json src/scripts/generate-theme-css.ts",
+    "db:studio": "prisma studio",
+    "db:reset": "prisma migrate reset --force && tsx --tsconfig tsconfig.json src/scripts/seed.ts",
+    "backup": "bash scripts/backup.sh",
+    "backup:windows": "powershell -ExecutionPolicy Bypass -File scripts/backup.ps1",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.{js,mjs,cjs}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ],
+    "*.css": [
+      "prettier --write"
+    ]
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.2.0",
+    "@prisma/client": "^7.2.0",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "focus-trap-react": "^11.0.4",
+    "lucide-react": "^0.562.0",
+    "luxon": "^3.7.2",
+    "next": "16.1.1",
+    "pg": "^8.16.3",
+    "react": "19.2.3",
+    "react-big-calendar": "^1.19.4",
+    "react-dom": "19.2.3",
+    "server-only": "^0.0.1",
+    "swisseph": "^0.5.17",
+    "tailwind-merge": "^3.4.0",
+    "zod": "4.2.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.57.0",
+    "@tailwindcss/postcss": "^4.1.18",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.1",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/luxon": "^3.7.1",
+    "@types/node": "^24",
+    "@types/pg": "^8.16.0",
+    "@types/react": "^19",
+    "@types/react-big-calendar": "^1.16.3",
+    "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^5.1.2",
+    "babel-plugin-react-compiler": "1.0.0",
+    "baseline-browser-mapping": "2.9.11",
+    "dotenv": "^17.2.3",
+    "eslint": "^9.39.2",
+    "eslint-config-next": "16.1.1",
+    "husky": "^9.1.7",
+    "jsdom": "^27.4.0",
+    "lint-staged": "^16.1.0",
+    "prettier": "^3.4.2",
+    "prettier-plugin-tailwindcss": "^0.7.2",
+    "prisma": "^7.2.0",
+    "tailwindcss": "^4.1.18",
+    "tsx": "^4.21.0",
+    "typescript": "^5",
+    "vitest": "^4.0.16",
+    "vitest-mock-extended": "^3.1.0"
+  }
+}

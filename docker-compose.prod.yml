@@ -1,0 +1,103 @@
+# =============================================================================
+# DHARMA CALENDAR - Production Docker Compose Override
+# =============================================================================
+# This file extends docker-compose.yml with production-specific settings.
+#
+# Usage:
+#   docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# Or set COMPOSE_FILE environment variable:
+#   export COMPOSE_FILE=docker-compose.yml:docker-compose.prod.yml
+#   docker-compose up -d
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # PostgreSQL Database - Production Settings
+  # ---------------------------------------------------------------------------
+  db:
+    # Don't expose port externally in production
+    ports: !reset []
+
+    # Resource limits for VPS
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 128M
+
+    # Production logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        tag: "dharma-db"
+
+    # More aggressive restart policy
+    restart: always
+
+  # ---------------------------------------------------------------------------
+  # Next.js Application - Production Settings
+  # ---------------------------------------------------------------------------
+  app:
+    # Resource limits for VPS
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 1G
+        reservations:
+          cpus: "0.5"
+          memory: 256M
+
+    # Production logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "5"
+        tag: "dharma-app"
+
+    # More aggressive restart policy
+    restart: always
+
+    # Additional production environment
+    environment:
+      # Ensure production mode
+      NODE_ENV: production
+      # Disable telemetry
+      NEXT_TELEMETRY_DISABLED: "1"
+
+  # ---------------------------------------------------------------------------
+  # Backup Service - Production Settings
+  # ---------------------------------------------------------------------------
+  backup:
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+
+    # Production logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+        tag: "dharma-backup"
+
+# =============================================================================
+# Network Configuration - Production
+# =============================================================================
+networks:
+  dharma-network:
+    driver: bridge
+    # Enable IPv6 if needed
+    # ipam:
+    #   config:
+    #     - subnet: "172.28.0.0/16"

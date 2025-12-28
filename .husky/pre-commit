@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# =============================================================================
+# Pre-commit Hook
+# =============================================================================
+# Runs lint-staged to format and lint only staged files.
+# This keeps commits clean without slowing down the entire codebase check.
+# =============================================================================
+
+npx lint-staged

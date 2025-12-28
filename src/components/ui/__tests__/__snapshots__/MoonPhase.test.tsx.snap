@@ -1,0 +1,311 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`MoonPhase Component > renders full moon state (snapshot) 1`] = `
+<DocumentFragment>
+  <div
+    class="relative inline-block"
+    style="width: 120px; height: 120px;"
+  >
+    <div
+      class="absolute inset-0 rounded-full opacity-30 blur-xl"
+      style="background: radial-gradient(circle, var(--theme-moon-glow, oklch(0.980 0.035 85 / 0.7)) 0%, transparent 70%);"
+    />
+    <svg
+      class="relative z-10"
+      height="120"
+      style="background: transparent;"
+      viewBox="0 0 120 120"
+      width="120"
+    >
+      <defs>
+        <radialgradient
+          cx="40%"
+          cy="40%"
+          id="moonSurface-120"
+        >
+          <stop
+            offset="0%"
+            style="stop-color: var(--theme-moon-surface-light, oklch(0.985 0.015 80));"
+          />
+          <stop
+            offset="50%"
+            style="stop-color: var(--theme-moon-surface-mid, oklch(0.945 0.020 75));"
+          />
+          <stop
+            offset="100%"
+            style="stop-color: var(--theme-moon-surface-dark, oklch(0.895 0.025 70));"
+          />
+        </radialgradient>
+        <radialgradient
+          cx="50%"
+          cy="50%"
+          id="moonDark-120"
+        >
+          <stop
+            offset="0%"
+            style="stop-color: var(--theme-moon-shadow-light, oklch(0.165 0.015 280));"
+          />
+          <stop
+            offset="100%"
+            style="stop-color: var(--theme-moon-shadow-deep, oklch(0.105 0.010 275));"
+          />
+        </radialgradient>
+        <filter
+          height="140%"
+          id="moonTexture-120"
+          width="140%"
+          x="-20%"
+          y="-20%"
+        >
+          <feturbulence
+            baseFrequency="0.02"
+            numOctaves="2"
+            result="noise"
+            type="fractalNoise"
+          />
+          <fecolormatrix
+            in="noise"
+            result="opacity"
+            type="matrix"
+            values="0 0 0 0 0
+                      0 0 0 0 0
+                      0 0 0 0 0
+                      0 0 0 0.05 0"
+          />
+          <feblend
+            in="SourceGraphic"
+            in2="opacity"
+            mode="multiply"
+          />
+        </filter>
+      </defs>
+      <circle
+        cx="60"
+        cy="60"
+        fill="url(#moonDark-120)"
+        filter="url(#moonTexture-120)"
+        r="58"
+      />
+      <path
+        class="transition-all duration-1000"
+        d="M 60 2 A 58 58 0 1 1 60 118 A 58 58 0 1 1 60 2"
+        fill="url(#moonSurface-120)"
+        filter="url(#moonTexture-120)"
+      />
+      <circle
+        cx="60"
+        cy="60"
+        fill="none"
+        r="58"
+        stroke="var(--theme-moon-rim, oklch(1 0 0 / 0.1))"
+        stroke-width="0.5"
+      />
+    </svg>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`MoonPhase Component > renders new moon state (snapshot) 1`] = `
+<DocumentFragment>
+  <div
+    class="relative inline-block"
+    style="width: 120px; height: 120px;"
+  >
+    <svg
+      class="relative z-10"
+      height="120"
+      style="background: transparent;"
+      viewBox="0 0 120 120"
+      width="120"
+    >
+      <defs>
+        <radialgradient
+          cx="40%"
+          cy="40%"
+          id="moonSurface-120"
+        >
+          <stop
+            offset="0%"
+            style="stop-color: var(--theme-moon-surface-light, oklch(0.985 0.015 80));"
+          />
+          <stop
+            offset="50%"
+            style="stop-color: var(--theme-moon-surface-mid, oklch(0.945 0.020 75));"
+          />
+          <stop
+            offset="100%"
+            style="stop-color: var(--theme-moon-surface-dark, oklch(0.895 0.025 70));"
+          />
+        </radialgradient>
+        <radialgradient
+          cx="50%"
+          cy="50%"
+          id="moonDark-120"
+        >
+          <stop
+            offset="0%"
+            style="stop-color: var(--theme-moon-shadow-light, oklch(0.165 0.015 280));"
+          />
+          <stop
+            offset="100%"
+            style="stop-color: var(--theme-moon-shadow-deep, oklch(0.105 0.010 275));"
+          />
+        </radialgradient>
+        <filter
+          height="140%"
+          id="moonTexture-120"
+          width="140%"
+          x="-20%"
+          y="-20%"
+        >
+          <feturbulence
+            baseFrequency="0.02"
+            numOctaves="2"
+            result="noise"
+            type="fractalNoise"
+          />
+          <fecolormatrix
+            in="noise"
+            result="opacity"
+            type="matrix"
+            values="0 0 0 0 0
+                      0 0 0 0 0
+                      0 0 0 0 0
+                      0 0 0 0.05 0"
+          />
+          <feblend
+            in="SourceGraphic"
+            in2="opacity"
+            mode="multiply"
+          />
+        </filter>
+      </defs>
+      <circle
+        cx="60"
+        cy="60"
+        fill="url(#moonDark-120)"
+        filter="url(#moonTexture-120)"
+        r="58"
+      />
+      <circle
+        cx="60"
+        cy="60"
+        fill="none"
+        r="58"
+        stroke="var(--theme-moon-rim, oklch(1 0 0 / 0.1))"
+        stroke-width="0.5"
+      />
+    </svg>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`MoonPhase Component > renders waxing crescent state (snapshot) 1`] = `
+<DocumentFragment>
+  <div
+    class="relative inline-block"
+    style="width: 120px; height: 120px;"
+  >
+    <div
+      class="absolute inset-0 rounded-full opacity-30 blur-xl"
+      style="background: radial-gradient(circle, var(--theme-moon-glow, oklch(0.980 0.035 85 / 0.4)) 0%, transparent 70%);"
+    />
+    <svg
+      class="relative z-10"
+      height="120"
+      style="background: transparent;"
+      viewBox="0 0 120 120"
+      width="120"
+    >
+      <defs>
+        <radialgradient
+          cx="40%"
+          cy="40%"
+          id="moonSurface-120"
+        >
+          <stop
+            offset="0%"
+            style="stop-color: var(--theme-moon-surface-light, oklch(0.985 0.015 80));"
+          />
+          <stop
+            offset="50%"
+            style="stop-color: var(--theme-moon-surface-mid, oklch(0.945 0.020 75));"
+          />
+          <stop
+            offset="100%"
+            style="stop-color: var(--theme-moon-surface-dark, oklch(0.895 0.025 70));"
+          />
+        </radialgradient>
+        <radialgradient
+          cx="50%"
+          cy="50%"
+          id="moonDark-120"
+        >
+          <stop
+            offset="0%"
+            style="stop-color: var(--theme-moon-shadow-light, oklch(0.165 0.015 280));"
+          />
+          <stop
+            offset="100%"
+            style="stop-color: var(--theme-moon-shadow-deep, oklch(0.105 0.010 275));"
+          />
+        </radialgradient>
+        <filter
+          height="140%"
+          id="moonTexture-120"
+          width="140%"
+          x="-20%"
+          y="-20%"
+        >
+          <feturbulence
+            baseFrequency="0.02"
+            numOctaves="2"
+            result="noise"
+            type="fractalNoise"
+          />
+          <fecolormatrix
+            in="noise"
+            result="opacity"
+            type="matrix"
+            values="0 0 0 0 0
+                      0 0 0 0 0
+                      0 0 0 0 0
+                      0 0 0 0.05 0"
+          />
+          <feblend
+            in="SourceGraphic"
+            in2="opacity"
+            mode="multiply"
+          />
+        </filter>
+      </defs>
+      <circle
+        cx="60"
+        cy="60"
+        fill="url(#moonDark-120)"
+        filter="url(#moonTexture-120)"
+        r="58"
+      />
+      <path
+        class="transition-all duration-1000"
+        d="
+        M 60 2
+        A 58 58 0 0 1 60 118
+        A 29 58 0 0 0 60 2
+        Z
+      "
+        fill="url(#moonSurface-120)"
+        filter="url(#moonTexture-120)"
+      />
+      <circle
+        cx="60"
+        cy="60"
+        fill="none"
+        r="58"
+        stroke="var(--theme-moon-rim, oklch(1 0 0 / 0.1))"
+        stroke-width="0.5"
+      />
+    </svg>
+  </div>
+</DocumentFragment>
+`;
