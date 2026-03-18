@@ -59,4 +59,6 @@ async function checkWhichEventsHaveOccurrences() {
   await prisma.$disconnect();
 }
 
-checkWhichEventsHaveOccurrences().catch(console.error);
+checkWhichEventsHaveOccurrences()
+  .catch(console.error)
+  .finally(() => process.exit(0));

@@ -37,4 +37,6 @@ async function checkJan292026() {
   await prisma.$disconnect();
 }
 
-checkJan292026().catch(console.error);
+checkJan292026()
+  .catch(console.error)
+  .finally(() => process.exit(0));

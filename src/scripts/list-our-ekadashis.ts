@@ -18,4 +18,6 @@ async function listOurEkadashis() {
   await prisma.$disconnect();
 }
 
-listOurEkadashis().catch(console.error);
+listOurEkadashis()
+  .catch(console.error)
+  .finally(() => process.exit(0));

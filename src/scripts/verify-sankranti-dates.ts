@@ -52,4 +52,6 @@ async function verifySankrantiDates() {
   await prisma.$disconnect();
 }
 
-verifySankrantiDates().catch(console.error);
+verifySankrantiDates()
+  .catch(console.error)
+  .finally(() => process.exit(0));

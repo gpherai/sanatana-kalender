@@ -111,4 +111,6 @@ async function smartComparison() {
   await prisma.$disconnect();
 }
 
-smartComparison().catch(console.error);
+smartComparison()
+  .catch(console.error)
+  .finally(() => process.exit(0));

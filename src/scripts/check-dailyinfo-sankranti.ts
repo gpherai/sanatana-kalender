@@ -60,4 +60,6 @@ async function checkDailyInfoSankranti() {
   await prisma.$disconnect();
 }
 
-checkDailyInfoSankranti().catch(console.error);
+checkDailyInfoSankranti()
+  .catch(console.error)
+  .finally(() => process.exit(0));

@@ -200,9 +200,11 @@ async function generateEventsFromNaming() {
 }
 
 generateEventsFromNaming()
-  .then(() => prisma.$disconnect())
   .catch((e) => {
     console.error("❌ Error:", e);
-    prisma.$disconnect();
     process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+    process.exit(0);
   });

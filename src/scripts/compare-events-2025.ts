@@ -202,7 +202,10 @@ async function compareEvents() {
 }
 
 compareEvents()
-  .then(() => prisma.$disconnect())
+  .then(async () => {
+    await prisma.$disconnect();
+    process.exit(0);
+  })
   .catch((error) => {
     console.error("Error:", error);
     prisma.$disconnect();

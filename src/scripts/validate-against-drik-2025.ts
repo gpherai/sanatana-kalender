@@ -105,4 +105,6 @@ async function validateAgainstDrik2025() {
   await prisma.$disconnect();
 }
 
-validateAgainstDrik2025().catch(console.error);
+validateAgainstDrik2025()
+  .catch(console.error)
+  .finally(() => process.exit(0));

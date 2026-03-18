@@ -12,4 +12,6 @@ async function getNirjalaId() {
   await prisma.$disconnect();
 }
 
-getNirjalaId().catch(console.error);
+getNirjalaId()
+  .catch(console.error)
+  .finally(() => process.exit(0));

@@ -55,4 +55,6 @@ async function checkMonthTransitions() {
   await prisma.$disconnect();
 }
 
-checkMonthTransitions().catch(console.error);
+checkMonthTransitions()
+  .catch(console.error)
+  .finally(() => process.exit(0));

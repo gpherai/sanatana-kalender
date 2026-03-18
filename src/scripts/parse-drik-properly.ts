@@ -167,4 +167,6 @@ async function analyzeEvents() {
   await prisma.$disconnect();
 }
 
-analyzeEvents().catch(console.error);
+analyzeEvents()
+  .catch(console.error)
+  .finally(() => process.exit(0));

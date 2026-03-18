@@ -72,4 +72,6 @@ async function testSolarGeneration() {
   await prisma.$disconnect();
 }
 
-testSolarGeneration().catch(console.error);
+testSolarGeneration()
+  .catch(console.error)
+  .finally(() => process.exit(0));

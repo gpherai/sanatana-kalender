@@ -69,4 +69,6 @@ async function check2026Jyeshtha() {
   await prisma.$disconnect();
 }
 
-check2026Jyeshtha().catch(console.error);
+check2026Jyeshtha()
+  .catch(console.error)
+  .finally(() => process.exit(0));

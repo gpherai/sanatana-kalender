@@ -74,4 +74,6 @@ async function finalReport() {
   await prisma.$disconnect();
 }
 
-finalReport().catch(console.error);
+finalReport()
+  .catch(console.error)
+  .finally(() => process.exit(0));

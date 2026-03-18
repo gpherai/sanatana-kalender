@@ -62,4 +62,6 @@ async function checkNirjala2026() {
   await prisma.$disconnect();
 }
 
-checkNirjala2026().catch(console.error);
+checkNirjala2026()
+  .catch(console.error)
+  .finally(() => process.exit(0));

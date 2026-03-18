@@ -26,4 +26,6 @@ async function checkSankrantis() {
   await prisma.$disconnect();
 }
 
-checkSankrantis().catch(console.error);
+checkSankrantis()
+  .catch(console.error)
+  .finally(() => process.exit(0));

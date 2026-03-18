@@ -29,4 +29,6 @@ async function checkMakaraSankrantiOccurrences() {
   await prisma.$disconnect();
 }
 
-checkMakaraSankrantiOccurrences().catch(console.error);
+checkMakaraSankrantiOccurrences()
+  .catch(console.error)
+  .finally(() => process.exit(0));
