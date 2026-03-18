@@ -1,223 +1,172 @@
-# 🕉️ Dharma Calendar
+# Sanatana Kalender
 
 > Persoonlijke spirituele kalender voor het bijhouden van Sanatana Dharma events, festivals en maanfasen.
 
-## 📋 Beschrijving
+## Beschrijving
 
-Dharma Calendar is een Next.js applicatie voor het beheren van Hindu festivals, puja's, ekadashi's en andere spirituele gebeurtenissen. De app biedt:
+Een Next.js applicatie voor het beheren van Hindu festivals, puja's, ekadashi's en andere spirituele gebeurtenissen. De app biedt:
 
-- 📅 Kalenderweergave (maand/week/dag/agenda)
-- 🌙 Maanfase tracking en zon/maan tijden
-- 🏷️ Categorisatie per godheid (Ganesha, Shiva, Krishna, etc.)
-- 🔍 Geavanceerd filteren en zoeken
-- 🎨 Meerdere thema's met dark mode support
-- 📍 Locatie-gebaseerde astronomische berekeningen
+- Kalenderweergave (maand/week/dag/agenda)
+- Maanfase tracking en zon/maan tijden
+- Categorisatie per godheid (Ganesha, Shiva, Krishna, etc.)
+- Geavanceerd filteren en zoeken
+- Meerdere thema's met dark mode support
+- Locatie-gebaseerde astronomische berekeningen (Swiss Ephemeris)
+- Parent-child event series (bijv. Navratri → 9 Navadurga dagen)
 
-## 🚀 Installatie
+## Installatie
 
-### Optie 1: Docker (Aanbevolen)
+### Optie 1: Docker
 
 ```bash
-# Clone repository
 git clone <repo-url>
-cd dharma-calendar
+cd sanatana-kalender
 
-# Kopieer en configureer environment
-cp .env.example .env.production
-nano .env.production  # Pas wachtwoorden aan
+# Maak een .env bestand aan (zie Configuratie hieronder)
 
-# Start met Docker Compose
-docker-compose --env-file .env.production up -d --build
+# Development
+docker-compose up -d --build
 
-# Check status
-docker-compose ps
-docker-compose logs -f app
+# Production
+docker-compose -f docker-compose.prod.yml up -d --build
 ```
-
-De applicatie is nu beschikbaar op `http://localhost:3000`
 
 ### Optie 2: Lokale Development
 
-#### Vereisten
-
-- Node.js 24.x of hoger (LTS vanaf oktober 2025)
-- PostgreSQL 17+
-- npm
-
-#### Stappen
+**Vereisten:** Node.js 24.x+, PostgreSQL 17+
 
 ```bash
-# Clone repository
 git clone <repo-url>
-cd dharma-calendar
+cd sanatana-kalender
 
-# Installeer dependencies
 npm install
 
-# Kopieer environment file en configureer
-cp .env.example .env
-# Edit .env met je DATABASE_URL
+# Maak .env aan met DATABASE_URL (zie Configuratie)
 
-# Database setup
-npm run db:generate    # Genereer Prisma client
-npm run db:push        # Push schema naar database
-npm run db:seed        # Seed met testdata
+npm run db:generate
+npm run db:push
+npm run db:seed
+# Genereer events en occurrences (zie commando's hieronder)
 
-# Start development server
 npm run dev
 ```
 
-## ⚙️ Configuratie
+## Configuratie
 
 ### Environment Variables
 
 | Variabele | Verplicht | Beschrijving |
 |-----------|-----------|--------------|
-| `DATABASE_URL` | ✅ | PostgreSQL connection string |
-| `NODE_ENV` | ❌ | `development` / `production` |
+| `DATABASE_URL` | Ja | PostgreSQL connection string |
+| `NODE_ENV` | Nee | `development` / `production` |
 | `POSTGRES_USER` | Docker | Database gebruiker |
 | `POSTGRES_PASSWORD` | Docker | Database wachtwoord |
 | `POSTGRES_DB` | Docker | Database naam |
 
-### Database
-
-De applicatie gebruikt PostgreSQL met Prisma ORM. Connection string format:
-
+Connection string format:
 ```
 postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public
 ```
 
-## 🏃 Uitvoeren
-
-### Docker
-
-```bash
-# Start
-docker-compose up -d
-
-# Stop
-docker-compose down
-
-# Logs bekijken
-docker-compose logs -f app
-
-# Database backup
-docker-compose --profile backup run --rm backup
-```
+## Commando's
 
 ### Development
 
 ```bash
-npm run dev
+npm run dev          # Start dev server op http://localhost:3000
+npm run build        # Production build
+npm run start        # Start production server
+npm run test         # Run unit tests
+npm run validate     # Format check + lint + type check
 ```
 
-Opent op `http://localhost:3000`
-
-### Production Build
+### Database
 
 ```bash
-npm run build
-npm run start
+npm run db:generate          # Regenereer Prisma client
+npm run db:push              # Push schema changes naar database
+npm run db:seed              # Seed database (categorieën)
+npm run db:studio            # Open Prisma Studio GUI
+npm run db:reset             # Reset en reseed database
 ```
 
-### Database Commands
+### Events & Occurrences
 
 ```bash
-npm run db:generate  # Regenereer Prisma client
-npm run db:push      # Push schema changes
-npm run db:seed      # Seed database
-npm run db:reset     # Reset en reseed database
-npm run db:studio    # Open Prisma Studio GUI
+# Genereer/update events uit de naming catalog (src/config/event-naming.ts)
+npx tsx --tsconfig tsconfig.json src/scripts/generate-events-from-naming.ts
+
+# Genereer occurrences voor alle events via API
+curl -X POST http://localhost:3000/api/events/generate-occurrences \
+  -H "Content-Type: application/json" \
+  -d '{"replace": true}'
 ```
 
-## 🔧 Health Check
+Zie [docs/DATABASE_PROCEDURES.md](docs/DATABASE_PROCEDURES.md) voor volledige procedures.
 
-De applicatie heeft een health endpoint voor monitoring:
+## Architectuur
+
+### Event Naming Catalog
+
+`src/config/event-naming.ts` is de single source of truth voor event definities. Elk event heeft een `key` (stable `namingKey` identifier) en een `ruleConfig` die bepaalt wanneer het event valt (tithi, nakshatra, maas, etc.).
+
+Het script `generate-events-from-naming.ts` synchroniseert de catalog naar de database.
+
+### Parent-Child Series
+
+Events staan in een hiërarchie via de `EventSeriesEntry` junction table (many-to-many). Zo kunnen de 9 Navadurga-godinnen zowel bij Chaitra Navratri als Sharad Navratri horen. In de events-lijst worden child events direct onder hun parent getoond.
+
+### Recurrence Engine
+
+`src/services/recurrence.service.ts` genereert `EventOccurrence` records op basis van een event's `recurrenceType` en `ruleConfig`:
+
+- `YEARLY_LUNAR` — jaarlijks op een specifieke tithi (bijv. Krishna Chaturdashi)
+- `MONTHLY_LUNAR` — maandelijks op een tithi (bijv. alle Ekadashi's = 24x per jaar)
+- `YEARLY_SOLAR` — jaarlijks op een Sankranti of vaste datum
+
+### Panchanga
+
+`src/services/panchanga.service.ts` berekent dagelijkse lunaire data (tithi, nakshatra, maas, paksha) via Swiss Ephemeris. De `DailyInfo` tabel slaat dit op als cache.
+
+## Project Structuur
 
 ```
-GET /api/health
-```
-
-Response (200 OK):
-```json
-{
-  "status": "healthy",
-  "timestamp": "2025-11-28T12:00:00.000Z",
-  "version": "0.10.0",
-  "checks": {
-    "database": { "status": "up", "latencyMs": 5 }
-  }
-}
-```
-
-## 📁 Project Structuur
-
-```
-dharma-calendar/
-├── docs/                    # Documentatie
-│   ├── ARCHITECTURE.md      # Technische architectuur
-│   ├── CHANGELOG.md         # Ontwikkelingslog
-│   ├── DEPLOYMENT.md        # VPS deployment guide
-│   └── TODO.md              # Roadmap
+sanatana-kalender/
+├── docs/                    # Documentatie & ADRs
 ├── prisma/
 │   └── schema.prisma        # Database schema
+├── scripts/                 # Shell scripts (backup)
 ├── src/
 │   ├── app/                 # Next.js App Router
 │   │   ├── api/             # API endpoints
-│   │   ├── events/          # Event pages
-│   │   └── settings/        # Settings page
+│   │   ├── events/          # Events overzichtspagina
+│   │   └── settings/        # Instellingen
 │   ├── components/          # React components
+│   ├── config/              # Configuratie (events, categorieën, thema's)
 │   ├── hooks/               # Custom hooks
 │   ├── lib/                 # Utilities
-│   ├── services/            # Business logic
+│   ├── scripts/             # TypeScript scripts (seed, generate, check)
+│   ├── services/            # Business logic (recurrence, panchanga)
 │   └── types/               # TypeScript types
-├── scripts/                 # Helper scripts
-├── Dockerfile               # Container build
-└── docker-compose.yml       # Container orchestration
+├── docker-compose.yml
+├── docker-compose.prod.yml
+└── Dockerfile
 ```
 
-## 🐛 Troubleshooting
+## API
 
-### Database Connection Failed
+| Endpoint | Methode | Beschrijving |
+|----------|---------|--------------|
+| `/api/health` | GET | Health check + DB latency |
+| `/api/events` | GET | Alle events met occurrences |
+| `/api/events/[id]` | GET/PUT/DELETE | Individueel event |
+| `/api/events/generate-occurrences` | POST | Genereer/vervang occurrences |
+| `/api/categories` | GET | Alle categorieën |
+| `/api/daily-info` | GET | Dagelijkse panchanga data |
+| `/api/preferences` | GET/PUT | Gebruikersvoorkeuren |
+| `/api/themes` | GET | Beschikbare thema's |
 
-1. Controleer of PostgreSQL draait
-2. Verifieer `DATABASE_URL` in `.env`
-3. Test connectie: `npx prisma db pull`
-
-### Prisma Client Errors
-
-```bash
-npm run db:generate
-```
-
-### Port Already in Use
-
-```bash
-# Windows
-netstat -ano | findstr :3000
-taskkill /PID <PID> /F
-
-# Linux/Mac
-lsof -i :3000
-kill -9 <PID>
-```
-
-### Docker Issues
-
-```bash
-# Rebuild containers
-docker-compose build --no-cache
-
-# Reset everything (⚠️ deletes data)
-docker-compose down -v
-docker-compose up -d --build
-
-# Check container logs
-docker-compose logs db
-docker-compose logs app
-```
-
-## 📊 Tech Stack
+## Tech Stack
 
 | Technologie | Versie | Doel |
 |-------------|--------|------|
@@ -227,24 +176,22 @@ docker-compose logs app
 | Tailwind CSS | 4.x | Styling |
 | Prisma | 7.x | ORM |
 | PostgreSQL | 17+ | Database |
-| Zod | 4.x | Validation |
-| react-big-calendar | 1.x | Calendar |
-| suncalc | 1.9 | Astronomy |
-| Docker | 24+ | Containerization |
+| Swiss Ephemeris | 0.5.x | Astronomische berekeningen |
+| react-big-calendar | 1.x | Kalenderweergave |
+| Zod | 4.x | Validatie |
 
-## 📚 Documentatie
+## Documentatie
 
-- [ARCHITECTURE.md](docs/ARCHITECTURE.md) - Technische architectuur
-- [DEPLOYMENT.md](docs/DEPLOYMENT.md) - VPS deployment guide
-- [CHANGELOG.md](docs/CHANGELOG.md) - Ontwikkelingsgeschiedenis
-- [TODO.md](docs/TODO.md) - Roadmap en features
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — Technische architectuur
+- [docs/DATABASE_PROCEDURES.md](docs/DATABASE_PROCEDURES.md) — Database procedures (seed, reset, generate)
+- [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) — VPS deployment guide
+- [docs/CHANGELOG.md](docs/CHANGELOG.md) — Ontwikkelingsgeschiedenis
+- [docs/TODO.md](docs/TODO.md) — Roadmap
 
-## 📄 Licentie
+## Licentie
 
-Private project - Alle rechten voorbehouden.
+Private project — Alle rechten voorbehouden.
 
 ---
 
-**Versie:** 0.10.0
-**Status:** Production Ready 🚀
-**Laatst bijgewerkt:** 24 december 2025
+**Versie:** 0.10.0 | **Laatst bijgewerkt:** 18 maart 2026
