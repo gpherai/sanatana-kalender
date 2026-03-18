@@ -352,7 +352,7 @@ async function main() {
     {
       name: "Maha Shivaratri",
       description:
-        "De grote nacht van Shiva. Devotees vasten en houden de hele nacht wake ter ere van Lord Shiva. Er worden speciale abhishekam rituelen uitgevoerd met melk, honing, en bilvabladeren.",
+        "De grote nacht van Shiva. Bhakta's (devotees) houden een vrat (vasten) en blijven de hele nacht wakker ter ere van Heer Shiva. Er worden speciale abhishekam rituelen uitgevoerd met melk, honing en bilvabladeren.",
       eventType: "FESTIVAL",
       recurrenceType: "YEARLY_LUNAR",
       importance: "MAJOR",
@@ -376,7 +376,7 @@ async function main() {
     {
       name: "Ram Navami",
       description:
-        "Geboortedag van Lord Rama, de zevende avatar van Vishnu. Wordt gevierd met bhajans, het lezen van de Ramayana, en het aanbieden van prasad aan tempels.",
+        "Verschijningsdag van Heer Rama, de zevende avatar van Vishnu. Wordt gevierd met bhajans, het lezen van de Ramayana en het aanbieden van prasad in tempels.",
       eventType: "JAYANTI",
       recurrenceType: "YEARLY_LUNAR",
       importance: "MAJOR",
@@ -388,7 +388,7 @@ async function main() {
     {
       name: "Hanuman Jayanti",
       description:
-        "Geboortedag van Lord Hanuman, de trouwe dienaar van Lord Rama. Devotees bezoeken tempels en reciteren de Hanuman Chalisa en Sundara Kanda.",
+        "Verschijningsdag van Heer Hanuman, de trouwe dienaar van Heer Rama. Bhakta's bezoeken tempels en reciteren de Hanuman Chalisa en Sundara Kanda.",
       eventType: "JAYANTI",
       recurrenceType: "YEARLY_LUNAR",
       importance: "MAJOR",
@@ -436,7 +436,7 @@ async function main() {
     {
       name: "Krishna Janmashtami",
       description:
-        "Geboortedag van Lord Krishna. Wordt gevierd met vasten tot middernacht (het geboorte-moment), gevolgd door aarti, bhajans en het breken van de vasten met prasad.",
+        "Verschijningsdag van Heer Krishna. Wordt gevierd met een vrat (vasten) tot middernacht (het geboorte-moment), gevolgd door aarti, bhajans en het breken van de vasten met prasad.",
       eventType: "JAYANTI",
       recurrenceType: "YEARLY_LUNAR",
       importance: "MAJOR",
@@ -448,7 +448,7 @@ async function main() {
     {
       name: "Ganesh Chaturthi",
       description:
-        "Geboortedag van Lord Ganesha, de god van wijsheid en nieuw begin. Tien dagen van festiviteiten met dagelijkse puja's, eindigend met visarjan (onderdompeling) op Anant Chaturdashi.",
+        "Verschijningsdag van Heer Ganesha, de god van wijsheid en nieuw begin. Tien dagen van festiviteiten met dagelijkse puja's, eindigend met visarjan (onderdompeling) op Anant Chaturdashi.",
       eventType: "FESTIVAL",
       recurrenceType: "YEARLY_LUNAR",
       importance: "MAJOR",
@@ -460,7 +460,7 @@ async function main() {
     {
       name: "Navaratri",
       description:
-        "Negen nachten gewijd aan Goddess Durga in haar negen vormen. Elke dag heeft een specifieke kleur en vorm van de Devi. Wordt afgesloten met Vijayadashami (Dussehra).",
+        "Negen nachten gewijd aan Godin Durga in haar negen vormen. Elke dag heeft een specifieke kleur en vorm van de Devi. Wordt afgesloten met Vijayadashami (Dussehra).",
       eventType: "FESTIVAL",
       recurrenceType: "YEARLY_LUNAR",
       importance: "MAJOR",
@@ -472,7 +472,7 @@ async function main() {
     {
       name: "Dussehra (Vijayadashami)",
       description:
-        "Overwinning van Lord Rama op Ravana en van Goddess Durga op Mahishasura. Symboliseert de triomf van goed over kwaad. Ravana-effigy's worden verbrand.",
+        "Overwinning van Heer Rama op Ravana en van Godin Durga op Mahishasura. Symboliseert de triomf van goed over kwaad. Ravana-effigie's worden verbrand.",
       eventType: "FESTIVAL",
       recurrenceType: "YEARLY_LUNAR",
       importance: "MAJOR",
@@ -484,7 +484,7 @@ async function main() {
     {
       name: "Diwali",
       description:
-        "Festival van lichten. Viert de terugkeer van Lord Rama naar Ayodhya na 14 jaar ballingschap. Huizen worden verlicht met diyas, er wordt Lakshmi puja gedaan voor welvaart.",
+        "Het festival van lichten. Viert de terugkeer van Heer Rama naar Ayodhya na 14 jaar ballingschap. Huizen worden verlicht met diyas en er wordt Lakshmi puja gedaan voor welvaart.",
       eventType: "FESTIVAL",
       recurrenceType: "YEARLY_LUNAR",
       importance: "MAJOR",
@@ -989,7 +989,7 @@ async function main() {
     {
       name: "Skanda Sashti",
       description:
-        "Zes dagen durend festival ter ere van Lord Murugan/Skanda. Viert zijn overwinning op de demon Surapadman. Zeer populair in Tamil Nadu en andere Zuid-Indiase staten.",
+        "Zes dagen durend festival ter ere van Heer Murugan/Skanda. Viert zijn overwinning op de demon Surapadman. Zeer populair in Tamil Nadu en andere Zuid-Indiase staten.",
       eventType: "FESTIVAL",
       recurrenceType: "YEARLY_LUNAR",
       importance: "MAJOR",
@@ -1001,7 +1001,7 @@ async function main() {
     {
       name: "Thaipusam",
       description:
-        "Festival ter ere van Lord Murugan. Devotees dragen kavadi's (versierde structuren) en sommigen doorboren hun lichaam met speren als teken van devotie en boetedoening.",
+        "Festival ter ere van Heer Murugan. Bhakta's dragen kavadi's (versierde structuren) en sommigen doorboren hun lichaam met speren als teken van devotie en boetedoening.",
       eventType: "FESTIVAL",
       recurrenceType: "YEARLY_LUNAR",
       importance: "MAJOR",
@@ -1032,33 +1032,43 @@ async function main() {
       continue;
     }
 
-    // Upsert the event by unique name
-    const event = await prisma.event.upsert({
+    // Find by name first since name is no longer unique in Prisma
+    const existingEvent = await prisma.event.findFirst({
       where: { name: eventData.name },
-      update: {
-        description: eventData.description,
-        eventType: eventData.eventType,
-        recurrenceType: eventData.recurrenceType,
-        importance: eventData.importance,
-        categoryId,
-        tithi: eventData.tithi,
-        nakshatra: eventData.nakshatra,
-        maas: eventData.maas,
-        tags: eventData.tags,
-      },
-      create: {
-        name: eventData.name,
-        description: eventData.description,
-        eventType: eventData.eventType,
-        recurrenceType: eventData.recurrenceType,
-        importance: eventData.importance,
-        categoryId,
-        tithi: eventData.tithi,
-        nakshatra: eventData.nakshatra,
-        maas: eventData.maas,
-        tags: eventData.tags,
-      },
     });
+
+    let event;
+    if (existingEvent) {
+      event = await prisma.event.update({
+        where: { id: existingEvent.id },
+        data: {
+          description: eventData.description,
+          eventType: eventData.eventType,
+          recurrenceType: eventData.recurrenceType,
+          importance: eventData.importance,
+          categoryId,
+          tithi: eventData.tithi,
+          nakshatra: eventData.nakshatra,
+          maas: eventData.maas,
+          tags: eventData.tags,
+        },
+      });
+    } else {
+      event = await prisma.event.create({
+        data: {
+          name: eventData.name,
+          description: eventData.description,
+          eventType: eventData.eventType,
+          recurrenceType: eventData.recurrenceType,
+          importance: eventData.importance,
+          categoryId,
+          tithi: eventData.tithi,
+          nakshatra: eventData.nakshatra,
+          maas: eventData.maas,
+          tags: eventData.tags,
+        },
+      });
+    }
     eventCount++;
     createdEvents.set(eventData.name, {
       id: event.id,

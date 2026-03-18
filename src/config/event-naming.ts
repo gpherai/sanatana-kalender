@@ -61,7 +61,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       maas: "PAUSHA",
     },
     description:
-      "Ekadashi in Pausha Shukla paksha. Believed to grant sons and general prosperity.",
+      "Ekadashi in de Pausha Shukla paksha. Wordt verondersteld nageslacht (zonen) en algemene voorspoed te schenken.",
     tags: ["ekadashi", "vasten", "zonen", "voorspoed"],
   },
   {
@@ -75,7 +75,8 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "EKADASHI_KRISHNA",
       maas: "PAUSHA",
     },
-    description: 'Means "fruitful/successful". Fasting brings success in all endeavors.',
+    description:
+      'Betekent "vruchtbaar/succesvol". Het vasten (vrat) brengt succes in alle ondernemingen.',
     tags: ["ekadashi", "vasten", "succes"],
   },
   {
@@ -89,7 +90,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "EKADASHI_KRISHNA",
       maas: "MAGHA",
     },
-    description: "Offering sesame (til) in seven forms purifies sins.",
+    description: "Het offeren van sesam (til) in zeven vormen zuivert papa (zonden).",
     tags: ["ekadashi", "vasten", "til", "sesam"],
   },
   {
@@ -103,7 +104,8 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "EKADASHI_SHUKLA",
       maas: "MAGHA",
     },
-    description: "Fasting liberates from ignorance and brings spiritual victory (jaya).",
+    description:
+      "Het vasten (vrat) bevrijdt van onwetendheid en brengt spirituele overwinning (jaya).",
     tags: ["ekadashi", "vasten", "overwinning"],
   },
   {
@@ -117,7 +119,8 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "EKADASHI_KRISHNA",
       maas: "PHALGUNA",
     },
-    description: "Lord Rama fasted on this day before going to Lanka to rescue Sita.",
+    description:
+      "Heer Rama hield een vrat op deze dag voordat Hij naar Lanka vertrok om Sita te redden.",
     tags: ["ekadashi", "vasten", "rama", "overwinning"],
   },
   {
@@ -131,7 +134,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "EKADASHI_SHUKLA",
       maas: "PHALGUNA",
     },
-    description: "Dedicated to amalaki (amla) tree, sacred to Lord Vishnu.",
+    description: "Gewijd aan de amalaki (amla) boom, heilig voor Heer Vishnu.",
     tags: ["ekadashi", "vasten", "amla", "vishnu"],
   },
   {
@@ -145,7 +148,8 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "EKADASHI_KRISHNA",
       maas: "CHAITRA",
     },
-    description: 'Means "remover of sins". Powerful Ekadashi that purifies all sins.',
+    description:
+      'Betekent "verwijderaar van zonden". Een krachtige Ekadashi die alle papa (zonden) zuivert.',
     tags: ["ekadashi", "vasten", "zuivering", "zonden"],
   },
   {
@@ -160,7 +164,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       maas: "CHAITRA",
     },
     description:
-      "Ekadashi that fulfills all desires (kama). Gandharva was freed from curse.",
+      "Ekadashi die alle wensen (kama) vervult. Een Gandharva werd bevrijd van een vloek door deze vrat.",
     tags: ["ekadashi", "vasten", "wensen", "verlossing"],
   },
   {
@@ -174,7 +178,8 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "EKADASHI_KRISHNA",
       maas: "VAISHAKHA",
     },
-    description: "Removes greatest sins and protects from difficulties.",
+    description:
+      "Vernietigt de grootste papa (zonden) en biedt bescherming tegen moeilijkheden.",
     tags: ["ekadashi", "vasten", "bescherming"],
   },
   {
@@ -188,7 +193,8 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "EKADASHI_SHUKLA",
       maas: "VAISHAKHA",
     },
-    description: "Named after Mohini avatar of Vishnu. Very auspicious for liberation.",
+    description:
+      "Vernoemd naar de Mohini avatar van Vishnu. Zeer gunstig voor het bereiken van moksha (bevrijding).",
     tags: ["ekadashi", "vasten", "mohini", "moksha"],
   },
   {
@@ -202,7 +208,8 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "EKADASHI_KRISHNA",
       maas: "JYESHTHA",
     },
-    description: "Removes sins and grants liberation. Very powerful Ekadashi.",
+    description:
+      "Vernietigt papa (zonden) en schenkt moksha (bevrijding). Een zeer krachtige Ekadashi.",
     tags: ["ekadashi", "vasten", "zuivering"],
   },
   {
@@ -216,7 +223,8 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "EKADASHI_SHUKLA",
       maas: "JYESHTHA",
     },
-    description: "Most austere Ekadashi - fasting without even water. Bhima's Ekadashi.",
+    description:
+      "De meest sobere Ekadashi - vasten (vrat) zonder zelfs water te drinken. Ook bekend als Bhima's Ekadashi.",
     tags: ["ekadashi", "vasten", "nirjala", "bhima"],
   },
   {
@@ -230,7 +238,8 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "EKADASHI_KRISHNA",
       maas: "ASHADHA",
     },
-    description: "Removes sins of many lifetimes and grants spiritual progress.",
+    description:
+      "Zuivert papa (zonden) van vele levens en schenkt spirituele vooruitgang.",
     tags: ["ekadashi", "vasten", "yoga"],
   },
   {
@@ -244,7 +253,8 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "EKADASHI_SHUKLA",
       maas: "ASHADHA",
     },
-    description: "Start of Chaturmas - four months when Lord Vishnu sleeps.",
+    description:
+      "Begin van Chaturmas - de vier heilige maanden waarin Heer Vishnu in yoga-nidra verblijft.",
     tags: ["ekadashi", "vasten", "chaturmas", "vishnu"],
   },
   {
@@ -258,7 +268,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "EKADASHI_KRISHNA",
       maas: "SHRAVANA",
     },
-    description: "One of the most important Ekadashis. Grants liberation.",
+    description: "Eén van de belangrijkste Ekadashis. Schenkt moksha (bevrijding).",
     tags: ["ekadashi", "vasten", "moksha"],
   },
   {
@@ -272,7 +282,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "EKADASHI_SHUKLA",
       maas: "SHRAVANA",
     },
-    description: "Grants children and removes childlessness.",
+    description: "Schenkt nageslacht en heft kinderloosheid op.",
     tags: ["ekadashi", "vasten", "kinderen"],
   },
   {
@@ -286,7 +296,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "EKADASHI_KRISHNA",
       maas: "BHADRAPADA",
     },
-    description: "Removes all sins and grants spiritual elevation.",
+    description: "Vernietigt alle papa (zonden) en schenkt spirituele verheffing.",
     tags: ["ekadashi", "vasten", "zuivering"],
   },
   {
@@ -300,7 +310,8 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "EKADASHI_SHUKLA",
       maas: "BHADRAPADA",
     },
-    description: "Lord Vishnu turns on His side during sleep. Middle of Chaturmas.",
+    description:
+      "Heer Vishnu draait Zich om op Zijn zij tijdens Zijn goddelijke slaap. Het midden van Chaturmas.",
     tags: ["ekadashi", "vasten", "chaturmas"],
   },
   {
@@ -314,7 +325,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "EKADASHI_KRISHNA",
       maas: "ASHWIN",
     },
-    description: "Frees ancestors from suffering and grants peace.",
+    description: "Bevrijdt voorouders (pitru's) van lijden en schenkt hen vrede.",
     tags: ["ekadashi", "vasten", "voorouders"],
   },
   {
@@ -328,7 +339,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "EKADASHI_SHUKLA",
       maas: "ASHWIN",
     },
-    description: "Destroys heaps of sins like a sharp hook.",
+    description: "Vernietigt hopen papa (zonden) als een scherpe haak.",
     tags: ["ekadashi", "vasten", "zuivering"],
   },
   {
@@ -342,7 +353,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "EKADASHI_KRISHNA",
       maas: "KARTIK",
     },
-    description: "Grants liberation and removes all sins.",
+    description: "Schenkt moksha (bevrijding) en vernietigt alle papa (zonden).",
     tags: ["ekadashi", "vasten", "rama"],
   },
   {
@@ -356,7 +367,8 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "EKADASHI_SHUKLA",
       maas: "KARTIK",
     },
-    description: "End of Chaturmas - Lord Vishnu wakes up. Dev Uthani Ekadashi.",
+    description:
+      "Einde van Chaturmas - Heer Vishnu ontwaakt. Ook bekend als Dev Uthani Ekadashi.",
     tags: ["ekadashi", "vasten", "chaturmas", "dev uthani"],
   },
   {
@@ -370,7 +382,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "EKADASHI_KRISHNA",
       maas: "MARGASHIRSHA",
     },
-    description: "Celebrates the birth of Ekadashi Devi. Very powerful.",
+    description: "Viert de verschijning van Ekadashi Devi. Een zeer krachtige vrat.",
     tags: ["ekadashi", "vasten", "devi"],
   },
   {
@@ -385,7 +397,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       maas: "MARGASHIRSHA",
     },
     description:
-      "Grants liberation (moksha). Also called Vaikuntha Ekadashi in South India.",
+      "Schenkt moksha (bevrijding). In Zuid-India ook wel Vaikuntha Ekadashi genoemd.",
     tags: ["ekadashi", "vasten", "moksha", "vaikuntha"],
   },
 
@@ -404,7 +416,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       sankranti: "MAKARA_SANKRANTI",
     },
     description:
-      "Sun enters Capricorn. Harvest festival, beginning of Uttarayana (northward journey of Sun).",
+      "De Zon treedt het teken Makara (Steenbok) binnen. Oogstfeest en het begin van Uttarayana (de noordwaartse reis van de Zon).",
     tags: ["sankranti", "zon", "oogst", "uttarayana"],
   },
   {
@@ -417,7 +429,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleConfig: {
       sankranti: "KUMBHA_SANKRANTI",
     },
-    description: "Sun enters Aquarius.",
+    description: "De Zon treedt het teken Kumbha (Waterman) binnen (Sankranti).",
     tags: ["sankranti", "zon"],
   },
   {
@@ -430,7 +442,8 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleConfig: {
       sankranti: "MEENA_SANKRANTI",
     },
-    description: "Sun enters Pisces.",
+    description:
+      "De Zon treedt het teken Meena (Vissen) binnen. Een gunstig moment voor spirituele reiniging.",
     tags: ["sankranti", "zon"],
   },
   {
@@ -443,7 +456,8 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleConfig: {
       sankranti: "MESHA_SANKRANTI",
     },
-    description: "Sun enters Aries. Hindu Solar New Year. Also called Vishu in Kerala.",
+    description:
+      "De Zon treedt het teken Mesha (Ram) binnen. Hindoestaanse zonne-nieuwjaar. In Kerala ook Vishu genoemd.",
     tags: ["sankranti", "zon", "nieuwjaar", "vishu"],
   },
   {
@@ -456,7 +470,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleConfig: {
       sankranti: "VRISHABHA_SANKRANTI",
     },
-    description: "Sun enters Taurus.",
+    description: "De Zon treedt het teken Vrishabha (Stier) binnen (Sankranti).",
     tags: ["sankranti", "zon"],
   },
   {
@@ -469,7 +483,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleConfig: {
       sankranti: "MITHUNA_SANKRANTI",
     },
-    description: "Sun enters Gemini.",
+    description: "De Zon treedt het teken Mithuna (Tweelingen) binnen (Sankranti).",
     tags: ["sankranti", "zon"],
   },
   {
@@ -483,7 +497,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       sankranti: "KARKA_SANKRANTI",
     },
     description:
-      "Sun enters Cancer. Beginning of Dakshinayana (southward journey of Sun).",
+      "De Zon treedt het teken Karka (Kreeft) binnen. Begin van Dakshinayana (de zuidwaartse reis van de Zon).",
     tags: ["sankranti", "zon", "dakshinayana"],
   },
   {
@@ -496,7 +510,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleConfig: {
       sankranti: "SIMHA_SANKRANTI",
     },
-    description: "Sun enters Leo.",
+    description: "De Zon treedt het teken Simha (Leeuw) binnen (Sankranti).",
     tags: ["sankranti", "zon"],
   },
   {
@@ -509,7 +523,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleConfig: {
       sankranti: "KANYA_SANKRANTI",
     },
-    description: "Sun enters Virgo.",
+    description: "De Zon treedt het teken Kanya (Maagd) binnen (Sankranti).",
     tags: ["sankranti", "zon"],
   },
   {
@@ -522,7 +536,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleConfig: {
       sankranti: "TULA_SANKRANTI",
     },
-    description: "Sun enters Libra.",
+    description: "De Zon treedt het teken Tula (Weegschaal) binnen (Sankranti).",
     tags: ["sankranti", "zon"],
   },
   {
@@ -535,7 +549,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleConfig: {
       sankranti: "VRISHCHIKA_SANKRANTI",
     },
-    description: "Sun enters Scorpio.",
+    description: "De Zon treedt het teken Vrishchika (Schorpioen) binnen (Sankranti).",
     tags: ["sankranti", "zon"],
   },
   {
@@ -548,7 +562,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleConfig: {
       sankranti: "DHANU_SANKRANTI",
     },
-    description: "Sun enters Sagittarius.",
+    description: "De Zon treedt het teken Dhanu (Boogschutter) binnen (Sankranti).",
     tags: ["sankranti", "zon"],
   },
 
@@ -567,7 +581,8 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "PURNIMA",
       maas: "ASHADHA",
     },
-    description: "Honoring spiritual and academic gurus. Day of Vyasa Purnima.",
+    description:
+      "Eerbetoon aan spirituele en academische leraren (guru's). De dag van Vyasa Purnima.",
     tags: ["purnima", "guru", "vyasa", "leraar"],
   },
   {
@@ -581,7 +596,8 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "PURNIMA",
       maas: "KARTIK",
     },
-    description: "Most auspicious Purnima. Karthigai Deepam in South India.",
+    description:
+      "De meest gunstige Purnima (volle maan). Karthigai Deepam in Zuid-India.",
     tags: ["purnima", "deepam", "licht"],
   },
   {
@@ -595,7 +611,8 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "PURNIMA",
       maas: "PAUSHA",
     },
-    description: "Full moon of Pausha month. Auspicious for charity and bathing.",
+    description:
+      "Volle maan (Purnima) van de maand Pausha. Gunstig voor dana (liefdadigheid) en rituele baden.",
     tags: ["purnima", "liefdadigheid"],
   },
   {
@@ -609,7 +626,8 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "PURNIMA",
       maas: "MAGHA",
     },
-    description: "Full moon of Magha month. Important for ancestors.",
+    description:
+      "Volle maan (Purnima) van de maand Magha. Belangrijk voor het eren van voorouders (pitru's).",
     tags: ["purnima", "voorouders"],
   },
   {
@@ -623,7 +641,8 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "PURNIMA",
       maas: "PHALGUNA",
     },
-    description: "Full moon before Holi. Holika Dahan performed on this night.",
+    description:
+      "Volle maan (Purnima) voor Holi. Holika Dahan vindt plaats op deze nacht.",
     tags: ["purnima", "holi", "holika dahan"],
   },
 
@@ -639,7 +658,8 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "PURNIMA",
       maas: "CHAITRA",
     },
-    description: "Full moon of Chaitra month. Hanuman Jayanti in some regions.",
+    description:
+      "Volle maan (Purnima) van de maand Chaitra. In sommige regio's ook Hanuman Jayanti.",
     tags: ["purnima"],
   },
   {
@@ -653,7 +673,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "PURNIMA",
       maas: "VAISHAKHA",
     },
-    description: "Buddha Purnima. Birth of Lord Buddha.",
+    description: "Buddha Purnima. De verschijning van Heer Boeddha.",
     tags: ["purnima", "buddha"],
   },
   {
@@ -667,7 +687,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "PURNIMA",
       maas: "JYESHTHA",
     },
-    description: "Full moon of Jyeshtha month. Vat Purnima Vrat.",
+    description: "Volle maan (Purnima) van de maand Jyeshtha. Vat Purnima Vrat.",
     tags: ["purnima", "vrat"],
   },
   {
@@ -681,7 +701,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "PURNIMA",
       maas: "ASHADHA",
     },
-    description: "Guru Purnima. Honoring spiritual teachers.",
+    description: "Guru Purnima. Eerbetoon aan spirituele leraren.",
     tags: ["purnima", "guru"],
   },
   {
@@ -695,7 +715,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "PURNIMA",
       maas: "SHRAVANA",
     },
-    description: "Raksha Bandhan. Sisters tie rakhi on brothers.",
+    description: "Raksha Bandhan. Zussen binden een rakhi om de pols van hun broers.",
     tags: ["purnima", "raksha bandhan"],
   },
   {
@@ -709,7 +729,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "PURNIMA",
       maas: "BHADRAPADA",
     },
-    description: "Full moon of Bhadrapada month.",
+    description: "Volle maan (Purnima) van de maand Bhadrapada.",
     tags: ["purnima"],
   },
   {
@@ -723,7 +743,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "PURNIMA",
       maas: "ASHWIN",
     },
-    description: "Autumn full moon. Most beautiful moonlight of the year.",
+    description: "Herfstvolle maan (Purnima). Het mooiste maanlicht van het jaar.",
     tags: ["purnima", "sharad"],
   },
   {
@@ -737,7 +757,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "PURNIMA",
       maas: "MARGASHIRSHA",
     },
-    description: "Full moon of Margashirsha month. Dattatreya Jayanti.",
+    description: "Volle maan (Purnima) van de maand Margashirsha. Dattatreya Jayanti.",
     tags: ["purnima"],
   },
 
@@ -753,7 +773,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "EKADASHI_KRISHNA",
       maas: "SHRAVANA",
     },
-    description: "Second Kamika Ekadashi observed in Shravana Krishna paksha.",
+    description: "Tweede Kamika Ekadashi waargenomen in de Shravana Krishna paksha.",
     tags: ["ekadashi", "vasten"],
   },
 
@@ -769,7 +789,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "NAVAMI_SHUKLA",
       maas: "CHAITRA",
     },
-    description: "Birth anniversary of Swaminarayan.",
+    description: "Verschijning van Bhagwan Swaminarayan.",
     tags: ["jayanti", "swaminarayan"],
   },
   {
@@ -783,7 +803,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "TRITIYA_SHUKLA",
       maas: "VAISHAKHA",
     },
-    description: "Birth of Lord Parashurama, 6th avatar of Vishnu.",
+    description: "Verschijning van Heer Parashurama, de 6e avatar van Vishnu.",
     tags: ["jayanti", "parashurama", "avatar"],
   },
   {
@@ -797,7 +817,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "PRATIPADA_KRISHNA",
       maas: "JYESHTHA",
     },
-    description: "Birth of Sage Narada.",
+    description: "Verschijning van de wijze (Rishi) Narada.",
     tags: ["jayanti", "narada", "rishi"],
   },
   {
@@ -811,7 +831,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "PURNIMA",
       maas: "SHRAVANA",
     },
-    description: "Appearance day of Gayatri Mantra.",
+    description: "Verschijningsdag van de heilige Gayatri Mantra.",
     tags: ["jayanti", "gayatri", "mantra"],
   },
   {
@@ -825,7 +845,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "SHASHTHI_SHUKLA",
       maas: "BHADRAPADA",
     },
-    description: "Birth of Lord Balarama, elder brother of Krishna.",
+    description: "Verschijning van Heer Balarama, de oudere broer van Heer Krishna.",
     tags: ["jayanti", "balarama"],
   },
 
@@ -841,7 +861,8 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "PURNIMA",
       maas: "PHALGUNA",
     },
-    description: "Bonfire night before Holi. Burning of Holika.",
+    description:
+      "De nacht van het heilige vreugdevuur voor Holi. De verbranding van Holika.",
     tags: ["holi", "festival", "vuur"],
   },
   {
@@ -855,7 +876,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "TRITIYA_SHUKLA",
       maas: "SHRAVANA",
     },
-    description: "Green Teej. Celebrated by women for marital bliss.",
+    description: "Groene Teej. Geleefd door vrouwen voor huwelijksgeluk.",
     tags: ["teej", "festival", "vrouwen"],
   },
   {
@@ -869,7 +890,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "TRITIYA_SHUKLA",
       maas: "BHADRAPADA",
     },
-    description: "Teej dedicated to Shiva and Parvati union.",
+    description: "Teej gewijd aan de vereniging van Heer Shiva en Godin Parvati.",
     tags: ["teej", "festival", "shiva", "parvati"],
   },
   {
@@ -883,7 +904,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "SHASHTHI_SHUKLA",
       maas: "KARTIK",
     },
-    description: "Ancient Vedic festival dedicated to Sun God.",
+    description: "Eeuwenoud Vedisch festival gewijd aan de Zonnegod (Surya Dev).",
     tags: ["chhath", "festival", "surya", "zon"],
   },
   {
@@ -897,7 +918,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "PRATIPADA_SHUKLA",
       maas: "KARTIK",
     },
-    description: "Day after Diwali. Worship of Govardhan mountain.",
+    description: "De dag na Diwali. Verering van de heilige Govardhan berg.",
     tags: ["govardhan", "festival", "krishna"],
   },
 
@@ -919,7 +940,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       isAdhikaOnly: true,
     },
     description:
-      "Ekadashi in the Adhika (intercalary) Jyeshtha month. Occurs only in years with an adhika Jyeshtha.",
+      "Ekadashi in de Adhika (schrikkel) Jyeshtha maand. Komt alleen voor in jaren met een Adhika maand.",
     tags: ["ekadashi", "vasten", "adhika", "padmini"],
   },
   {
@@ -935,7 +956,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       isAdhikaOnly: true,
     },
     description:
-      "Ekadashi in the Krishna paksha of Adhika Jyeshtha. Occurs only in years with an adhika Jyeshtha.",
+      "Ekadashi in de Krishna paksha van Adhika Jyeshtha. Komt alleen voor in jaren met een Adhika maand.",
     tags: ["ekadashi", "vasten", "adhika", "parama"],
   },
   {
@@ -951,7 +972,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       isAdhikaOnly: true,
     },
     description:
-      "Full moon of the Adhika (intercalary) Jyeshtha month. Occurs only in years with an adhika Jyeshtha.",
+      "Volle maan (Purnima) van de Adhika (schrikkel) Jyeshtha maand. Komt alleen voor in jaren met een Adhika maand.",
     tags: ["purnima", "adhika", "jyeshtha"],
   },
 
