@@ -1,23 +1,23 @@
-import 'dotenv/config';
-import { prisma } from '@/lib/db';
-import { readFileSync } from 'fs';
+import "dotenv/config";
+import { prisma } from "@/lib/db";
+import { readFileSync } from "fs";
 
 // Name normalization and matching
 function normalizeEventName(name: string): string {
   return name
     .toLowerCase()
     .trim()
-    .replace(/\s+/g, ' ')
-    .replace(/puja/g, '')
-    .replace(/vrat/g, '')
-    .replace(/jayanti/g, '')
-    .replace(/ekadashi/g, 'ekadasi')
-    .replace(/chaturthi/g, 'chaturthi')
-    .replace(/ashtami/g, 'ashtami')
-    .replace(/navami/g, 'navami')
-    .replace(/janmotsava/g, 'jayanti')
-    .replace(/\*/g, '')
-    .replace(/@.+$/g, '') // Remove location suffixes
+    .replace(/\s+/g, " ")
+    .replace(/puja/g, "")
+    .replace(/vrat/g, "")
+    .replace(/jayanti/g, "")
+    .replace(/ekadashi/g, "ekadasi")
+    .replace(/chaturthi/g, "chaturthi")
+    .replace(/ashtami/g, "ashtami")
+    .replace(/navami/g, "navami")
+    .replace(/janmotsava/g, "jayanti")
+    .replace(/\*/g, "")
+    .replace(/@.+$/g, "") // Remove location suffixes
     .trim();
 }
 
@@ -37,10 +37,17 @@ function findSimilarEvent(drikName: string, ourEvents: string[]): string | null 
     }
 
     // Special cases
-    if (normalized.includes('ram navami') && ourNormalized.includes('ram navami')) return ourEvent;
-    if (normalized.includes('rakhi') && ourNormalized.includes('raksha bandhan')) return ourEvent;
-    if (normalized.includes('janmashtami') && ourNormalized.includes('krishna janmashtami')) return ourEvent;
-    if (normalized.includes('guru purnima') && ourNormalized.includes('guru purnima')) return ourEvent;
+    if (normalized.includes("ram navami") && ourNormalized.includes("ram navami"))
+      return ourEvent;
+    if (normalized.includes("rakhi") && ourNormalized.includes("raksha bandhan"))
+      return ourEvent;
+    if (
+      normalized.includes("janmashtami") &&
+      ourNormalized.includes("krishna janmashtami")
+    )
+      return ourEvent;
+    if (normalized.includes("guru purnima") && ourNormalized.includes("guru purnima"))
+      return ourEvent;
   }
 
   return null;
@@ -48,15 +55,23 @@ function findSimilarEvent(drikName: string, ourEvents: string[]): string | null 
 
 async function smartComparison() {
   // Parse Drik file
-  const drikContent = readFileSync('/home/gerald/projects/Claude/dharma-calendar/events_dp_2025.txt', 'utf-8');
+  const drikContent = readFileSync(
+    "/home/gerald/projects/Claude/dharma-calendar/events_dp_2025.txt",
+    "utf-8"
+  );
   const drikEvents = drikContent
-    .split('\n')
-    .filter(line => {
+    .split("\n")
+    .filter((line) => {
       const trimmed = line.trim();
       // Event names are lines that start with capital letter and don't contain dates
-      return trimmed.match(/^[A-Z]/) && !trimmed.match(/\d{4}/) && !trimmed.includes('===') && !trimmed.includes('Panchang');
+      return (
+        trimmed.match(/^[A-Z]/) &&
+        !trimmed.match(/\d{4}/) &&
+        !trimmed.includes("===") &&
+        !trimmed.includes("Panchang")
+      );
     })
-    .map(line => line.trim())
+    .map((line) => line.trim())
     .filter((name, index, arr) => arr.indexOf(name) === index); // Unique
 
   console.log(`📊 Drik Panchang 2025: ${drikEvents.length} unique events\n`);
@@ -65,7 +80,7 @@ async function smartComparison() {
   const ourEvents = await prisma.event.findMany({
     select: { name: true },
   });
-  const ourEventNames = ourEvents.map(e => e.name);
+  const ourEventNames = ourEvents.map((e) => e.name);
 
   console.log(`📊 Our database: ${ourEventNames.length} events\n`);
 
@@ -85,9 +100,9 @@ async function smartComparison() {
   console.log(`✅ Matched: ${matched.length}`);
   console.log(`❌ Missing: ${missing.length}\n`);
 
-  console.log(`\n${'='.repeat(70)}`);
+  console.log(`\n${"=".repeat(70)}`);
   console.log(`❌ TRULY MISSING EVENTS (${missing.length}):`);
-  console.log(`${'='.repeat(70)}\n`);
+  console.log(`${"=".repeat(70)}\n`);
 
   for (const event of missing) {
     console.log(`  - ${event}`);

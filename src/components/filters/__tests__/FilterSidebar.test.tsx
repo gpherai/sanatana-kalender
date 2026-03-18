@@ -1,27 +1,27 @@
-import { describe, it, expect, vi, afterEach } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { FilterSidebar } from '../FilterSidebar'
-import { CATEGORIES } from '@/lib/constants'
-import type { FilterState } from '@/hooks/useFilters'
+import { describe, it, expect, vi, afterEach } from "vitest";
+import { render, screen, fireEvent } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { FilterSidebar } from "../FilterSidebar";
+import { CATEGORIES } from "@/lib/constants";
+import type { FilterState } from "@/hooks/useFilters";
 
 const BASE_FILTERS: FilterState = {
-  search: '',
+  search: "",
   categories: [],
   eventTypes: [],
   importances: [],
   specialTithis: [],
-  sortBy: 'date',
-  sortOrder: 'asc',
-}
+  sortBy: "date",
+  sortOrder: "asc",
+};
 
-describe('FilterSidebar', () => {
+describe("FilterSidebar", () => {
   afterEach(() => {
-    vi.useRealTimers()
-  })
+    vi.useRealTimers();
+  });
 
-  it('shows active filter count and clears filters', async () => {
-    const onClearFilters = vi.fn()
+  it("shows active filter count and clears filters", async () => {
+    const onClearFilters = vi.fn();
 
     render(
       <FilterSidebar
@@ -31,17 +31,17 @@ describe('FilterSidebar', () => {
         onClearFilters={onClearFilters}
         activeFilterCount={2}
       />
-    )
+    );
 
-    const clearButton = screen.getByRole('button', { name: /Wissen/i })
-    await userEvent.click(clearButton)
+    const clearButton = screen.getByRole("button", { name: /Wissen/i });
+    await userEvent.click(clearButton);
 
-    expect(onClearFilters).toHaveBeenCalled()
-  })
+    expect(onClearFilters).toHaveBeenCalled();
+  });
 
-  it('debounces search input changes', async () => {
-    vi.useFakeTimers()
-    const onFilterChange = vi.fn()
+  it("debounces search input changes", async () => {
+    vi.useFakeTimers();
+    const onFilterChange = vi.fn();
 
     render(
       <FilterSidebar
@@ -51,22 +51,22 @@ describe('FilterSidebar', () => {
         onClearFilters={vi.fn()}
         activeFilterCount={0}
       />
-    )
+    );
 
-    const input = screen.getByPlaceholderText('Zoeken...')
-    fireEvent.change(input, { target: { value: 'shiv' } })
+    const input = screen.getByPlaceholderText("Zoeken...");
+    fireEvent.change(input, { target: { value: "shiv" } });
 
-    expect(onFilterChange).not.toHaveBeenCalled()
+    expect(onFilterChange).not.toHaveBeenCalled();
 
-    vi.advanceTimersByTime(300)
+    vi.advanceTimersByTime(300);
 
-    expect(onFilterChange).toHaveBeenCalledWith('search', 'shiv')
-  })
+    expect(onFilterChange).toHaveBeenCalledWith("search", "shiv");
+  });
 
-  it('toggles a category filter', async () => {
-    const onToggleFilter = vi.fn()
-    const user = userEvent.setup()
-    const category = CATEGORIES[0]
+  it("toggles a category filter", async () => {
+    const onToggleFilter = vi.fn();
+    const user = userEvent.setup();
+    const category = CATEGORIES[0];
 
     render(
       <FilterSidebar
@@ -76,38 +76,38 @@ describe('FilterSidebar', () => {
         onClearFilters={vi.fn()}
         activeFilterCount={0}
       />
-    )
+    );
 
-    const checkbox = screen.getByLabelText(new RegExp(category.label))
-    await user.click(checkbox)
+    const checkbox = screen.getByLabelText(new RegExp(category.label));
+    await user.click(checkbox);
 
-    expect(onToggleFilter).toHaveBeenCalledWith('categories', category.value)
-  })
+    expect(onToggleFilter).toHaveBeenCalledWith("categories", category.value);
+  });
 
-  it('clears search when clear button is clicked', async () => {
-    const onFilterChange = vi.fn()
+  it("clears search when clear button is clicked", async () => {
+    const onFilterChange = vi.fn();
 
     render(
       <FilterSidebar
-        filters={{ ...BASE_FILTERS, search: 'shiva' }}
+        filters={{ ...BASE_FILTERS, search: "shiva" }}
         onFilterChange={onFilterChange}
         onToggleFilter={vi.fn()}
         onClearFilters={vi.fn()}
         activeFilterCount={1}
       />
-    )
+    );
 
-    const input = screen.getByPlaceholderText('Zoeken...')
-    const clearButton = input.parentElement?.querySelector('button')
-    expect(clearButton).toBeTruthy()
+    const input = screen.getByPlaceholderText("Zoeken...");
+    const clearButton = input.parentElement?.querySelector("button");
+    expect(clearButton).toBeTruthy();
 
-    await userEvent.click(clearButton as HTMLButtonElement)
+    await userEvent.click(clearButton as HTMLButtonElement);
 
-    expect(onFilterChange).toHaveBeenCalledWith('search', '')
-  })
+    expect(onFilterChange).toHaveBeenCalledWith("search", "");
+  });
 
-  it('updates sort order selections', async () => {
-    const onFilterChange = vi.fn()
+  it("updates sort order selections", async () => {
+    const onFilterChange = vi.fn();
 
     render(
       <FilterSidebar
@@ -117,16 +117,16 @@ describe('FilterSidebar', () => {
         onClearFilters={vi.fn()}
         activeFilterCount={0}
       />
-    )
+    );
 
-    await userEvent.click(screen.getByRole('button', { name: /Sortering/i }))
+    await userEvent.click(screen.getByRole("button", { name: /Sortering/i }));
 
-    const [sortBySelect, sortOrderSelect] = screen.getAllByRole('combobox')
+    const [sortBySelect, sortOrderSelect] = screen.getAllByRole("combobox");
 
-    fireEvent.change(sortBySelect, { target: { value: 'name' } })
-    fireEvent.change(sortOrderSelect, { target: { value: 'desc' } })
+    fireEvent.change(sortBySelect, { target: { value: "name" } });
+    fireEvent.change(sortOrderSelect, { target: { value: "desc" } });
 
-    expect(onFilterChange).toHaveBeenCalledWith('sortBy', 'name')
-    expect(onFilterChange).toHaveBeenCalledWith('sortOrder', 'desc')
-  })
-})
+    expect(onFilterChange).toHaveBeenCalledWith("sortBy", "name");
+    expect(onFilterChange).toHaveBeenCalledWith("sortOrder", "desc");
+  });
+});

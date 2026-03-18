@@ -19,13 +19,55 @@ interface DayDetailsPanelProps {
 }
 
 const SANSKRIT_DAYS = [
-  { name: "Somavara", deity: "Chandra", planet: "Moon", icon: "🌙", color: "text-[var(--theme-almanac-planet-moon)]" },
-  { name: "Mangalavara", deity: "Mangal", planet: "Mars", icon: "🔴", color: "text-[var(--theme-almanac-planet-mars)]" },
-  { name: "Budhavara", deity: "Budha", planet: "Mercury", icon: "🟢", color: "text-[var(--theme-almanac-planet-mercury)]" },
-  { name: "Guruvara", deity: "Brihaspati", planet: "Jupiter", icon: "🟡", color: "text-[var(--theme-almanac-planet-jupiter)]" },
-  { name: "Shukravara", deity: "Shukra", planet: "Venus", icon: "⚪", color: "text-[var(--theme-almanac-planet-venus)]" },
-  { name: "Shanivara", deity: "Shani", planet: "Saturn", icon: "🪐", color: "text-[var(--theme-almanac-planet-saturn)]" },
-  { name: "Ravivara", deity: "Surya", planet: "Sun", icon: "☀️", color: "text-[var(--theme-almanac-planet-sun)]" },
+  {
+    name: "Somavara",
+    deity: "Chandra",
+    planet: "Moon",
+    icon: "🌙",
+    color: "text-[var(--theme-almanac-planet-moon)]",
+  },
+  {
+    name: "Mangalavara",
+    deity: "Mangal",
+    planet: "Mars",
+    icon: "🔴",
+    color: "text-[var(--theme-almanac-planet-mars)]",
+  },
+  {
+    name: "Budhavara",
+    deity: "Budha",
+    planet: "Mercury",
+    icon: "🟢",
+    color: "text-[var(--theme-almanac-planet-mercury)]",
+  },
+  {
+    name: "Guruvara",
+    deity: "Brihaspati",
+    planet: "Jupiter",
+    icon: "🟡",
+    color: "text-[var(--theme-almanac-planet-jupiter)]",
+  },
+  {
+    name: "Shukravara",
+    deity: "Shukra",
+    planet: "Venus",
+    icon: "⚪",
+    color: "text-[var(--theme-almanac-planet-venus)]",
+  },
+  {
+    name: "Shanivara",
+    deity: "Shani",
+    planet: "Saturn",
+    icon: "🪐",
+    color: "text-[var(--theme-almanac-planet-saturn)]",
+  },
+  {
+    name: "Ravivara",
+    deity: "Surya",
+    planet: "Sun",
+    icon: "☀️",
+    color: "text-[var(--theme-almanac-planet-sun)]",
+  },
 ] as const;
 
 export function DayDetailsPanel({
@@ -41,7 +83,7 @@ export function DayDetailsPanel({
   const selectedHinduMonth = getApproximateHinduMonth(selectedDate);
 
   return (
-    <div className="w-full space-y-4 lg:w-72 lg:flex-shrink-0 lg:sticky lg:top-20 lg:self-start">
+    <div className="w-full space-y-4 lg:sticky lg:top-20 lg:w-72 lg:flex-shrink-0 lg:self-start">
       {/* Selected Day Header */}
       <div
         className="rounded-2xl p-4 text-white shadow-lg"
@@ -107,16 +149,20 @@ export function DayDetailsPanel({
           >
             <div className="mb-2 flex items-center gap-2">
               <Sun className="h-4 w-4 text-[var(--theme-almanac-sun-icon)]" />
-              <span className="text-xs font-semibold text-theme-fg">Zon</span>
+              <span className="text-theme-fg text-xs font-semibold">Zon</span>
             </div>
             <div className="space-y-1 text-xs">
               <div className="flex justify-between">
                 <span className="text-theme-fg-muted">Opkomst</span>
-                <span className="font-semibold text-theme-fg">{selectedDayInfo.sunrise || "—"}</span>
+                <span className="text-theme-fg font-semibold">
+                  {selectedDayInfo.sunrise || "—"}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-theme-fg-muted">Ondergang</span>
-                <span className="font-semibold text-theme-fg">{selectedDayInfo.sunset || "—"}</span>
+                <span className="text-theme-fg font-semibold">
+                  {selectedDayInfo.sunset || "—"}
+                </span>
               </div>
             </div>
           </div>
@@ -130,16 +176,20 @@ export function DayDetailsPanel({
           >
             <div className="mb-2 flex items-center gap-2">
               <Moon className="h-4 w-4 text-[var(--theme-almanac-moon-icon)]" />
-              <span className="text-xs font-semibold text-theme-fg">Maan</span>
+              <span className="text-theme-fg text-xs font-semibold">Maan</span>
             </div>
             <div className="space-y-1 text-xs">
               <div className="flex justify-between">
                 <span className="text-theme-fg-muted">Opkomst</span>
-                <span className="font-semibold text-theme-fg">{selectedDayInfo.moonrise || "—"}</span>
+                <span className="text-theme-fg font-semibold">
+                  {selectedDayInfo.moonrise || "—"}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-theme-fg-muted">Ondergang</span>
-                <span className="font-semibold text-theme-fg">{selectedDayInfo.moonset || "—"}</span>
+                <span className="text-theme-fg font-semibold">
+                  {selectedDayInfo.moonset || "—"}
+                </span>
               </div>
             </div>
           </div>
@@ -148,7 +198,7 @@ export function DayDetailsPanel({
 
       {/* Moon Phase Visual */}
       {selectedDayInfo && (
-        <div className="flex items-center gap-4 rounded-xl bg-theme-surface-raised p-4 shadow">
+        <div className="bg-theme-surface-raised flex items-center gap-4 rounded-xl p-4 shadow">
           <MoonPhase
             percent={selectedDayInfo.moonPhasePercent}
             isWaxing={selectedDayInfo.isWaxing}
@@ -156,11 +206,12 @@ export function DayDetailsPanel({
             glow={true}
           />
           <div>
-            <div className="font-semibold text-theme-fg">
+            <div className="text-theme-fg font-semibold">
               {selectedDayInfo.moonPhaseName}
             </div>
-            <div className="text-sm text-theme-fg-muted">
-              {selectedDayInfo.moonPhasePercent}% • {selectedDayInfo.isWaxing ? "Wassend ↑" : "Afnemend ↓"}
+            <div className="text-theme-fg-muted text-sm">
+              {selectedDayInfo.moonPhasePercent}% •{" "}
+              {selectedDayInfo.isWaxing ? "Wassend ↑" : "Afnemend ↓"}
             </div>
           </div>
         </div>
@@ -178,8 +229,8 @@ export function DayDetailsPanel({
               <div key={i} className="flex items-start gap-2">
                 <span className="text-lg">{special.emoji}</span>
                 <div>
-                  <div className="font-medium text-theme-fg">{special.name}</div>
-                  <div className="text-xs text-theme-fg-muted">{special.description}</div>
+                  <div className="text-theme-fg font-medium">{special.name}</div>
+                  <div className="text-theme-fg-muted text-xs">{special.description}</div>
                 </div>
               </div>
             ))}
@@ -188,58 +239,59 @@ export function DayDetailsPanel({
       )}
 
       {/* Panchanga Details */}
-      {selectedDayInfo && (selectedDayInfo.yoga || selectedDayInfo.karana || selectedDayInfo.rahuKalam) && (
-        <div className="rounded-xl bg-theme-surface-raised p-4 shadow">
-          <h4 className="mb-3 text-sm font-semibold text-theme-fg">
-            Panchanga Details
-          </h4>
-          <div className="space-y-3">
-            {selectedDayInfo.yoga && (
-              <div className="rounded-lg bg-theme-surface-hover p-3">
-                <h5 className="mb-1 text-xs font-medium text-theme-fg-muted">Yoga</h5>
-                <p className="text-sm font-medium text-theme-fg">
-                  {selectedDayInfo.yoga.name}
-                </p>
-                {selectedDayInfo.yoga.endTime && (
-                  <p className="mt-1 text-xs text-theme-fg-muted">
-                    Eindigt om {selectedDayInfo.yoga.endTime}
+      {selectedDayInfo &&
+        (selectedDayInfo.yoga || selectedDayInfo.karana || selectedDayInfo.rahuKalam) && (
+          <div className="bg-theme-surface-raised rounded-xl p-4 shadow">
+            <h4 className="text-theme-fg mb-3 text-sm font-semibold">
+              Panchanga Details
+            </h4>
+            <div className="space-y-3">
+              {selectedDayInfo.yoga && (
+                <div className="bg-theme-surface-hover rounded-lg p-3">
+                  <h5 className="text-theme-fg-muted mb-1 text-xs font-medium">Yoga</h5>
+                  <p className="text-theme-fg text-sm font-medium">
+                    {selectedDayInfo.yoga.name}
                   </p>
-                )}
-              </div>
-            )}
+                  {selectedDayInfo.yoga.endTime && (
+                    <p className="text-theme-fg-muted mt-1 text-xs">
+                      Eindigt om {selectedDayInfo.yoga.endTime}
+                    </p>
+                  )}
+                </div>
+              )}
 
-            {selectedDayInfo.karana && (
-              <div className="rounded-lg bg-theme-surface-hover p-3">
-                <h5 className="mb-1 text-xs font-medium text-theme-fg-muted">Karana</h5>
-                <p className="text-sm font-medium text-theme-fg">
-                  {selectedDayInfo.karana.name} ({selectedDayInfo.karana.type})
-                </p>
-                {selectedDayInfo.karana.endTime && (
-                  <p className="mt-1 text-xs text-theme-fg-muted">
-                    Eindigt om {selectedDayInfo.karana.endTime}
+              {selectedDayInfo.karana && (
+                <div className="bg-theme-surface-hover rounded-lg p-3">
+                  <h5 className="text-theme-fg-muted mb-1 text-xs font-medium">Karana</h5>
+                  <p className="text-theme-fg text-sm font-medium">
+                    {selectedDayInfo.karana.name} ({selectedDayInfo.karana.type})
                   </p>
-                )}
-              </div>
-            )}
+                  {selectedDayInfo.karana.endTime && (
+                    <p className="text-theme-fg-muted mt-1 text-xs">
+                      Eindigt om {selectedDayInfo.karana.endTime}
+                    </p>
+                  )}
+                </div>
+              )}
 
-            {selectedDayInfo.rahuKalam && (
-              <div className="rounded-lg border-l-4 border-[var(--theme-almanac-warning-border)] bg-[var(--theme-almanac-warning-bg)] p-3">
-                <h5 className="mb-1 text-xs font-medium text-[var(--theme-almanac-warning-heading)]">
-                  Rahu Kalam (Ongunstig)
-                </h5>
-                <p className="text-sm font-semibold text-[var(--theme-almanac-warning-text)]">
-                  {selectedDayInfo.rahuKalam.start} - {selectedDayInfo.rahuKalam.end}
-                </p>
-              </div>
-            )}
+              {selectedDayInfo.rahuKalam && (
+                <div className="rounded-lg border-l-4 border-[var(--theme-almanac-warning-border)] bg-[var(--theme-almanac-warning-bg)] p-3">
+                  <h5 className="mb-1 text-xs font-medium text-[var(--theme-almanac-warning-heading)]">
+                    Rahu Kalam (Ongunstig)
+                  </h5>
+                  <p className="text-sm font-semibold text-[var(--theme-almanac-warning-text)]">
+                    {selectedDayInfo.rahuKalam.start} - {selectedDayInfo.rahuKalam.end}
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       {/* Events */}
       {showEvents && (
-        <div className="rounded-xl bg-theme-surface-raised p-4 shadow">
-          <h4 className="mb-3 flex items-center gap-2 text-sm font-semibold text-theme-fg">
+        <div className="bg-theme-surface-raised rounded-xl p-4 shadow">
+          <h4 className="text-theme-fg mb-3 flex items-center gap-2 text-sm font-semibold">
             <Star className="h-4 w-4 text-[var(--theme-almanac-event-icon)]" />
             Events
           </h4>
@@ -258,22 +310,24 @@ export function DayDetailsPanel({
                 >
                   <div className="flex items-center gap-2">
                     <span>{event.resource.category?.icon || "📅"}</span>
-                    <span className="font-medium text-theme-fg">
-                      {event.title}
-                    </span>
+                    <span className="text-theme-fg font-medium">{event.title}</span>
                     {event.resource.importance === "MAJOR" && (
                       <Star className="h-3 w-3 fill-[var(--theme-almanac-event-major-star)] text-[var(--theme-almanac-event-major-star)]" />
                     )}
                   </div>
 
                   {/* Spanning event indicator */}
-                  {(event.resource.startTime || event.resource.endTime || event.resource.notes) && (
+                  {(event.resource.startTime ||
+                    event.resource.endTime ||
+                    event.resource.notes) && (
                     <div className="mt-1 flex items-center gap-2 text-xs">
-                      {event.resource.startTime && event.resource.startTime === "00:00" && event.resource.endTime && (
-                        <span className="rounded bg-[var(--theme-almanac-moon-badge-bg)] px-2 py-0.5 text-[var(--theme-almanac-moon-badge-fg)]">
-                          Eindigt {event.resource.endTime}
-                        </span>
-                      )}
+                      {event.resource.startTime &&
+                        event.resource.startTime === "00:00" &&
+                        event.resource.endTime && (
+                          <span className="rounded bg-[var(--theme-almanac-moon-badge-bg)] px-2 py-0.5 text-[var(--theme-almanac-moon-badge-fg)]">
+                            Eindigt {event.resource.endTime}
+                          </span>
+                        )}
                       {event.resource.endTime && event.resource.endTime === "23:59" && (
                         <span className="rounded bg-[var(--theme-almanac-special-badge-bg)] px-2 py-0.5 text-[var(--theme-almanac-special-badge-fg)]">
                           Loopt door
@@ -288,7 +342,7 @@ export function DayDetailsPanel({
                   )}
 
                   {event.resource.description && (
-                    <p className="mt-1 text-xs text-theme-fg-muted line-clamp-2">
+                    <p className="text-theme-fg-muted mt-1 line-clamp-2 text-xs">
                       {event.resource.description}
                     </p>
                   )}
@@ -296,7 +350,7 @@ export function DayDetailsPanel({
               ))}
             </div>
           ) : (
-            <p className="text-center text-sm text-theme-fg-muted">Geen events</p>
+            <p className="text-theme-fg-muted text-center text-sm">Geen events</p>
           )}
         </div>
       )}

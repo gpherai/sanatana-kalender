@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 async function checkSankrantis() {
   const sankrantis = await prisma.dailyInfo.findMany({
     where: {
-      sankranti: { not: null }
+      sankranti: { not: null },
     },
     select: {
       date: true,
@@ -12,14 +12,14 @@ async function checkSankrantis() {
       sankrantiTime: true,
     },
     orderBy: {
-      date: 'asc'
+      date: "asc",
     },
-    take: 40
+    take: 40,
   });
 
   console.log(`✅ Found ${sankrantis.length} Sankrantis in database:\n`);
-  sankrantis.forEach(s => {
-    const dateStr = s.date.toISOString().split('T')[0];
+  sankrantis.forEach((s) => {
+    const dateStr = s.date.toISOString().split("T")[0];
     console.log(`${dateStr}: ${s.sankranti?.padEnd(25)} at ${s.sankrantiTime}`);
   });
 

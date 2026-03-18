@@ -52,13 +52,12 @@ export function CalendarSection({
       icon={Calendar}
       iconColor="secondary"
     >
-
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
         {/* Default view */}
         <div>
           <label
             htmlFor="defaultView"
-            className="mb-2 block text-sm font-medium text-theme-fg-secondary"
+            className="text-theme-fg-secondary mb-2 block text-sm font-medium"
           >
             Standaard weergave
           </label>
@@ -66,7 +65,7 @@ export function CalendarSection({
             id="defaultView"
             value={defaultView}
             onChange={(e) => onFieldChange("defaultView", e.target.value)}
-            className="focus:ring-theme-primary-50 focus:border-theme-primary w-8/12 rounded-lg border border-theme-border bg-theme-surface px-3 py-2 text-theme-fg focus:ring-2"
+            className="focus:ring-theme-primary-50 focus:border-theme-primary border-theme-border bg-theme-surface text-theme-fg w-8/12 rounded-lg border px-3 py-2 focus:ring-2"
           >
             {VIEW_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -80,7 +79,7 @@ export function CalendarSection({
         <div>
           <label
             htmlFor="weekStartsOn"
-            className="mb-2 block text-sm font-medium text-theme-fg-secondary"
+            className="text-theme-fg-secondary mb-2 block text-sm font-medium"
           >
             Week begint op
           </label>
@@ -88,7 +87,7 @@ export function CalendarSection({
             id="weekStartsOn"
             value={weekStartsOn}
             onChange={(e) => onFieldChange("weekStartsOn", parseInt(e.target.value))}
-            className="focus:ring-theme-primary-50 focus:border-theme-primary w-8/12 rounded-lg border border-theme-border bg-theme-surface px-3 py-2 text-theme-fg focus:ring-2"
+            className="focus:ring-theme-primary-50 focus:border-theme-primary border-theme-border bg-theme-surface text-theme-fg w-8/12 rounded-lg border px-3 py-2 focus:ring-2"
           >
             {WEEK_START_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -102,7 +101,7 @@ export function CalendarSection({
         <div className="sm:col-span-2">
           <label
             htmlFor="timezone"
-            className="mb-2 block text-sm font-medium text-theme-fg-secondary"
+            className="text-theme-fg-secondary mb-2 block text-sm font-medium"
           >
             Tijdzone
           </label>
@@ -110,7 +109,7 @@ export function CalendarSection({
             id="timezone"
             value={timezone}
             onChange={(e) => onFieldChange("timezone", e.target.value)}
-            className="focus:ring-theme-primary-50 focus:border-theme-primary w-full rounded-lg border border-theme-border bg-theme-surface px-3 py-2 text-theme-fg focus:ring-2 sm:w-8/12"
+            className="focus:ring-theme-primary-50 focus:border-theme-primary border-theme-border bg-theme-surface text-theme-fg w-full rounded-lg border px-3 py-2 focus:ring-2 sm:w-8/12"
           >
             {TIMEZONE_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>

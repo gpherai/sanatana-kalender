@@ -17,11 +17,13 @@ import "./globals.css";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 // =============================================================================
@@ -32,7 +34,7 @@ export const metadata: Metadata = {
   title: "Dharma Calendar",
   description:
     "Hindu Festival & Spiritual Events Calendar - Track festivals, puja, vrat, and more",
-  keywords: ["hindu", "calendar", "festival", "puja", "vrat", "tithi", "nakshatra"],
+  keywords: "hindu, calendar, festival, puja, vrad, tithi, nakshatra",
 };
 
 // =============================================================================
@@ -78,12 +80,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="nl" suppressHydrationWarning>
+    <html
+      lang="nl"
+      suppressHydrationWarning
+      className={`${geistSans.variable} ${geistMono.variable} font-sans`}
+    >
       <head>
         {/* Theme initialization script - runs before paint to prevent flash */}
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className="font-sans antialiased">
         <ThemeProvider>
           <ToastProvider>
             <Header />

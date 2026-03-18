@@ -52,9 +52,12 @@ export function TodayHero() {
 
         const [dailyRes, todayEventsRes] = await Promise.all([
           fetch("/api/daily-info", { signal: controller.signal }),
-          fetch(`/api/events?start=${todayStr}T00:00:00.000Z&end=${todayStr}T23:59:59.999Z`, {
-            signal: controller.signal,
-          }),
+          fetch(
+            `/api/events?start=${todayStr}T00:00:00.000Z&end=${todayStr}T23:59:59.999Z`,
+            {
+              signal: controller.signal,
+            }
+          ),
         ]);
 
         if (dailyRes.ok) {
@@ -180,9 +183,7 @@ export function TodayHero() {
             {/* Vedic Calendar Year Info */}
             {dailyInfo?.vikramaSamvat && (
               <div className="mb-2 flex flex-wrap items-center gap-2 text-xs text-white/50">
-                <span>
-                  Vikrama Samvat {dailyInfo.vikramaSamvat.year}
-                </span>
+                <span>Vikrama Samvat {dailyInfo.vikramaSamvat.year}</span>
                 {dailyInfo.samvatsara && (
                   <>
                     <span className="text-white/30">•</span>
@@ -217,7 +218,9 @@ export function TodayHero() {
                 {dailyInfo?.tithi && (
                   <>
                     <span className="text-white/40">•</span>
-                    <span>{dailyInfo.tithi.name} ({dailyInfo.tithi.paksha})</span>
+                    <span>
+                      {dailyInfo.tithi.name} ({dailyInfo.tithi.paksha})
+                    </span>
                   </>
                 )}
 
@@ -238,9 +241,7 @@ export function TodayHero() {
                 {dailyInfo?.nakshatra && dailyInfo?.tithi?.endTime && (
                   <span className="text-white/30">•</span>
                 )}
-                {dailyInfo?.nakshatra && (
-                  <span>Pada {dailyInfo.nakshatra.pada}</span>
-                )}
+                {dailyInfo?.nakshatra && <span>Pada {dailyInfo.nakshatra.pada}</span>}
               </div>
             </div>
           </div>
@@ -264,7 +265,7 @@ export function TodayHero() {
           {/* Sun Times */}
           <div className="rounded-2xl bg-[var(--theme-glass-bg)] p-5 backdrop-blur-md">
             <div className="mb-4 flex items-center gap-2">
-              <Sun className="h-5 w-5 text-theme-icon-sun" />
+              <Sun className="text-theme-icon-sun h-5 w-5" />
               <h3 className="font-semibold text-white">Zon</h3>
               {dailyInfo?.sunSign && (
                 <span className="ml-auto text-xs text-white/60">
@@ -276,7 +277,7 @@ export function TodayHero() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Sunrise className="h-5 w-5 text-theme-icon-sunrise" />
+                  <Sunrise className="text-theme-icon-sunrise h-5 w-5" />
                   <span className="text-white/70">Opkomst</span>
                 </div>
                 <div className="text-right">
@@ -291,7 +292,7 @@ export function TodayHero() {
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Sunset className="h-5 w-5 text-theme-icon-sunset" />
+                  <Sunset className="text-theme-icon-sunset h-5 w-5" />
                   <span className="text-white/70">Ondergang</span>
                 </div>
                 <div className="text-right">
@@ -307,7 +308,8 @@ export function TodayHero() {
               {/* Pravishte info - days since Sankranti */}
               {dailyInfo?.pravishte && (
                 <div className="border-t border-white/10 pt-3 text-xs text-white/50">
-                  Dag {dailyInfo.pravishte.daysSinceSankranti} in {dailyInfo.pravishte.currentRashi}
+                  Dag {dailyInfo.pravishte.daysSinceSankranti} in{" "}
+                  {dailyInfo.pravishte.currentRashi}
                 </div>
               )}
             </div>
@@ -316,7 +318,7 @@ export function TodayHero() {
           {/* Moon Phase - Center piece */}
           <div className="flex flex-col items-center justify-center rounded-2xl bg-[var(--theme-glass-bg)] p-5 backdrop-blur-sm">
             <div className="mb-4 flex items-center gap-2">
-              <MoonStar className="h-5 w-5 text-theme-icon-moon" />
+              <MoonStar className="text-theme-icon-moon h-5 w-5" />
               <h3 className="font-semibold text-white">Maan</h3>
             </div>
 
@@ -344,7 +346,7 @@ export function TodayHero() {
           {/* Moon Times */}
           <div className="rounded-2xl bg-[var(--theme-glass-bg)] p-5 backdrop-blur-md">
             <div className="mb-4 flex items-center gap-2">
-              <Moon className="h-5 w-5 text-theme-icon-moon" />
+              <Moon className="text-theme-icon-moon h-5 w-5" />
               <h3 className="font-semibold text-white">Maantijden</h3>
               {dailyInfo?.moonSign && (
                 <span className="ml-auto text-xs text-white/60">
@@ -397,7 +399,7 @@ export function TodayHero() {
         {/* Special Lunar Day Banner */}
         {specialDay && (
           <div
-            className="mt-6 rounded-2xl p-4 backdrop-blur-sm ring-1 ring-[var(--theme-glass-border)]"
+            className="mt-6 rounded-2xl p-4 ring-1 ring-[var(--theme-glass-border)] backdrop-blur-sm"
             style={{
               background: `linear-gradient(90deg,
                 color-mix(in oklch, var(--theme-almanac-special-bg) 50%, transparent),
@@ -419,7 +421,7 @@ export function TodayHero() {
         {todayEvents.length > 0 && (
           <div className="mt-6 border-t border-[var(--theme-glass-border)] pt-6">
             <div className="mb-4 flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-theme-icon-event-special" />
+              <Sparkles className="text-theme-icon-event-special h-5 w-5" />
               <h3 className="font-semibold text-white">Vandaag</h3>
             </div>
 
@@ -442,7 +444,6 @@ export function TodayHero() {
             </div>
           </div>
         )}
-
       </div>
     </div>
   );

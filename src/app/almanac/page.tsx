@@ -10,11 +10,7 @@ import {
   MonthGrid,
   DayDetailsPanel,
 } from "@/components/almanac";
-import {
-  formatDateISO,
-  getMonthDays,
-  getMonthStartPadding,
-} from "@/lib/date-utils";
+import { formatDateISO, getMonthDays, getMonthStartPadding } from "@/lib/date-utils";
 import type { DailyInfoResponse } from "@/types";
 import type { CalendarEvent, CalendarEventResponse } from "@/types/calendar";
 import { parseCalendarEvent } from "@/types/calendar";
@@ -68,7 +64,12 @@ function getMoonPhaseEvents(monthData: DailyInfoResponse[]): MoonPhaseEvent[] {
       if (distanceTo50 <= prevDistance && distanceTo50 <= nextDistance) {
         const wasPrevWaxing = !prev || prev.isWaxing;
         if (wasPrevWaxing) {
-          events.push({ date, type: "first_quarter", name: "Eerste Kwartier", emoji: "🌓" });
+          events.push({
+            date,
+            type: "first_quarter",
+            name: "Eerste Kwartier",
+            emoji: "🌓",
+          });
         }
       }
     }
@@ -81,7 +82,12 @@ function getMoonPhaseEvents(monthData: DailyInfoResponse[]): MoonPhaseEvent[] {
       if (distanceTo50 <= prevDistance && distanceTo50 <= nextDistance) {
         const wasPrevWaning = !prev || !prev.isWaxing;
         if (wasPrevWaning) {
-          events.push({ date, type: "last_quarter", name: "Laatste Kwartier", emoji: "🌗" });
+          events.push({
+            date,
+            type: "last_quarter",
+            name: "Laatste Kwartier",
+            emoji: "🌗",
+          });
         }
       }
     }
@@ -167,7 +173,7 @@ export default function AlmanacPage() {
     // Save scroll position before state update (in next tick)
     const timer = requestAnimationFrame(() => {
       if (scrollPositionRef.current > 0) {
-        window.scrollTo({ top: scrollPositionRef.current, behavior: 'instant' });
+        window.scrollTo({ top: scrollPositionRef.current, behavior: "instant" });
       }
     });
 
@@ -186,23 +192,24 @@ export default function AlmanacPage() {
   const moonPhases = useMemo(() => getMoonPhaseEvents(monthData), [monthData]);
 
   // Extract special days from API response (server-calculated)
-  const specialDays = useMemo(() =>
-    monthData
-      .filter(d => d.specialDay)
-      .map(d => ({
-        date: new Date(d.date),
-        type: d.specialDay!.type,
-        name: d.specialDay!.name,
-        description: d.specialDay!.description,
-        emoji: d.specialDay!.emoji,
-      })),
+  const specialDays = useMemo(
+    () =>
+      monthData
+        .filter((d) => d.specialDay)
+        .map((d) => ({
+          date: new Date(d.date),
+          type: d.specialDay!.type,
+          name: d.specialDay!.name,
+          description: d.specialDay!.description,
+          emoji: d.specialDay!.emoji,
+        })),
     [monthData]
   );
 
   // Create maps for quick lookup
   const dailyInfoMap = useMemo(() => {
     const map = new Map<string, DailyInfoResponse>();
-    monthData.forEach(d => {
+    monthData.forEach((d) => {
       const key = d.date.split("T")[0]!;
       map.set(key, d);
     });
@@ -211,7 +218,7 @@ export default function AlmanacPage() {
 
   const eventsMap = useMemo(() => {
     const map = new Map<string, CalendarEventResponse[]>();
-    monthEvents.forEach(e => {
+    monthEvents.forEach((e) => {
       const key = e.start.split("T")[0]!;
       const existing = map.get(key) || [];
       existing.push(e);
@@ -221,8 +228,8 @@ export default function AlmanacPage() {
   }, [monthEvents]);
 
   const specialDaysMap = useMemo(() => {
-    const map = new Map<string, typeof specialDays[0][]>();
-    specialDays.forEach(s => {
+    const map = new Map<string, (typeof specialDays)[0][]>();
+    specialDays.forEach((s) => {
       const key = formatDateISO(s.date);
       const existing = map.get(key) || [];
       existing.push(s);
@@ -233,7 +240,7 @@ export default function AlmanacPage() {
 
   const moonPhasesMap = useMemo(() => {
     const map = new Map<string, MoonPhaseEvent>();
-    moonPhases.forEach(p => {
+    moonPhases.forEach((p) => {
       map.set(formatDateISO(p.date), p);
     });
     return map;
@@ -246,11 +253,14 @@ export default function AlmanacPage() {
   const selectedDaySpecial = specialDaysMap.get(selectedDateStr) || [];
 
   // Handlers
-  const handleToggleFilter = useCallback((filter: "moonPhases" | "specialDays" | "events") => {
-    if (filter === "moonPhases") setShowMoonPhases(v => !v);
-    if (filter === "specialDays") setShowSpecialDays(v => !v);
-    if (filter === "events") setShowEvents(v => !v);
-  }, []);
+  const handleToggleFilter = useCallback(
+    (filter: "moonPhases" | "specialDays" | "events") => {
+      if (filter === "moonPhases") setShowMoonPhases((v) => !v);
+      if (filter === "specialDays") setShowSpecialDays((v) => !v);
+      if (filter === "events") setShowEvents((v) => !v);
+    },
+    []
+  );
 
   const handleEventClick = (event: CalendarEventResponse) => {
     setSelectedEvent(parseCalendarEvent(event));
@@ -278,8 +288,8 @@ export default function AlmanacPage() {
       {loading ? (
         <div className="flex h-64 items-center justify-center">
           <div className="flex flex-col items-center gap-3">
-            <div className="h-12 w-12 animate-spin rounded-full border-4 border-theme-primary-20 border-t-theme-primary" />
-            <span className="text-sm text-theme-fg-muted">Laden...</span>
+            <div className="border-theme-primary-20 border-t-theme-primary h-12 w-12 animate-spin rounded-full border-4" />
+            <span className="text-theme-fg-muted text-sm">Laden...</span>
           </div>
         </div>
       ) : (

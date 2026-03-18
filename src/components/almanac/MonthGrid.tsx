@@ -33,8 +33,18 @@ interface MonthGridProps {
 const WEEKDAYS_SHORT = ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"] as const;
 
 const MONTHS = [
-  "Januari", "Februari", "Maart", "April", "Mei", "Juni",
-  "Juli", "Augustus", "September", "Oktober", "November", "December",
+  "Januari",
+  "Februari",
+  "Maart",
+  "April",
+  "Mei",
+  "Juni",
+  "Juli",
+  "Augustus",
+  "September",
+  "Oktober",
+  "November",
+  "December",
 ] as const;
 
 export function MonthGrid({
@@ -53,8 +63,8 @@ export function MonthGrid({
   showEvents,
 }: MonthGridProps) {
   return (
-    <div className="rounded-2xl bg-theme-surface-raised p-4 shadow-lg">
-      <h2 className="mb-4 text-xl font-bold text-theme-fg">
+    <div className="bg-theme-surface-raised rounded-2xl p-4 shadow-lg">
+      <h2 className="text-theme-fg mb-4 text-xl font-bold">
         {MONTHS[month]} {year}
       </h2>
 
@@ -63,7 +73,7 @@ export function MonthGrid({
         {WEEKDAYS_SHORT.map((day) => (
           <div
             key={day}
-            className="p-2 text-center text-xs font-semibold text-theme-fg-muted"
+            className="text-theme-fg-muted p-2 text-center text-xs font-semibold"
           >
             {day}
           </div>
@@ -81,7 +91,7 @@ export function MonthGrid({
           const dayEvents = eventsMap.get(dateStr) || [];
           const daySpecial = specialDaysMap.get(dateStr) || [];
           const moonPhase = moonPhasesMap.get(dateStr);
-          const hasMajorEvent = dayEvents.some(e => e.resource.importance === "MAJOR");
+          const hasMajorEvent = dayEvents.some((e) => e.resource.importance === "MAJOR");
           const isSelected = isSameDay(date, selectedDate);
           const isTodayDate = isToday(date);
 
@@ -90,11 +100,11 @@ export function MonthGrid({
               key={dateStr}
               onClick={() => onSelectDate(date)}
               className={cn(
-                "group relative flex flex-col rounded-lg p-1.5 text-left transition-all focus:outline-none focus:ring-2 focus:ring-theme-primary focus:ring-offset-1",
+                "group focus:ring-theme-primary relative flex flex-col rounded-lg p-1.5 text-left transition-all focus:ring-2 focus:ring-offset-1 focus:outline-none",
                 isSelected
-                  ? "bg-theme-primary text-white shadow-lg ring-2 ring-theme-primary ring-offset-2 ring-offset-theme-surface"
+                  ? "bg-theme-primary ring-theme-primary ring-offset-theme-surface text-white shadow-lg ring-2 ring-offset-2"
                   : isTodayDate
-                    ? "bg-theme-primary-15 ring-1 ring-theme-primary"
+                    ? "bg-theme-primary-15 ring-theme-primary ring-1"
                     : hasMajorEvent && showEvents
                       ? "bg-[var(--theme-almanac-event-cell-bg)] hover:bg-[var(--theme-almanac-event-cell-bg-hover)]"
                       : moonPhase && showMoonPhases
@@ -118,17 +128,17 @@ export function MonthGrid({
                 >
                   {date.getDate()}
                 </span>
-                {info && (
-                  <span className="text-sm">{info.moonPhaseEmoji}</span>
-                )}
+                {info && <span className="text-sm">{info.moonPhaseEmoji}</span>}
               </div>
 
               {/* Sun times */}
               {info && (
-                <div className={cn(
-                  "mt-0.5 text-[10px] leading-tight",
-                  isSelected ? "text-white/80" : "text-theme-fg-muted"
-                )}>
+                <div
+                  className={cn(
+                    "mt-0.5 text-[10px] leading-tight",
+                    isSelected ? "text-white/80" : "text-theme-fg-muted"
+                  )}
+                >
                   <div className="flex items-center gap-0.5">
                     <Sunrise className="h-2.5 w-2.5 flex-shrink-0 text-[var(--theme-almanac-sun-rise-icon)]" />
                     <span>{info.sunrise}</span>
@@ -152,7 +162,10 @@ export function MonthGrid({
                   </span>
                 )}
                 {daySpecial.length > 0 && showSpecialDays && (
-                  <span className="text-[10px]" title={daySpecial.map(s => s.name).join(", ")}>
+                  <span
+                    className="text-[10px]"
+                    title={daySpecial.map((s) => s.name).join(", ")}
+                  >
                     🙏
                   </span>
                 )}

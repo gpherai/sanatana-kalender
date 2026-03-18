@@ -204,9 +204,7 @@ export function useFetchMultiple<T = unknown>(
           );
         }
 
-        const jsonData = (await Promise.all(
-          responses.map((r) => r.json())
-        )) as T[];
+        const jsonData = (await Promise.all(responses.map((r) => r.json()))) as T[];
 
         if (!didCancel && isMountedRef.current) {
           setData(jsonData);

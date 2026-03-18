@@ -15,8 +15,18 @@ interface AlmanacFiltersProps {
 }
 
 const MONTHS_SHORT = [
-  "Jan", "Feb", "Mrt", "Apr", "Mei", "Jun",
-  "Jul", "Aug", "Sep", "Okt", "Nov", "Dec",
+  "Jan",
+  "Feb",
+  "Mrt",
+  "Apr",
+  "Mei",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Okt",
+  "Nov",
+  "Dec",
 ] as const;
 
 export function AlmanacFilters({
@@ -32,23 +42,23 @@ export function AlmanacFilters({
   const currentDate = new Date();
 
   return (
-    <div className="mb-6 rounded-2xl bg-theme-surface-raised p-4 shadow-lg">
+    <div className="bg-theme-surface-raised mb-6 rounded-2xl p-4 shadow-lg">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         {/* Year navigation */}
         <div className="flex items-center gap-2">
           <button
             onClick={() => onYearChange(year - 1)}
-            className="rounded-lg p-2 text-theme-fg-muted transition-colors hover:bg-theme-surface-hover focus:outline-none focus:ring-2 focus:ring-theme-primary focus:ring-offset-2"
+            className="text-theme-fg-muted hover:bg-theme-surface-hover focus:ring-theme-primary rounded-lg p-2 transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none"
             aria-label="Vorig jaar"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
-          <span className="min-w-[4rem] text-center text-xl font-bold text-theme-fg">
+          <span className="text-theme-fg min-w-[4rem] text-center text-xl font-bold">
             {year}
           </span>
           <button
             onClick={() => onYearChange(year + 1)}
-            className="rounded-lg p-2 text-theme-fg-muted transition-colors hover:bg-theme-surface-hover focus:outline-none focus:ring-2 focus:ring-theme-primary focus:ring-offset-2"
+            className="text-theme-fg-muted hover:bg-theme-surface-hover focus:ring-theme-primary rounded-lg p-2 transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none"
             aria-label="Volgend jaar"
           >
             <ChevronRight className="h-5 w-5" />
@@ -59,14 +69,15 @@ export function AlmanacFilters({
         <div className="flex flex-1 gap-1 overflow-x-auto">
           {MONTHS_SHORT.map((m, index) => {
             const isSelected = index === month;
-            const isCurrent = index === currentDate.getMonth() && year === currentDate.getFullYear();
+            const isCurrent =
+              index === currentDate.getMonth() && year === currentDate.getFullYear();
 
             return (
               <button
                 key={m}
                 onClick={() => onMonthChange(index)}
                 className={cn(
-                  "flex-shrink-0 rounded-lg px-3 py-1.5 text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-theme-primary focus:ring-offset-1",
+                  "focus:ring-theme-primary flex-shrink-0 rounded-lg px-3 py-1.5 text-sm font-medium transition-all focus:ring-2 focus:ring-offset-1 focus:outline-none",
                   isSelected
                     ? "bg-theme-primary text-white shadow-md"
                     : isCurrent
@@ -82,11 +93,11 @@ export function AlmanacFilters({
 
         {/* Filters */}
         <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-theme-fg-muted" />
+          <Filter className="text-theme-fg-muted h-4 w-4" />
           <button
             onClick={() => onToggleFilter("moonPhases")}
             className={cn(
-              "rounded-full px-3 py-1 text-xs font-medium transition-all focus:outline-none focus:ring-2 focus:ring-[var(--theme-almanac-moon-focus)] focus:ring-offset-1",
+              "rounded-full px-3 py-1 text-xs font-medium transition-all focus:ring-2 focus:ring-[var(--theme-almanac-moon-focus)] focus:ring-offset-1 focus:outline-none",
               showMoonPhases
                 ? "bg-[var(--theme-almanac-moon-bg)] text-[var(--theme-almanac-moon-fg)]"
                 : "bg-theme-surface-hover text-theme-fg-muted"
@@ -97,7 +108,7 @@ export function AlmanacFilters({
           <button
             onClick={() => onToggleFilter("specialDays")}
             className={cn(
-              "rounded-full px-3 py-1 text-xs font-medium transition-all focus:outline-none focus:ring-2 focus:ring-[var(--theme-almanac-special-focus)] focus:ring-offset-1",
+              "rounded-full px-3 py-1 text-xs font-medium transition-all focus:ring-2 focus:ring-[var(--theme-almanac-special-focus)] focus:ring-offset-1 focus:outline-none",
               showSpecialDays
                 ? "bg-[var(--theme-almanac-special-bg)] text-[var(--theme-almanac-special-fg)]"
                 : "bg-theme-surface-hover text-theme-fg-muted"
@@ -108,7 +119,7 @@ export function AlmanacFilters({
           <button
             onClick={() => onToggleFilter("events")}
             className={cn(
-              "rounded-full px-3 py-1 text-xs font-medium transition-all focus:outline-none focus:ring-2 focus:ring-[var(--theme-almanac-event-focus)] focus:ring-offset-1",
+              "rounded-full px-3 py-1 text-xs font-medium transition-all focus:ring-2 focus:ring-[var(--theme-almanac-event-focus)] focus:ring-offset-1 focus:outline-none",
               showEvents
                 ? "bg-[var(--theme-almanac-event-bg)] text-[var(--theme-almanac-event-fg)]"
                 : "bg-theme-surface-hover text-theme-fg-muted"

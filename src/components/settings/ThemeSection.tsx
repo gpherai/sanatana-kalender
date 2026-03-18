@@ -48,10 +48,9 @@ export function ThemeSection({
       icon={Palette}
       iconColor="primary"
     >
-
       {/* Color Mode Selection */}
       <div className="mb-6">
-        <label className="mb-2 block text-sm font-medium text-theme-fg-secondary">
+        <label className="text-theme-fg-secondary mb-2 block text-sm font-medium">
           Weergavemodus
         </label>
         <div className="flex flex-wrap gap-2">
@@ -77,9 +76,8 @@ export function ThemeSection({
           })}
         </div>
         {colorMode === "system" && (
-          <p className="mt-2 text-xs text-theme-fg-muted">
-            Huidige systeemvoorkeur:{" "}
-            {resolvedColorMode === "dark" ? "Donker" : "Licht"}
+          <p className="text-theme-fg-muted mt-2 text-xs">
+            Huidige systeemvoorkeur: {resolvedColorMode === "dark" ? "Donker" : "Licht"}
           </p>
         )}
       </div>
@@ -88,17 +86,17 @@ export function ThemeSection({
       <div className="space-y-8">
         {/* Classic Themes Section */}
         {(() => {
-          const classicThemes = themes.filter(t => t.category === "classic");
+          const classicThemes = themes.filter((t) => t.category === "classic");
           if (classicThemes.length === 0) return null;
 
           return (
             <div>
               <div className="mb-4 flex items-center gap-2">
-                <div className="h-px flex-1 bg-theme-border"></div>
-                <h3 className="text-sm font-semibold uppercase tracking-wider text-theme-fg-muted">
+                <div className="bg-theme-border h-px flex-1"></div>
+                <h3 className="text-theme-fg-muted text-sm font-semibold tracking-wider uppercase">
                   Classic Themes
                 </h3>
-                <div className="h-px flex-1 bg-theme-border"></div>
+                <div className="bg-theme-border h-px flex-1"></div>
               </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {classicThemes.map((theme) => {
@@ -123,20 +121,28 @@ export function ThemeSection({
 
                       {/* Color preview circles */}
                       <div className="mb-3 flex gap-2">
-                        <div className="h-8 w-8 rounded-full shadow-inner ring-1 ring-black/10"
-                          style={{ backgroundColor: theme.colors.primary }} />
-                        <div className="h-8 w-8 rounded-full shadow-inner ring-1 ring-black/10"
-                          style={{ backgroundColor: theme.colors.secondary }} />
-                        <div className="h-8 w-8 rounded-full shadow-inner ring-1 ring-black/10"
-                          style={{ backgroundColor: theme.colors.accent }} />
+                        <div
+                          className="h-8 w-8 rounded-full shadow-inner ring-1 ring-black/10"
+                          style={{ backgroundColor: theme.colors.primary }}
+                        />
+                        <div
+                          className="h-8 w-8 rounded-full shadow-inner ring-1 ring-black/10"
+                          style={{ backgroundColor: theme.colors.secondary }}
+                        />
+                        <div
+                          className="h-8 w-8 rounded-full shadow-inner ring-1 ring-black/10"
+                          style={{ backgroundColor: theme.colors.accent }}
+                        />
                       </div>
 
-                      <h3 className="font-medium text-theme-fg">{theme.displayName}</h3>
-                      <p className="mt-1 text-xs text-theme-fg-muted">{theme.description}</p>
+                      <h3 className="text-theme-fg font-medium">{theme.displayName}</h3>
+                      <p className="text-theme-fg-muted mt-1 text-xs">
+                        {theme.description}
+                      </p>
 
                       {theme.isDefault && (
                         <div className="mt-2">
-                          <span className="inline-block rounded-full bg-theme-surface-raised px-2 py-0.5 text-xs text-theme-fg-secondary">
+                          <span className="bg-theme-surface-raised text-theme-fg-secondary inline-block rounded-full px-2 py-0.5 text-xs">
                             Standaard
                           </span>
                         </div>
@@ -151,19 +157,19 @@ export function ThemeSection({
 
         {/* Revamped Themes Section */}
         {(() => {
-          const revampedThemes = themes.filter(t => t.category === "revamped");
+          const revampedThemes = themes.filter((t) => t.category === "revamped");
           if (revampedThemes.length === 0) return null;
 
           return (
             <div>
               <div className="mb-4 flex items-center gap-2">
-                <div className="h-px flex-1 bg-theme-border"></div>
-                <h3 className="text-sm font-semibold uppercase tracking-wider text-theme-fg-muted flex items-center gap-1.5">
+                <div className="bg-theme-border h-px flex-1"></div>
+                <h3 className="text-theme-fg-muted flex items-center gap-1.5 text-sm font-semibold tracking-wider uppercase">
                   <span className="text-base">✨</span> Revamped Themes
                 </h3>
-                <div className="h-px flex-1 bg-theme-border"></div>
+                <div className="bg-theme-border h-px flex-1"></div>
               </div>
-              <p className="mb-4 text-center text-xs text-theme-fg-muted">
+              <p className="text-theme-fg-muted mb-4 text-center text-xs">
                 Enhanced with subtle gradient backgrounds
               </p>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -177,7 +183,7 @@ export function ThemeSection({
                       className={cn(
                         "relative rounded-xl border-2 p-4 text-left transition-all",
                         isSelected
-                          ? "border-theme-primary bg-theme-primary-10 shadow-lg ring-2 ring-theme-primary/20"
+                          ? "border-theme-primary bg-theme-primary-10 ring-theme-primary/20 shadow-lg ring-2"
                           : "border-theme-border hover:border-theme-border-strong hover:shadow-md"
                       )}
                     >
@@ -189,23 +195,31 @@ export function ThemeSection({
 
                       {/* Gradient preview badge */}
                       <div className="absolute top-2 left-2">
-                        <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-br from-white/20 to-white/5 px-2 py-0.5 text-[10px] font-medium text-white/90 backdrop-blur-sm ring-1 ring-white/20">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-br from-white/20 to-white/5 px-2 py-0.5 text-[10px] font-medium text-white/90 ring-1 ring-white/20 backdrop-blur-sm">
                           🎨 Gradient
                         </span>
                       </div>
 
                       {/* Color preview circles */}
-                      <div className="mb-3 mt-6 flex gap-2">
-                        <div className="h-8 w-8 rounded-full shadow-inner ring-1 ring-black/10"
-                          style={{ backgroundColor: theme.colors.primary }} />
-                        <div className="h-8 w-8 rounded-full shadow-inner ring-1 ring-black/10"
-                          style={{ backgroundColor: theme.colors.secondary }} />
-                        <div className="h-8 w-8 rounded-full shadow-inner ring-1 ring-black/10"
-                          style={{ backgroundColor: theme.colors.accent }} />
+                      <div className="mt-6 mb-3 flex gap-2">
+                        <div
+                          className="h-8 w-8 rounded-full shadow-inner ring-1 ring-black/10"
+                          style={{ backgroundColor: theme.colors.primary }}
+                        />
+                        <div
+                          className="h-8 w-8 rounded-full shadow-inner ring-1 ring-black/10"
+                          style={{ backgroundColor: theme.colors.secondary }}
+                        />
+                        <div
+                          className="h-8 w-8 rounded-full shadow-inner ring-1 ring-black/10"
+                          style={{ backgroundColor: theme.colors.accent }}
+                        />
                       </div>
 
-                      <h3 className="font-medium text-theme-fg">{theme.displayName}</h3>
-                      <p className="mt-1 text-xs text-theme-fg-muted">{theme.description}</p>
+                      <h3 className="text-theme-fg font-medium">{theme.displayName}</h3>
+                      <p className="text-theme-fg-muted mt-1 text-xs">
+                        {theme.description}
+                      </p>
                     </button>
                   );
                 })}
@@ -216,19 +230,19 @@ export function ThemeSection({
 
         {/* Special Themes Section */}
         {(() => {
-          const specialThemes = themes.filter(t => t.category === "special");
+          const specialThemes = themes.filter((t) => t.category === "special");
           if (specialThemes.length === 0) return null;
 
           return (
             <div>
               <div className="mb-4 flex items-center gap-2">
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent via-amber-500/30 to-transparent"></div>
-                <h3 className="text-sm font-semibold uppercase tracking-wider bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent flex items-center gap-1.5">
+                <h3 className="flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-sm font-semibold tracking-wider text-transparent uppercase">
                   <span className="text-base">✨</span> Special Themes
                 </h3>
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent via-amber-500/30 to-transparent"></div>
               </div>
-              <p className="mb-4 text-center text-xs text-theme-fg-muted">
+              <p className="text-theme-fg-muted mb-4 text-center text-xs">
                 Premium themes with enhanced visual effects
               </p>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -247,23 +261,31 @@ export function ThemeSection({
                       )}
                     >
                       {isSelected && (
-                        <div className="bg-gradient-to-r from-amber-500 to-orange-500 absolute top-2 right-2 rounded-full p-1 text-white shadow-lg">
+                        <div className="absolute top-2 right-2 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 p-1 text-white shadow-lg">
                           <Check className="h-3 w-3" />
                         </div>
                       )}
 
                       {/* Color preview circles */}
                       <div className="mb-3 flex gap-2">
-                        <div className="h-8 w-8 rounded-full shadow-inner ring-1 ring-black/10"
-                          style={{ backgroundColor: theme.colors.primary }} />
-                        <div className="h-8 w-8 rounded-full shadow-inner ring-1 ring-black/10"
-                          style={{ backgroundColor: theme.colors.secondary }} />
-                        <div className="h-8 w-8 rounded-full shadow-inner ring-1 ring-black/10"
-                          style={{ backgroundColor: theme.colors.accent }} />
+                        <div
+                          className="h-8 w-8 rounded-full shadow-inner ring-1 ring-black/10"
+                          style={{ backgroundColor: theme.colors.primary }}
+                        />
+                        <div
+                          className="h-8 w-8 rounded-full shadow-inner ring-1 ring-black/10"
+                          style={{ backgroundColor: theme.colors.secondary }}
+                        />
+                        <div
+                          className="h-8 w-8 rounded-full shadow-inner ring-1 ring-black/10"
+                          style={{ backgroundColor: theme.colors.accent }}
+                        />
                       </div>
 
-                      <h3 className="font-medium text-theme-fg">{theme.displayName}</h3>
-                      <p className="mt-1 text-xs text-theme-fg-muted">{theme.description}</p>
+                      <h3 className="text-theme-fg font-medium">{theme.displayName}</h3>
+                      <p className="text-theme-fg-muted mt-1 text-xs">
+                        {theme.description}
+                      </p>
 
                       <div className="mt-2">
                         <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-2 py-0.5 text-xs font-medium text-white shadow-sm">

@@ -12,7 +12,12 @@ async function getSunRashi(jd: number): Promise<number> {
 }
 
 async function debugAdhika() {
-  const location = { lat: 52.0705, lon: 4.3007, timezone: "Europe/Amsterdam" };
+  const location = {
+    name: "Den Haag",
+    lat: 52.0705,
+    lon: 4.3007,
+    tz: "Europe/Amsterdam",
+  };
 
   // Test Amavasyas (new moons) - Adhika is determined by Amavasya boundaries!
   const amavasyaDates = [
@@ -24,10 +29,22 @@ async function debugAdhika() {
   console.log("Checking Sun's rashi at Amavasyas:\n");
 
   for (const dateStr of amavasyaDates) {
-    const astro = await calculateSunriseSunset(dateStr, location.lat, location.lon, location.timezone);
+    const astro = await calculateSunriseSunset(dateStr, location);
     const rashi = await getSunRashi(astro.sunriseJD);
-    const rashiNames = ["Mesha", "Vrishabha", "Mithuna", "Karka", "Simha", "Kanya",
-                        "Tula", "Vrishchika", "Dhanu", "Makara", "Kumbha", "Meena"];
+    const rashiNames = [
+      "Mesha",
+      "Vrishabha",
+      "Mithuna",
+      "Karka",
+      "Simha",
+      "Kanya",
+      "Tula",
+      "Vrishchika",
+      "Dhanu",
+      "Makara",
+      "Kumbha",
+      "Meena",
+    ];
 
     console.log(`${dateStr}: Sun in ${rashiNames[rashi]} (rashi ${rashi})`);
   }

@@ -333,7 +333,12 @@ export async function GET(request: NextRequest) {
       }
 
       // Calculate range using service layer
-      const panchangas = await panchangaService.calculateRange(start, end, location, timezone);
+      const panchangas = await panchangaService.calculateRange(
+        start,
+        end,
+        location,
+        timezone
+      );
 
       // Transform all results
       const responses = panchangas.map(transformToApiResponse);

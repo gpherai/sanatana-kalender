@@ -1,31 +1,31 @@
-import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import type { ReactNode } from 'react'
-import { EventCard, EventCardCompact } from '../EventCard'
-import type { Category } from '@/types/calendar'
+import { describe, it, expect, vi } from "vitest";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import type { ReactNode } from "react";
+import { EventCard, EventCardCompact } from "../EventCard";
+import type { Category } from "@/types/calendar";
 
-vi.mock('next/link', () => ({
+vi.mock("next/link", () => ({
   __esModule: true,
   default: ({ href, children, ...rest }: { href: string; children: ReactNode }) => (
     <a href={href} {...rest}>
       {children}
     </a>
   ),
-}))
+}));
 
 const CATEGORY: Category = {
-  id: 'cat_1',
-  name: 'ganesha',
-  displayName: 'Ganesha',
-  icon: 'G',
-  color: '#fff',
+  id: "cat_1",
+  name: "ganesha",
+  displayName: "Ganesha",
+  icon: "G",
+  color: "#fff",
   description: null,
   sortOrder: 1,
-}
+};
 
-describe('EventCard', () => {
-  it('renders details and badges', () => {
+describe("EventCard", () => {
+  it("renders details and badges", () => {
     render(
       <EventCard
         id="evt_1"
@@ -40,20 +40,20 @@ describe('EventCard', () => {
         importance="MAJOR"
         tithi="Pratipada"
         nakshatra="Ashwini"
-        tags={['alpha', 'beta', 'gamma', 'delta', 'epsilon']}
+        tags={["alpha", "beta", "gamma", "delta", "epsilon"]}
       />
-    )
+    );
 
-    expect(screen.getByText('Belangrijk')).toBeInTheDocument()
-    expect(screen.getByText('Event description')).toBeInTheDocument()
-    expect(screen.getByText('09:00 - 10:00')).toBeInTheDocument()
-    expect(screen.getByText(/Pratipada/)).toBeInTheDocument()
-    expect(screen.getByText(/Ashwini/)).toBeInTheDocument()
-    expect(screen.getByText('+1 meer')).toBeInTheDocument()
-    expect(screen.getByText('(3 dagen)')).toBeInTheDocument()
-  })
+    expect(screen.getByText("Belangrijk")).toBeInTheDocument();
+    expect(screen.getByText("Event description")).toBeInTheDocument();
+    expect(screen.getByText("09:00 - 10:00")).toBeInTheDocument();
+    expect(screen.getByText(/Pratipada/)).toBeInTheDocument();
+    expect(screen.getByText(/Ashwini/)).toBeInTheDocument();
+    expect(screen.getByText("+1 meer")).toBeInTheDocument();
+    expect(screen.getByText("(3 dagen)")).toBeInTheDocument();
+  });
 
-  it('falls back to general category when none is provided', () => {
+  it("falls back to general category when none is provided", () => {
     render(
       <EventCard
         id="evt_5"
@@ -62,12 +62,12 @@ describe('EventCard', () => {
         eventType="OTHER"
         importance="MINOR"
       />
-    )
+    );
 
-    expect(screen.getByText('Algemeen')).toBeInTheDocument()
-  })
+    expect(screen.getByText("Algemeen")).toBeInTheDocument();
+  });
 
-  it('renders a link when onClick is not provided', () => {
+  it("renders a link when onClick is not provided", () => {
     render(
       <EventCard
         id="evt_1"
@@ -77,14 +77,14 @@ describe('EventCard', () => {
         eventType="FESTIVAL"
         importance="MODERATE"
       />
-    )
+    );
 
-    const link = screen.getByRole('link', { name: /Festival/i })
-    expect(link).toHaveAttribute('href', '/events/evt_1')
-  })
+    const link = screen.getByRole("link", { name: /Festival/i });
+    expect(link).toHaveAttribute("href", "/events/evt_1");
+  });
 
-  it('renders a button when onClick is provided', async () => {
-    const onClick = vi.fn()
+  it("renders a button when onClick is provided", async () => {
+    const onClick = vi.fn();
     render(
       <EventCard
         id="evt_2"
@@ -95,17 +95,17 @@ describe('EventCard', () => {
         importance="MODERATE"
         onClick={onClick}
       />
-    )
+    );
 
-    const button = screen.getByRole('button', { name: /Festival/i })
-    await userEvent.click(button)
+    const button = screen.getByRole("button", { name: /Festival/i });
+    await userEvent.click(button);
 
-    expect(onClick).toHaveBeenCalled()
-  })
-})
+    expect(onClick).toHaveBeenCalled();
+  });
+});
 
-describe('EventCardCompact', () => {
-  it('renders a link by default', () => {
+describe("EventCardCompact", () => {
+  it("renders a link by default", () => {
     render(
       <EventCardCompact
         id="evt_3"
@@ -115,14 +115,14 @@ describe('EventCardCompact', () => {
         eventType="FESTIVAL"
         importance="MODERATE"
       />
-    )
+    );
 
-    const link = screen.getByRole('link', { name: /Compact/i })
-    expect(link).toHaveAttribute('href', '/events/evt_3')
-  })
+    const link = screen.getByRole("link", { name: /Compact/i });
+    expect(link).toHaveAttribute("href", "/events/evt_3");
+  });
 
-  it('renders a button when onClick is provided', async () => {
-    const onClick = vi.fn()
+  it("renders a button when onClick is provided", async () => {
+    const onClick = vi.fn();
     render(
       <EventCardCompact
         id="evt_4"
@@ -133,11 +133,11 @@ describe('EventCardCompact', () => {
         importance="MAJOR"
         onClick={onClick}
       />
-    )
+    );
 
-    const button = screen.getByRole('button', { name: /Compact/i })
-    await userEvent.click(button)
+    const button = screen.getByRole("button", { name: /Compact/i });
+    await userEvent.click(button);
 
-    expect(onClick).toHaveBeenCalled()
-  })
-})
+    expect(onClick).toHaveBeenCalled();
+  });
+});

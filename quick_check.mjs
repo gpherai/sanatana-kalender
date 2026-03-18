@@ -1,11 +1,11 @@
-import pkg from '@prisma/client';
+import pkg from "@prisma/client";
 const { PrismaClient } = pkg;
 const prisma = new PrismaClient({
   datasources: {
     db: {
-      url: "postgresql://postgres:postgres@localhost:5432/dharma_calendar?schema=public"
-    }
-  }
+      url: "postgresql://postgres:postgres@localhost:5432/dharma_calendar?schema=public",
+    },
+  },
 });
 
 async function check() {
@@ -18,12 +18,12 @@ async function check() {
   // Check a sample
   const sample = await prisma.dailyInfo.findFirst({
     where: { maas: { not: null } },
-    orderBy: { date: 'asc' }
+    orderBy: { date: "asc" },
   });
 
   if (sample) {
     console.log(`\n✅ Sample DailyInfo:`);
-    console.log(`   Date: ${sample.date.toISOString().split('T')[0]}`);
+    console.log(`   Date: ${sample.date.toISOString().split("T")[0]}`);
     console.log(`   Maas: ${sample.maas} (${sample.maasName} - ${sample.maasType})`);
     console.log(`   Lunar Day: ${sample.lunarDay}`);
     console.log(`   Vikrama Samvat: ${sample.vikramaSamvatYear}`);
@@ -31,8 +31,8 @@ async function check() {
 
   // Check Maha Shivaratri
   const shivaratri = await prisma.event.findFirst({
-    where: { name: 'Maha Shivaratri' },
-    include: { occurrences: { orderBy: { date: 'asc' } } }
+    where: { name: "Maha Shivaratri" },
+    include: { occurrences: { orderBy: { date: "asc" } } },
   });
 
   if (shivaratri) {
@@ -40,8 +40,8 @@ async function check() {
     console.log(`   Recurrence: ${shivaratri.recurrenceType}`);
     console.log(`   Tithi: ${shivaratri.tithi}, Maas: ${shivaratri.maas}`);
     console.log(`   Occurrences: ${shivaratri.occurrences.length}`);
-    shivaratri.occurrences.forEach(o => {
-      console.log(`      - ${o.date.toISOString().split('T')[0]}`);
+    shivaratri.occurrences.forEach((o) => {
+      console.log(`      - ${o.date.toISOString().split("T")[0]}`);
     });
   }
 

@@ -1,5 +1,5 @@
-import 'dotenv/config';
-import { prisma } from '@/lib/db';
+import "dotenv/config";
+import { prisma } from "@/lib/db";
 
 async function checkOccurrences() {
   // Total occurrences
@@ -10,11 +10,13 @@ async function checkOccurrences() {
   });
 
   console.log(`\n📊 Total Occurrences: ${total}`);
-  console.log(`📅 Date Range: ${dateRange._min.date?.toISOString().split('T')[0]} to ${dateRange._max.date?.toISOString().split('T')[0]}\n`);
+  console.log(
+    `📅 Date Range: ${dateRange._min.date?.toISOString().split("T")[0]} to ${dateRange._max.date?.toISOString().split("T")[0]}\n`
+  );
 
   // Sankranti occurrences
   const sankrantiEvents = await prisma.event.findMany({
-    where: { ruleType: 'SOLAR' },
+    where: { ruleType: "SOLAR" },
     include: { _count: { select: { occurrences: true } } },
   });
 
@@ -26,7 +28,7 @@ async function checkOccurrences() {
   // Ekadashi occurrences (sample a few)
   const ekadashiEvents = await prisma.event.findMany({
     where: {
-      name: { contains: 'Ekadashi' },
+      name: { contains: "Ekadashi" },
     },
     take: 5,
     include: { _count: { select: { occurrences: true } } },
@@ -44,7 +46,7 @@ async function checkOccurrences() {
       _count: { select: { occurrences: true } },
       occurrences: {
         select: { date: true },
-        orderBy: { date: 'asc' },
+        orderBy: { date: "asc" },
       },
     },
   });
@@ -52,8 +54,8 @@ async function checkOccurrences() {
   console.log(`\n🌙 Adhika-Only Events (${adhikaEvents.length}):`);
   for (const event of adhikaEvents) {
     console.log(`  ${event.name}: ${event._count.occurrences} occurrences`);
-    event.occurrences.forEach(occ => {
-      console.log(`    - ${occ.date.toISOString().split('T')[0]}`);
+    event.occurrences.forEach((occ) => {
+      console.log(`    - ${occ.date.toISOString().split("T")[0]}`);
     });
   }
 

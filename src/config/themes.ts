@@ -399,9 +399,9 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
     category: "special" as const,
     isSpecial: true,
     colors: {
-      primary: "oklch(0.62 0.22 275)",    // Neon indigo
-      secondary: "oklch(0.72 0.10 210)",  // Cold moonlight cyan
-      accent: "oklch(0.74 0.18 45)",      // Ritual ember
+      primary: "oklch(0.62 0.22 275)", // Neon indigo
+      secondary: "oklch(0.72 0.10 210)", // Cold moonlight cyan
+      accent: "oklch(0.74 0.18 45)", // Ritual ember
     },
     background: {
       light: `
@@ -426,16 +426,16 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
       },
       moon: {
         surface: {
-          light: "oklch(0.920 0.045 285)",  // Pale indigo-silver
-          mid: "oklch(0.850 0.055 280)",    // Soft lavender
-          dark: "oklch(0.780 0.065 275)",   // Deep lilac
+          light: "oklch(0.920 0.045 285)", // Pale indigo-silver
+          mid: "oklch(0.850 0.055 280)", // Soft lavender
+          dark: "oklch(0.780 0.065 275)", // Deep lilac
         },
         shadow: {
-          light: "oklch(0.180 0.030 275)",  // Dark indigo
-          deep: "oklch(0.095 0.022 270)",   // Near-black purple
+          light: "oklch(0.180 0.030 275)", // Dark indigo
+          deep: "oklch(0.095 0.022 270)", // Near-black purple
         },
         glow: "oklch(0.720 0.18 285 / 0.65)", // Indigo moonlight glow
-        rim: "oklch(0.82 0.12 280 / 0.15)",    // Ethereal purple rim
+        rim: "oklch(0.82 0.12 280 / 0.15)", // Ethereal purple rim
       },
       header: {
         light: `
@@ -532,16 +532,16 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
       },
       moon: {
         surface: {
-          light: "oklch(0.990 0.028 85)",   // Brilliant golden-cream
-          mid: "oklch(0.950 0.035 80)",     // Rich champagne
-          dark: "oklch(0.880 0.042 75)",    // Deep honey
+          light: "oklch(0.990 0.028 85)", // Brilliant golden-cream
+          mid: "oklch(0.950 0.035 80)", // Rich champagne
+          dark: "oklch(0.880 0.042 75)", // Deep honey
         },
         shadow: {
-          light: "oklch(0.220 0.028 35)",   // Warm dark brown
-          deep: "oklch(0.125 0.020 30)",    // Rich earth-black
+          light: "oklch(0.220 0.028 35)", // Warm dark brown
+          deep: "oklch(0.125 0.020 30)", // Rich earth-black
         },
         glow: "oklch(0.880 0.12 85 / 0.75)", // Divine golden glow
-        rim: "oklch(0.95 0.10 85 / 0.18)",   // Blessed gold rim
+        rim: "oklch(0.95 0.10 85 / 0.18)", // Blessed gold rim
       },
       header: {
         light: `
@@ -757,7 +757,9 @@ export function getSpecialThemes(): readonly ThemeDefinition[] {
  * Get all standard (classic + revamped) themes.
  */
 export function getStandardThemes(): readonly ThemeDefinition[] {
-  return THEME_CATALOG.filter((t) => t.category === "classic" || t.category === "revamped");
+  return THEME_CATALOG.filter(
+    (t) => t.category === "classic" || t.category === "revamped"
+  );
 }
 
 /**

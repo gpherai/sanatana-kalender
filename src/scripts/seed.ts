@@ -37,7 +37,7 @@ import type {
   Importance,
   EventType,
   RecurrenceType,
-} from "@/generated/prisma/client";
+} from "@prisma/client";
 
 // Event interface for type safety
 interface EventData {
@@ -102,7 +102,10 @@ async function main() {
         );
 
         // Map tithi to enum
-        const tithiEnum = convertTithiToEnum(panchanga.tithi.number, panchanga.tithi.paksha);
+        const tithiEnum = convertTithiToEnum(
+          panchanga.tithi.number,
+          panchanga.tithi.paksha
+        );
         const nakshatraEnum = mapNakshatraToEnum(panchanga.nakshatra.number);
         // Paksha is stored independently (not gated by tithi mapping)
         const pakshaEnum = panchanga.tithi.paksha === "Shukla" ? "SHUKLA" : "KRISHNA";
@@ -143,7 +146,9 @@ async function main() {
             maas: maasEnum,
             isAdhika: panchanga.maas?.isAdhika ?? false,
             // Solar transition (Sankranti)
-            sankranti: panchanga.sankranti?.name ? convertSankrantiToEnum(panchanga.sankranti.name) : null,
+            sankranti: panchanga.sankranti?.name
+              ? convertSankrantiToEnum(panchanga.sankranti.name)
+              : null,
             sankrantiTime: panchanga.sankranti?.time ?? null,
             // Drik Panchang extended fields
             maasName: panchanga.maas?.name ?? null,
@@ -206,7 +211,9 @@ async function main() {
             maas: maasEnum,
             isAdhika: panchanga.maas?.isAdhika ?? false,
             // Solar transition (Sankranti)
-            sankranti: panchanga.sankranti?.name ? convertSankrantiToEnum(panchanga.sankranti.name) : null,
+            sankranti: panchanga.sankranti?.name
+              ? convertSankrantiToEnum(panchanga.sankranti.name)
+              : null,
             sankrantiTime: panchanga.sankranti?.time ?? null,
             // Drik Panchang extended fields
             maasName: panchanga.maas?.name ?? null,
@@ -252,7 +259,9 @@ async function main() {
         // Progress logging every 30 days
         if (insertedCount % 30 === 0) {
           const progress = ((insertedCount / total) * 100).toFixed(1);
-          console.log(`   Progress: ${insertedCount}/${total} (${progress}%) - Last: ${dateForLog}`);
+          console.log(
+            `   Progress: ${insertedCount}/${total} (${progress}%) - Last: ${dateForLog}`
+          );
         }
       } catch (error) {
         console.error(`   ❌ Error for ${current.toISODate()}:`, error);
@@ -269,7 +278,9 @@ async function main() {
       console.warn(`   ⚠️  ${errorCount} days failed - review errors above`);
     }
   } else {
-    console.log(`   ℹ️  DailyInfo already exists (${existingDailyInfo} records). Skipping.`);
+    console.log(
+      `   ℹ️  DailyInfo already exists (${existingDailyInfo} records). Skipping.`
+    );
     console.log(`      Use FORCE_RESEED=true to regenerate.`);
   }
 
@@ -347,7 +358,7 @@ async function main() {
       importance: "MAJOR",
       categoryName: "shiva",
       tithi: "CHATURDASHI_KRISHNA",
-      maas: "MAGHA",
+      maas: "PHALGUNA",
       tags: ["vasten", "nachtelijk", "shiva", "abhishekam"],
     },
     {
@@ -818,21 +829,9 @@ async function main() {
 
     // ==========================================
     // SANKRANTI & SOLAR EVENTS
+    // (Makar Sankranti en alle andere Sankrantis worden beheerd via
+    //  event-naming.ts + generate-events-from-naming.ts script)
     // ==========================================
-    {
-      name: "Makar Sankranti",
-      description:
-        "De zon gaat het sterrenbeeld Makar (Steenbok) binnen. Viert de langere dagen. Er wordt til-gul (sesam-jaggery) snoep uitgewisseld en vliegers opgelaten.",
-      eventType: "SANKRANTI",
-      recurrenceType: "YEARLY_SOLAR",
-      importance: "MAJOR",
-      categoryName: "vishnu",
-      tags: ["zon", "oogst", "til-gul", "vliegers", "pongal"],
-      occurrences: [
-        { date: calendarDate(2025, 1, 14), notes: "Til-gul ghya, god god bola!" },
-        { date: calendarDate(2026, 1, 14) },
-      ],
-    },
     {
       name: "Pongal",
       description:
@@ -1021,7 +1020,8 @@ async function main() {
   console.log("📅 Seeding events...");
 
   // Step 1: Upsert all Events (without occurrences)
-  const createdEvents: Map<string, { id: string; recurrenceType: RecurrenceType }> = new Map();
+  const createdEvents: Map<string, { id: string; recurrenceType: RecurrenceType }> =
+    new Map();
 
   for (const eventData of events) {
     const categoryId = categoryMap.get(eventData.categoryName);
@@ -1060,7 +1060,10 @@ async function main() {
       },
     });
     eventCount++;
-    createdEvents.set(eventData.name, { id: event.id, recurrenceType: event.recurrenceType });
+    createdEvents.set(eventData.name, {
+      id: event.id,
+      recurrenceType: event.recurrenceType,
+    });
 
     // If manual occurrences provided (for NONE recurrence or seed dates), insert them
     if (eventData.occurrences && eventData.occurrences.length > 0) {
@@ -1172,7 +1175,9 @@ async function main() {
   console.log("\n⚠️  NEXT STEP: Regenerate all occurrences via API");
   console.log("   curl -X POST http://localhost:3000/api/events/generate-occurrences \\");
   console.log('     -H "Content-Type: application/json" \\');
-  console.log('     -d \'{"startDate":"2025-01-01", "endDate":"2027-12-31", "replace": true}\'');
+  console.log(
+    '     -d \'{"startDate":"2025-01-01", "endDate":"2027-12-31", "replace": true}\''
+  );
   console.log("\n   See docs/DATABASE_PROCEDURES.md for details");
 }
 

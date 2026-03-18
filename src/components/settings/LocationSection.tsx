@@ -23,7 +23,10 @@ interface LocationSectionProps {
   locationLon: number;
   dailyInfo: DailyInfo | null;
   onLocationPreset: (preset: (typeof PRESET_LOCATIONS)[number]) => void;
-  onLocationChange: (field: "locationName" | "locationLat" | "locationLon", value: string | number) => void;
+  onLocationChange: (
+    field: "locationName" | "locationLat" | "locationLon",
+    value: string | number
+  ) => void;
 }
 
 // =============================================================================
@@ -45,10 +48,9 @@ export function LocationSection({
       icon={MapPin}
       iconColor="accent"
     >
-
       {/* Preset locations */}
       <div className="mb-6">
-        <label className="mb-2 block text-sm font-medium text-theme-fg-secondary">
+        <label className="text-theme-fg-secondary mb-2 block text-sm font-medium">
           Snelle selectie
         </label>
         <div className="flex flex-wrap gap-2">
@@ -75,7 +77,7 @@ export function LocationSection({
         <div>
           <label
             htmlFor="locationName"
-            className="mb-2 block text-sm font-medium text-theme-fg-secondary"
+            className="text-theme-fg-secondary mb-2 block text-sm font-medium"
           >
             Naam
           </label>
@@ -84,7 +86,7 @@ export function LocationSection({
             type="text"
             value={locationName}
             onChange={(e) => onLocationChange("locationName", e.target.value)}
-            className="focus:ring-theme-primary-50 focus:border-theme-primary w-full rounded-lg border border-theme-border bg-theme-surface px-3 py-2 text-theme-fg focus:ring-2"
+            className="focus:ring-theme-primary-50 focus:border-theme-primary border-theme-border bg-theme-surface text-theme-fg w-full rounded-lg border px-3 py-2 focus:ring-2"
           />
         </div>
 
@@ -92,7 +94,7 @@ export function LocationSection({
         <div>
           <label
             htmlFor="locationLat"
-            className="mb-2 block text-sm font-medium text-theme-fg-secondary"
+            className="text-theme-fg-secondary mb-2 block text-sm font-medium"
           >
             Breedtegraad
           </label>
@@ -104,7 +106,7 @@ export function LocationSection({
             onChange={(e) =>
               onLocationChange("locationLat", parseFloat(e.target.value) || 0)
             }
-            className="focus:ring-theme-primary-50 focus:border-theme-primary w-full rounded-lg border border-theme-border bg-theme-surface px-3 py-2 text-theme-fg focus:ring-2"
+            className="focus:ring-theme-primary-50 focus:border-theme-primary border-theme-border bg-theme-surface text-theme-fg w-full rounded-lg border px-3 py-2 focus:ring-2"
           />
         </div>
 
@@ -112,7 +114,7 @@ export function LocationSection({
         <div>
           <label
             htmlFor="locationLon"
-            className="mb-2 block text-sm font-medium text-theme-fg-secondary"
+            className="text-theme-fg-secondary mb-2 block text-sm font-medium"
           >
             Lengtegraad
           </label>
@@ -124,7 +126,7 @@ export function LocationSection({
             onChange={(e) =>
               onLocationChange("locationLon", parseFloat(e.target.value) || 0)
             }
-            className="focus:ring-theme-primary-50 focus:border-theme-primary w-full rounded-lg border border-theme-border bg-theme-surface px-3 py-2 text-theme-fg focus:ring-2"
+            className="focus:ring-theme-primary-50 focus:border-theme-primary border-theme-border bg-theme-surface text-theme-fg w-full rounded-lg border px-3 py-2 focus:ring-2"
           />
         </div>
       </div>
@@ -132,17 +134,15 @@ export function LocationSection({
       {/* Sun/Moon preview */}
       {dailyInfo && (
         <div className="bg-theme-gradient-subtle border-theme-primary-30 mt-6 rounded-xl border p-4">
-          <h3 className="mb-3 text-sm font-medium text-theme-fg-secondary">
+          <h3 className="text-theme-fg-secondary mb-3 text-sm font-medium">
             📍 Vandaag in {locationName}
           </h3>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <div className="flex items-center gap-2">
               <Sun className="h-5 w-5 text-amber-500" />
               <div>
-                <div className="text-xs text-theme-fg-muted">
-                  Zonsopgang
-                </div>
-                <div className="font-medium text-theme-fg">
+                <div className="text-theme-fg-muted text-xs">Zonsopgang</div>
+                <div className="text-theme-fg font-medium">
                   {dailyInfo.sunrise ?? "-"}
                 </div>
               </div>
@@ -150,32 +150,22 @@ export function LocationSection({
             <div className="flex items-center gap-2">
               <Sun className="h-5 w-5 text-orange-500" />
               <div>
-                <div className="text-xs text-theme-fg-muted">
-                  Zonsondergang
-                </div>
-                <div className="font-medium text-theme-fg">
-                  {dailyInfo.sunset ?? "-"}
-                </div>
+                <div className="text-theme-fg-muted text-xs">Zonsondergang</div>
+                <div className="text-theme-fg font-medium">{dailyInfo.sunset ?? "-"}</div>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <Moon className="h-5 w-5 text-indigo-500" />
               <div>
-                <div className="text-xs text-theme-fg-muted">
-                  Maanfase
-                </div>
-                <div className="font-medium text-theme-fg">
-                  {dailyInfo.moonPhaseName}
-                </div>
+                <div className="text-theme-fg-muted text-xs">Maanfase</div>
+                <div className="text-theme-fg font-medium">{dailyInfo.moonPhaseName}</div>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <Moon className="h-5 w-5 text-purple-500" />
               <div>
-                <div className="text-xs text-theme-fg-muted">
-                  Verlicht
-                </div>
-                <div className="font-medium text-theme-fg">
+                <div className="text-theme-fg-muted text-xs">Verlicht</div>
+                <div className="text-theme-fg font-medium">
                   {dailyInfo.moonPhasePercent}%
                 </div>
               </div>

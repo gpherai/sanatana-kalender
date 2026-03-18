@@ -107,21 +107,46 @@ export function MoonPhase({
         height={size}
         viewBox={`0 0 ${size} ${size}`}
         className="relative z-10"
-        style={{ background: 'transparent' }}
+        style={{ background: "transparent" }}
       >
         {/* Definitions for gradients and filters */}
         <defs>
           {/* Moon surface gradient - light side */}
           <radialGradient id={`moonSurface-${size}`} cx="40%" cy="40%">
-            <stop offset="0%" style={{ stopColor: 'var(--theme-moon-surface-light, oklch(0.985 0.015 80))' }} />
-            <stop offset="50%" style={{ stopColor: 'var(--theme-moon-surface-mid, oklch(0.945 0.020 75))' }} />
-            <stop offset="100%" style={{ stopColor: 'var(--theme-moon-surface-dark, oklch(0.895 0.025 70))' }} />
+            <stop
+              offset="0%"
+              style={{
+                stopColor: "var(--theme-moon-surface-light, oklch(0.985 0.015 80))",
+              }}
+            />
+            <stop
+              offset="50%"
+              style={{
+                stopColor: "var(--theme-moon-surface-mid, oklch(0.945 0.020 75))",
+              }}
+            />
+            <stop
+              offset="100%"
+              style={{
+                stopColor: "var(--theme-moon-surface-dark, oklch(0.895 0.025 70))",
+              }}
+            />
           </radialGradient>
 
           {/* Dark side gradient */}
           <radialGradient id={`moonDark-${size}`} cx="50%" cy="50%">
-            <stop offset="0%" style={{ stopColor: 'var(--theme-moon-shadow-light, oklch(0.165 0.015 280))' }} />
-            <stop offset="100%" style={{ stopColor: 'var(--theme-moon-shadow-deep, oklch(0.105 0.010 275))' }} />
+            <stop
+              offset="0%"
+              style={{
+                stopColor: "var(--theme-moon-shadow-light, oklch(0.165 0.015 280))",
+              }}
+            />
+            <stop
+              offset="100%"
+              style={{
+                stopColor: "var(--theme-moon-shadow-deep, oklch(0.105 0.010 275))",
+              }}
+            />
           </radialGradient>
 
           {/* Subtle texture (no heavy filters that cause white boxes) */}
@@ -196,12 +221,8 @@ export function MoonPhaseCompact({
     <div className={cn("flex items-center gap-3", className)}>
       <MoonPhase percent={percent} isWaxing={isWaxing} size={48} glow={false} />
       <div>
-        <div className="text-sm font-medium text-theme-fg">
-          {phaseName}
-        </div>
-        <div className="text-xs text-theme-fg-muted">
-          {percent}% verlicht
-        </div>
+        <div className="text-theme-fg text-sm font-medium">{phaseName}</div>
+        <div className="text-theme-fg-muted text-xs">{percent}% verlicht</div>
       </div>
     </div>
   );

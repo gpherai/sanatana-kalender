@@ -1,13 +1,13 @@
-import 'dotenv/config';
-import { prisma } from '@/lib/db';
+import "dotenv/config";
+import { prisma } from "@/lib/db";
 
 async function checkJan292026() {
   // Check what's on Jan 29, 2026
   const dailyInfo = await prisma.dailyInfo.findUnique({
-    where: { date: new Date('2026-01-29') },
+    where: { date: new Date("2026-01-29") },
   });
 
-  console.log('\n📅 DailyInfo for 2026-01-29:');
+  console.log("\n📅 DailyInfo for 2026-01-29:");
   console.log(`  tithi: ${dailyInfo?.tithi}`);
   console.log(`  maas: ${dailyInfo?.maas}`);
   console.log(`  paksha: ${dailyInfo?.paksha}`);
@@ -16,7 +16,7 @@ async function checkJan292026() {
   // Check the Nirjala Ekadashi occurrence
   const occurrence = await prisma.eventOccurrence.findFirst({
     where: {
-      date: new Date('2026-01-29'),
+      date: new Date("2026-01-29"),
     },
     include: {
       event: {

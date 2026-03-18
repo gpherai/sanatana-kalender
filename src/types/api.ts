@@ -21,11 +21,10 @@ import type { DailyInfoData } from "@/services";
  *
  * @see /src/app/api/daily-info/route.ts for the transformation logic
  */
-export interface DailyInfoResponse
-  extends Omit<
-    DailyInfoData,
-    "date" | "moonPhaseType" | "tithi" | "nakshatra" | "yogaName" | "karanaName" | "maas"
-  > {
+export interface DailyInfoResponse extends Omit<
+  DailyInfoData,
+  "date" | "moonPhaseType" | "tithi" | "nakshatra" | "yogaName" | "karanaName" | "maas"
+> {
   /** ISO date string (YYYY-MM-DD) */
   date: string;
 

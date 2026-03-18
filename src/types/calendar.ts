@@ -15,11 +15,8 @@ import type {
   RecurrenceType,
   CalendarView,
   MoonPhaseType,
-} from "@/generated/prisma/enums";
-import {
-  EventType as EventTypeEnum,
-  Importance as ImportanceEnum,
-} from "@/generated/prisma/enums";
+} from "@prisma/client";
+import { EventType as EventTypeEnum, Importance as ImportanceEnum } from "@prisma/client";
 import { TIME_REGEX } from "@/lib/patterns";
 
 // =============================================================================
@@ -81,6 +78,12 @@ export interface CalendarEventResource {
   endTime: string | null;
   /** Original end date from database (without +1 day adjustment for RBC) */
   originalEndDate: Date | null;
+  /** Event IDs of parent series events (e.g. Navratri), empty for standalone events */
+  seriesParentEventIds: string[];
+  /** Position within the series (e.g. 1 = dag 1, null for non-series events) */
+  seriesDayNumber: number | null;
+  /** Whether this event has series children (i.e. it is a parent) */
+  hasSeriesChildren: boolean;
 }
 
 /**
@@ -100,6 +103,9 @@ export interface CalendarEventResourceResponse {
   startTime: string | null;
   endTime: string | null;
   originalEndDate: string | null;
+  seriesParentEventIds: string[];
+  seriesDayNumber: number | null;
+  hasSeriesChildren: boolean;
 }
 
 // =============================================================================
@@ -153,7 +159,7 @@ export interface CalendarEventResponse {
  * @returns Date object at LOCAL midnight
  */
 function parseLocalDate(dateString: string): Date {
-  const [year, month, day] = dateString.split('-').map(Number);
+  const [year, month, day] = dateString.split("-").map(Number);
   // Creates date at LOCAL midnight (not UTC)
   // This prevents timezone shifts in calendar display
   return new Date(year!, month! - 1, day!);
@@ -181,6 +187,9 @@ export function parseCalendarEvent(event: CalendarEventResponse): CalendarEvent 
       originalEndDate: event.resource.originalEndDate
         ? parseLocalDate(event.resource.originalEndDate)
         : null,
+      seriesParentEventIds: event.resource.seriesParentEventIds,
+      seriesDayNumber: event.resource.seriesDayNumber,
+      hasSeriesChildren: event.resource.hasSeriesChildren,
     },
   };
 }

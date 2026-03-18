@@ -281,9 +281,12 @@ export default function SettingsPage() {
     []
   );
 
-  const handleCalendarFieldChange = useCallback((field: string, value: string | number) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  }, []);
+  const handleCalendarFieldChange = useCallback(
+    (field: string, value: string | number) => {
+      setFormData((prev) => ({ ...prev, [field]: value }));
+    },
+    []
+  );
 
   // ---------------------------------------------------------------------------
   // Render: Save Status Indicator
@@ -292,7 +295,7 @@ export default function SettingsPage() {
     switch (saveStatus) {
       case "saving":
         return (
-          <div className="flex items-center gap-2 text-sm text-theme-fg-muted">
+          <div className="text-theme-fg-muted flex items-center gap-2 text-sm">
             <Loader2 className="h-4 w-4 animate-spin" />
             <span>Opslaan...</span>
           </div>
@@ -313,7 +316,7 @@ export default function SettingsPage() {
         );
       default:
         return (
-          <div className="flex items-center gap-2 text-sm text-theme-fg-subtle">
+          <div className="text-theme-fg-subtle flex items-center gap-2 text-sm">
             <Cloud className="h-4 w-4" />
             <span>Auto-save actief</span>
           </div>
@@ -329,10 +332,8 @@ export default function SettingsPage() {
       {/* Page Header */}
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-theme-fg">
-            Instellingen
-          </h1>
-          <p className="text-sm text-theme-fg-muted">
+          <h1 className="text-theme-fg text-2xl font-bold">Instellingen</h1>
+          <p className="text-theme-fg-muted text-sm">
             Wijzigingen worden automatisch opgeslagen
           </p>
         </div>

@@ -58,8 +58,8 @@ const securityHeaders = [
 // =============================================================================
 
 const nextConfig: NextConfig = {
-  // Enable React Compiler
-  reactCompiler: true,
+  // Disable React Compiler as it can cause prerendering hook errors in Next.js canary
+  reactCompiler: false,
 
   // Standalone output for Docker deployment
   // This creates a self-contained build in .next/standalone
@@ -67,7 +67,8 @@ const nextConfig: NextConfig = {
 
   // Exclude native modules from server bundling
   // swisseph uses native Node.js addons (.node files) that can't be bundled
-  serverExternalPackages: ["swisseph"],
+  // @prisma/client uses a WASM engine that often has resolution issues in Turbopack
+  serverExternalPackages: ["swisseph", "@prisma/client"],
 
   // Security headers for all routes
   async headers() {
@@ -85,6 +86,10 @@ const nextConfig: NextConfig = {
 
   // TypeScript and ESLint are enforced via npm scripts (validate command)
   // Not configured here as Next.js 16 handles this differently
+
+  // Allow cross-origin requests in development to silence Turbopack warning
+  // According to Next.js 15+ docs, this should be at the root of the config
+  allowedDevOrigins: ["http://10.123.123.108:3000", "10.123.123.108"],
 };
 
 export default nextConfig;

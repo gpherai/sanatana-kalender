@@ -102,12 +102,12 @@ export function PageLayout({
   className,
 }: PageLayoutProps) {
   return (
-    <div className="min-h-screen bg-theme-bg-subtle">
+    <div className="bg-theme-bg-subtle min-h-screen">
       {loading ? (
         <div className="flex min-h-screen items-center justify-center">
           <div className="text-center">
             <Loader2 className="text-theme-primary mx-auto mb-2 h-8 w-8 animate-spin" />
-            <p className="text-sm text-theme-fg-muted">{loadingMessage}</p>
+            <p className="text-theme-fg-muted text-sm">{loadingMessage}</p>
           </div>
         </div>
       ) : (

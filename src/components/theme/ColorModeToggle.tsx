@@ -72,9 +72,10 @@ export function ColorModeToggle({ className }: ColorModeToggleProps) {
         aria-label="Kleurmodus wisselen"
         title="Kleurmodus"
         disabled
+        suppressHydrationWarning
       >
         {/* Neutral icon during SSR - prevents hydration mismatch */}
-        <Monitor className="h-5 w-5 text-theme-fg-muted" aria-hidden="true" />
+        <Monitor className="text-theme-fg-muted h-5 w-5" aria-hidden="true" />
       </button>
     );
   }
@@ -95,9 +96,9 @@ export function ColorModeToggle({ className }: ColorModeToggleProps) {
       title={isDark ? "Lichte modus" : "Donkere modus"}
     >
       {isDark ? (
-        <Sun className="h-5 w-5 text-theme-icon-mode-sun" aria-hidden="true" />
+        <Sun className="text-theme-icon-mode-sun h-5 w-5" aria-hidden="true" />
       ) : (
-        <Moon className="h-5 w-5 text-theme-icon-mode-moon" aria-hidden="true" />
+        <Moon className="text-theme-icon-mode-moon h-5 w-5" aria-hidden="true" />
       )}
     </button>
   );
@@ -135,7 +136,7 @@ export function ColorModeSelect({ className }: ColorModeSelectProps) {
           className={cn(
             "appearance-none rounded-lg py-2 pr-8 pl-9",
             "bg-theme-surface-raised",
-            "border border-theme-border",
+            "border-theme-border border",
             "text-theme-fg-muted",
             "text-sm font-medium",
             "cursor-wait"
@@ -145,7 +146,7 @@ export function ColorModeSelect({ className }: ColorModeSelectProps) {
           <option>Laden...</option>
         </select>
         <Monitor
-          className="pointer-events-none absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 text-theme-fg-muted"
+          className="text-theme-fg-muted pointer-events-none absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2"
           aria-hidden="true"
         />
       </div>
@@ -167,7 +168,7 @@ export function ColorModeSelect({ className }: ColorModeSelectProps) {
         className={cn(
           "appearance-none rounded-lg py-2 pr-8 pl-9",
           "bg-theme-surface-raised",
-          "border border-theme-border",
+          "border-theme-border border",
           "text-theme-fg",
           "text-sm font-medium",
           "focus-visible:ring-theme-primary focus-visible:ring-2 focus-visible:outline-none",
@@ -186,14 +187,16 @@ export function ColorModeSelect({ className }: ColorModeSelectProps) {
       <CurrentIcon
         className={cn(
           "pointer-events-none absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2",
-          resolvedColorMode === "dark" ? "text-theme-icon-mode-sun" : "text-theme-icon-mode-moon"
+          resolvedColorMode === "dark"
+            ? "text-theme-icon-mode-sun"
+            : "text-theme-icon-mode-moon"
         )}
         aria-hidden="true"
       />
 
       {/* Dropdown arrow */}
       <svg
-        className="pointer-events-none absolute top-1/2 right-2.5 h-4 w-4 -translate-y-1/2 text-theme-fg-muted"
+        className="text-theme-fg-muted pointer-events-none absolute top-1/2 right-2.5 h-4 w-4 -translate-y-1/2"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"

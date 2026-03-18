@@ -53,13 +53,13 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
   });
 
   // Load categories from database using useFetch hook
-  const {
-    data: categories,
-    loading: isLoadingCategories,
-  } = useFetch<Category[]>("/api/categories", {
-    errorMessage: "Failed to load categories",
-    onError: (err) => logError("Failed to load categories", err),
-  });
+  const { data: categories, loading: isLoadingCategories } = useFetch<Category[]>(
+    "/api/categories",
+    {
+      errorMessage: "Failed to load categories",
+      onError: (err) => logError("Failed to load categories", err),
+    }
+  );
 
   // Tags as array for chip display
   const [tagInput, setTagInput] = useState("");
@@ -170,7 +170,7 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Basic Info Section */}
       <div className="space-y-4">
-        <h3 className="text-sm font-medium tracking-wide text-theme-fg-muted uppercase">
+        <h3 className="text-theme-fg-muted text-sm font-medium tracking-wide uppercase">
           Basis Informatie
         </h3>
 
@@ -178,7 +178,7 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
         <div>
           <label
             htmlFor="name"
-            className="mb-1 block text-sm font-medium text-theme-fg-secondary"
+            className="text-theme-fg-secondary mb-1 block text-sm font-medium"
           >
             Naam <span className="text-theme-error">*</span>
           </label>
@@ -193,14 +193,14 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
             )}
             placeholder="Bijv. Maha Shivaratri"
           />
-          {errors.name && <p className="mt-1 text-sm text-theme-error">{errors.name}</p>}
+          {errors.name && <p className="text-theme-error mt-1 text-sm">{errors.name}</p>}
         </div>
 
         {/* Description */}
         <div>
           <label
             htmlFor="description"
-            className="mb-1 block text-sm font-medium text-theme-fg-secondary"
+            className="text-theme-fg-secondary mb-1 block text-sm font-medium"
           >
             Beschrijving
           </label>
@@ -220,7 +220,7 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
           <div>
             <label
               htmlFor="eventType"
-              className="mb-1 block text-sm font-medium text-theme-fg-secondary"
+              className="text-theme-fg-secondary mb-1 block text-sm font-medium"
             >
               Type <span className="text-theme-error">*</span>
             </label>
@@ -244,7 +244,7 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
           <div>
             <label
               htmlFor="categoryId"
-              className="mb-1 block text-sm font-medium text-theme-fg-secondary"
+              className="text-theme-fg-secondary mb-1 block text-sm font-medium"
             >
               Categorie
             </label>
@@ -272,7 +272,7 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
           <div>
             <label
               htmlFor="importance"
-              className="mb-1 block text-sm font-medium text-theme-fg-secondary"
+              className="text-theme-fg-secondary mb-1 block text-sm font-medium"
             >
               Belang
             </label>
@@ -296,7 +296,7 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
 
       {/* Date Section */}
       <div className="space-y-4">
-        <h3 className="text-sm font-medium tracking-wide text-theme-fg-muted uppercase">
+        <h3 className="text-theme-fg-muted text-sm font-medium tracking-wide uppercase">
           Datum & Tijd
         </h3>
 
@@ -305,7 +305,7 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
           <div>
             <label
               htmlFor="date"
-              className="mb-1 block text-sm font-medium text-theme-fg-secondary"
+              className="text-theme-fg-secondary mb-1 block text-sm font-medium"
             >
               Startdatum <span className="text-theme-error">*</span>
             </label>
@@ -319,16 +319,18 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
                 errors.date ? "border-theme-error" : "border-theme-border"
               )}
             />
-            {errors.date && <p className="mt-1 text-sm text-theme-error">{errors.date}</p>}
+            {errors.date && (
+              <p className="text-theme-error mt-1 text-sm">{errors.date}</p>
+            )}
           </div>
 
           {/* End Date */}
           <div>
             <label
               htmlFor="endDate"
-              className="mb-1 block text-sm font-medium text-theme-fg-secondary"
+              className="text-theme-fg-secondary mb-1 block text-sm font-medium"
             >
-              Einddatum <span className="text-xs text-theme-fg-subtle">(optioneel)</span>
+              Einddatum <span className="text-theme-fg-subtle text-xs">(optioneel)</span>
             </label>
             <input
               type="date"
@@ -344,9 +346,9 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
           <div>
             <label
               htmlFor="startTime"
-              className="mb-1 block text-sm font-medium text-theme-fg-secondary"
+              className="text-theme-fg-secondary mb-1 block text-sm font-medium"
             >
-              Starttijd <span className="text-xs text-theme-fg-subtle">(optioneel)</span>
+              Starttijd <span className="text-theme-fg-subtle text-xs">(optioneel)</span>
             </label>
             <input
               type="time"
@@ -361,9 +363,9 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
           <div>
             <label
               htmlFor="endTime"
-              className="mb-1 block text-sm font-medium text-theme-fg-secondary"
+              className="text-theme-fg-secondary mb-1 block text-sm font-medium"
             >
-              Eindtijd <span className="text-xs text-theme-fg-subtle">(optioneel)</span>
+              Eindtijd <span className="text-theme-fg-subtle text-xs">(optioneel)</span>
             </label>
             <input
               type="time"
@@ -378,7 +380,7 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
 
       {/* Lunar Info Section */}
       <div className="space-y-4">
-        <h3 className="text-sm font-medium tracking-wide text-theme-fg-muted uppercase">
+        <h3 className="text-theme-fg-muted text-sm font-medium tracking-wide uppercase">
           Lunaire Informatie <span className="text-xs font-normal">(optioneel)</span>
         </h3>
 
@@ -387,7 +389,7 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
           <div>
             <label
               htmlFor="tithi"
-              className="mb-1 block text-sm font-medium text-theme-fg-secondary"
+              className="text-theme-fg-secondary mb-1 block text-sm font-medium"
             >
               Tithi
             </label>
@@ -419,7 +421,7 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
           <div>
             <label
               htmlFor="nakshatra"
-              className="mb-1 block text-sm font-medium text-theme-fg-secondary"
+              className="text-theme-fg-secondary mb-1 block text-sm font-medium"
             >
               Nakshatra
             </label>
@@ -442,7 +444,7 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
           <div>
             <label
               htmlFor="maas"
-              className="mb-1 block text-sm font-medium text-theme-fg-secondary"
+              className="text-theme-fg-secondary mb-1 block text-sm font-medium"
             >
               Maas (Maand)
             </label>
@@ -465,7 +467,7 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
 
       {/* Tags Section */}
       <div className="space-y-4">
-        <h3 className="text-sm font-medium tracking-wide text-theme-fg-muted uppercase">
+        <h3 className="text-theme-fg-muted text-sm font-medium tracking-wide uppercase">
           Tags <span className="text-xs font-normal">(optioneel)</span>
         </h3>
 
@@ -476,15 +478,15 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
               value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
               onKeyDown={handleTagKeyDown}
-              className={cn(inputClasses, "flex-1 border-theme-border")}
+              className={cn(inputClasses, "border-theme-border flex-1")}
               placeholder="Voeg tag toe..."
             />
             <button
               type="button"
               onClick={addTag}
-              className="rounded-lg bg-theme-surface-raised px-3 py-2 transition-colors hover:bg-theme-hover"
+              className="bg-theme-surface-raised hover:bg-theme-hover rounded-lg px-3 py-2 transition-colors"
             >
-              <Plus className="h-5 w-5 text-theme-fg-secondary" />
+              <Plus className="text-theme-fg-secondary h-5 w-5" />
             </button>
           </div>
 
@@ -513,7 +515,7 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
 
       {/* Notes Section */}
       <div className="space-y-4">
-        <h3 className="text-sm font-medium tracking-wide text-theme-fg-muted uppercase">
+        <h3 className="text-theme-fg-muted text-sm font-medium tracking-wide uppercase">
           Notities <span className="text-xs font-normal">(optioneel)</span>
         </h3>
 
@@ -528,11 +530,11 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
       </div>
 
       {/* Submit Button */}
-      <div className="flex justify-end gap-3 border-t border-theme-border pt-4">
+      <div className="border-theme-border flex justify-end gap-3 border-t pt-4">
         <button
           type="button"
           onClick={() => router.back()}
-          className="rounded-lg px-4 py-2 text-sm font-medium text-theme-fg-secondary transition-colors hover:text-theme-fg"
+          className="text-theme-fg-secondary hover:text-theme-fg rounded-lg px-4 py-2 text-sm font-medium transition-colors"
         >
           Annuleren
         </button>

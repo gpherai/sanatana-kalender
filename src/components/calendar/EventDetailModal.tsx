@@ -13,6 +13,7 @@ import {
   Clock,
   Sparkles,
   ExternalLink,
+  ChevronRight,
 } from "lucide-react";
 import { format, formatDistanceToNow, isPast, isToday, isTomorrow } from "date-fns";
 import { nl } from "date-fns/locale";
@@ -53,6 +54,10 @@ export function EventDetailModal({
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [eventRelations, setEventRelations] = useState<{
+    parentEvents: { id: string; name: string }[];
+    childEvents: { id: string; name: string; dayNumber?: number | null }[];
+  } | null>(null);
 
   // Animate in
   useEffect(() => {
@@ -62,6 +67,23 @@ export function EventDetailModal({
       setIsVisible(false);
     }
   }, [isOpen]);
+
+  // Fetch parent/child relations when modal opens
+  useEffect(() => {
+    if (!isOpen || !event) return;
+    setEventRelations(null);
+    fetch(`/api/events/${event.eventId}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data) {
+          setEventRelations({
+            parentEvents: data.parentEvents ?? [],
+            childEvents: data.childEvents ?? [],
+          });
+        }
+      })
+      .catch(() => {});
+  }, [isOpen, event]);
 
   // Close on ESC key
   const handleKeyDown = useCallback(
@@ -165,7 +187,10 @@ export function EventDetailModal({
       onClick={handleBackdropClick}
     >
       {/* Backdrop */}
-      <div className="pointer-events-none absolute inset-0 bg-[var(--theme-modal-backdrop)] backdrop-blur-sm" aria-hidden="true" />
+      <div
+        className="pointer-events-none absolute inset-0 bg-[var(--theme-modal-backdrop)] backdrop-blur-sm"
+        aria-hidden="true"
+      />
 
       {/* Modal */}
       <div
@@ -175,7 +200,7 @@ export function EventDetailModal({
         aria-labelledby="modal-title"
         tabIndex={-1}
         className={cn(
-          "relative w-full max-w-lg rounded-3xl bg-theme-surface shadow-2xl",
+          "bg-theme-surface relative w-full max-w-lg rounded-3xl shadow-2xl",
           "max-h-[90vh] overflow-hidden",
           "outline-none",
           "transition-all duration-300",
@@ -207,11 +232,11 @@ export function EventDetailModal({
               "bg-theme-surface-hover/60 hover:bg-theme-surface-hover",
               "backdrop-blur-sm transition-all duration-200",
               "hover:scale-105",
-              "focus:outline-none focus:ring-2 focus:ring-theme-primary focus:ring-offset-2"
+              "focus:ring-theme-primary focus:ring-2 focus:ring-offset-2 focus:outline-none"
             )}
             aria-label="Sluiten"
           >
-            <X className="h-5 w-5 text-theme-fg-secondary" />
+            <X className="text-theme-fg-secondary h-5 w-5" />
           </button>
 
           {/* Category + Type badges */}
@@ -230,7 +255,7 @@ export function EventDetailModal({
               </span>
             )}
             {eventType && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-theme-surface-overlay px-2.5 py-1 text-sm text-theme-fg-secondary backdrop-blur-sm">
+              <span className="bg-theme-surface-overlay text-theme-fg-secondary inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-sm backdrop-blur-sm">
                 {eventType.icon} {eventType.label}
               </span>
             )}
@@ -245,7 +270,7 @@ export function EventDetailModal({
           {/* Title */}
           <h2
             id="modal-title"
-            className="pr-10 text-2xl leading-tight font-bold text-theme-fg"
+            className="text-theme-fg pr-10 text-2xl leading-tight font-bold"
           >
             {event.title}
           </h2>
@@ -274,16 +299,12 @@ export function EventDetailModal({
             <div className="flex-1">
               <div className="mb-1 flex items-center gap-2">
                 <Calendar className="text-theme-primary h-4 w-4" />
-                <span className="text-sm font-medium text-theme-fg-muted">
-                  Datum
-                </span>
+                <span className="text-theme-fg-muted text-sm font-medium">Datum</span>
               </div>
-              <div className="font-medium text-theme-fg capitalize">
-                {startDate}
-              </div>
+              <div className="text-theme-fg font-medium capitalize">{startDate}</div>
               {isMultiDay && (
                 <>
-                  <div className="mt-0.5 text-sm text-theme-fg-muted capitalize">
+                  <div className="text-theme-fg-muted mt-0.5 text-sm capitalize">
                     tot {endDate}
                   </div>
                   <div className="bg-theme-primary-15 text-theme-primary mt-1.5 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium">
@@ -291,7 +312,7 @@ export function EventDetailModal({
                   </div>
                 </>
               )}
-              <div className="mt-1 text-xs text-theme-fg-subtle">
+              <div className="text-theme-fg-subtle mt-1 text-xs">
                 {moonInfo.percent}% maanverlicht •{" "}
                 {moonInfo.isWaxing ? "Wassend" : "Afnemend"}
               </div>
@@ -300,17 +321,14 @@ export function EventDetailModal({
 
           {/* Time (if set) */}
           {event.resource.startTime && (
-            <div className="flex items-center gap-3 rounded-xl bg-theme-surface-raised p-3">
+            <div className="bg-theme-surface-raised flex items-center gap-3 rounded-xl p-3">
               <Clock className="text-theme-secondary h-5 w-5" />
               <div>
-                <span className="font-medium text-theme-fg">
+                <span className="text-theme-fg font-medium">
                   {event.resource.startTime}
                 </span>
                 {event.resource.endTime && (
-                  <span className="text-theme-fg-muted">
-                    {" "}
-                    - {event.resource.endTime}
-                  </span>
+                  <span className="text-theme-fg-muted"> - {event.resource.endTime}</span>
                 )}
               </div>
             </div>
@@ -318,7 +336,7 @@ export function EventDetailModal({
 
           {/* Description */}
           {event.resource.description && (
-            <div className="leading-relaxed text-theme-fg-secondary">
+            <div className="text-theme-fg-secondary leading-relaxed">
               {event.resource.description}
             </div>
           )}
@@ -343,10 +361,8 @@ export function EventDetailModal({
                     <div className="mb-1 text-xs tracking-wide text-[var(--theme-almanac-moon-icon)] uppercase">
                       Tithi
                     </div>
-                    <div className="font-medium text-theme-fg">
-                      {tithi.label}
-                    </div>
-                    <div className="mt-0.5 text-xs text-theme-fg-muted">
+                    <div className="text-theme-fg font-medium">{tithi.label}</div>
+                    <div className="text-theme-fg-muted mt-0.5 text-xs">
                       {tithi.paksha} Paksha
                     </div>
                   </div>
@@ -356,9 +372,7 @@ export function EventDetailModal({
                     <div className="mb-1 text-xs tracking-wide text-[var(--theme-almanac-moon-icon)] uppercase">
                       Nakshatra
                     </div>
-                    <div className="font-medium text-theme-fg">
-                      {nakshatra.label}
-                    </div>
+                    <div className="text-theme-fg font-medium">{nakshatra.label}</div>
                   </div>
                 )}
                 {maas && (
@@ -366,9 +380,7 @@ export function EventDetailModal({
                     <div className="mb-1 text-xs tracking-wide text-[var(--theme-almanac-moon-icon)] uppercase">
                       Maas
                     </div>
-                    <div className="font-medium text-theme-fg">
-                      {maas.label}
-                    </div>
+                    <div className="text-theme-fg font-medium">{maas.label}</div>
                   </div>
                 )}
               </div>
@@ -379,16 +391,14 @@ export function EventDetailModal({
           {event.resource.tags.length > 0 && (
             <div>
               <div className="mb-2 flex items-center gap-2">
-                <Tag className="h-4 w-4 text-theme-fg-subtle" />
-                <span className="text-sm font-medium text-theme-fg-muted">
-                  Tags
-                </span>
+                <Tag className="text-theme-fg-subtle h-4 w-4" />
+                <span className="text-theme-fg-muted text-sm font-medium">Tags</span>
               </div>
               <div className="flex flex-wrap gap-2">
                 {event.resource.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="cursor-default rounded-full bg-theme-surface-raised px-3 py-1 text-sm text-theme-fg-secondary transition-colors hover:bg-theme-hover"
+                    className="bg-theme-surface-raised text-theme-fg-secondary hover:bg-theme-hover cursor-default rounded-full px-3 py-1 text-sm transition-colors"
                   >
                     #{tag}
                   </span>
@@ -402,19 +412,64 @@ export function EventDetailModal({
             <div className="rounded-2xl bg-[var(--theme-info-bg)] p-4">
               <div className="mb-2 flex items-center gap-2">
                 <span className="text-lg">📝</span>
-                <span className="font-medium text-[var(--theme-info-fg)]">
-                  Notities
-                </span>
+                <span className="font-medium text-[var(--theme-info-fg)]">Notities</span>
               </div>
               <p className="text-sm leading-relaxed text-[var(--theme-info-fg)]">
                 {event.resource.notes}
               </p>
             </div>
           )}
+
+          {/* Parent event links */}
+          {eventRelations?.parentEvents && eventRelations.parentEvents.length > 0 && (
+            <div className="bg-theme-surface-raised rounded-2xl p-4">
+              <div className="mb-2 flex items-center gap-2">
+                <ChevronRight className="text-theme-fg-subtle h-4 w-4" />
+                <span className="text-theme-fg-muted text-sm font-medium">
+                  Onderdeel van
+                </span>
+              </div>
+              <div className="space-y-1">
+                {eventRelations.parentEvents.map((parent) => (
+                  <div key={parent.id} className="text-theme-fg text-sm font-medium">
+                    {parent.name}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Child events list */}
+          {eventRelations?.childEvents && eventRelations.childEvents.length > 0 && (
+            <div className="bg-theme-surface-raised rounded-2xl p-4">
+              <div className="mb-3 flex items-center gap-2">
+                <span className="text-base">🌸</span>
+                <span className="text-theme-fg-muted text-sm font-medium">
+                  {eventRelations.childEvents.length} dagen
+                </span>
+              </div>
+              <div className="space-y-1.5">
+                {eventRelations.childEvents.map((child) => (
+                  <div
+                    key={child.id}
+                    className="text-theme-fg-secondary flex items-center gap-2 text-sm"
+                  >
+                    {child.dayNumber != null && (
+                      <span className="text-theme-fg-subtle w-4 shrink-0 text-right text-xs">
+                        {child.dayNumber}.
+                      </span>
+                    )}
+                    <ChevronRight className="text-theme-fg-subtle h-3.5 w-3.5 flex-shrink-0" />
+                    <span>{child.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Action Buttons */}
-        <div className="border-t border-theme-border bg-theme-bg-subtle p-5 pt-4">
+        <div className="border-theme-border bg-theme-bg-subtle border-t p-5 pt-4">
           {showDeleteConfirm ? (
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
@@ -426,7 +481,7 @@ export function EventDetailModal({
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowDeleteConfirm(false)}
-                  className="flex-1 rounded-xl bg-theme-active px-4 py-2.5 text-sm font-medium transition-colors hover:bg-theme-hover"
+                  className="bg-theme-active hover:bg-theme-hover flex-1 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors"
                   disabled={isDeleting}
                 >
                   Annuleren

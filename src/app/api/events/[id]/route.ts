@@ -8,7 +8,7 @@ import {
   validationError,
 } from "@/lib/api-response";
 import { parseCalendarDate } from "@/lib/utils";
-import { Prisma } from "@/generated/prisma/client";
+import { Prisma } from "@prisma/client";
 import {
   EventType,
   Importance,
@@ -16,7 +16,7 @@ import {
   Tithi,
   Nakshatra,
   Maas,
-} from "@/generated/prisma/enums";
+} from "@prisma/client";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -36,19 +36,45 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
       return errorResponse("Ongeldig event ID formaat", 400);
     }
 
-    const event = await prisma.event.findUnique({
+    const eventRaw = await prisma.event.findUnique({
       where: { id },
       include: {
         category: true,
         occurrences: {
           orderBy: { date: "asc" },
         },
+        seriesParentEntries: {
+          include: {
+            parent: { select: { id: true, name: true } },
+          },
+        },
+        seriesChildEntries: {
+          include: {
+            child: { select: { id: true, name: true } },
+          },
+          orderBy: { sortOrder: "asc" },
+        },
       },
     });
 
-    if (!event) {
+    if (!eventRaw) {
       return notFoundError("Event");
     }
+
+    // Transform junction table entries to flat arrays, deduplicating by event id
+    const { seriesParentEntries, seriesChildEntries, ...rest } = eventRaw;
+    const parentEventMap = new Map<string, { id: string; name: string }>();
+    for (const e of seriesParentEntries) {
+      parentEventMap.set(e.parent.id, e.parent);
+    }
+    const event = {
+      ...rest,
+      parentEvents: [...parentEventMap.values()],
+      childEvents: seriesChildEntries.map((e) => ({
+        ...e.child,
+        dayNumber: e.dayNumber,
+      })),
+    };
 
     return NextResponse.json(event);
   } catch (error) {

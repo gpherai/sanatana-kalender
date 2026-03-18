@@ -1,3 +1,5 @@
+"use client";
+
 import { useCallback, useMemo } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import {
@@ -8,7 +10,6 @@ import {
   type CategoryValue,
   type EventTypeValue,
   type ImportanceValue,
-  type SpecialTithiValue,
 } from "@/lib/constants";
 
 // ============================================================================
@@ -135,20 +136,32 @@ function filterValidValues(values: string[], validSet: Set<string>): string[] {
  * clearFilters();
  */
 export function useFilters() {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
+  let router: ReturnType<typeof useRouter> | null = null;
+  let pathname = "";
+  let searchParams: ReturnType<typeof useSearchParams> | null = null;
+
+  try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    router = useRouter();
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    pathname = usePathname();
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    searchParams = useSearchParams();
+  } catch {
+    // SSR/Prerender might not have navigation context
+  }
 
   // Parse and validate current filters from URL
   const filters: FilterState = useMemo(() => {
+    if (!searchParams) return DEFAULT_FILTERS;
+
     // Parse arrays from comma-separated strings
     const rawCategories =
       searchParams.get("categories")?.split(",").filter(Boolean) ?? [];
     const rawEventTypes = searchParams.get("types")?.split(",").filter(Boolean) ?? [];
     const rawImportances =
       searchParams.get("importance")?.split(",").filter(Boolean) ?? [];
-    const rawSpecialTithis =
-      searchParams.get("tithis")?.split(",").filter(Boolean) ?? [];
+    const rawSpecialTithis = searchParams.get("tithis")?.split(",").filter(Boolean) ?? [];
 
     return {
       search: searchParams.get("search") ?? "",
@@ -166,6 +179,7 @@ export function useFilters() {
   // Update URL with new params
   const updateURL = useCallback(
     (newParams: URLSearchParams) => {
+      if (!router || !pathname) return;
       const query = newParams.toString();
       const url = query ? `${pathname}?${query}` : pathname;
       router.push(url, { scroll: false });
@@ -176,6 +190,7 @@ export function useFilters() {
   // Set a single filter value
   const setFilter = useCallback(
     <K extends keyof FilterState>(key: K, value: FilterState[K]) => {
+      if (!searchParams) return;
       const params = new URLSearchParams(searchParams.toString());
 
       // Map keys to URL param names
@@ -211,7 +226,10 @@ export function useFilters() {
 
   // Toggle a value in an array filter
   const toggleFilter = useCallback(
-    (key: "categories" | "eventTypes" | "importances" | "specialTithis", value: string) => {
+    (
+      key: "categories" | "eventTypes" | "importances" | "specialTithis",
+      value: string
+    ) => {
       const currentValues = filters[key];
       const newValues = currentValues.includes(value)
         ? currentValues.filter((v) => v !== value)
@@ -223,6 +241,7 @@ export function useFilters() {
 
   // Clear all filters
   const clearFilters = useCallback(() => {
+    if (!router || !pathname) return;
     router.push(pathname, { scroll: false });
   }, [router, pathname]);
 

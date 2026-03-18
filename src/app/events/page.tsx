@@ -17,6 +17,94 @@ import { cn } from "@/lib/utils";
 
 type ViewMode = "grid" | "list";
 
+/**
+ * Re-order events so series children appear directly below their parent occurrence.
+ * Matching is date-range based: a child belongs to the parent occurrence whose
+ * date range (start..originalEndDate) contains the child's start date.
+ * This correctly separates e.g. Chaitra Navratri (April) children from
+ * Sharad Navratri (October) children even though they share the same parent event IDs.
+ */
+function groupChildrenUnderParents(
+  events: CalendarEventResponse[]
+): CalendarEventResponse[] {
+  // Pre-sort: on the same date, series parents come before their children
+  const sorted = [...events].sort((a, b) => {
+    const dateDiff = a.start.localeCompare(b.start);
+    if (dateDiff !== 0) return dateDiff;
+    // Same date: parent (hasSeriesChildren) before child (has parents)
+    return (
+      (a.resource.hasSeriesChildren ? 0 : 1) - (b.resource.hasSeriesChildren ? 0 : 1)
+    );
+  });
+
+  // Build map: parentEventId → all parent occurrences present in this result set
+  const parentOccByEventId = new Map<string, CalendarEventResponse[]>();
+  for (const event of sorted) {
+    if (event.resource.hasSeriesChildren) {
+      const arr = parentOccByEventId.get(event.eventId) ?? [];
+      arr.push(event);
+      parentOccByEventId.set(event.eventId, arr);
+    }
+  }
+
+  // For each child occurrence, find the specific parent occurrence whose date range contains it.
+  // Map: parentOccurrence.id → child occurrences (sorted by dayNumber)
+  const childrenByParentOccId = new Map<string, CalendarEventResponse[]>();
+
+  for (const event of sorted) {
+    if (event.resource.seriesParentEventIds.length === 0) continue;
+
+    for (const parentEventId of event.resource.seriesParentEventIds) {
+      const parentOccs = parentOccByEventId.get(parentEventId) ?? [];
+      const match = parentOccs.find((p) => {
+        const rangeEnd = p.resource.originalEndDate ?? p.start;
+        return event.start >= p.start && event.start <= rangeEnd;
+      });
+      if (match) {
+        const arr = childrenByParentOccId.get(match.id) ?? [];
+        arr.push(event);
+        childrenByParentOccId.set(match.id, arr);
+        break; // matched to exactly one parent occurrence
+      }
+    }
+  }
+
+  // Sort children within each parent occurrence by dayNumber
+  for (const children of childrenByParentOccId.values()) {
+    children.sort(
+      (a, b) =>
+        (a.resource.seriesDayNumber ?? 999) - (b.resource.seriesDayNumber ?? 999) ||
+        a.start.localeCompare(b.start)
+    );
+  }
+
+  const placed = new Set<string>();
+  const result: CalendarEventResponse[] = [];
+
+  for (const event of sorted) {
+    if (placed.has(event.id)) continue;
+    placed.add(event.id);
+    result.push(event);
+
+    // After a parent occurrence, insert its matched children immediately
+    if (event.resource.hasSeriesChildren) {
+      for (const child of childrenByParentOccId.get(event.id) ?? []) {
+        if (!placed.has(child.id)) {
+          placed.add(child.id);
+          result.push(child);
+        }
+      }
+    }
+  }
+
+  // Append children whose parent wasn't in this result set (e.g. filtered out)
+  for (const event of sorted) {
+    if (!placed.has(event.id)) result.push(event);
+  }
+
+  return result;
+}
+
 function EventsContent() {
   const [events, setEvents] = useState<CalendarEventResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -56,8 +144,8 @@ function EventsContent() {
           throw new Error("Kon events niet laden");
         }
 
-        const data = await response.json();
-        setEvents(data);
+        const data: CalendarEventResponse[] = await response.json();
+        setEvents(groupChildrenUnderParents(data));
       } catch (err) {
         if (err instanceof Error && err.name === "AbortError") {
           return;
@@ -93,210 +181,215 @@ function EventsContent() {
   return (
     <PageLayout>
       {/* Page Header */}
-        <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-theme-fg">
-              Events
-            </h1>
-            <p className="mt-1 text-sm text-theme-fg-muted">
-              {loading ? (
-                "Laden..."
-              ) : (
-                <>
-                  {events.length} event{events.length !== 1 && "s"} gevonden
-                  {activeFilterCount > 0 && (
-                    <span className="text-theme-primary">
-                      {" "}
-                      • {activeFilterCount} filter{activeFilterCount !== 1 && "s"} actief
-                    </span>
-                  )}
-                </>
-              )}
-            </p>
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center gap-3">
-            {/* View Toggle */}
-            <div className="flex items-center rounded-lg bg-theme-surface-raised p-1 shadow-sm">
-              <button
-                onClick={() => setViewMode("grid")}
-                className={cn(
-                  "rounded-md p-2 transition-colors",
-                  viewMode === "grid"
-                    ? "bg-theme-primary-15 text-theme-primary"
-                    : "text-theme-fg-muted hover:text-theme-fg"
-                )}
-                title="Grid weergave"
-              >
-                <LayoutGrid className="h-4 w-4" />
-              </button>
-              <button
-                onClick={() => setViewMode("list")}
-                className={cn(
-                  "rounded-md p-2 transition-colors",
-                  viewMode === "list"
-                    ? "bg-theme-primary-15 text-theme-primary"
-                    : "text-theme-fg-muted hover:text-theme-fg"
-                )}
-                title="Lijst weergave"
-              >
-                <List className="h-4 w-4" />
-              </button>
-            </div>
-
-            {/* Filter Toggle (mobile) */}
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className={cn(
-                "flex items-center gap-2 rounded-lg px-3 py-2 transition-colors lg:hidden",
-                showFilters
-                  ? "bg-theme-primary-15 text-theme-primary"
-                  : "bg-theme-surface-raised text-theme-fg-muted"
-              )}
-            >
-              <SlidersHorizontal className="h-4 w-4" />
-              {activeFilterCount > 0 && (
-                <span className="bg-theme-primary flex h-5 w-5 items-center justify-center rounded-full text-xs text-white">
-                  {activeFilterCount}
-                </span>
-              )}
-            </button>
-
-            {/* New Event Button */}
-            <Link
-              href="/events/new"
-              className="bg-theme-primary shadow-theme-primary flex items-center gap-2 rounded-xl px-4 py-2 font-medium text-white shadow-lg transition-all hover:opacity-90"
-            >
-              <Plus className="h-4 w-4" />
-              <span className="hidden sm:inline">Nieuw Event</span>
-            </Link>
-          </div>
-        </div>
-
-        {/* Main Layout: Sidebar + Events */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
-          {/* Filter Sidebar */}
-          <div className={cn("lg:col-span-1", !showFilters && "hidden lg:block")}>
-            <div className="sticky top-4">
-              <FilterSidebar
-                filters={filters}
-                onFilterChange={setFilter}
-                onToggleFilter={toggleFilter}
-                onClearFilters={clearFilters}
-                activeFilterCount={activeFilterCount}
-              />
-            </div>
-          </div>
-
-          {/* Events */}
-          <div className="lg:col-span-3">
-            {/* Loading State */}
-            {loading && (
-              <div className="flex items-center justify-center py-24">
-                <div className="flex flex-col items-center gap-3">
-                  <div className="relative">
-                    <div className="border-theme-primary-20 h-16 w-16 rounded-full border-4" />
-                    <div className="border-theme-primary absolute inset-0 h-16 w-16 animate-spin rounded-full border-4 border-t-transparent" />
-                  </div>
-                  <span className="text-sm text-theme-fg-muted">
-                    Events laden...
+      <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+        <div>
+          <h1 className="text-theme-fg text-3xl font-bold">Events</h1>
+          <p className="text-theme-fg-muted mt-1 text-sm">
+            {loading ? (
+              "Laden..."
+            ) : (
+              <>
+                {events.length} event{events.length !== 1 && "s"} gevonden
+                {activeFilterCount > 0 && (
+                  <span className="text-theme-primary">
+                    {" "}
+                    • {activeFilterCount} filter{activeFilterCount !== 1 && "s"} actief
                   </span>
-                </div>
-              </div>
-            )}
-
-            {/* Error State */}
-            {error && !loading && (
-              <div className="py-24 text-center">
-                <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/20">
-                  <span className="text-4xl">😕</span>
-                </div>
-                <h2 className="mb-2 text-xl font-semibold text-theme-fg">
-                  Oeps, er ging iets mis
-                </h2>
-                <p className="mx-auto mb-6 max-w-md text-sm text-theme-fg-muted">
-                  {error}
-                </p>
-                <button
-                  onClick={refetch}
-                  className="bg-theme-primary shadow-theme-primary rounded-xl px-6 py-2.5 font-medium text-white shadow-lg transition-colors hover:opacity-90"
-                >
-                  Opnieuw proberen
-                </button>
-              </div>
-            )}
-
-            {/* Empty State */}
-            {!loading && !error && events.length === 0 && (
-              <div className="py-24 text-center">
-                <div className="bg-theme-gradient-subtle mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full">
-                  <span className="text-5xl">📅</span>
-                </div>
-                <h2 className="mb-2 text-xl font-semibold text-theme-fg">
-                  {activeFilterCount > 0 ? "Geen events gevonden" : "Nog geen events"}
-                </h2>
-                <p className="mx-auto mb-6 max-w-md text-sm text-theme-fg-muted">
-                  {activeFilterCount > 0
-                    ? "Probeer andere filters of wis ze allemaal"
-                    : "Begin met het toevoegen van je eerste spirituele event"}
-                </p>
-                {activeFilterCount > 0 ? (
-                  <button
-                    onClick={clearFilters}
-                    className="border-theme-primary text-theme-primary hover:bg-theme-primary-10 rounded-xl border-2 px-6 py-2.5 font-medium transition-colors"
-                  >
-                    Filters wissen
-                  </button>
-                ) : (
-                  <Link
-                    href="/events/new"
-                    className="bg-theme-primary shadow-theme-primary inline-flex items-center gap-2 rounded-xl px-6 py-2.5 font-medium text-white shadow-lg transition-colors hover:opacity-90"
-                  >
-                    <Plus className="h-4 w-4" />
-                    Eerste Event Toevoegen
-                  </Link>
                 )}
-              </div>
+              </>
             )}
+          </p>
+        </div>
 
-            {/* Events Grid/List */}
-            {!loading && !error && events.length > 0 && (
-              <div
-                className={cn(
-                  viewMode === "grid"
-                    ? "grid grid-cols-1 gap-4 md:grid-cols-2"
-                    : "flex flex-col gap-3"
-                )}
-              >
-                {events.map((event) => (
-                  <EventCard
-                    key={event.id}
-                    id={event.eventId}
-                    name={event.title}
-                    description={event.resource.description}
-                    date={new Date(event.start)}
-                    endDate={
-                      event.resource.originalEndDate
-                        ? new Date(event.resource.originalEndDate)
-                        : null
-                    }
-                    startTime={event.resource.startTime}
-                    endTime={event.resource.endTime}
-                    category={event.resource.category}
-                    eventType={event.resource.eventType}
-                    importance={event.resource.importance}
-                    tithi={event.resource.tithi}
-                    nakshatra={event.resource.nakshatra}
-                    tags={event.resource.tags}
-                    onClick={() => handleEventClick(event)}
-                    className={viewMode === "list" ? "md:flex-row" : ""}
-                  />
-                ))}
-              </div>
+        {/* Actions */}
+        <div className="flex items-center gap-3">
+          {/* View Toggle */}
+          <div className="bg-theme-surface-raised flex items-center rounded-lg p-1 shadow-sm">
+            <button
+              onClick={() => setViewMode("grid")}
+              className={cn(
+                "rounded-md p-2 transition-colors",
+                viewMode === "grid"
+                  ? "bg-theme-primary-15 text-theme-primary"
+                  : "text-theme-fg-muted hover:text-theme-fg"
+              )}
+              title="Grid weergave"
+            >
+              <LayoutGrid className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => setViewMode("list")}
+              className={cn(
+                "rounded-md p-2 transition-colors",
+                viewMode === "list"
+                  ? "bg-theme-primary-15 text-theme-primary"
+                  : "text-theme-fg-muted hover:text-theme-fg"
+              )}
+              title="Lijst weergave"
+            >
+              <List className="h-4 w-4" />
+            </button>
+          </div>
+
+          {/* Filter Toggle (mobile) */}
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className={cn(
+              "flex items-center gap-2 rounded-lg px-3 py-2 transition-colors lg:hidden",
+              showFilters
+                ? "bg-theme-primary-15 text-theme-primary"
+                : "bg-theme-surface-raised text-theme-fg-muted"
             )}
+          >
+            <SlidersHorizontal className="h-4 w-4" />
+            {activeFilterCount > 0 && (
+              <span className="bg-theme-primary flex h-5 w-5 items-center justify-center rounded-full text-xs text-white">
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
+
+          {/* New Event Button */}
+          <Link
+            href="/events/new"
+            className="bg-theme-primary shadow-theme-primary flex items-center gap-2 rounded-xl px-4 py-2 font-medium text-white shadow-lg transition-all hover:opacity-90"
+          >
+            <Plus className="h-4 w-4" />
+            <span className="hidden sm:inline">Nieuw Event</span>
+          </Link>
+        </div>
+      </div>
+
+      {/* Main Layout: Sidebar + Events */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
+        {/* Filter Sidebar */}
+        <div className={cn("lg:col-span-1", !showFilters && "hidden lg:block")}>
+          <div className="sticky top-4">
+            <FilterSidebar
+              filters={filters}
+              onFilterChange={setFilter}
+              onToggleFilter={toggleFilter}
+              onClearFilters={clearFilters}
+              activeFilterCount={activeFilterCount}
+            />
           </div>
         </div>
+
+        {/* Events */}
+        <div className="lg:col-span-3">
+          {/* Loading State */}
+          {loading && (
+            <div className="flex items-center justify-center py-24">
+              <div className="flex flex-col items-center gap-3">
+                <div className="relative">
+                  <div className="border-theme-primary-20 h-16 w-16 rounded-full border-4" />
+                  <div className="border-theme-primary absolute inset-0 h-16 w-16 animate-spin rounded-full border-4 border-t-transparent" />
+                </div>
+                <span className="text-theme-fg-muted text-sm">Events laden...</span>
+              </div>
+            </div>
+          )}
+
+          {/* Error State */}
+          {error && !loading && (
+            <div className="py-24 text-center">
+              <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/20">
+                <span className="text-4xl">😕</span>
+              </div>
+              <h2 className="text-theme-fg mb-2 text-xl font-semibold">
+                Oeps, er ging iets mis
+              </h2>
+              <p className="text-theme-fg-muted mx-auto mb-6 max-w-md text-sm">{error}</p>
+              <button
+                onClick={refetch}
+                className="bg-theme-primary shadow-theme-primary rounded-xl px-6 py-2.5 font-medium text-white shadow-lg transition-colors hover:opacity-90"
+              >
+                Opnieuw proberen
+              </button>
+            </div>
+          )}
+
+          {/* Empty State */}
+          {!loading && !error && events.length === 0 && (
+            <div className="py-24 text-center">
+              <div className="bg-theme-gradient-subtle mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full">
+                <span className="text-5xl">📅</span>
+              </div>
+              <h2 className="text-theme-fg mb-2 text-xl font-semibold">
+                {activeFilterCount > 0 ? "Geen events gevonden" : "Nog geen events"}
+              </h2>
+              <p className="text-theme-fg-muted mx-auto mb-6 max-w-md text-sm">
+                {activeFilterCount > 0
+                  ? "Probeer andere filters of wis ze allemaal"
+                  : "Begin met het toevoegen van je eerste spirituele event"}
+              </p>
+              {activeFilterCount > 0 ? (
+                <button
+                  onClick={clearFilters}
+                  className="border-theme-primary text-theme-primary hover:bg-theme-primary-10 rounded-xl border-2 px-6 py-2.5 font-medium transition-colors"
+                >
+                  Filters wissen
+                </button>
+              ) : (
+                <Link
+                  href="/events/new"
+                  className="bg-theme-primary shadow-theme-primary inline-flex items-center gap-2 rounded-xl px-6 py-2.5 font-medium text-white shadow-lg transition-colors hover:opacity-90"
+                >
+                  <Plus className="h-4 w-4" />
+                  Eerste Event Toevoegen
+                </Link>
+              )}
+            </div>
+          )}
+
+          {/* Events Grid/List */}
+          {!loading && !error && events.length > 0 && (
+            <div
+              className={cn(
+                viewMode === "grid"
+                  ? "grid grid-cols-1 gap-4 md:grid-cols-2"
+                  : "flex flex-col gap-3"
+              )}
+            >
+              {events.map((event) => {
+                const isChild = event.resource.seriesParentEventIds.length > 0;
+                return (
+                  <div
+                    key={event.id}
+                    className={cn(
+                      isChild &&
+                        viewMode === "list" &&
+                        "border-theme-border border-l-2 pl-4"
+                    )}
+                  >
+                    <EventCard
+                      id={event.eventId}
+                      name={event.title}
+                      description={event.resource.description}
+                      date={new Date(event.start)}
+                      endDate={
+                        event.resource.originalEndDate
+                          ? new Date(event.resource.originalEndDate)
+                          : null
+                      }
+                      startTime={event.resource.startTime}
+                      endTime={event.resource.endTime}
+                      category={event.resource.category}
+                      eventType={event.resource.eventType}
+                      importance={event.resource.importance}
+                      tithi={event.resource.tithi}
+                      nakshatra={event.resource.nakshatra}
+                      tags={event.resource.tags}
+                      onClick={() => handleEventClick(event)}
+                      className={viewMode === "list" ? "md:flex-row" : ""}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
       {/* Event Detail Modal */}
       {selectedEvent && (
         <EventDetailModal

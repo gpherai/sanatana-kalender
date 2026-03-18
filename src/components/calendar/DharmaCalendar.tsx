@@ -63,9 +63,14 @@ function DateHeader({ date }: DateHeaderProps) {
 export function DharmaCalendar() {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<View>("month");
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Fetch events for the current month range
   const fetchEvents = useCallback(async (date: Date) => {
@@ -192,42 +197,44 @@ export function DharmaCalendar() {
 
   return (
     <div className="relative h-[calc(100vh-12rem)] min-h-[500px]">
-      {loading && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-theme-surface-overlay">
+      {(!mounted || loading) && (
+        <div className="bg-theme-surface-overlay absolute inset-0 z-10 flex items-center justify-center rounded-xl">
           <div className="flex flex-col items-center gap-2">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-[var(--theme-spinner-track)] border-t-[var(--theme-spinner-fill)]" />
-            <div className="text-sm text-theme-fg-muted">Laden...</div>
+            <div className="text-theme-fg-muted text-sm">Laden...</div>
           </div>
         </div>
       )}
 
-      <Calendar<CalendarEvent>
-        localizer={localizer}
-        events={events}
-        startAccessor="start"
-        endAccessor="end"
-        date={currentDate}
-        view={view}
-        onNavigate={handleNavigate}
-        onView={handleViewChange}
-        onSelectEvent={handleSelectEvent}
-        eventPropGetter={eventStyleGetter}
-        dayPropGetter={dayPropGetter}
-        components={components}
-        messages={{
-          today: "Vandaag",
-          previous: "Vorige",
-          next: "Volgende",
-          month: "Maand",
-          week: "Week",
-          day: "Dag",
-          agenda: "Agenda",
-          noEventsInRange: "Geen evenementen in deze periode",
-        }}
-        popup
-        selectable={false}
-        className="dharma-calendar"
-      />
+      {mounted && (
+        <Calendar<CalendarEvent>
+          localizer={localizer}
+          events={events}
+          startAccessor="start"
+          endAccessor="end"
+          date={currentDate}
+          view={view}
+          onNavigate={handleNavigate}
+          onView={handleViewChange}
+          onSelectEvent={handleSelectEvent}
+          eventPropGetter={eventStyleGetter}
+          dayPropGetter={dayPropGetter}
+          components={components}
+          messages={{
+            today: "Vandaag",
+            previous: "Vorige",
+            next: "Volgende",
+            month: "Maand",
+            week: "Week",
+            day: "Dag",
+            agenda: "Agenda",
+            noEventsInRange: "Geen evenementen in deze periode",
+          }}
+          popup
+          selectable={false}
+          className="dharma-calendar"
+        />
+      )}
 
       {/* Event Detail Modal */}
       {selectedEvent && (

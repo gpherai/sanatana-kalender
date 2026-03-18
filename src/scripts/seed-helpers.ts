@@ -1,5 +1,5 @@
 import { parseCalendarDate } from "@/lib/utils";
-import type { Tithi, Nakshatra, MoonPhaseType, Maas, Sankranti } from "@/generated/prisma/client";
+import type { Tithi, Nakshatra, MoonPhaseType, Maas, Sankranti } from "@prisma/client";
 
 /**
  * Helper for calendar dates (pure date, no timezone conversion).

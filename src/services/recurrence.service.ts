@@ -14,7 +14,7 @@
  * @module services/recurrence
  */
 
-import type { Event, RecurrenceType } from "@/generated/prisma/client";
+import type { Event, RecurrenceType } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { DEFAULT_LOCATION } from "@/lib/constants";
 import { logDebug, logWarn } from "@/lib/utils";
@@ -122,43 +122,45 @@ export async function generateOccurrences(
         );
         break;
       default:
-        logWarn(`Rule type ${event.ruleType} not yet implemented for event ${event.name}`);
+        logWarn(
+          `Rule type ${event.ruleType} not yet implemented for event ${event.name}`
+        );
         return [];
     }
   } else {
     // Fallback to recurrenceType logic
     switch (event.recurrenceType) {
-    case "YEARLY_LUNAR":
-      occurrences = await generateYearlyLunarOccurrences(
-        event,
-        startDate,
-        endDate,
-        location,
-        timezone
-      );
-      break;
+      case "YEARLY_LUNAR":
+        occurrences = await generateYearlyLunarOccurrences(
+          event,
+          startDate,
+          endDate,
+          location,
+          timezone
+        );
+        break;
 
-    case "YEARLY_SOLAR":
-      occurrences = generateYearlySolarOccurrences(event);
-      break;
+      case "YEARLY_SOLAR":
+        occurrences = generateYearlySolarOccurrences(event);
+        break;
 
-    case "MONTHLY_LUNAR":
-      occurrences = await generateMonthlyLunarOccurrences(
-        event,
-        startDate,
-        endDate,
-        location,
-        timezone
-      );
-      break;
+      case "MONTHLY_LUNAR":
+        occurrences = await generateMonthlyLunarOccurrences(
+          event,
+          startDate,
+          endDate,
+          location,
+          timezone
+        );
+        break;
 
-    case "MONTHLY_SOLAR":
-      occurrences = generateMonthlySolarOccurrences(event);
-      break;
+      case "MONTHLY_SOLAR":
+        occurrences = generateMonthlySolarOccurrences(event);
+        break;
 
-    default:
-      logWarn(`Unknown recurrence type: ${event.recurrenceType}`);
-      return [];
+      default:
+        logWarn(`Unknown recurrence type: ${event.recurrenceType}`);
+        return [];
     }
   }
 
@@ -192,8 +194,7 @@ async function generateSolarRuleOccurrences(
 ): Promise<GeneratedOccurrence[]> {
   // Extract sankranti from ruleConfig or direct sankranti field
   const sankrantiName =
-    (event.ruleConfig as any)?.sankranti ||
-    event.sankranti;
+    (event.ruleConfig as Record<string, unknown>)?.sankranti || event.sankranti;
 
   if (!sankrantiName) {
     logWarn(`SOLAR rule for event "${event.name}" has no sankranti specified`);
@@ -214,7 +215,7 @@ async function generateSolarRuleOccurrences(
       sankrantiTime: true,
     },
     orderBy: {
-      date: 'asc',
+      date: "asc",
     },
   });
 
@@ -246,7 +247,7 @@ async function generateYearlyLunarOccurrences(
   }
 
   // Build where clause with Adhika support
-  const where: any = {
+  const where: Record<string, unknown> = {
     date: {
       gte: startDate,
       lte: endDate,
@@ -256,9 +257,9 @@ async function generateYearlyLunarOccurrences(
 
   // Handle Adhika matching
   if (event.isAdhikaOnly) {
-    where.isAdhika = true;  // Only Adhika months
+    where.isAdhika = true; // Only Adhika months
   } else if (!event.includeAdhika) {
-    where.isAdhika = false;  // Only regular months (default)
+    where.isAdhika = false; // Only regular months (default)
   }
   // If includeAdhika=true, don't filter isAdhika
 
@@ -276,34 +277,57 @@ async function generateYearlyLunarOccurrences(
     },
   });
 
-  // For yearly events, we want roughly one per year
-  // Group by year and take the closest match to the original pattern
-  const occurrencesByYear = new Map<number, typeof dailyData[0]>();
+  // Build maas filter: ruleConfig.maas (array or single) takes priority over event.maas
+  const rcMaas = (event.ruleConfig as Record<string, unknown>)?.maas;
+  const maasValues: string[] | null = Array.isArray(rcMaas)
+    ? (rcMaas as string[])
+    : rcMaas
+      ? [rcMaas as string]
+      : event.maas
+        ? [event.maas]
+        : null;
+  const isMultiMaas = maasValues !== null && maasValues.length > 1;
+
+  // For yearly events, group by year (or year+maas for multi-maas events like Navadurga)
+  const occurrencesByKey = new Map<string, (typeof dailyData)[0]>();
 
   for (const day of dailyData) {
     const year = day.date.getUTCFullYear();
 
-    // If maas is specified, ONLY match days in that maas
-    if (event.maas && day.maas !== event.maas) {
-      continue; // Skip days not in the specified maas
+    // If maas filter is active, skip non-matching months
+    if (maasValues && (!day.maas || !maasValues.includes(day.maas))) {
+      continue;
     }
 
-    if (!occurrencesByYear.has(year)) {
-      occurrencesByYear.set(year, day);
-    } else {
-      // If multiple matches in same year, take the first one (they're all in correct maas)
-      // Could add additional logic here (e.g., prefer certain pakshas)
+    // Multi-maas events get one occurrence per maas per year (e.g. Navadurga in Chaitra + Ashwin)
+    const key = isMultiMaas && day.maas ? `${year}-${day.maas}` : String(year);
+
+    if (!occurrencesByKey.has(key)) {
+      occurrencesByKey.set(key, day);
     }
   }
 
+  // Read optional durationDays from ruleConfig (e.g., multi-day festivals)
+  const durationDays =
+    typeof (event.ruleConfig as Record<string, unknown>)?.durationDays === "number"
+      ? ((event.ruleConfig as Record<string, unknown>).durationDays as number)
+      : 1;
+
   // Convert to occurrences with end times
-  return Array.from(occurrencesByYear.values())
+  return Array.from(occurrencesByKey.values())
     .sort((a, b) => a.date.getTime() - b.date.getTime())
-    .map((day) => ({
-      date: day.date,
-      startTime: undefined,
-      endTime: day.tithiEndTime ?? undefined,
-    }));
+    .map((day) => {
+      const endDate =
+        durationDays > 1
+          ? new Date(day.date.getTime() + (durationDays - 1) * 24 * 60 * 60 * 1000)
+          : undefined;
+      return {
+        date: day.date,
+        endDate,
+        startTime: undefined,
+        endTime: day.tithiEndTime ?? undefined,
+      };
+    });
 }
 
 // =============================================================================
@@ -383,7 +407,8 @@ async function generateMonthlyLunarOccurrences(
     } else {
       // Check if this is the SECOND day of a spanning tithi
       const prev = dailyData[i - 1];
-      const isPrevConsecutive = prev && isConsecutiveDay(new Date(prev.date), currentDate);
+      const isPrevConsecutive =
+        prev && isConsecutiveDay(new Date(prev.date), currentDate);
 
       if (isPrevConsecutive) {
         // This is the LAST day of a spanning tithi
@@ -426,7 +451,9 @@ function isConsecutiveDay(day1: Date, day2: Date): boolean {
  */
 function generateMonthlySolarOccurrences(event: Event): GeneratedOccurrence[] {
   // Would need a reference date - skip for now
-  logDebug(`Monthly solar recurrence requires manual seed occurrence for "${event.name}"`);
+  logDebug(
+    `Monthly solar recurrence requires manual seed occurrence for "${event.name}"`
+  );
   return [];
 }
 
@@ -490,7 +517,10 @@ export function getRecommendedWindow(recurrenceType: RecurrenceType): {
 
     case "MONTHLY_LUNAR":
     case "MONTHLY_SOLAR":
-      return { yearsAhead: 2, description: "2 years for monthly events (24-48 occurrences)" };
+      return {
+        yearsAhead: 2,
+        description: "2 years for monthly events (24-48 occurrences)",
+      };
 
     default:
       return { yearsAhead: 1, description: "1 year default" };

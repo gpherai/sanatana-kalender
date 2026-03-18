@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:17
+    container_name: dharma-db
+    restart: always
+    environment:
+      POSTGRES_USER: gerald
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: dharma_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - dharma_db_data:/var/lib/postgresql/data
+
+volumes:
+  dharma_db_data:

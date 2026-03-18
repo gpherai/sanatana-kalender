@@ -79,17 +79,15 @@ export function Section({
   const colors = ICON_COLOR_CLASSES[iconColor];
 
   return (
-    <section className={cn("rounded-2xl bg-theme-surface p-6 shadow-lg", className)}>
+    <section className={cn("bg-theme-surface rounded-2xl p-6 shadow-lg", className)}>
       {/* Header */}
       <div className="mb-6 flex items-center gap-3">
         <div className={cn("rounded-lg p-2", colors.bg)}>
           <Icon className={cn("h-5 w-5", colors.text)} />
         </div>
         <div>
-          <h2 className="text-lg font-semibold text-theme-fg">{title}</h2>
-          {description && (
-            <p className="text-sm text-theme-fg-muted">{description}</p>
-          )}
+          <h2 className="text-theme-fg text-lg font-semibold">{title}</h2>
+          {description && <p className="text-theme-fg-muted text-sm">{description}</p>}
         </div>
       </div>
 

@@ -81,8 +81,8 @@ export function formatDateLocal(date: Date | string | null | undefined): string 
 
   // Use local date components (no timezone conversion)
   const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
 
   return `${year}-${month}-${day}`;
 }
@@ -149,7 +149,7 @@ export function parseCalendarDate(dateString: string): Date {
     throw new Error(`Invalid date format: "${dateString}". Expected YYYY-MM-DD.`);
   }
 
-  const [year, month, day] = dateString.split('-').map(Number);
+  const [year, month, day] = dateString.split("-").map(Number);
 
   // Create date at UTC midnight to prevent timezone shift when storing in @db.Date
   // PostgreSQL DATE columns strip time, so we must ensure the date component is correct

@@ -2,7 +2,12 @@
 
 import { useState, useRef, useCallback, useMemo } from "react";
 import { Search, X, Filter, ChevronDown, ChevronUp } from "lucide-react";
-import { CATEGORIES, EVENT_TYPES, IMPORTANCE_LEVELS, SPECIAL_TITHIS } from "@/lib/constants";
+import {
+  CATEGORIES,
+  EVENT_TYPES,
+  IMPORTANCE_LEVELS,
+  SPECIAL_TITHIS,
+} from "@/lib/constants";
 import type { FilterState } from "@/hooks/useFilters";
 import { cn } from "@/lib/utils";
 
@@ -33,10 +38,10 @@ function FilterSection({
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className="mb-4 border-b border-theme-border pb-4 last:mb-0 last:border-0 last:pb-0">
+    <div className="border-theme-border mb-4 border-b pb-4 last:mb-0 last:border-0 last:pb-0">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="hover:text-theme-primary mb-2 flex w-full items-center justify-between text-left font-medium text-theme-fg-secondary transition-colors"
+        className="hover:text-theme-primary text-theme-fg-secondary mb-2 flex w-full items-center justify-between text-left font-medium transition-colors"
       >
         <span className="flex items-center gap-2">
           <span>{icon}</span>
@@ -59,16 +64,16 @@ interface CheckboxItemProps {
 
 function CheckboxItem({ label, icon, checked, onChange, color }: CheckboxItemProps) {
   return (
-    <label className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 transition-colors hover:bg-theme-hover">
+    <label className="hover:bg-theme-hover flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 transition-colors">
       <input
         type="checkbox"
         checked={checked}
         onChange={onChange}
-        className="h-4 w-4 rounded border-theme-border accent-[var(--theme-primary)]"
+        className="border-theme-border h-4 w-4 rounded accent-[var(--theme-primary)]"
       />
       {icon && <span>{icon}</span>}
       <span
-        className="flex-1 text-sm text-theme-fg-secondary"
+        className="text-theme-fg-secondary flex-1 text-sm"
         style={color ? { color } : undefined}
       >
         {label}
@@ -132,7 +137,7 @@ function SearchInput({
 
   return (
     <div className="relative">
-      <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-theme-fg-subtle" />
+      <Search className="text-theme-fg-subtle absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
       <input
         type="text"
         placeholder="Zoeken..."
@@ -141,7 +146,7 @@ function SearchInput({
         className={cn(
           "w-full rounded-lg py-2 pr-8 pl-9 text-sm",
           "bg-theme-surface-raised",
-          "border border-theme-border",
+          "border-theme-border border",
           "ring-theme-primary-50 focus:border-theme-primary focus:ring-2 focus:outline-none",
           "placeholder:text-theme-fg-subtle"
         )}
@@ -149,7 +154,7 @@ function SearchInput({
       {value && (
         <button
           onClick={handleClear}
-          className="absolute top-1/2 right-3 -translate-y-1/2 text-theme-fg-subtle hover:text-theme-fg-secondary"
+          className="text-theme-fg-subtle hover:text-theme-fg-secondary absolute top-1/2 right-3 -translate-y-1/2"
         >
           <X className="h-4 w-4" />
         </button>
@@ -180,10 +185,10 @@ export function FilterSidebar({
   }, [filters.search]);
 
   return (
-    <aside className="sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto rounded-xl bg-theme-surface p-4 shadow-md">
+    <aside className="bg-theme-surface sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto rounded-xl p-4 shadow-md">
       {/* Header */}
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="flex items-center gap-2 font-semibold text-theme-fg">
+        <h2 className="text-theme-fg flex items-center gap-2 font-semibold">
           <Filter className="h-4 w-4" />
           Filters
           {activeFilterCount > 0 && (
@@ -195,7 +200,7 @@ export function FilterSidebar({
         {activeFilterCount > 0 && (
           <button
             onClick={onClearFilters}
-            className="hover:text-theme-primary flex items-center gap-1 text-xs text-theme-fg-muted transition-colors"
+            className="hover:text-theme-primary text-theme-fg-muted flex items-center gap-1 text-xs transition-colors"
           >
             <X className="h-3 w-3" />
             Wissen
@@ -276,9 +281,7 @@ export function FilterSidebar({
       <FilterSection title="Sortering" icon="↕️" defaultOpen={false}>
         <div className="space-y-2">
           <div>
-            <label className="mb-1 block text-xs text-theme-fg-muted">
-              Sorteer op
-            </label>
+            <label className="text-theme-fg-muted mb-1 block text-xs">Sorteer op</label>
             <select
               value={filters.sortBy}
               onChange={(e) =>
@@ -287,7 +290,7 @@ export function FilterSidebar({
               className={cn(
                 "w-full rounded-lg px-3 py-2 text-sm",
                 "bg-theme-surface-raised",
-                "border border-theme-border",
+                "border-theme-border border",
                 "ring-theme-primary-50 focus:border-theme-primary focus:ring-2 focus:outline-none"
               )}
             >
@@ -296,9 +299,7 @@ export function FilterSidebar({
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-xs text-theme-fg-muted">
-              Volgorde
-            </label>
+            <label className="text-theme-fg-muted mb-1 block text-xs">Volgorde</label>
             <select
               value={filters.sortOrder}
               onChange={(e) =>
@@ -307,7 +308,7 @@ export function FilterSidebar({
               className={cn(
                 "w-full rounded-lg px-3 py-2 text-sm",
                 "bg-theme-surface-raised",
-                "border border-theme-border",
+                "border-theme-border border",
                 "ring-theme-primary-50 focus:border-theme-primary focus:ring-2 focus:outline-none"
               )}
             >

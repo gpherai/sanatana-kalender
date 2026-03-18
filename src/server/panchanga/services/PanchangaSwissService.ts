@@ -1,6 +1,14 @@
-
+import path from "path";
+import { createRequire } from "module";
 import { DateTime } from "luxon";
 import * as swisseph from "swisseph";
+
+// Resolve bundled Swiss Ephemeris data files from the swisseph package
+const _require = createRequire(import.meta.url);
+const EPHE_PATH = path.join(
+  path.dirname(_require.resolve("swisseph/package.json")),
+  "ephe"
+);
 import type { DailyPanchangaFull, LocationConfig } from "../types";
 import {
   calculateSunriseSunset,
@@ -37,6 +45,8 @@ import {
  */
 export class PanchangaSwissService {
   constructor() {
+    // Use bundled Swiss Ephemeris data files (more accurate than Moshier)
+    swisseph.swe_set_ephe_path(EPHE_PATH);
     // Ensure strict Lahiri ayanamsa setting
     swisseph.swe_set_sid_mode(swisseph.SE_SIDM_LAHIRI, 0, 0);
   }
@@ -48,8 +58,12 @@ export class PanchangaSwissService {
    * @param location - Location with lat/lon and timezone
    * @returns Complete Panchanga data for the day
    */
-  async computeDaily(dateStr: string, location: LocationConfig): Promise<DailyPanchangaFull> {
-    // Ensure strict Lahiri setting before every calculation
+  async computeDaily(
+    dateStr: string,
+    location: LocationConfig
+  ): Promise<DailyPanchangaFull> {
+    // Ensure correct settings before every calculation
+    swisseph.swe_set_ephe_path(EPHE_PATH);
     swisseph.swe_set_sid_mode(swisseph.SE_SIDM_LAHIRI, 0, 0);
 
     // ==========================================================================
@@ -66,7 +80,7 @@ export class PanchangaSwissService {
     // STEP 2: Calculate Positions at Sunrise
     // ==========================================================================
     // Flags: Sidereal (Lahiri), Moshier ephemeris (no files needed), Speed
-    const flags = swisseph.SEFLG_SIDEREAL | swisseph.SEFLG_MOSEPH | swisseph.SEFLG_SPEED;
+    const flags = swisseph.SEFLG_SIDEREAL | swisseph.SEFLG_SWIEPH | swisseph.SEFLG_SPEED;
     const sunPos = await swe_calc_ut(astro.sunriseJD, swisseph.SE_SUN, flags);
     const moonPos = await swe_calc_ut(astro.sunriseJD, swisseph.SE_MOON, flags);
 
@@ -197,7 +211,11 @@ export class PanchangaSwissService {
     const tithiName = TITHI_NAMES[tithiIdx - 1] ?? "Unknown";
     const paksha = tithiIdx <= 15 ? ("Shukla" as const) : ("Krishna" as const);
     const nakName = NAKSHATRA_NAMES[nakIdx - 1] ?? "Unknown";
-    const pada = (Math.floor((moonPos.longitude % (360 / 27)) / (360 / 108)) + 1) as 1 | 2 | 3 | 4;
+    const pada = (Math.floor((moonPos.longitude % (360 / 27)) / (360 / 108)) + 1) as
+      | 1
+      | 2
+      | 3
+      | 4;
     const yogaName = YOGA_NAMES[yogaIdx - 1] ?? "Unknown";
 
     // Karana Name Logic (special handling for fixed karanas)
@@ -215,7 +233,7 @@ export class PanchangaSwissService {
     const formatTime = (dt: DateTime | null): string | undefined =>
       dt ? dt.toFormat("HH:mm:ss") : undefined;
     const formatIso = (dt: DateTime | null): string | undefined =>
-      dt ? dt.toUTC().toISO() ?? undefined : undefined;
+      dt ? (dt.toUTC().toISO() ?? undefined) : undefined;
 
     const jdToLocal = (jd: number): DateTime => {
       const dateUTC = swisseph.swe_revjul(jd, swisseph.SE_GREG_CAL as 0 | 1);
@@ -316,7 +334,8 @@ export class PanchangaSwissService {
         let low = testJD;
         let high = testJD + 1;
 
-        while (high - low > 0.0001) { // ~8.64 seconds precision
+        while (high - low > 0.0001) {
+          // ~8.64 seconds precision
           const mid = (low + high) / 2;
           const midSunPos = await swe_calc_ut(mid, swisseph.SE_SUN, flags);
           const midLon = norm360(midSunPos.longitude);
@@ -336,7 +355,8 @@ export class PanchangaSwissService {
     const lastSankrantiDate = jdToLocal(lastSankrantiJD);
     // Pravishte counts inclusively (Sankranti day = day 1, not day 0)
     // Traditional Vedic counting: if Sankranti was today, we are in day 1
-    const daysSinceSankranti = Math.floor(astro.sunriseTime.diff(lastSankrantiDate, "days").days) + 1;
+    const daysSinceSankranti =
+      Math.floor(astro.sunriseTime.diff(lastSankrantiDate, "days").days) + 1;
 
     // -------------------------------------------------------------------------
     // SAMVAT YEARS & SAMVATSARA NAMES (60-year cycle)
@@ -359,8 +379,8 @@ export class PanchangaSwissService {
     // Map to 60-year Samvatsara cycle using traditional offsets
     // These offsets are standard in Vedic calendar tradition
     // Reference: Drik Panchang verification (2082 Vikrama = Kalayukta, 1947 Shaka = Vishvavasu)
-    const VIKRAMA_SAMVATSARA_OFFSET = 9;  // (year + 9) % 60 gives correct cycle position
-    const SHAKA_SAMVATSARA_OFFSET = 11;   // (year + 11) % 60 gives correct cycle position
+    const VIKRAMA_SAMVATSARA_OFFSET = 9; // (year + 9) % 60 gives correct cycle position
+    const SHAKA_SAMVATSARA_OFFSET = 11; // (year + 11) % 60 gives correct cycle position
 
     const vikramaSamvatsaraIdx = (vikramaYear + VIKRAMA_SAMVATSARA_OFFSET) % 60;
     const shakaSamvatsaraIdx = (shakaYear + SHAKA_SAMVATSARA_OFFSET) % 60;
@@ -369,74 +389,49 @@ export class PanchangaSwissService {
     const shakaSamvatsaraName = SAMVATSARA_NAMES[shakaSamvatsaraIdx] ?? "Unknown";
 
     // -------------------------------------------------------------------------
-    // MAAS (Lunar Month) - Purnimanta System (FIXED)
+    // MAAS (Lunar Month) - Purnimanta System
     // -------------------------------------------------------------------------
-    // Purnimanta: Month begins day after Purnima, ends at next Purnima
-    // Month NAME determined by solar sign at the PURNIMA (not current sun!)
+    // Traditional rule: the month is named by the Sun's rashi at the AMAVASYA
+    // that opens the month, not by the current day's Sun position.
     //
-    // Fix per Codex feedback: Find exact Purnima via elongation, not sunrise sampling
+    // This correctly handles adhika (intercalary) months. When an adhika month
+    // occurs, the following nija month opens with an Amavasya that falls right
+    // at or just before the next Sankranti. Using the opening Amavasya's Sun
+    // rashi ensures every day in the nija month carries the correct name,
+    // even after the Sun has already moved to the next sign.
+    //
+    // Example — 2026 Adhika Jyeshtha:
+    //   Nija Jyeshtha opens ~Jun 14 (Amavasya, Sun still in Vrishabha idx=1).
+    //   Mithuna Sankranti arrives Jun 15–16, but ALL days Jun 14–29 are
+    //   correctly labeled Jyeshtha (maasIdx = (1+1)%12 = 2) because the
+    //   opening Amavasya was still in Vrishabha.
+    //   Without this fix the old (sunSignIdx+1) formula would label Jun 16+
+    //   as Ashadha, shifting every event in H2 2026 by one month.
 
-    // Step 1: Find relevant Purnima for Purnimanta month name
-    // IMPORTANT: In Purnimanta, when in Shukla paksha, use NEXT Purnima (future)!
-    // When in Krishna paksha, use most recent (past) Purnima
-    let monthStartPurnimaJD: number | null = null;
-    const searchForward = paksha === "Shukla"; // Shukla → future, Krishna → past
+    // Step 1: Find the Amavasya boundaries of the current lunar month.
+    // These are reused for both maas naming AND adhika detection,
+    // avoiding duplicate Swiss Ephemeris round-trips.
+    const prevAmavasya = await this.findNearestAmavasya(astro.sunriseJD, "backward");
+    const nextAmavasya = await this.findNearestAmavasya(astro.sunriseJD, "forward");
 
-    // Search for Purnima
-    const searchDirection = searchForward ? 1 : -1;
-    for (let dayOffset = 0; dayOffset < 35; dayOffset++) {
-      const searchDayJD = astro.sunriseJD + (searchDirection * dayOffset);
+    // Step 2: Determine maas name from Sun's rashi at the opening Amavasya.
+    const rashiAtMonthStart = prevAmavasya ? await this.getSunRashi(prevAmavasya) : null;
 
-      // Check if this day bracket contains Purnima (tithi 14 → 15 transition)
-      const sunAtDay = await swe_calc_ut(searchDayJD, swisseph.SE_SUN, flags);
-      const moonAtDay = await swe_calc_ut(searchDayJD, swisseph.SE_MOON, flags);
-      const tithiAtDay = Math.floor(getTithiProgress(sunAtDay.longitude, moonAtDay.longitude)) + 1;
-
-      // If we're near Purnima (tithi 13-16), find exact transition
-      if (tithiAtDay >= 13 && tithiAtDay <= 16) {
-        // Find exact moment when elongation reaches 180° (Purnima)
-        // This is when tithi 14 ends = Purnima begins
-        const purnimaJD = await findEventEnd(
-          searchDayJD - 1, // Start 1 day before to ensure we bracket it
-          async (jd) => {
-            const s = await swe_calc_ut(jd, swisseph.SE_SUN, flags);
-            const m = await swe_calc_ut(jd, swisseph.SE_MOON, flags);
-            return getTithiProgress(s.longitude, m.longitude);
-          },
-          14, // Target: end of tithi 14
-          30  // Wrap at 30
-        );
-
-        // For Shukla: accept if Purnima is in future
-        // For Krishna: accept if Purnima is in past
-        const isValid = searchForward
-          ? purnimaJD && purnimaJD >= astro.sunriseJD
-          : purnimaJD && purnimaJD <= astro.sunriseJD;
-
-        if (isValid) {
-          monthStartPurnimaJD = purnimaJD;
-          break;
-        }
-      }
-    }
-
-    // Fallback: if no exact Purnima found, use rough estimate
-    if (!monthStartPurnimaJD) {
-      monthStartPurnimaJD = astro.sunriseJD - 15; // Rough: ~15 days ago
-    }
-
-    // Step 2: Calculate Maas name using (current_sun_sign + 1)
-    // This matches Drik Panchang's Purnimanta month determination
-    const maasIdx = (sunSignIdx + 1) % 12;
+    // Fall back to current Sun sign only if the Amavasya lookup fails.
+    const maasRashiIdx = rashiAtMonthStart ?? sunSignIdx;
+    const maasIdx = (maasRashiIdx + 1) % 12;
     const lunarMaasName = LUNAR_MASA_NAMES[maasIdx] ?? "Unknown";
 
-    // Calculate lunar day using Purnimanta system (tithi-based, not solar days)
-    // Purnimanta: Month starts day after Purnima, counts through Krishna then Shukla
-    // Formula: Shukla tithi + 15, or Krishna tithi - 15
+    // Calculate lunar day using Purnimanta system (tithi-based).
+    // Formula: Shukla tithi + 15, or Krishna tithi - 15.
     const lunarDay = tithiIdx <= 15 ? tithiIdx + 15 : tithiIdx - 15;
 
-    // Step 3: Detect Adhika (intercalary) month
-    const isAdhika = await this.detectAdhikaMaas(astro.sunriseJD);
+    // Step 3: Detect Adhika (intercalary) month.
+    // Reuse already-found Amavasyas: same Sun rashi at both boundaries means
+    // no Sankranti occurred in this lunar month → month is adhika.
+    const prevRashi = rashiAtMonthStart;
+    const nextRashi = nextAmavasya ? await this.getSunRashi(nextAmavasya) : null;
+    const isAdhika = prevRashi !== null && nextRashi !== null && prevRashi === nextRashi;
 
     // Step 4: Detect Sankranti (solar transition)
     const sankrantiData = await this.detectSankranti(dateStr, location);
@@ -500,7 +495,8 @@ export class PanchangaSwissService {
 
       // Calculate pada for next nakshatra
       const nextMoonPos = await swe_calc_ut(nakEndJD + 0.01, swisseph.SE_MOON, flags);
-      const nextPada = (Math.floor((nextMoonPos.longitude % (360 / 27)) / (360 / 108)) + 1) as 1 | 2 | 3 | 4;
+      const nextPada = (Math.floor((nextMoonPos.longitude % (360 / 27)) / (360 / 108)) +
+        1) as 1 | 2 | 3 | 4;
 
       nextNakshatra = {
         number: nextNakIdx,
@@ -568,7 +564,9 @@ export class PanchangaSwissService {
       nextKarana = {
         number: nextKaranaIdx,
         name: nextKName,
-        type: (nextKaranaIdx >= 2 && nextKaranaIdx <= 57 ? "Movable" : "Fixed") as "Movable" | "Fixed",
+        type: (nextKaranaIdx >= 2 && nextKaranaIdx <= 57 ? "Movable" : "Fixed") as
+          | "Movable"
+          | "Fixed",
         endLocal: formatTime(nextKEnd),
         endUtcIso: formatIso(nextKEnd),
       };
@@ -657,10 +655,12 @@ export class PanchangaSwissService {
         isAdhika: isAdhika,
       },
 
-      sankranti: sankrantiData ? {
-        name: sankrantiData.sankranti,
-        time: sankrantiData.time,
-      } : undefined,
+      sankranti: sankrantiData
+        ? {
+            name: sankrantiData.sankranti,
+            time: sankrantiData.time,
+          }
+        : undefined,
 
       vikramaSamvat: {
         year: vikramaYear,
@@ -704,61 +704,10 @@ export class PanchangaSwissService {
 
       meta: {
         engine: "swisseph-core",
-        flags: ["SEFLG_SIDEREAL", "SEFLG_MOSEPH", "SE_SIDM_LAHIRI"],
+        flags: ["SEFLG_SIDEREAL", "SEFLG_SWIEPH", "SE_SIDM_LAHIRI"],
         swissephVersion: "0.5.17",
       },
     };
-  }
-
-  /**
-   * Find nearest Purnima (Full Moon) from a given Julian Day
-   *
-   * @param fromJD - Julian Day to search from
-   * @param direction - 'backward' for previous Purnima, 'forward' for next Purnima
-   * @returns Julian Day of the nearest Purnima, or null if not found
-   */
-  private async findNearestPurnima(fromJD: number, direction: 'backward' | 'forward'): Promise<number | null> {
-    const flags = swisseph.SEFLG_SIDEREAL | swisseph.SEFLG_MOSEPH;
-    const searchDirection = direction === 'forward' ? 1 : -1;
-
-    // Start search offset at 1 to ensure we skip the current day
-    // This guarantees: backward < fromJD and forward > fromJD
-    for (let dayOffset = 1; dayOffset < 60; dayOffset++) {
-      const searchDayJD = fromJD + (searchDirection * dayOffset);
-
-      // Check if this day bracket contains Purnima (tithi 14 → 15 transition)
-      const sunAtDay = await swe_calc_ut(searchDayJD, swisseph.SE_SUN, flags);
-      const moonAtDay = await swe_calc_ut(searchDayJD, swisseph.SE_MOON, flags);
-      const tithiAtDay = Math.floor(this.getTithiProgress(sunAtDay.longitude, moonAtDay.longitude)) + 1;
-
-      // If we're near Purnima (tithi 13-16), find exact transition
-      if (tithiAtDay >= 13 && tithiAtDay <= 16) {
-        // Find exact moment when elongation reaches 180° (Purnima)
-        const purnimaJD = await findEventEnd(
-          searchDayJD - 1, // Start 1 day before to ensure we bracket it
-          async (jd) => {
-            const s = await swe_calc_ut(jd, swisseph.SE_SUN, flags);
-            const m = await swe_calc_ut(jd, swisseph.SE_MOON, flags);
-            return this.getTithiProgress(s.longitude, m.longitude);
-          },
-          14, // Target: end of tithi 14 (= Purnima begins)
-          30  // Wrap at 30
-        );
-
-        // Verify the found Purnima is in the correct direction
-        if (purnimaJD) {
-          const isCorrectDirection = direction === 'forward'
-            ? purnimaJD > fromJD
-            : purnimaJD < fromJD;
-
-          if (isCorrectDirection) {
-            return purnimaJD;
-          }
-        }
-      }
-    }
-
-    return null; // Not found within search range
   }
 
   /**
@@ -768,7 +717,7 @@ export class PanchangaSwissService {
    * @returns Rashi index (0-11) or null if calculation fails
    */
   private async getSunRashi(jd: number): Promise<number | null> {
-    const flags = swisseph.SEFLG_SIDEREAL | swisseph.SEFLG_MOSEPH;
+    const flags = swisseph.SEFLG_SIDEREAL | swisseph.SEFLG_SWIEPH;
 
     try {
       const sunPos = await swe_calc_ut(jd, swisseph.SE_SUN, flags);
@@ -792,59 +741,29 @@ export class PanchangaSwissService {
   }
 
   /**
-   * Detect if current date is in an Adhika (intercalary) month
-   *
-   * Adhika month occurs when NO Sankranti (solar transition) happens between
-   * two consecutive Amavasyas (new moons), meaning Sun's rashi is the same at both.
-   *
-   * IMPORTANT: Adhika is determined by AMAVASYA boundaries, not Purnima!
-   * - Find previous Amavasya
-   * - Find next Amavasya
-   * - If Sun's rashi is SAME at both → this month is Adhika
-   *
-   * @param currentJD - Current Julian Day (at sunrise)
-   * @returns true if Adhika month, false otherwise
-   */
-  private async detectAdhikaMaas(currentJD: number): Promise<boolean> {
-    // Find the previous Amavasya (new moon)
-    const prevAmavasya = await this.findNearestAmavasya(currentJD, 'backward');
-    if (!prevAmavasya) return false;
-
-    // Find the next Amavasya (new moon)
-    const nextAmavasya = await this.findNearestAmavasya(currentJD, 'forward');
-    if (!nextAmavasya) return false;
-
-    // Get Sun's rashi at both Amavasyas
-    const prevRashi = await this.getSunRashi(prevAmavasya);
-    const nextRashi = await this.getSunRashi(nextAmavasya);
-
-    if (prevRashi === null || nextRashi === null) return false;
-
-    // If Sun's rashi is SAME at both Amavasyas → this month is Adhika
-    // (no Sankranti occurred between them = no solar month transition)
-    return prevRashi === nextRashi;
-  }
-
-  /**
    * Find nearest Amavasya (New Moon) from a given Julian Day
    *
    * @param fromJD - Julian Day to search from
    * @param direction - 'backward' for previous Amavasya, 'forward' for next Amavasya
    * @returns Julian Day of the nearest Amavasya, or null if not found
    */
-  private async findNearestAmavasya(fromJD: number, direction: 'backward' | 'forward'): Promise<number | null> {
-    const flags = swisseph.SEFLG_SIDEREAL | swisseph.SEFLG_MOSEPH;
-    const searchDirection = direction === 'forward' ? 1 : -1;
+  private async findNearestAmavasya(
+    fromJD: number,
+    direction: "backward" | "forward"
+  ): Promise<number | null> {
+    const flags = swisseph.SEFLG_SIDEREAL | swisseph.SEFLG_SWIEPH;
+    const searchDirection = direction === "forward" ? 1 : -1;
 
     // Start search offset at 1 to ensure we skip the current day
     // This guarantees: backward < fromJD and forward > fromJD
     for (let dayOffset = 1; dayOffset < 60; dayOffset++) {
-      const searchDayJD = fromJD + (searchDirection * dayOffset);
+      const searchDayJD = fromJD + searchDirection * dayOffset;
 
       // Check if this day bracket contains Amavasya (tithi 29 → 30/0 transition)
       const sunAtDay = await swe_calc_ut(searchDayJD, swisseph.SE_SUN, flags);
       const moonAtDay = await swe_calc_ut(searchDayJD, swisseph.SE_MOON, flags);
-      const tithiAtDay = Math.floor(this.getTithiProgress(sunAtDay.longitude, moonAtDay.longitude)) + 1;
+      const tithiAtDay =
+        Math.floor(this.getTithiProgress(sunAtDay.longitude, moonAtDay.longitude)) + 1;
 
       // If we're near Amavasya (tithi 28-30 or 1-2), find exact transition
       if (tithiAtDay >= 28 || tithiAtDay <= 2) {
@@ -858,14 +777,13 @@ export class PanchangaSwissService {
             return this.getTithiProgress(s.longitude, m.longitude);
           },
           29, // Target: end of tithi 29 (= Amavasya begins)
-          30  // Wrap at 30
+          30 // Wrap at 30
         );
 
         // Verify the found Amavasya is in the correct direction
         if (amavasya) {
-          const isCorrectDirection = direction === 'forward'
-            ? amavasya > fromJD
-            : amavasya < fromJD;
+          const isCorrectDirection =
+            direction === "forward" ? amavasya > fromJD : amavasya < fromJD;
 
           if (isCorrectDirection) {
             return amavasya;
@@ -894,8 +812,6 @@ export class PanchangaSwissService {
     dateStr: string,
     location: LocationConfig
   ): Promise<{ sankranti: string; time: string } | null> {
-    const flags = swisseph.SEFLG_SIDEREAL | swisseph.SEFLG_MOSEPH;
-
     // Get JD for start of this day (sunrise)
     const astro = await calculateSunriseSunset(dateStr, location);
     const dayStartJD = astro.sunriseJD;
@@ -937,26 +853,28 @@ export class PanchangaSwissService {
     const m = Math.floor(remainder);
     const s = Math.floor((remainder - m) * 60);
 
-    const dt = DateTime.utc(dateUTC.year, dateUTC.month, dateUTC.day, h, m, s).setZone(location.tz);
-    const timeStr = dt.toFormat('HH:mm');
+    const dt = DateTime.utc(dateUTC.year, dateUTC.month, dateUTC.day, h, m, s).setZone(
+      location.tz
+    );
+    const timeStr = dt.toFormat("HH:mm");
 
     // Determine which sankranti this is (based on the NEW rashi we're entering)
     const sankrantiNames = [
-      'MESHA_SANKRANTI',       // Entering Aries
-      'VRISHABHA_SANKRANTI',   // Entering Taurus
-      'MITHUNA_SANKRANTI',     // Entering Gemini
-      'KARKA_SANKRANTI',       // Entering Cancer
-      'SIMHA_SANKRANTI',       // Entering Leo
-      'KANYA_SANKRANTI',       // Entering Virgo
-      'TULA_SANKRANTI',        // Entering Libra
-      'VRISHCHIKA_SANKRANTI',  // Entering Scorpio
-      'DHANU_SANKRANTI',       // Entering Sagittarius
-      'MAKARA_SANKRANTI',      // Entering Capricorn (famous Makar Sankranti)
-      'KUMBHA_SANKRANTI',      // Entering Aquarius
-      'MEENA_SANKRANTI',       // Entering Pisces
+      "MESHA_SANKRANTI", // Entering Aries
+      "VRISHABHA_SANKRANTI", // Entering Taurus
+      "MITHUNA_SANKRANTI", // Entering Gemini
+      "KARKA_SANKRANTI", // Entering Cancer
+      "SIMHA_SANKRANTI", // Entering Leo
+      "KANYA_SANKRANTI", // Entering Virgo
+      "TULA_SANKRANTI", // Entering Libra
+      "VRISHCHIKA_SANKRANTI", // Entering Scorpio
+      "DHANU_SANKRANTI", // Entering Sagittarius
+      "MAKARA_SANKRANTI", // Entering Capricorn (famous Makar Sankranti)
+      "KUMBHA_SANKRANTI", // Entering Aquarius
+      "MEENA_SANKRANTI", // Entering Pisces
     ];
 
-    const sankranti = sankrantiNames[rashiEnd];
+    const sankranti = sankrantiNames[rashiEnd] ?? "UNKNOWN_SANKRANTI";
 
     return { sankranti, time: timeStr };
   }

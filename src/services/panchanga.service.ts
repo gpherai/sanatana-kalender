@@ -11,7 +11,11 @@
  * - UI never imports from this service directly
  */
 
-import { PanchangaSwissService, type DailyPanchangaFull, type LocationConfig } from "@/server/panchanga";
+import {
+  PanchangaSwissService,
+  type DailyPanchangaFull,
+  type LocationConfig,
+} from "@/server/panchanga";
 import type { Location } from "@/lib/constants";
 import { DateTime } from "luxon";
 
@@ -141,7 +145,9 @@ export class PanchangaService {
 
     // Calculate using Swiss Ephemeris engine
     if (DEBUG_LOGGING) {
-      console.log(`[PanchangaService] Computing Panchanga for ${dateStr} at ${location.name}`);
+      console.log(
+        `[PanchangaService] Computing Panchanga for ${dateStr} at ${location.name}`
+      );
     }
 
     const result = await this.swissService.computeDaily(dateStr, locConfig);
@@ -170,12 +176,14 @@ export class PanchangaService {
     const results: DailyPanchangaFull[] = [];
 
     // Use Luxon for proper date iteration in timezone
-    let current = DateTime.fromJSDate(startDate, { zone: timezone }).startOf('day');
-    const end = DateTime.fromJSDate(endDate, { zone: timezone }).startOf('day');
+    let current = DateTime.fromJSDate(startDate, { zone: timezone }).startOf("day");
+    const end = DateTime.fromJSDate(endDate, { zone: timezone }).startOf("day");
 
     if (DEBUG_LOGGING) {
-      const days = Math.ceil(end.diff(current, 'days').days) + 1;
-      console.log(`[PanchangaService] Computing range: ${days} days from ${current.toISODate()} to ${end.toISODate()}`);
+      const days = Math.ceil(end.diff(current, "days").days) + 1;
+      console.log(
+        `[PanchangaService] Computing range: ${days} days from ${current.toISODate()} to ${end.toISODate()}`
+      );
     }
 
     while (current <= end) {
@@ -188,7 +196,9 @@ export class PanchangaService {
     }
 
     if (DEBUG_LOGGING) {
-      console.log(`[PanchangaService] Computed ${results.length} days (${this.cache.size} in cache)`);
+      console.log(
+        `[PanchangaService] Computed ${results.length} days (${this.cache.size} in cache)`
+      );
     }
 
     return results;
@@ -200,7 +210,7 @@ export class PanchangaService {
   clearCache(): void {
     this.cache.clear();
     if (DEBUG_LOGGING) {
-      console.log('[PanchangaService] Cache cleared');
+      console.log("[PanchangaService] Cache cleared");
     }
   }
 

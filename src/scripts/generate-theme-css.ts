@@ -438,20 +438,21 @@ function generateDarkModeBase(): string {
 function generateStandardThemes(): string {
   const standardThemes = getStandardThemes(); // Gets both classic and revamped
 
-  const blocks = standardThemes.map((theme) => {
-    const isRevamped = theme.category === "revamped";
+  const blocks = standardThemes
+    .map((theme) => {
+      const isRevamped = theme.category === "revamped";
 
-    let css = `
-/* Theme: ${theme.displayName} ${isRevamped ? '(Revamped with gradients)' : '(Classic)'} */
+      let css = `
+/* Theme: ${theme.displayName} ${isRevamped ? "(Revamped with gradients)" : "(Classic)"} */
 [data-theme="${theme.name}"] {
   --theme-primary: ${theme.colors.primary};
   --theme-secondary: ${theme.colors.secondary};
   --theme-accent: ${theme.colors.accent};
 }`;
 
-    // Add background gradients for revamped themes
-    if (isRevamped && theme.background) {
-      css += `
+      // Add background gradients for revamped themes
+      if (isRevamped && theme.background) {
+        css += `
 
 /* Background (Light) */
 [data-theme="${theme.name}"] body {
@@ -507,10 +508,11 @@ function generateStandardThemes(): string {
   backdrop-filter: blur(16px);
   border-color: oklch(1 0 0 / 0.15) !important;
 }`;
-    }
+      }
 
-    return css;
-  }).join("\n");
+      return css;
+    })
+    .join("\n");
 
   return `
 /* =============================================================================
@@ -702,7 +704,6 @@ function generateBaseStyles(): string {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), system-ui, sans-serif;
   min-height: 100vh;
 }
 

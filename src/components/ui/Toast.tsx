@@ -35,7 +35,13 @@ const ToastContext = createContext<ToastContextValue | null>(null);
 export function useToast() {
   const context = useContext(ToastContext);
   if (!context) {
-    throw new Error("useToast must be used within a ToastProvider");
+    // Provide safe fallback for SSR/Prerendering
+    return {
+      showToast: () => {},
+      success: () => {},
+      error: () => {},
+      info: () => {},
+    };
   }
   return context;
 }
@@ -141,7 +147,7 @@ function ToastItem({ toast, onRemove }: ToastItemProps) {
       <p className="flex-1 text-sm font-medium">{toast.message}</p>
       <button
         onClick={() => onRemove(toast.id)}
-        className="rounded p-1 transition-colors hover:bg-theme-surface-hover focus:outline-none focus:ring-2 focus:ring-theme-primary focus:ring-offset-1"
+        className="hover:bg-theme-surface-hover focus:ring-theme-primary rounded p-1 transition-colors focus:ring-2 focus:ring-offset-1 focus:outline-none"
         aria-label="Sluiten"
       >
         <X className="h-4 w-4" />

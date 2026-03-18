@@ -3,8 +3,8 @@ import { prisma } from "@/lib/db";
 import { updatePreferencesSchema } from "@/lib/validations";
 import { serverError, validationError } from "@/lib/api-response";
 import { DEFAULT_LOCATION } from "@/lib/constants";
-import { Prisma } from "@/generated/prisma/client";
-import { EventType, CalendarView } from "@/generated/prisma/enums";
+import { Prisma } from "@prisma/client";
+import { EventType, CalendarView } from "@prisma/client";
 
 /**
  * Default preferences object (not persisted until first PUT)

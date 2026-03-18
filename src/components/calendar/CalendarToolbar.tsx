@@ -49,7 +49,7 @@ export function CalendarToolbar({
             )}
             aria-label="Vorige"
           >
-            <ChevronLeft className="h-5 w-5 text-theme-fg-secondary" />
+            <ChevronLeft className="text-theme-fg-secondary h-5 w-5" />
           </button>
           <button
             onClick={goToNext}
@@ -60,18 +60,18 @@ export function CalendarToolbar({
             )}
             aria-label="Volgende"
           >
-            <ChevronRight className="h-5 w-5 text-theme-fg-secondary" />
+            <ChevronRight className="text-theme-fg-secondary h-5 w-5" />
           </button>
         </div>
       </div>
 
       {/* Current Date */}
-      <h2 className="text-xl font-semibold text-theme-fg capitalize">
+      <h2 className="text-theme-fg text-xl font-semibold capitalize">
         {format(date, "MMMM yyyy", { locale: nl })}
       </h2>
 
       {/* View Buttons */}
-      <div className="flex items-center gap-1 rounded-lg bg-theme-surface-raised p-1">
+      <div className="bg-theme-surface-raised flex items-center gap-1 rounded-lg p-1">
         {viewButtons.map(({ key, label }) => (
           <button
             key={key}

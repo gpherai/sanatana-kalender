@@ -1,9 +1,18 @@
-
+import path from "path";
+import { createRequire } from "module";
 import { DateTime } from "luxon";
 import * as swisseph from "swisseph";
 import type { LocationConfig } from "../types";
 
-// Ensure strict Lahiri setting globally for this module
+// Resolve bundled Swiss Ephemeris data files from the swisseph package
+const _require = createRequire(import.meta.url);
+const EPHE_PATH = path.join(
+  path.dirname(_require.resolve("swisseph/package.json")),
+  "ephe"
+);
+
+// Set ephemeris path and Lahiri ayanamsa globally for this module
+swisseph.swe_set_ephe_path(EPHE_PATH);
 swisseph.swe_set_sid_mode(swisseph.SE_SIDM_LAHIRI, 0, 0);
 
 // =============================================================================
@@ -14,20 +23,6 @@ swisseph.swe_set_sid_mode(swisseph.SE_SIDM_LAHIRI, 0, 0);
 interface SweRiseTransResult {
   error?: string;
   transitTime?: number;
-}
-
-interface SweCalcUtResult {
-  error?: string;
-  longitude: number;
-  latitude: number;
-  distance: number;
-  speed: number;
-}
-
-interface SwePhenoUtResult {
-  error?: string;
-  phaseAngle: number;
-  phase: number; // illumination fraction (0..1)
 }
 
 const swe_julday = (
@@ -97,10 +92,28 @@ export const swe_calc_ut = (
   iflag: number
 ): Promise<{ longitude: number; latitude: number; distance: number; speed: number }> => {
   return new Promise((resolve, reject) => {
-    swisseph.swe_calc_ut(jd, ipl, iflag, (result: SweCalcUtResult) => {
-      if (result.error) reject(new Error(result.error));
-      else resolve(result);
-    });
+    swisseph.swe_calc_ut(
+      jd,
+      ipl,
+      iflag,
+      (result: {
+        error?: string;
+        longitude: number;
+        latitude: number;
+        distance: number;
+        longitudeSpeed?: number;
+      }) => {
+        if (result.error) reject(new Error(result.error));
+        else {
+          resolve({
+            longitude: result.longitude,
+            latitude: result.latitude,
+            distance: result.distance,
+            speed: result.longitudeSpeed || 0,
+          });
+        }
+      }
+    );
   });
 };
 
@@ -110,11 +123,16 @@ export const swe_pheno_ut = (
   flags: number
 ): Promise<{ phaseAngle: number; phaseIllum: number }> => {
   return new Promise((resolve, reject) => {
-    swisseph.swe_pheno_ut(jd, ipl, flags, (res: SwePhenoUtResult) => {
-      if (res.error) reject(new Error(res.error));
-      // swisseph returns 'phase' for illumination fraction (0..1)
-      else resolve({ phaseAngle: res.phaseAngle, phaseIllum: res.phase });
-    });
+    swisseph.swe_pheno_ut(
+      jd,
+      ipl,
+      flags,
+      (res: { error?: string; phaseAngle: number; phase: number }) => {
+        if (res.error) reject(new Error(res.error));
+        // swisseph returns 'phase' for illumination fraction (0..1)
+        else resolve({ phaseAngle: res.phaseAngle, phaseIllum: res.phase });
+      }
+    );
   });
 };
 
@@ -235,7 +253,7 @@ export async function calculateSunriseSunset(
     swisseph.SE_GREG_CAL as 0 | 1
   );
 
-  const EPHE_FLAG = swisseph.SEFLG_MOSEPH;
+  const EPHE_FLAG = swisseph.SEFLG_SWIEPH;
 
   const riseTimeJD = await swe_rise_trans(
     jdStart,
@@ -266,7 +284,9 @@ export async function calculateSunriseSunset(
     const m = Math.floor(remainder);
     const s = Math.floor((remainder - m) * 60);
 
-    return DateTime.utc(dateUTC.year, dateUTC.month, dateUTC.day, h, m, s).setZone(loc.tz);
+    return DateTime.utc(dateUTC.year, dateUTC.month, dateUTC.day, h, m, s).setZone(
+      loc.tz
+    );
   };
 
   return {
@@ -311,7 +331,7 @@ export async function calculateMoonriseMoonset(
     swisseph.SE_GREG_CAL as 0 | 1
   );
 
-  const EPHE_FLAG = swisseph.SEFLG_MOSEPH;
+  const EPHE_FLAG = swisseph.SEFLG_SWIEPH;
 
   const riseTimeJD = await swe_rise_trans(
     jdStart,
@@ -342,7 +362,9 @@ export async function calculateMoonriseMoonset(
     const m = Math.floor(remainder);
     const s = Math.floor((remainder - m) * 60);
 
-    return DateTime.utc(dateUTC.year, dateUTC.month, dateUTC.day, h, m, s).setZone(loc.tz);
+    return DateTime.utc(dateUTC.year, dateUTC.month, dateUTC.day, h, m, s).setZone(
+      loc.tz
+    );
   };
 
   return {

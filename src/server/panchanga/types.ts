@@ -1,4 +1,3 @@
-
 /**
  * Panchanga Types - Server-only
  * Type definitions for Swiss Ephemeris Panchanga calculations
@@ -22,10 +21,10 @@ export interface DailyPanchangaFull {
   sunsetUtcIso: string; // ISO timestamp
 
   // Moon times
-  moonriseLocal: string; // HH:mm:ss
-  moonsetLocal: string; // HH:mm:ss
-  moonriseUtcIso: string; // ISO timestamp
-  moonsetUtcIso: string; // ISO timestamp
+  moonriseLocal: string | null; // HH:mm:ss
+  moonsetLocal: string | null; // HH:mm:ss
+  moonriseUtcIso: string | null; // ISO timestamp
+  moonsetUtcIso: string | null; // ISO timestamp
 
   // Ayanamsa
   ayanamsa: {
@@ -186,7 +185,7 @@ export interface DailyPanchangaFull {
   // Metadata
   meta: {
     engine: string; // "swisseph-core"
-    flags: string[]; // ["SEFLG_SIDEREAL", "SEFLG_MOSEPH", "SE_SIDM_LAHIRI"]
+    flags: string[]; // ["SEFLG_SIDEREAL", "SEFLG_SWIEPH", "SE_SIDM_LAHIRI"]
     swissephVersion: string;
     ephemerisPath?: string;
   };

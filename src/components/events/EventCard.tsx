@@ -99,7 +99,7 @@ export function EventCard({
 
       {/* Major Event Badge */}
       {isMajor && (
-        <div className="absolute top-3 right-3 flex items-center gap-1 rounded-full bg-theme-warning-bg px-2 py-1 text-xs font-medium text-theme-warning">
+        <div className="bg-theme-warning-bg text-theme-warning absolute top-3 right-3 flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium">
           <Star className="h-3 w-3 fill-current" />
           Belangrijk
         </div>
@@ -114,9 +114,7 @@ export function EventCard({
               "h-12 w-12 flex-shrink-0 rounded-xl",
               "flex items-center justify-center text-2xl",
               "transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3",
-              categoryData?.name
-                ? getCategoryBgClass(categoryData.name, 15)
-                : ""
+              categoryData?.name ? getCategoryBgClass(categoryData.name, 15) : ""
             )}
             style={
               !categoryData?.name
@@ -129,45 +127,43 @@ export function EventCard({
 
           {/* Title + Category */}
           <div className="min-w-0 flex-1 pt-1">
-            <h3 className="truncate text-lg font-semibold text-theme-fg transition-colors group-hover:text-theme-primary">
+            <h3 className="text-theme-fg group-hover:text-theme-primary truncate text-lg font-semibold transition-colors">
               {name}
             </h3>
             <div className="mt-0.5 flex items-center gap-2">
               <span
                 className={cn(
                   "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
-                  categoryData?.name
-                    ? getCategoryBgClass(categoryData.name, 15)
-                    : ""
+                  categoryData?.name ? getCategoryBgClass(categoryData.name, 15) : ""
                 )}
                 style={{
-                  ...((!categoryData?.name && getCategoryDynamicStyle("oklch(0.6 0.15 250)", 15)) || {}),
+                  ...((!categoryData?.name &&
+                    getCategoryDynamicStyle("oklch(0.6 0.15 250)", 15)) ||
+                    {}),
                   color: categoryData?.color ?? "oklch(0.5 0.15 250)",
                 }}
               >
                 {categoryData?.displayName ?? "Algemeen"}
               </span>
-              <span className="text-xs text-theme-fg-muted">
-                {eventTypeData?.label}
-              </span>
+              <span className="text-theme-fg-muted text-xs">{eventTypeData?.label}</span>
             </div>
           </div>
         </div>
 
         {/* Description (if present) */}
         {description && (
-          <p className="mb-3 line-clamp-2 pl-16 text-sm text-theme-fg-secondary">
+          <p className="text-theme-fg-secondary mb-3 line-clamp-2 pl-16 text-sm">
             {description}
           </p>
         )}
 
         {/* Date & Time Row */}
-        <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-2 pl-16 text-sm text-theme-fg-secondary">
+        <div className="text-theme-fg-secondary mb-3 flex flex-wrap items-center gap-x-4 gap-y-2 pl-16 text-sm">
           <div className="flex items-center gap-1.5">
-            <Calendar className="h-4 w-4 text-theme-accent" />
+            <Calendar className="text-theme-accent h-4 w-4" />
             <span>{formatEventDate()}</span>
             {durationDays > 1 && (
-              <span className="font-medium text-theme-accent">
+              <span className="text-theme-accent font-medium">
                 ({durationDays} dagen)
               </span>
             )}
@@ -175,7 +171,7 @@ export function EventCard({
 
           {startTime && (
             <div className="flex items-center gap-1.5">
-              <Clock className="h-4 w-4 text-theme-info" />
+              <Clock className="text-theme-info h-4 w-4" />
               <span>
                 {startTime}
                 {endTime && ` - ${endTime}`}
@@ -188,12 +184,12 @@ export function EventCard({
         {(tithi || nakshatra) && (
           <div className="mb-3 flex flex-wrap items-center gap-2 pl-16">
             {tithi && (
-              <span className="inline-flex items-center gap-1 rounded-lg bg-theme-secondary-10 px-2 py-1 text-xs text-theme-secondary">
+              <span className="bg-theme-secondary-10 text-theme-secondary inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs">
                 🌙 {tithi}
               </span>
             )}
             {nakshatra && (
-              <span className="inline-flex items-center gap-1 rounded-lg bg-theme-accent-10 px-2 py-1 text-xs text-theme-accent">
+              <span className="bg-theme-accent-10 text-theme-accent inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs">
                 ⭐ {nakshatra}
               </span>
             )}
@@ -203,24 +199,26 @@ export function EventCard({
         {/* Tags */}
         {tags.length > 0 && (
           <div className="flex flex-wrap items-center gap-1.5 pl-16">
-            <Tag className="h-3 w-3 text-theme-fg-subtle" />
+            <Tag className="text-theme-fg-subtle h-3 w-3" />
             {tags.slice(0, 4).map((tag) => (
               <span
                 key={tag}
-                className="rounded-md bg-theme-surface-raised px-2 py-0.5 text-xs text-theme-fg-secondary dark:text-theme-fg-subtle"
+                className="bg-theme-surface-raised text-theme-fg-secondary dark:text-theme-fg-subtle rounded-md px-2 py-0.5 text-xs"
               >
                 {tag}
               </span>
             ))}
             {tags.length > 4 && (
-              <span className="text-xs text-theme-fg-subtle">+{tags.length - 4} meer</span>
+              <span className="text-theme-fg-subtle text-xs">
+                +{tags.length - 4} meer
+              </span>
             )}
           </div>
         )}
 
         {/* Hover Arrow */}
         <div className="absolute right-5 bottom-5 opacity-0 transition-opacity group-hover:opacity-100">
-          <ChevronRight className="h-5 w-5 text-theme-primary" />
+          <ChevronRight className="text-theme-primary h-5 w-5" />
         </div>
       </div>
 
@@ -290,9 +288,7 @@ export function EventCardCompact({
       <div
         className={cn(
           "flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg text-lg transition-transform duration-200 group-hover:scale-110",
-          categoryData?.name
-            ? getCategoryBgClass(categoryData.name, 15)
-            : ""
+          categoryData?.name ? getCategoryBgClass(categoryData.name, 15) : ""
         )}
         style={
           !categoryData?.name
@@ -305,12 +301,12 @@ export function EventCardCompact({
 
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <span className="truncate text-sm font-medium text-theme-fg transition-colors group-hover:text-theme-primary">
+          <span className="text-theme-fg group-hover:text-theme-primary truncate text-sm font-medium transition-colors">
             {name}
           </span>
-          {isMajor && <Star className="h-3 w-3 fill-theme-warning text-theme-warning" />}
+          {isMajor && <Star className="fill-theme-warning text-theme-warning h-3 w-3" />}
         </div>
-        <div className="text-xs text-theme-fg-muted">
+        <div className="text-theme-fg-muted text-xs">
           {new Date(date).toLocaleDateString("nl-NL", {
             day: "numeric",
             month: "short",
@@ -318,7 +314,7 @@ export function EventCardCompact({
         </div>
       </div>
 
-      <ChevronRight className="h-4 w-4 text-theme-fg-subtle opacity-0 transition-opacity group-hover:opacity-100" />
+      <ChevronRight className="text-theme-fg-subtle h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
     </>
   );
 

@@ -22,7 +22,6 @@ import {
   useEffect,
   useState,
   useCallback,
-  useSyncExternalStore,
   type ReactNode,
 } from "react";
 import {
@@ -88,11 +87,6 @@ function subscribeToSystemColorMode(callback: () => void): () => void {
   return () => mediaQuery.removeEventListener("change", callback);
 }
 
-// Server-side snapshot for useSyncExternalStore
-function getServerSnapshot(): ResolvedColorMode {
-  return "light";
-}
-
 // =============================================================================
 // DOM MANIPULATION
 // =============================================================================
@@ -155,25 +149,27 @@ export function ThemeProvider({
   defaultTheme = DEFAULT_THEME_NAME,
   defaultColorMode = DEFAULT_COLOR_MODE,
 }: ThemeProviderProps) {
-  // Subscribe to system color mode changes via useSyncExternalStore
-  const systemColorMode = useSyncExternalStore(
-    subscribeToSystemColorMode,
-    getSystemColorMode,
-    getServerSnapshot
-  );
+  // Use state for system color mode to avoid useSyncExternalStore during prerendering
+  const [systemColorMode, setSystemColorMode] = useState<ResolvedColorMode>("light");
 
-  // Initialize state from localStorage or defaults
-  const [themeName, setThemeNameState] = useState<string>(() => {
-    if (typeof window === "undefined") return defaultTheme;
-    const stored = loadFromStorage();
-    return stored?.themeName ?? defaultTheme;
-  });
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSystemColorMode(getSystemColorMode()); // sync on mount; intentional (avoids SSR hydration mismatch)
+    return subscribeToSystemColorMode(() => setSystemColorMode(getSystemColorMode()));
+  }, []);
 
-  const [colorMode, setColorModeState] = useState<ColorMode>(() => {
-    if (typeof window === "undefined") return defaultColorMode;
+  // Initialize state with defaults to prevent SSR hydration mismatch
+  const [themeName, setThemeNameState] = useState<string>(defaultTheme);
+  const [colorMode, setColorModeState] = useState<ColorMode>(defaultColorMode);
+
+  // Load from storage after mount
+  useEffect(() => {
     const stored = loadFromStorage();
-    return stored?.colorMode ?? defaultColorMode;
-  });
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (stored?.themeName) setThemeNameState(stored.themeName);
+
+    if (stored?.colorMode) setColorModeState(stored.colorMode);
+  }, []);
 
   // Resolved color mode (never "system")
   const resolvedColorMode: ResolvedColorMode =
@@ -254,13 +250,23 @@ export function ThemeProvider({
 
 /**
  * Access theme context.
- * @throws Error if used outside ThemeProvider
+ * Returns a default context value if used outside ThemeProvider (safe for SSR/tests)
  */
 export function useTheme(): ThemeContextValue {
   const context = useContext(ThemeContext);
 
   if (context === undefined) {
-    throw new Error("useTheme must be used within a ThemeProvider");
+    // Provide a safe fallback for SSR/Tests instead of throwing
+    return {
+      themeName: DEFAULT_THEME_NAME,
+      colorMode: DEFAULT_COLOR_MODE,
+      resolvedColorMode: "light",
+      setTheme: () => {},
+      setColorMode: () => {},
+      toggleColorMode: () => {},
+      themes: THEME_OPTIONS,
+      currentTheme: THEME_OPTIONS[0]!,
+    };
   }
 
   return context;

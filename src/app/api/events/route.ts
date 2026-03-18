@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { createEventSchema, eventQuerySchema } from "@/lib/validations";
 import { errorResponse, serverError, validationError } from "@/lib/api-response";
 import { parseCalendarDate, addDayForDisplay, formatDateLocal } from "@/lib/utils";
-import { Prisma } from "@/generated/prisma/client";
+import { Prisma } from "@prisma/client";
 import {
   Tithi,
   Nakshatra,
@@ -11,7 +11,7 @@ import {
   EventType,
   Importance,
   RecurrenceType,
-} from "@/generated/prisma/enums";
+} from "@prisma/client";
 
 // ============================================================================
 // Helper: Parse Query Parameters
@@ -137,6 +137,12 @@ export async function GET(request: NextRequest) {
         event: {
           include: {
             category: true,
+            seriesParentEntries: {
+              select: { parentEventId: true, dayNumber: true, sortOrder: true },
+            },
+            seriesChildEntries: {
+              select: { childEventId: true },
+            },
           },
         },
       },
@@ -169,6 +175,9 @@ export async function GET(request: NextRequest) {
           startTime: occ.startTime,
           endTime: occ.endTime,
           originalEndDate: occ.endDate ? formatDateLocal(occ.endDate) : null,
+          seriesParentEventIds: occ.event.seriesParentEntries.map((e) => e.parentEventId),
+          seriesDayNumber: occ.event.seriesParentEntries[0]?.dayNumber ?? null,
+          hasSeriesChildren: occ.event.seriesChildEntries.length > 0,
         },
       };
     });
