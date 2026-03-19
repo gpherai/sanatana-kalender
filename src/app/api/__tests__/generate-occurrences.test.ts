@@ -30,7 +30,7 @@ describe("POST /api/events/generate-occurrences", () => {
     const json = await response.json();
 
     expect(response.status).toBe(400);
-    expect(json.error).toBe("startDate and endDate are required");
+    expect(json.error).toBe("VALIDATION_ERROR");
   });
 
   it("returns not found when event does not exist", async () => {
@@ -50,7 +50,7 @@ describe("POST /api/events/generate-occurrences", () => {
     const json = await response.json();
 
     expect(response.status).toBe(404);
-    expect(json.error).toBe("Event not found");
+    expect(json.error).toBe("NOT_FOUND");
   });
 
   it("rejects invalid date formats", async () => {
@@ -67,7 +67,7 @@ describe("POST /api/events/generate-occurrences", () => {
     const json = await response.json();
 
     expect(response.status).toBe(400);
-    expect(json.error).toBe("Invalid date format");
+    expect(json.error).toBe("VALIDATION_ERROR");
   });
 
   it("returns early when event has no recurrence", async () => {

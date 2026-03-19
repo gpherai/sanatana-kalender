@@ -259,6 +259,32 @@ export const preferencesFormSchema = z.object({
 export type PreferencesFormData = z.infer<typeof preferencesFormSchema>;
 
 // =============================================================================
+// GENERATE OCCURRENCES SCHEMA
+// =============================================================================
+
+/**
+ * Schema for POST /api/events/generate-occurrences.
+ * Validates the request body for occurrence generation.
+ */
+export const generateOccurrencesSchema = z.object({
+  eventId: z.string().cuid().optional(),
+  startDate: dateStringSchema,
+  endDate: dateStringSchema,
+  location: z
+    .object({
+      name: z.string().min(1).max(100),
+      lat: z.number().min(-90).max(90),
+      lon: z.number().min(-180).max(180),
+    })
+    .optional(),
+  timezone: z.string().min(1).max(50).optional(),
+  maxOccurrences: z.number().int().positive().max(5000).optional(),
+  replace: z.boolean().default(false),
+});
+
+export type GenerateOccurrencesPayload = z.infer<typeof generateOccurrencesSchema>;
+
+// =============================================================================
 // QUERY PARAMETER SCHEMAS
 // =============================================================================
 

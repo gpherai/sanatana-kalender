@@ -8,6 +8,8 @@ import type { NextConfig } from "next";
 // @see https://nextjs.org/docs/app/api-reference/next-config-js/headers
 // =============================================================================
 
+const isDev = process.env.NODE_ENV === "development";
+
 const securityHeaders = [
   // Prevents browsers from MIME-sniffing a response away from the declared content-type
   {
@@ -35,14 +37,15 @@ const securityHeaders = [
   //   key: "Strict-Transport-Security",
   //   value: "max-age=31536000; includeSubDomains",
   // },
-  // Content Security Policy - adjust based on your needs
-  // This is a relatively permissive policy suitable for development
+  // Content Security Policy
+  // unsafe-inline: required for Tailwind and Next.js inline scripts (theme init)
+  // unsafe-eval: required by React/Next.js in dev for debugging callstacks, removed in production
   {
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-eval' 'unsafe-inline'", // Next.js requires unsafe-eval in dev
-      "style-src 'self' 'unsafe-inline'", // Tailwind uses inline styles
+      `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+      "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob:",
       "font-src 'self' data:",
       "connect-src 'self'",

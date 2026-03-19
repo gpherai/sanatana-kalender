@@ -29,39 +29,23 @@ import {
   generateOccurrencesForEvents,
 } from "@/services/recurrence.service";
 import { DEFAULT_LOCATION } from "@/lib/constants";
-
-interface GenerateRequest {
-  eventId?: string; // Optional: if provided, generate only for this event
-  startDate: string; // ISO date string
-  endDate: string; // ISO date string
-  location?: {
-    name: string;
-    lat: number;
-    lon: number;
-  };
-  timezone?: string;
-  maxOccurrences?: number;
-  replace?: boolean; // If true, delete existing occurrences in range first
-}
+import { generateOccurrencesSchema } from "@/lib/validations";
+import { validationError, notFoundError, serverError } from "@/lib/api-response";
 
 export async function POST(request: NextRequest) {
   try {
-    const body: GenerateRequest = await request.json();
+    const body = await request.json();
 
-    // Validate required fields
-    if (!body.startDate || !body.endDate) {
-      return NextResponse.json(
-        { error: "startDate and endDate are required" },
-        { status: 400 }
-      );
+    // Validate with Zod
+    const result = generateOccurrencesSchema.safeParse(body);
+    if (!result.success) {
+      return validationError(result.error);
     }
 
-    const startDate = new Date(body.startDate);
-    const endDate = new Date(body.endDate);
+    const data = result.data;
 
-    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-      return NextResponse.json({ error: "Invalid date format" }, { status: 400 });
-    }
+    const startDate = new Date(data.startDate);
+    const endDate = new Date(data.endDate);
 
     if (startDate > endDate) {
       return NextResponse.json(
@@ -70,19 +54,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const location = body.location || DEFAULT_LOCATION;
-    const timezone = body.timezone || DEFAULT_LOCATION.timezone;
-    const maxOccurrences = body.maxOccurrences;
-    const replace = body.replace ?? false;
+    const location = data.location || DEFAULT_LOCATION;
+    const timezone = data.timezone || DEFAULT_LOCATION.timezone;
+    const maxOccurrences = data.maxOccurrences;
+    const replace = data.replace;
 
     // Single event generation
-    if (body.eventId) {
+    if (data.eventId) {
       const event = await prisma.event.findUnique({
-        where: { id: body.eventId },
+        where: { id: data.eventId },
       });
 
       if (!event) {
-        return NextResponse.json({ error: "Event not found" }, { status: 404 });
+        return notFoundError("Event");
       }
 
       if (event.recurrenceType === "NONE") {
@@ -239,13 +223,7 @@ export async function POST(request: NextRequest) {
       deleted: totalDeleted,
     });
   } catch (error) {
-    console.error("Error generating occurrences:", error);
-    return NextResponse.json(
-      {
-        error: "Failed to generate occurrences",
-        details: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 }
-    );
+    console.error("[API] POST /api/events/generate-occurrences error:", error);
+    return serverError("Kon occurrences niet genereren");
   }
 }
