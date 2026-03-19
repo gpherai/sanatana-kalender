@@ -267,13 +267,6 @@ export const PRESET_LOCATIONS: Location[] = [
 // --------------------------------------------
 
 /**
- * Get moon phase emoji from phase value
- */
-export function getMoonPhaseEmoji(phase: MoonPhaseValue): string {
-  return MOON_PHASES.find((p) => p.value === phase)?.emoji ?? "🌙";
-}
-
-/**
  * Get event type by value
  */
 export function getEventType(value: string) {

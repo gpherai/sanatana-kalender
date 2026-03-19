@@ -19,7 +19,7 @@ import {
 } from "@/types/calendar";
 import { getEventType } from "@/lib/constants";
 import { logError, formatDateLocal } from "@/lib/utils";
-import { getMoonPhaseEmoji } from "@/lib/date-utils";
+import { getApproxMoonPhaseEmoji } from "@/lib/moon-phases";
 import { EventDetailModal } from "./EventDetailModal";
 import { CalendarToolbar } from "./CalendarToolbar";
 
@@ -40,7 +40,7 @@ const localizer = dateFnsLocalizer({
  * Custom date header component showing moon phase
  */
 function DateHeader({ date }: DateHeaderProps) {
-  const { emoji: moonEmoji, isSpecial: specialDay } = getMoonPhaseEmoji(date);
+  const { emoji: moonEmoji, isSpecial: specialDay } = getApproxMoonPhaseEmoji(date);
   const isToday = new Date().toDateString() === date.toDateString();
 
   return (

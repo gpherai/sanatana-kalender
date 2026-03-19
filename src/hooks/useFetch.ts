@@ -234,7 +234,7 @@ export function useFetchMultiple<T = unknown>(
       didCancel = true;
       controller.abort();
     };
-  }, [urls.join(","), skip, refreshKey, onSuccess, onError, errorMessage]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(urls), skip, refreshKey, onSuccess, onError, errorMessage]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     isMountedRef.current = true;

@@ -20,7 +20,7 @@ import { nl } from "date-fns/locale";
 import { CalendarEvent } from "@/types/calendar";
 import { getEventType, getTithi, getNakshatra, getMaas } from "@/lib/constants";
 import { cn, logError } from "@/lib/utils";
-import { getMoonPhaseIllumination } from "@/lib/date-utils";
+import { getApproxMoonIllumination } from "@/lib/moon-phases";
 import { useToast } from "@/components/ui/Toast";
 import { MoonPhase } from "@/components/ui/MoonPhase";
 // Note: Inline color-mix styles used here for edge cases (gradients, mixing with white)
@@ -167,7 +167,7 @@ export function EventDetailModal({
   const isMultiDay =
     event.start.toDateString() !== new Date(displayEndDate).toDateString();
   const relativeLabel = getRelativeDateLabel(event.start);
-  const moonInfo = getMoonPhaseIllumination(event.start);
+  const moonInfo = getApproxMoonIllumination(event.start);
 
   // Calculate duration for multi-day events
   const durationDays = isMultiDay

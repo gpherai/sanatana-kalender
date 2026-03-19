@@ -231,7 +231,17 @@ export class PanchangaService {
 // =============================================================================
 
 /**
- * Export a singleton instance for use across the application
- * This ensures cache is shared between API calls
+ * Singleton pattern using globalThis to survive Next.js hot-reload.
+ * Without this, each hot-reload creates a new instance, losing the LRU cache.
+ * Same pattern as src/lib/db.ts uses for PrismaClient.
  */
-export const panchangaService = new PanchangaService();
+const globalForPanchanga = globalThis as unknown as {
+  panchangaService: PanchangaService | undefined;
+};
+
+export const panchangaService =
+  globalForPanchanga.panchangaService ?? new PanchangaService();
+
+if (process.env.NODE_ENV !== "production") {
+  globalForPanchanga.panchangaService = panchangaService;
+}
