@@ -120,7 +120,10 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
 
     try {
       const payload = transformFormToApi(result.data);
-      const url = mode === "create" ? "/api/events" : `/api/events/${initialData?.id}`;
+      if (mode === "edit" && !initialData?.id) {
+        throw new Error("Event ID is required in edit mode");
+      }
+      const url = mode === "create" ? "/api/events" : `/api/events/${initialData!.id}`;
       const method = mode === "create" ? "POST" : "PUT";
 
       const response = await fetch(url, {

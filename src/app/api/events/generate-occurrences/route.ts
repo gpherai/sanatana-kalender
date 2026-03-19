@@ -104,38 +104,23 @@ export async function POST(request: NextRequest) {
         deletedCount = deleteResult.count;
       }
 
-      // Insert new occurrences (upsert to handle duplicates)
-      const insertedCount = await Promise.all(
-        occurrences.map((occ) =>
-          prisma.eventOccurrence.upsert({
-            where: {
-              eventId_date: {
-                eventId: event.id,
-                date: occ.date,
-              },
-            },
-            create: {
-              eventId: event.id,
-              date: occ.date,
-              endDate: occ.endDate,
-              startTime: occ.startTime,
-              endTime: occ.endTime,
-              notes: occ.notes,
-            },
-            update: {
-              endDate: occ.endDate,
-              startTime: occ.startTime,
-              endTime: occ.endTime,
-              notes: occ.notes,
-            },
-          })
-        )
-      );
+      // Insert new occurrences using bulk createMany (skipDuplicates for non-replace case)
+      const createResult = await prisma.eventOccurrence.createMany({
+        data: occurrences.map((occ) => ({
+          eventId: event.id,
+          date: occ.date,
+          endDate: occ.endDate,
+          startTime: occ.startTime,
+          endTime: occ.endTime,
+          notes: occ.notes,
+        })),
+        skipDuplicates: true,
+      });
 
       return NextResponse.json({
         message: `Generated occurrences for "${event.name}"`,
         eventId: event.id,
-        generated: insertedCount.length,
+        generated: createResult.count,
         deleted: deletedCount,
       });
     }
@@ -185,35 +170,21 @@ export async function POST(request: NextRequest) {
         totalDeleted += deleteResult.count;
       }
 
-      // Insert new occurrences (upsert to handle duplicates)
-      const inserted = await Promise.all(
-        occurrences.map((occ) =>
-          prisma.eventOccurrence.upsert({
-            where: {
-              eventId_date: {
-                eventId,
-                date: occ.date,
-              },
-            },
-            create: {
-              eventId,
-              date: occ.date,
-              endDate: occ.endDate,
-              startTime: occ.startTime,
-              endTime: occ.endTime,
-              notes: occ.notes,
-            },
-            update: {
-              endDate: occ.endDate,
-              startTime: occ.startTime,
-              endTime: occ.endTime,
-              notes: occ.notes,
-            },
-          })
-        )
-      );
-
-      totalGenerated += inserted.length;
+      // Insert new occurrences using bulk createMany (skipDuplicates for non-replace case)
+      if (occurrences.length > 0) {
+        const insertResult = await prisma.eventOccurrence.createMany({
+          data: occurrences.map((occ) => ({
+            eventId,
+            date: occ.date,
+            endDate: occ.endDate,
+            startTime: occ.startTime,
+            endTime: occ.endTime,
+            notes: occ.notes,
+          })),
+          skipDuplicates: true,
+        });
+        totalGenerated += insertResult.count;
+      }
     }
 
     return NextResponse.json({

@@ -17,7 +17,7 @@
  * ```
  */
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 // =============================================================================
 // TYPES
@@ -67,9 +67,6 @@ export function useFetch<T = unknown>(
   const [error, setError] = useState<Error | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  // Track if component is mounted
-  const isMountedRef = useRef(true);
-
   // Manual refetch function
   const refetch = useCallback(() => {
     setRefreshKey((prev) => prev + 1);
@@ -83,17 +80,17 @@ export function useFetch<T = unknown>(
     }
 
     const controller = new AbortController();
-    let didCancel = false;
+    const { signal } = controller;
 
     async function fetchData() {
       // Reset states
-      if (!didCancel && isMountedRef.current) {
+      if (!signal.aborted) {
         setLoading(true);
         setError(null);
       }
 
       try {
-        const response = await fetch(url as string, { signal: controller.signal });
+        const response = await fetch(url as string, { signal });
 
         if (!response.ok) {
           throw new Error(
@@ -103,7 +100,7 @@ export function useFetch<T = unknown>(
 
         const jsonData = (await response.json()) as T;
 
-        if (!didCancel && isMountedRef.current) {
+        if (!signal.aborted) {
           setData(jsonData);
           onSuccess?.(jsonData);
         }
@@ -115,12 +112,12 @@ export function useFetch<T = unknown>(
 
         const fetchError = err instanceof Error ? err : new Error("Unknown error");
 
-        if (!didCancel && isMountedRef.current) {
+        if (!signal.aborted) {
           setError(fetchError);
           onError?.(fetchError);
         }
       } finally {
-        if (!didCancel && isMountedRef.current) {
+        if (!signal.aborted) {
           setLoading(false);
         }
       }
@@ -129,18 +126,9 @@ export function useFetch<T = unknown>(
     fetchData();
 
     return () => {
-      didCancel = true;
       controller.abort();
     };
   }, [url, skip, refreshKey, onSuccess, onError, errorMessage]);
-
-  // Track mounted state
-  useEffect(() => {
-    isMountedRef.current = true;
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, []);
 
   return { data, loading, error, refetch };
 }
@@ -167,7 +155,8 @@ export function useFetchMultiple<T = unknown>(
   const [error, setError] = useState<Error | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const isMountedRef = useRef(true);
+  // Stable serialized key — only recompute when urls array contents change
+  const urlsKey = urls.join(",");
 
   const refetch = useCallback(() => {
     setRefreshKey((prev) => prev + 1);
@@ -182,17 +171,17 @@ export function useFetchMultiple<T = unknown>(
     }
 
     const controller = new AbortController();
-    let didCancel = false;
+    const { signal } = controller;
 
     async function fetchAll() {
-      if (!didCancel && isMountedRef.current) {
+      if (!signal.aborted) {
         setLoading(true);
         setError(null);
       }
 
       try {
         const responses = await Promise.all(
-          validUrls.map((url) => fetch(url, { signal: controller.signal }))
+          validUrls.map((url) => fetch(url, { signal }))
         );
 
         // Check all responses
@@ -206,7 +195,7 @@ export function useFetchMultiple<T = unknown>(
 
         const jsonData = (await Promise.all(responses.map((r) => r.json()))) as T[];
 
-        if (!didCancel && isMountedRef.current) {
+        if (!signal.aborted) {
           setData(jsonData);
           onSuccess?.(jsonData);
         }
@@ -217,12 +206,12 @@ export function useFetchMultiple<T = unknown>(
 
         const fetchError = err instanceof Error ? err : new Error("Unknown error");
 
-        if (!didCancel && isMountedRef.current) {
+        if (!signal.aborted) {
           setError(fetchError);
           onError?.(fetchError);
         }
       } finally {
-        if (!didCancel && isMountedRef.current) {
+        if (!signal.aborted) {
           setLoading(false);
         }
       }
@@ -231,17 +220,11 @@ export function useFetchMultiple<T = unknown>(
     fetchAll();
 
     return () => {
-      didCancel = true;
       controller.abort();
     };
-  }, [JSON.stringify(urls), skip, refreshKey, onSuccess, onError, errorMessage]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    isMountedRef.current = true;
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, []);
+    // urlsKey is a stable string derived from urls — safe to use instead of the array itself
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [urlsKey, skip, refreshKey, onSuccess, onError, errorMessage]);
 
   return { data, loading, error, refetch };
 }

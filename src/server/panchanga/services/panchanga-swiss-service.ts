@@ -433,8 +433,8 @@ export class PanchangaSwissService {
     const nextRashi = nextAmavasya ? await this.getSunRashi(nextAmavasya) : null;
     const isAdhika = prevRashi !== null && nextRashi !== null && prevRashi === nextRashi;
 
-    // Step 4: Detect Sankranti (solar transition)
-    const sankrantiData = await this.detectSankranti(dateStr, location);
+    // Step 4: Detect Sankranti (solar transition) - reuse already-computed astro data
+    const sankrantiData = await this.detectSankranti(astro.sunriseJD, location.tz);
 
     // -------------------------------------------------------------------------
     // MULTIPLE TRANSITIONS - Check if elements end before next sunrise
@@ -796,25 +796,23 @@ export class PanchangaSwissService {
   }
 
   /**
-   * Detect if a Sankranti (solar transition between rashis) occurs on a given date
+   * Detect if a Sankranti (solar transition between rashis) occurs on a given date.
    *
-   * Sankranti = Sun transitioning from one zodiac sign to the next
-   * We search ±1.5 days around the given date to detect transitions
+   * Sankranti = Sun transitioning from one zodiac sign to the next.
+   * Searches within a ~24-hour window starting at the provided sunrise Julian Day.
    *
    * NOTE: Unlike findEventEnd which is limited to 1.5 days for lunar events,
    * solar transitions are slower and can be safely detected within this window.
    *
-   * @param dateStr - Date string (YYYY-MM-DD)
-   * @param location - Location config with lat, lon, tz
+   * @param sunriseJD - Julian Day of sunrise (already computed by caller)
+   * @param tz - IANA timezone string for local time formatting
    * @returns Object with sankranti type and time, or null if no transition
    */
   private async detectSankranti(
-    dateStr: string,
-    location: LocationConfig
+    sunriseJD: number,
+    tz: string
   ): Promise<{ sankranti: string; time: string } | null> {
-    // Get JD for start of this day (sunrise)
-    const astro = await calculateSunriseSunset(dateStr, location);
-    const dayStartJD = astro.sunriseJD;
+    const dayStartJD = sunriseJD;
     const dayEndJD = dayStartJD + 1; // ~24 hours later
 
     // Get Sun's rashi at day start and end
@@ -854,7 +852,7 @@ export class PanchangaSwissService {
     const s = Math.floor((remainder - m) * 60);
 
     const dt = DateTime.utc(dateUTC.year, dateUTC.month, dateUTC.day, h, m, s).setZone(
-      location.tz
+      tz
     );
     const timeStr = dt.toFormat("HH:mm");
 

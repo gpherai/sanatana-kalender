@@ -47,8 +47,13 @@ export const DATE_PREFIX_REGEX = /^\d{4}-\d{2}-\d{2}/;
 export const DATETIME_REGEX = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?$/;
 
 /**
- * CUID format (Prisma default ID)
+ * CUID format (Prisma default ID) — approximate pattern for reference only.
  * Examples: "clfx1234567890abcdefghij"
+ *
+ * NOTE: This regex is an approximation and may reject valid CUID2 identifiers
+ * (which can have varying lengths and character sets). For authoritative
+ * validation, use Zod's `.cuid()` validator (see `cuidSchema` in validations.ts).
+ * This constant is retained for backward compatibility with tests/helpers.
  */
 export const CUID_REGEX = /^c[a-z0-9]{24}$/;
 

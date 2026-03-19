@@ -10,9 +10,14 @@ export const dynamic = "force-dynamic";
 
 export default async function Home() {
   // Fetch upcoming events from database with category relation (7 days window)
-  const today = new Date();
-  const sevenDaysLater = new Date(today);
-  sevenDaysLater.setDate(today.getDate() + 7);
+  // Strip time component to UTC midnight so all-day events for today are included
+  const now = new Date();
+  const today = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+  );
+  const sevenDaysLater = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 7)
+  );
 
   const upcomingEvents = await prisma.eventOccurrence.findMany({
     where: {

@@ -78,7 +78,10 @@ export function getApproximateHinduMonth(date: Date): string {
  * detectSpecialDay({ number: 15, paksha: "Shukla", name: "Purnima" })
  * // { type: "purnima", name: "Purnima", description: "Volle Maan - Heilige dag", emoji: "🌕" }
  */
-export function detectSpecialDay(tithi: TithiInfo): SpecialDay | null {
+export function detectSpecialDay(
+  tithi: TithiInfo,
+  date: Date = new Date()
+): SpecialDay | null {
   if (!tithi) return null;
 
   const { number, paksha } = tithi;
@@ -86,7 +89,7 @@ export function detectSpecialDay(tithi: TithiInfo): SpecialDay | null {
   // Purnima (Full Moon) - 15th Shukla Paksha
   if (number === 15 && paksha === "Shukla") {
     return {
-      date: new Date(), // Will be set by caller
+      date,
       type: "purnima",
       name: "Purnima",
       description: "Volle Maan - Heilige dag",
@@ -97,7 +100,7 @@ export function detectSpecialDay(tithi: TithiInfo): SpecialDay | null {
   // Amavasya (New Moon) - 15th Krishna Paksha
   if (number === 15 && paksha === "Krishna") {
     return {
-      date: new Date(),
+      date,
       type: "amavasya",
       name: "Amavasya",
       description: "Nieuwe Maan - Voorouderdag",
@@ -108,7 +111,7 @@ export function detectSpecialDay(tithi: TithiInfo): SpecialDay | null {
   // Ekadashi (11th tithi) - Important fasting day for Vishnu worship
   if (number === 11) {
     return {
-      date: new Date(),
+      date,
       type: "ekadashi",
       name: `${paksha} Ekadashi`,
       description: "Vishnu vastendag",
@@ -120,7 +123,7 @@ export function detectSpecialDay(tithi: TithiInfo): SpecialDay | null {
   if (number === 4) {
     if (paksha === "Shukla") {
       return {
-        date: new Date(),
+        date,
         type: "chaturthi",
         name: "Vinayaka Chaturthi",
         description: "Ganesha puja dag",
@@ -128,7 +131,7 @@ export function detectSpecialDay(tithi: TithiInfo): SpecialDay | null {
       };
     } else {
       return {
-        date: new Date(),
+        date,
         type: "sankashti",
         name: "Sankashti Chaturthi",
         description: "Ganesha vastendag",
@@ -140,7 +143,7 @@ export function detectSpecialDay(tithi: TithiInfo): SpecialDay | null {
   // Pradosham (13th tithi) - Shiva worship time
   if (number === 13) {
     return {
-      date: new Date(),
+      date,
       type: "pradosham",
       name: "Pradosham",
       description: "Shiva vereringsdag",
@@ -151,7 +154,7 @@ export function detectSpecialDay(tithi: TithiInfo): SpecialDay | null {
   // Ashtami (8th tithi) - Durga/Devi worship
   if (number === 8) {
     return {
-      date: new Date(),
+      date,
       type: "ashtami",
       name: `${paksha} Ashtami`,
       description: "Durga dag",
@@ -182,11 +185,9 @@ export function getSpecialLunarDays<T extends { date: string | Date; tithi?: Tit
   for (const day of monthData) {
     if (!day.tithi) continue;
 
-    const specialDay = detectSpecialDay(day.tithi);
+    const date = typeof day.date === "string" ? new Date(day.date) : day.date;
+    const specialDay = detectSpecialDay(day.tithi, date);
     if (specialDay) {
-      // Set the correct date for this special day
-      const date = typeof day.date === "string" ? new Date(day.date) : day.date;
-      specialDay.date = date;
       specialDays.push(specialDay);
     }
   }

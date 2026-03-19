@@ -313,22 +313,6 @@ enum MoonPhaseType {
   WANING_CRESCENT
 }
 
-/// Zodiac signs (Rashi) - 12 signs of 30° each
-enum Rashi {
-  MESHA
-  VRISHABHA
-  MITHUNA
-  KARKA
-  SIMHA
-  KANYA
-  TULA
-  VRISHCHIKA
-  DHANU
-  MAKARA
-  KUMBHA
-  MEENA
-}
-
 /// Solar transitions between zodiac signs (Sankranti)
 enum Sankranti {
   MESHA_SANKRANTI

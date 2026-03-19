@@ -232,7 +232,7 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
       where: { id },
     });
 
-    return NextResponse.json({ success: true });
+    return new NextResponse(null, { status: 204 });
   } catch (error) {
     console.error("[API] DELETE /api/events/[id] error:", error);
 

@@ -36,7 +36,9 @@ const DEFAULT_PREFERENCES = {
  */
 export async function GET() {
   try {
-    const preferences = await prisma.userPreference.findFirst();
+    const preferences = await prisma.userPreference.findUnique({
+      where: { id: "default" },
+    });
 
     if (!preferences) {
       // Return default preferences without creating in DB

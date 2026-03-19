@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useCallback, useState } from "react";
+import { FocusTrap } from "focus-trap-react";
 import { useRouter } from "next/navigation";
 import {
   X,
@@ -178,364 +179,377 @@ export function EventDetailModal({
     : 1;
 
   return (
-    <div
-      className={cn(
-        "fixed inset-0 z-50 flex items-center justify-center p-4",
-        "transition-opacity duration-300",
-        isVisible ? "opacity-100" : "opacity-0"
-      )}
-      onClick={handleBackdropClick}
+    <FocusTrap
+      focusTrapOptions={{
+        escapeDeactivates: false,
+        allowOutsideClick: true,
+        fallbackFocus: () => modalRef.current ?? document.body,
+      }}
     >
-      {/* Backdrop */}
       <div
-        className="pointer-events-none absolute inset-0 bg-[var(--theme-modal-backdrop)] backdrop-blur-sm"
-        aria-hidden="true"
-      />
-
-      {/* Modal */}
-      <div
-        ref={modalRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="modal-title"
-        tabIndex={-1}
         className={cn(
-          "bg-theme-surface relative w-full max-w-lg rounded-3xl shadow-2xl",
-          "max-h-[90vh] overflow-hidden",
-          "outline-none",
-          "transition-all duration-300",
-          isVisible
-            ? "translate-y-0 scale-100 opacity-100"
-            : "translate-y-4 scale-95 opacity-0"
+          "fixed inset-0 z-50 flex items-center justify-center p-4",
+          "transition-opacity duration-300",
+          isVisible ? "opacity-100" : "opacity-0"
         )}
-        onClick={(e) => e.stopPropagation()}
+        onClick={handleBackdropClick}
       >
-        {/* Header with gradient */}
+        {/* Backdrop */}
         <div
-          className="relative overflow-hidden p-6 pb-5"
-          style={{
-            // Keep as inline: gradient with non-standard opacity levels (25%, 10%)
-            background: category?.color
-              ? `linear-gradient(135deg, color-mix(in oklch, ${category.color} 25%, transparent) 0%, color-mix(in oklch, ${category.color} 10%, transparent) 100%)`
-              : "linear-gradient(135deg, oklch(0.97 0.02 60) 0%, oklch(0.98 0.01 60) 100%)",
-          }}
+          className="pointer-events-none absolute inset-0 bg-[var(--theme-modal-backdrop)] backdrop-blur-sm"
+          aria-hidden="true"
+        />
+
+        {/* Modal */}
+        <div
+          ref={modalRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
+          tabIndex={-1}
+          className={cn(
+            "bg-theme-surface relative w-full max-w-lg rounded-3xl shadow-2xl",
+            "max-h-[90vh] overflow-hidden",
+            "outline-none",
+            "transition-all duration-300",
+            isVisible
+              ? "translate-y-0 scale-100 opacity-100"
+              : "translate-y-4 scale-95 opacity-0"
+          )}
+          onClick={(e) => e.stopPropagation()}
         >
-          {/* Decorative circles */}
-          <div className="absolute -top-12 -right-12 h-32 w-32 rounded-full bg-[var(--theme-glass-bg)]" />
-          <div className="absolute -bottom-8 -left-8 h-24 w-24 rounded-full bg-[var(--theme-glass-bg)]" />
-
-          {/* Close button */}
-          <button
-            onClick={onClose}
-            className={cn(
-              "absolute top-4 right-4 rounded-full p-2.5",
-              "bg-theme-surface-hover/60 hover:bg-theme-surface-hover",
-              "backdrop-blur-sm transition-all duration-200",
-              "hover:scale-105",
-              "focus:ring-theme-primary focus:ring-2 focus:ring-offset-2 focus:outline-none"
-            )}
-            aria-label="Sluiten"
+          {/* Header with gradient */}
+          <div
+            className="relative overflow-hidden p-6 pb-5"
+            style={{
+              // Keep as inline: gradient with non-standard opacity levels (25%, 10%)
+              background: category?.color
+                ? `linear-gradient(135deg, color-mix(in oklch, ${category.color} 25%, transparent) 0%, color-mix(in oklch, ${category.color} 10%, transparent) 100%)`
+                : "linear-gradient(135deg, oklch(0.97 0.02 60) 0%, oklch(0.98 0.01 60) 100%)",
+            }}
           >
-            <X className="text-theme-fg-secondary h-5 w-5" />
-          </button>
+            {/* Decorative circles */}
+            <div className="absolute -top-12 -right-12 h-32 w-32 rounded-full bg-[var(--theme-glass-bg)]" />
+            <div className="absolute -bottom-8 -left-8 h-24 w-24 rounded-full bg-[var(--theme-glass-bg)]" />
 
-          {/* Category + Type badges */}
-          <div className="mb-3 flex flex-wrap items-center gap-2">
-            {category && (
-              <span
-                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium backdrop-blur-sm"
+            {/* Close button */}
+            <button
+              onClick={onClose}
+              className={cn(
+                "absolute top-4 right-4 rounded-full p-2.5",
+                "bg-theme-surface-hover/60 hover:bg-theme-surface-hover",
+                "backdrop-blur-sm transition-all duration-200",
+                "hover:scale-105",
+                "focus:ring-theme-primary focus:ring-2 focus:ring-offset-2 focus:outline-none"
+              )}
+              aria-label="Sluiten"
+            >
+              <X className="text-theme-fg-secondary h-5 w-5" />
+            </button>
+
+            {/* Category + Type badges */}
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              {category && (
+                <span
+                  className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium backdrop-blur-sm"
+                  style={{
+                    // Keep as inline: mixing with white instead of transparent
+                    backgroundColor: `color-mix(in oklch, ${category.color} 30%, white)`,
+                    color: category.color,
+                  }}
+                >
+                  <span className="text-base">{category.icon}</span>
+                  <span>{category.displayName}</span>
+                </span>
+              )}
+              {eventType && (
+                <span className="bg-theme-surface-overlay text-theme-fg-secondary inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-sm backdrop-blur-sm">
+                  {eventType.icon} {eventType.label}
+                </span>
+              )}
+              {event.resource.importance === "MAJOR" && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-amber-400/30 px-2.5 py-1 text-sm font-medium text-amber-700 backdrop-blur-sm dark:text-amber-300">
+                  <Star className="h-3.5 w-3.5 fill-current" />
+                  Belangrijk
+                </span>
+              )}
+            </div>
+
+            {/* Title */}
+            <h2
+              id="modal-title"
+              className="text-theme-fg pr-10 text-2xl leading-tight font-bold"
+            >
+              {event.title}
+            </h2>
+
+            {/* Relative date badge - theme colored */}
+            {relativeLabel && (
+              <div className="bg-theme-primary mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium text-white">
+                <Sparkles className="h-3.5 w-3.5" />
+                {relativeLabel}
+              </div>
+            )}
+          </div>
+
+          {/* Content */}
+          <div className="max-h-[calc(90vh-280px)] space-y-5 overflow-y-auto p-6 pt-5">
+            {/* Date + Moon Phase Row */}
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0">
+                <MoonPhase
+                  percent={moonInfo.percent}
+                  isWaxing={moonInfo.isWaxing}
+                  size={56}
+                  glow={false}
+                />
+              </div>
+              <div className="flex-1">
+                <div className="mb-1 flex items-center gap-2">
+                  <Calendar className="text-theme-primary h-4 w-4" />
+                  <span className="text-theme-fg-muted text-sm font-medium">Datum</span>
+                </div>
+                <div className="text-theme-fg font-medium capitalize">{startDate}</div>
+                {isMultiDay && (
+                  <>
+                    <div className="text-theme-fg-muted mt-0.5 text-sm capitalize">
+                      tot {endDate}
+                    </div>
+                    <div className="bg-theme-primary-15 text-theme-primary mt-1.5 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium">
+                      {durationDays} dagen
+                    </div>
+                  </>
+                )}
+                <div className="text-theme-fg-subtle mt-1 text-xs">
+                  {moonInfo.percent}% maanverlicht •{" "}
+                  {moonInfo.isWaxing ? "Wassend" : "Afnemend"}
+                </div>
+              </div>
+            </div>
+
+            {/* Time (if set) */}
+            {event.resource.startTime && (
+              <div className="bg-theme-surface-raised flex items-center gap-3 rounded-xl p-3">
+                <Clock className="text-theme-secondary h-5 w-5" />
+                <div>
+                  <span className="text-theme-fg font-medium">
+                    {event.resource.startTime}
+                  </span>
+                  {event.resource.endTime && (
+                    <span className="text-theme-fg-muted">
+                      {" "}
+                      - {event.resource.endTime}
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Description */}
+            {event.resource.description && (
+              <div className="text-theme-fg-secondary leading-relaxed">
+                {event.resource.description}
+              </div>
+            )}
+
+            {/* Lunar Info */}
+            {(tithi || nakshatra || maas) && (
+              <div
+                className="rounded-2xl p-4"
                 style={{
-                  // Keep as inline: mixing with white instead of transparent
-                  backgroundColor: `color-mix(in oklch, ${category.color} 30%, white)`,
-                  color: category.color,
+                  background: `linear-gradient(135deg, var(--theme-almanac-moon-card-from), var(--theme-almanac-moon-card-to))`,
                 }}
               >
-                <span className="text-base">{category.icon}</span>
-                <span>{category.displayName}</span>
-              </span>
-            )}
-            {eventType && (
-              <span className="bg-theme-surface-overlay text-theme-fg-secondary inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-sm backdrop-blur-sm">
-                {eventType.icon} {eventType.label}
-              </span>
-            )}
-            {event.resource.importance === "MAJOR" && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-amber-400/30 px-2.5 py-1 text-sm font-medium text-amber-700 backdrop-blur-sm dark:text-amber-300">
-                <Star className="h-3.5 w-3.5 fill-current" />
-                Belangrijk
-              </span>
-            )}
-          </div>
-
-          {/* Title */}
-          <h2
-            id="modal-title"
-            className="text-theme-fg pr-10 text-2xl leading-tight font-bold"
-          >
-            {event.title}
-          </h2>
-
-          {/* Relative date badge - theme colored */}
-          {relativeLabel && (
-            <div className="bg-theme-primary mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium text-white">
-              <Sparkles className="h-3.5 w-3.5" />
-              {relativeLabel}
-            </div>
-          )}
-        </div>
-
-        {/* Content */}
-        <div className="max-h-[calc(90vh-280px)] space-y-5 overflow-y-auto p-6 pt-5">
-          {/* Date + Moon Phase Row */}
-          <div className="flex items-start gap-4">
-            <div className="flex-shrink-0">
-              <MoonPhase
-                percent={moonInfo.percent}
-                isWaxing={moonInfo.isWaxing}
-                size={56}
-                glow={false}
-              />
-            </div>
-            <div className="flex-1">
-              <div className="mb-1 flex items-center gap-2">
-                <Calendar className="text-theme-primary h-4 w-4" />
-                <span className="text-theme-fg-muted text-sm font-medium">Datum</span>
-              </div>
-              <div className="text-theme-fg font-medium capitalize">{startDate}</div>
-              {isMultiDay && (
-                <>
-                  <div className="text-theme-fg-muted mt-0.5 text-sm capitalize">
-                    tot {endDate}
-                  </div>
-                  <div className="bg-theme-primary-15 text-theme-primary mt-1.5 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium">
-                    {durationDays} dagen
-                  </div>
-                </>
-              )}
-              <div className="text-theme-fg-subtle mt-1 text-xs">
-                {moonInfo.percent}% maanverlicht •{" "}
-                {moonInfo.isWaxing ? "Wassend" : "Afnemend"}
-              </div>
-            </div>
-          </div>
-
-          {/* Time (if set) */}
-          {event.resource.startTime && (
-            <div className="bg-theme-surface-raised flex items-center gap-3 rounded-xl p-3">
-              <Clock className="text-theme-secondary h-5 w-5" />
-              <div>
-                <span className="text-theme-fg font-medium">
-                  {event.resource.startTime}
-                </span>
-                {event.resource.endTime && (
-                  <span className="text-theme-fg-muted"> - {event.resource.endTime}</span>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Description */}
-          {event.resource.description && (
-            <div className="text-theme-fg-secondary leading-relaxed">
-              {event.resource.description}
-            </div>
-          )}
-
-          {/* Lunar Info */}
-          {(tithi || nakshatra || maas) && (
-            <div
-              className="rounded-2xl p-4"
-              style={{
-                background: `linear-gradient(135deg, var(--theme-almanac-moon-card-from), var(--theme-almanac-moon-card-to))`,
-              }}
-            >
-              <div className="mb-3 flex items-center gap-2">
-                <Moon className="h-5 w-5 text-[var(--theme-almanac-moon-icon)]" />
-                <span className="font-medium text-[var(--theme-almanac-moon-fg)]">
-                  Vedische Informatie
-                </span>
-              </div>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                {tithi && (
-                  <div className="rounded-xl bg-[var(--theme-almanac-moon-cell-bg)] p-3 text-center">
-                    <div className="mb-1 text-xs tracking-wide text-[var(--theme-almanac-moon-icon)] uppercase">
-                      Tithi
-                    </div>
-                    <div className="text-theme-fg font-medium">{tithi.label}</div>
-                    <div className="text-theme-fg-muted mt-0.5 text-xs">
-                      {tithi.paksha} Paksha
-                    </div>
-                  </div>
-                )}
-                {nakshatra && (
-                  <div className="rounded-xl bg-[var(--theme-almanac-moon-cell-bg)] p-3 text-center">
-                    <div className="mb-1 text-xs tracking-wide text-[var(--theme-almanac-moon-icon)] uppercase">
-                      Nakshatra
-                    </div>
-                    <div className="text-theme-fg font-medium">{nakshatra.label}</div>
-                  </div>
-                )}
-                {maas && (
-                  <div className="rounded-xl bg-[var(--theme-almanac-moon-cell-bg)] p-3 text-center">
-                    <div className="mb-1 text-xs tracking-wide text-[var(--theme-almanac-moon-icon)] uppercase">
-                      Maas
-                    </div>
-                    <div className="text-theme-fg font-medium">{maas.label}</div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Tags */}
-          {event.resource.tags.length > 0 && (
-            <div>
-              <div className="mb-2 flex items-center gap-2">
-                <Tag className="text-theme-fg-subtle h-4 w-4" />
-                <span className="text-theme-fg-muted text-sm font-medium">Tags</span>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {event.resource.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="bg-theme-surface-raised text-theme-fg-secondary hover:bg-theme-hover cursor-default rounded-full px-3 py-1 text-sm transition-colors"
-                  >
-                    #{tag}
+                <div className="mb-3 flex items-center gap-2">
+                  <Moon className="h-5 w-5 text-[var(--theme-almanac-moon-icon)]" />
+                  <span className="font-medium text-[var(--theme-almanac-moon-fg)]">
+                    Vedische Informatie
                   </span>
-                ))}
+                </div>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                  {tithi && (
+                    <div className="rounded-xl bg-[var(--theme-almanac-moon-cell-bg)] p-3 text-center">
+                      <div className="mb-1 text-xs tracking-wide text-[var(--theme-almanac-moon-icon)] uppercase">
+                        Tithi
+                      </div>
+                      <div className="text-theme-fg font-medium">{tithi.label}</div>
+                      <div className="text-theme-fg-muted mt-0.5 text-xs">
+                        {tithi.paksha} Paksha
+                      </div>
+                    </div>
+                  )}
+                  {nakshatra && (
+                    <div className="rounded-xl bg-[var(--theme-almanac-moon-cell-bg)] p-3 text-center">
+                      <div className="mb-1 text-xs tracking-wide text-[var(--theme-almanac-moon-icon)] uppercase">
+                        Nakshatra
+                      </div>
+                      <div className="text-theme-fg font-medium">{nakshatra.label}</div>
+                    </div>
+                  )}
+                  {maas && (
+                    <div className="rounded-xl bg-[var(--theme-almanac-moon-cell-bg)] p-3 text-center">
+                      <div className="mb-1 text-xs tracking-wide text-[var(--theme-almanac-moon-icon)] uppercase">
+                        Maas
+                      </div>
+                      <div className="text-theme-fg font-medium">{maas.label}</div>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Notes */}
-          {event.resource.notes && (
-            <div className="rounded-2xl bg-[var(--theme-info-bg)] p-4">
-              <div className="mb-2 flex items-center gap-2">
-                <span className="text-lg">📝</span>
-                <span className="font-medium text-[var(--theme-info-fg)]">Notities</span>
+            {/* Tags */}
+            {event.resource.tags.length > 0 && (
+              <div>
+                <div className="mb-2 flex items-center gap-2">
+                  <Tag className="text-theme-fg-subtle h-4 w-4" />
+                  <span className="text-theme-fg-muted text-sm font-medium">Tags</span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {event.resource.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="bg-theme-surface-raised text-theme-fg-secondary hover:bg-theme-hover cursor-default rounded-full px-3 py-1 text-sm transition-colors"
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
               </div>
-              <p className="text-sm leading-relaxed text-[var(--theme-info-fg)]">
-                {event.resource.notes}
-              </p>
-            </div>
-          )}
+            )}
 
-          {/* Parent event links */}
-          {eventRelations?.parentEvents && eventRelations.parentEvents.length > 0 && (
-            <div className="bg-theme-surface-raised rounded-2xl p-4">
-              <div className="mb-2 flex items-center gap-2">
-                <ChevronRight className="text-theme-fg-subtle h-4 w-4" />
-                <span className="text-theme-fg-muted text-sm font-medium">
-                  Onderdeel van
-                </span>
+            {/* Notes */}
+            {event.resource.notes && (
+              <div className="rounded-2xl bg-[var(--theme-info-bg)] p-4">
+                <div className="mb-2 flex items-center gap-2">
+                  <span className="text-lg">📝</span>
+                  <span className="font-medium text-[var(--theme-info-fg)]">
+                    Notities
+                  </span>
+                </div>
+                <p className="text-sm leading-relaxed text-[var(--theme-info-fg)]">
+                  {event.resource.notes}
+                </p>
               </div>
-              <div className="space-y-1">
-                {eventRelations.parentEvents.map((parent) => (
-                  <div key={parent.id} className="text-theme-fg text-sm font-medium">
-                    {parent.name}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+            )}
 
-          {/* Child events list */}
-          {eventRelations?.childEvents && eventRelations.childEvents.length > 0 && (
-            <div className="bg-theme-surface-raised rounded-2xl p-4">
-              <div className="mb-3 flex items-center gap-2">
-                <span className="text-base">🌸</span>
-                <span className="text-theme-fg-muted text-sm font-medium">
-                  {eventRelations.childEvents.length} dagen
-                </span>
+            {/* Parent event links */}
+            {eventRelations?.parentEvents && eventRelations.parentEvents.length > 0 && (
+              <div className="bg-theme-surface-raised rounded-2xl p-4">
+                <div className="mb-2 flex items-center gap-2">
+                  <ChevronRight className="text-theme-fg-subtle h-4 w-4" />
+                  <span className="text-theme-fg-muted text-sm font-medium">
+                    Onderdeel van
+                  </span>
+                </div>
+                <div className="space-y-1">
+                  {eventRelations.parentEvents.map((parent) => (
+                    <div key={parent.id} className="text-theme-fg text-sm font-medium">
+                      {parent.name}
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="space-y-1.5">
-                {eventRelations.childEvents.map((child) => (
-                  <div
-                    key={child.id}
-                    className="text-theme-fg-secondary flex items-center gap-2 text-sm"
+            )}
+
+            {/* Child events list */}
+            {eventRelations?.childEvents && eventRelations.childEvents.length > 0 && (
+              <div className="bg-theme-surface-raised rounded-2xl p-4">
+                <div className="mb-3 flex items-center gap-2">
+                  <span className="text-base">🌸</span>
+                  <span className="text-theme-fg-muted text-sm font-medium">
+                    {eventRelations.childEvents.length} dagen
+                  </span>
+                </div>
+                <div className="space-y-1.5">
+                  {eventRelations.childEvents.map((child) => (
+                    <div
+                      key={child.id}
+                      className="text-theme-fg-secondary flex items-center gap-2 text-sm"
+                    >
+                      {child.dayNumber != null && (
+                        <span className="text-theme-fg-subtle w-4 shrink-0 text-right text-xs">
+                          {child.dayNumber}.
+                        </span>
+                      )}
+                      <ChevronRight className="text-theme-fg-subtle h-3.5 w-3.5 flex-shrink-0" />
+                      <span>{child.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="border-theme-border bg-theme-bg-subtle border-t p-5 pt-4">
+            {showDeleteConfirm ? (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
+                  <Trash2 className="h-4 w-4" />
+                  <span className="text-sm font-medium">
+                    Weet je zeker dat je &ldquo;{event.title}&rdquo; wilt verwijderen?
+                  </span>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setShowDeleteConfirm(false)}
+                    className="bg-theme-active hover:bg-theme-hover flex-1 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors"
+                    disabled={isDeleting}
                   >
-                    {child.dayNumber != null && (
-                      <span className="text-theme-fg-subtle w-4 shrink-0 text-right text-xs">
-                        {child.dayNumber}.
-                      </span>
-                    )}
-                    <ChevronRight className="text-theme-fg-subtle h-3.5 w-3.5 flex-shrink-0" />
-                    <span>{child.name}</span>
-                  </div>
-                ))}
+                    Annuleren
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                    className="flex-1 rounded-xl bg-[var(--theme-error)] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:opacity-90 disabled:opacity-50"
+                  >
+                    {isDeleting ? "Verwijderen..." : "Ja, verwijderen"}
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
-
-        {/* Action Buttons */}
-        <div className="border-theme-border bg-theme-bg-subtle border-t p-5 pt-4">
-          {showDeleteConfirm ? (
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
-                <Trash2 className="h-4 w-4" />
-                <span className="text-sm font-medium">
-                  Weet je zeker dat je &ldquo;{event.title}&rdquo; wilt verwijderen?
-                </span>
-              </div>
-              <div className="flex gap-2">
+            ) : (
+              <div className="flex gap-3">
                 <button
-                  onClick={() => setShowDeleteConfirm(false)}
-                  className="bg-theme-active hover:bg-theme-hover flex-1 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors"
-                  disabled={isDeleting}
+                  onClick={handleEdit}
+                  className={cn(
+                    "flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium",
+                    "bg-theme-primary text-white hover:opacity-90",
+                    "shadow-theme-primary shadow-lg",
+                    "transition-all duration-200"
+                  )}
                 >
-                  Annuleren
+                  <Pencil className="h-4 w-4" />
+                  Bewerken
                 </button>
                 <button
-                  onClick={handleDelete}
-                  disabled={isDeleting}
-                  className="flex-1 rounded-xl bg-[var(--theme-error)] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:opacity-90 disabled:opacity-50"
+                  onClick={() => router.push(`/events/${event.eventId}`)}
+                  className={cn(
+                    "flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium",
+                    "bg-theme-active hover:bg-theme-hover",
+                    "text-theme-fg-secondary",
+                    "transition-colors"
+                  )}
+                  title="Open volledige pagina"
                 >
-                  {isDeleting ? "Verwijderen..." : "Ja, verwijderen"}
+                  <ExternalLink className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className={cn(
+                    "flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-medium",
+                    "bg-theme-active hover:bg-[var(--theme-error-bg)]",
+                    "text-theme-fg-secondary hover:text-[var(--theme-error-fg)]",
+                    "transition-colors"
+                  )}
+                >
+                  <Trash2 className="h-4 w-4" />
                 </button>
               </div>
-            </div>
-          ) : (
-            <div className="flex gap-3">
-              <button
-                onClick={handleEdit}
-                className={cn(
-                  "flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium",
-                  "bg-theme-primary text-white hover:opacity-90",
-                  "shadow-theme-primary shadow-lg",
-                  "transition-all duration-200"
-                )}
-              >
-                <Pencil className="h-4 w-4" />
-                Bewerken
-              </button>
-              <button
-                onClick={() => router.push(`/events/${event.eventId}`)}
-                className={cn(
-                  "flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium",
-                  "bg-theme-active hover:bg-theme-hover",
-                  "text-theme-fg-secondary",
-                  "transition-colors"
-                )}
-                title="Open volledige pagina"
-              >
-                <ExternalLink className="h-4 w-4" />
-              </button>
-              <button
-                onClick={() => setShowDeleteConfirm(true)}
-                className={cn(
-                  "flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-medium",
-                  "bg-theme-active hover:bg-[var(--theme-error-bg)]",
-                  "text-theme-fg-secondary hover:text-[var(--theme-error-fg)]",
-                  "transition-colors"
-                )}
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </FocusTrap>
   );
 }

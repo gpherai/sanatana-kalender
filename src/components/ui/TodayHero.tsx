@@ -7,12 +7,12 @@ import { cn } from "@/lib/utils";
 import { formatDateLocal, formatTimeAgo } from "@/lib/date-utils";
 import { getApproximateHinduMonth } from "@/lib/panchanga-helpers";
 import type { DailyInfoResponse } from "@/types";
+import type { CalendarEventResourceResponse } from "@/types/calendar";
 
 interface TodayEvent {
   id: string;
   name: string;
-  category: string | null;
-  categoryIcon: string | null;
+  category: CalendarEventResourceResponse["category"];
   eventType: string;
   importance: string;
   date: string;
@@ -70,19 +70,13 @@ export function TodayHero() {
             eventId: string;
             title: string;
             start: string;
-            resource: {
-              category: string | null;
-              categoryIcon: string | null;
-              eventType: string;
-              importance: string;
-            };
+            resource: CalendarEventResourceResponse;
           }> = await todayEventsRes.json();
           setTodayEvents(
             events.map((e) => ({
               id: e.eventId,
               name: e.title,
               category: e.resource.category,
-              categoryIcon: e.resource.categoryIcon,
               eventType: e.resource.eventType,
               importance: e.resource.importance,
               date: e.start,
@@ -436,7 +430,7 @@ export function TodayHero() {
                       : "bg-[var(--theme-glass-bg)] text-white/90"
                   )}
                 >
-                  {event.categoryIcon && <span>{event.categoryIcon}</span>}
+                  {event.category?.icon && <span>{event.category.icon}</span>}
                   <span className="font-medium">{event.name}</span>
                   {event.importance === "MAJOR" && <span className="ml-1">⭐</span>}
                 </div>

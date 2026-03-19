@@ -46,13 +46,13 @@ interface CacheEntry {
 class PanchangaCache {
   private cache = new Map<string, CacheEntry>();
 
-  private createKey(date: string, location: Location): string {
-    // Use date string + location coordinates as cache key
-    return `${date}:${location.lat.toFixed(4)}:${location.lon.toFixed(4)}`;
+  private createKey(date: string, location: Location, timezone: string): string {
+    // Include timezone in cache key: same date + location with different timezone yields different results
+    return `${date}:${location.lat.toFixed(4)}:${location.lon.toFixed(4)}:${timezone}`;
   }
 
-  get(date: string, location: Location): DailyPanchangaFull | null {
-    const key = this.createKey(date, location);
+  get(date: string, location: Location, timezone: string): DailyPanchangaFull | null {
+    const key = this.createKey(date, location, timezone);
     const entry = this.cache.get(key);
 
     if (!entry) return null;
@@ -66,8 +66,13 @@ class PanchangaCache {
     return entry.data;
   }
 
-  set(date: string, location: Location, data: DailyPanchangaFull): void {
-    const key = this.createKey(date, location);
+  set(
+    date: string,
+    location: Location,
+    timezone: string,
+    data: DailyPanchangaFull
+  ): void {
+    const key = this.createKey(date, location, timezone);
 
     // Evict oldest entry if cache is full (LRU)
     if (this.cache.size >= CACHE_CONFIG.maxSize) {
@@ -127,7 +132,7 @@ export class PanchangaService {
     }
 
     // Check cache first
-    const cached = this.cache.get(dateStr, location);
+    const cached = this.cache.get(dateStr, location, timezone);
     if (cached) {
       if (DEBUG_LOGGING) {
         console.log(`[PanchangaService] Cache hit for ${dateStr}`);
@@ -153,7 +158,7 @@ export class PanchangaService {
     const result = await this.swissService.computeDaily(dateStr, locConfig);
 
     // Cache the result
-    this.cache.set(dateStr, location, result);
+    this.cache.set(dateStr, location, timezone, result);
 
     return result;
   }

@@ -15,6 +15,7 @@
  */
 
 import type { Event, RecurrenceType } from "@prisma/client";
+import { Sankranti } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { DEFAULT_LOCATION } from "@/lib/domain";
 import { logDebug, logWarn } from "@/lib/utils";
@@ -201,6 +202,15 @@ async function generateSolarRuleOccurrences(
     return [];
   }
 
+  // Validate sankrantiName is a valid Sankranti enum value before passing to Prisma
+  const validSankrantiValues = Object.values(Sankranti) as string[];
+  if (!validSankrantiValues.includes(String(sankrantiName))) {
+    logWarn(
+      `SOLAR rule for event "${event.name}" has invalid sankranti value: "${sankrantiName}"`
+    );
+    return [];
+  }
+
   // Query DailyInfo for days when this Sankranti occurs
   const dailyData = await prisma.dailyInfo.findMany({
     where: {
@@ -208,7 +218,7 @@ async function generateSolarRuleOccurrences(
         gte: startDate,
         lte: endDate,
       },
-      sankranti: sankrantiName,
+      sankranti: sankrantiName as Sankranti,
     },
     select: {
       date: true,
@@ -339,11 +349,9 @@ async function generateYearlyLunarOccurrences(
  * Uses the first occurrence date as template and repeats annually.
  */
 function generateYearlySolarOccurrences(event: Event): GeneratedOccurrence[] {
-  // We need a reference date - this would come from the first manually created occurrence
-  // For now, we'll skip solar recurrence as it requires a seed date
-  // This will be handled by the seed script providing the first occurrence
-  logDebug(`Yearly solar recurrence requires manual seed occurrence for "${event.name}"`);
-  return [];
+  throw new Error(
+    `YEARLY_SOLAR recurrence is not yet implemented (event: "${event.name}"). Use SOLAR rule type instead.`
+  );
 }
 
 // =============================================================================
@@ -433,12 +441,22 @@ async function generateMonthlyLunarOccurrences(
 }
 
 /**
- * Check if two dates are consecutive (day2 is day after day1)
+ * Check if two dates are consecutive (day2 is day after day1).
+ * Uses UTC date components to avoid locale-dependent behavior.
  */
 function isConsecutiveDay(day1: Date, day2: Date): boolean {
-  const nextDay = new Date(day1);
-  nextDay.setDate(nextDay.getDate() + 1);
-  return nextDay.toDateString() === day2.toDateString();
+  const y1 = day1.getUTCFullYear();
+  const m1 = day1.getUTCMonth();
+  const d1 = day1.getUTCDate();
+  const y2 = day2.getUTCFullYear();
+  const m2 = day2.getUTCMonth();
+  const d2 = day2.getUTCDate();
+  const nextDay = new Date(Date.UTC(y1, m1, d1 + 1));
+  return (
+    nextDay.getUTCFullYear() === y2 &&
+    nextDay.getUTCMonth() === m2 &&
+    nextDay.getUTCDate() === d2
+  );
 }
 
 // =============================================================================
@@ -450,11 +468,9 @@ function isConsecutiveDay(day1: Date, day2: Date): boolean {
  * Uses day-of-month from reference date.
  */
 function generateMonthlySolarOccurrences(event: Event): GeneratedOccurrence[] {
-  // Would need a reference date - skip for now
-  logDebug(
-    `Monthly solar recurrence requires manual seed occurrence for "${event.name}"`
+  throw new Error(
+    `MONTHLY_SOLAR recurrence is not yet implemented (event: "${event.name}").`
   );
-  return [];
 }
 
 // =============================================================================

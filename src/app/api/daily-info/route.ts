@@ -110,11 +110,14 @@ function transformToApiResponse(panchanga: DailyPanchangaFull) {
     // Special day detection (server-calculated for consistency and caching)
     specialDay: panchanga.tithi
       ? (() => {
-          const specialDay = detectSpecialDay({
-            number: panchanga.tithi.number,
-            name: panchanga.tithi.name,
-            paksha: panchanga.tithi.paksha,
-          });
+          const specialDay = detectSpecialDay(
+            {
+              number: panchanga.tithi.number,
+              name: panchanga.tithi.name,
+              paksha: panchanga.tithi.paksha,
+            },
+            new Date(panchanga.date)
+          );
           return specialDay
             ? {
                 type: specialDay.type,
