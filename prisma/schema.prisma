@@ -20,7 +20,6 @@ model Category {
   updatedAt   DateTime @updatedAt
   events      Event[]
 
-  @@index([name])
   @@index([sortOrder])
 }
 
@@ -157,32 +156,7 @@ model DailyInfo {
   createdAt            DateTime       @default(now())
   updatedAt            DateTime       @updatedAt
 
-  @@index([date])
   @@index([tithi])
-}
-
-/// Lunar events (eclipses, special tithis) - Reserved for future use
-model LunarEvent {
-  id          String   @id @default(cuid())
-  date        DateTime @db.Date
-  eventType   String
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@index([date])
-}
-
-/// Moon phase data for display - Reserved for future use
-model MoonPhase {
-  id           String        @id @default(cuid())
-  date         DateTime      @unique @db.Date
-  phase        MoonPhaseType
-  illumination Float
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-
-  @@index([date])
 }
 
 /// User preferences (single-user for now)

@@ -10,6 +10,3 @@ export * from "./api";
 
 // Calendar types
 export * from "./calendar";
-
-// Theme types
-export * from "./theme";

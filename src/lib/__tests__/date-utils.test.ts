@@ -1,21 +1,41 @@
 import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
 import {
+  isValidDate,
   isSameDay,
   isToday,
   isWeekend,
   getMonthDays,
   getMonthStartPadding,
+  formatDate,
+  formatShortDate,
+  formatDateForInput,
+  formatDateLocal,
   formatDateISO,
   formatDateNL,
   formatTimeAgo,
-  getMoonPhaseEmoji,
-  getMoonPhaseIllumination,
-  getMoonPhaseInfo,
+  parseCalendarDate,
+  safeParseDate,
+  addDayForDisplay,
+  subtractDayFromDisplay,
+  startOfDayUTC,
+  endOfDayUTC,
 } from "../date-utils";
 
 describe("Date Utilities", () => {
   // =============================================================================
-  // DATE COMPARISON TESTS
+  // DATE VALIDATION
+  // =============================================================================
+  describe("isValidDate", () => {
+    it("returns true for valid dates", () => {
+      expect(isValidDate(new Date())).toBe(true);
+    });
+    it("returns false for invalid dates", () => {
+      expect(isValidDate(new Date("invalid"))).toBe(false);
+    });
+  });
+
+  // =============================================================================
+  // DATE COMPARISON
   // =============================================================================
   describe("isSameDay", () => {
     it("should return true for the same date", () => {
@@ -39,7 +59,6 @@ describe("Date Utilities", () => {
 
   describe("isToday", () => {
     beforeEach(() => {
-      // Mock the system time to a fixed date
       vi.useFakeTimers();
       vi.setSystemTime(new Date(Date.UTC(2024, 2, 15, 12, 0, 0)));
     });
@@ -61,12 +80,12 @@ describe("Date Utilities", () => {
 
   describe("isWeekend", () => {
     it("should return true for Saturday", () => {
-      const saturday = new Date(2024, 0, 6); // Jan 6, 2024 is a Saturday
+      const saturday = new Date(2024, 0, 6);
       expect(isWeekend(saturday)).toBe(true);
     });
 
     it("should return true for Sunday", () => {
-      const sunday = new Date(2024, 0, 7); // Jan 7, 2024 is a Sunday
+      const sunday = new Date(2024, 0, 7);
       expect(isWeekend(sunday)).toBe(true);
     });
 
@@ -77,47 +96,87 @@ describe("Date Utilities", () => {
   });
 
   // =============================================================================
-  // CALENDAR HELPER TESTS
+  // CALENDAR HELPERS
   // =============================================================================
   describe("getMonthDays", () => {
     it("should return the correct number of days for January (31)", () => {
-      const days = getMonthDays(2024, 0); // January
+      const days = getMonthDays(2024, 0);
       expect(days).toHaveLength(31);
-      expect(days[0].getDate()).toBe(1);
-      expect(days[30].getDate()).toBe(31);
+      expect(days[0]!.getDate()).toBe(1);
+      expect(days[30]!.getDate()).toBe(31);
     });
 
     it("should return the correct number of days for February in a leap year (29)", () => {
-      const days = getMonthDays(2024, 1); // February 2024 (Leap Year)
+      const days = getMonthDays(2024, 1);
       expect(days).toHaveLength(29);
     });
 
     it("should return the correct number of days for February in a non-leap year (28)", () => {
-      const days = getMonthDays(2023, 1); // February 2023
+      const days = getMonthDays(2023, 1);
       expect(days).toHaveLength(28);
     });
   });
 
   describe("getMonthStartPadding", () => {
     it("should return correct padding for a month starting on Monday (0 padding)", () => {
-      // Jan 2024 starts on a Monday
       expect(getMonthStartPadding(2024, 0)).toBe(0);
     });
 
     it("should return correct padding for a month starting on Tuesday (1 padding)", () => {
-      // Oct 2024 starts on a Tuesday
       expect(getMonthStartPadding(2024, 9)).toBe(1);
     });
 
     it("should return correct padding for a month starting on Sunday (6 padding)", () => {
-      // Sep 2024 starts on a Sunday
       expect(getMonthStartPadding(2024, 8)).toBe(6);
     });
   });
 
   // =============================================================================
-  // DATE FORMATTING TESTS
+  // DATE FORMATTING
   // =============================================================================
+  describe("formatDate", () => {
+    it("formats date in Dutch locale", () => {
+      const date = new Date(2025, 0, 1);
+      expect(formatDate(date)).toMatch(/1 januari 2025/i);
+    });
+    it("handles null/undefined", () => {
+      expect(formatDate(null)).toBe("Geen datum");
+    });
+    it("handles invalid dates", () => {
+      expect(formatDate("invalid")).toBe("Ongeldige datum");
+    });
+  });
+
+  describe("formatShortDate", () => {
+    it("formats as short Dutch date", () => {
+      const date = new Date(Date.UTC(2025, 0, 4));
+      expect(formatShortDate(date)).toMatch(/4/);
+    });
+    it("handles invalid date", () => {
+      expect(formatShortDate("invalid")).toBe("Ongeldige datum");
+    });
+  });
+
+  describe("formatDateForInput", () => {
+    it("formats as YYYY-MM-DD", () => {
+      const date = new Date(Date.UTC(2025, 0, 1));
+      expect(formatDateForInput(date).startsWith("2025-01-01")).toBe(true);
+    });
+    it("returns empty string for invalid input", () => {
+      expect(formatDateForInput(null)).toBe("");
+    });
+  });
+
+  describe("formatDateLocal", () => {
+    it("formats using local components", () => {
+      const date = new Date(2025, 0, 1, 15, 0, 0);
+      expect(formatDateLocal(date)).toBe("2025-01-01");
+    });
+    it("returns empty string for null", () => {
+      expect(formatDateLocal(null)).toBe("");
+    });
+  });
+
   describe("formatDateISO", () => {
     it("should format date as YYYY-MM-DD", () => {
       const date = new Date("2024-12-25T15:30:00Z");
@@ -169,57 +228,66 @@ describe("Date Utilities", () => {
   });
 
   // =============================================================================
-  // MOON PHASE TESTS
+  // CALENDAR DATE PARSING
   // =============================================================================
-  describe("getMoonPhaseEmoji", () => {
-    // Note: These tests rely on the specific implementation details (constants) in date-utils.
-    // Ideally, we test logic, but here we check if it returns a valid structure.
-
-    it("should return a valid emoji and status", () => {
-      const date = new Date();
-      const result = getMoonPhaseEmoji(date);
-
-      expect(result).toHaveProperty("emoji");
-      expect(result).toHaveProperty("isSpecial");
-      expect(["🌕", "🌖", "🌗", "🌘", "🌑", "🌒", "🌓", "🌔"]).toContain(result.emoji);
+  describe("parseCalendarDate", () => {
+    it("parses YYYY-MM-DD to UTC midnight", () => {
+      const result = parseCalendarDate("2025-01-01");
+      expect(result.toISOString()).toBe("2025-01-01T00:00:00.000Z");
     });
-
-    it("should identify a known full moon (approximate)", () => {
-      // Based on the code's constant/logic, we try to hit a full moon.
-      // Or we just verify the return type structure is robust.
-      // Let's stick to structure for now as the alg is an approximation.
-      const date = new Date("2024-01-25"); // Full Moon was around Jan 25, 2024
-      const result = getMoonPhaseEmoji(date);
-      expect(result.emoji).toBeDefined();
+    it("throws on invalid format", () => {
+      expect(() => parseCalendarDate("01-01-2025")).toThrow();
     });
   });
 
-  describe("getMoonPhaseIllumination", () => {
-    it("returns 0% illumination at the known new moon reference", () => {
-      const date = new Date(2000, 0, 6, 18, 14);
-      const result = getMoonPhaseIllumination(date);
-      expect(result.percent).toBe(0);
-      expect(result.isWaxing).toBe(true);
+  describe("safeParseDate", () => {
+    it("returns Date for valid string", () => {
+      const result = safeParseDate("2025-01-01");
+      expect(result).toBeInstanceOf(Date);
+      expect(result?.toISOString()).toBe("2025-01-01T00:00:00.000Z");
     });
-
-    it("returns a valid percentage range", () => {
-      const result = getMoonPhaseIllumination(new Date());
-      expect(result.percent).toBeGreaterThanOrEqual(0);
-      expect(result.percent).toBeLessThanOrEqual(100);
+    it("returns null for invalid format", () => {
+      expect(safeParseDate("invalid")).toBeNull();
+      expect(safeParseDate("01-01-2025")).toBeNull();
+    });
+    it("returns null for null/undefined", () => {
+      expect(safeParseDate(null)).toBeNull();
     });
   });
 
-  describe("getMoonPhaseInfo", () => {
-    it("combines emoji and illumination data consistently", () => {
-      const date = new Date(2025, 0, 1);
-      const info = getMoonPhaseInfo(date);
-      const illumination = getMoonPhaseIllumination(date);
-      const emoji = getMoonPhaseEmoji(date);
+  // =============================================================================
+  // DATE ARITHMETIC
+  // =============================================================================
+  describe("addDayForDisplay", () => {
+    it("adds 1 day", () => {
+      const start = new Date("2025-01-01T00:00:00Z");
+      expect(addDayForDisplay(start).toISOString()).toBe("2025-01-02T00:00:00.000Z");
+    });
+  });
 
-      expect(info.percent).toBe(illumination.percent);
-      expect(info.isWaxing).toBe(illumination.isWaxing);
-      expect(info.emoji).toBe(emoji.emoji);
-      expect(info.isSpecial).toBe(emoji.isSpecial);
+  describe("subtractDayFromDisplay", () => {
+    it("removes 1 day", () => {
+      const start = new Date("2025-01-02T00:00:00Z");
+      expect(subtractDayFromDisplay(start).toISOString()).toBe(
+        "2025-01-01T00:00:00.000Z"
+      );
+    });
+  });
+
+  // =============================================================================
+  // DAY BOUNDARIES
+  // =============================================================================
+  describe("startOfDayUTC", () => {
+    it("resets time to 00:00:00", () => {
+      const date = new Date("2025-01-01T15:30:45.123Z");
+      expect(startOfDayUTC(date).toISOString()).toBe("2025-01-01T00:00:00.000Z");
+    });
+  });
+
+  describe("endOfDayUTC", () => {
+    it("sets time to 23:59:59.999", () => {
+      const date = new Date("2025-01-01T05:00:00Z");
+      expect(endOfDayUTC(date).toISOString()).toBe("2025-01-01T23:59:59.999Z");
     });
   });
 });

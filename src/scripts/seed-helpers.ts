@@ -1,5 +1,8 @@
-import { parseCalendarDate } from "@/lib/utils";
-import type { Tithi, Nakshatra, MoonPhaseType, Maas, Sankranti } from "@prisma/client";
+import { parseCalendarDate } from "@/lib/date-utils";
+import { getMoonPhaseType } from "@/lib/moon-phases";
+import type { Tithi, Nakshatra, Maas, Sankranti } from "@prisma/client";
+
+export { getMoonPhaseType };
 
 /**
  * Helper for calendar dates (pure date, no timezone conversion).
@@ -82,24 +85,6 @@ export function mapNakshatraToEnum(nakNum: number): Nakshatra | null {
     return names[nakNum - 1] as Nakshatra;
   }
   return null;
-}
-
-// Determine moon phase type from illumination percentage
-export function getMoonPhaseType(pct: number, waxing: boolean): MoonPhaseType {
-  if (pct < 3) return "NEW_MOON";
-  if (pct > 97) return "FULL_MOON";
-
-  if (waxing) {
-    if (pct < 25) return "WAXING_CRESCENT";
-    if (pct < 50) return "FIRST_QUARTER";
-    if (pct < 75) return "WAXING_GIBBOUS";
-    return "FULL_MOON";
-  }
-
-  if (pct > 75) return "WANING_GIBBOUS";
-  if (pct > 50) return "LAST_QUARTER";
-  if (pct > 25) return "WANING_CRESCENT";
-  return "NEW_MOON";
 }
 
 // Convert maas name (e.g., "Chaitra") to Prisma enum (e.g., "CHAITRA")

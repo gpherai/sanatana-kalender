@@ -20,7 +20,7 @@ import { CATEGORY_CATALOG } from "@/config/categories";
 import { generateOccurrences } from "@/services/recurrence.service";
 import { DEFAULT_LOCATION } from "@/lib/constants";
 import { panchangaService } from "@/services/panchanga.service";
-import { parseCalendarDate } from "@/lib/utils";
+import { parseCalendarDate } from "@/lib/date-utils";
 import {
   calendarDate,
   convertTithiToEnum,

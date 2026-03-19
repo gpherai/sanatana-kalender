@@ -7,7 +7,7 @@ import {
   serverError,
   validationError,
 } from "@/lib/api-response";
-import { parseCalendarDate } from "@/lib/utils";
+import { parseCalendarDate } from "@/lib/date-utils";
 import { Prisma } from "@prisma/client";
 import {
   EventType,

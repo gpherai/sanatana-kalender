@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { NextRequest } from "next/server";
 import { prismaMock } from "@/__tests__/helpers/prisma-mock";
-import { formatDateLocal } from "@/lib/utils";
+import { formatDateLocal } from "@/lib/date-utils";
 import { GET, POST } from "../events/route";
 
 describe("API Events", () => {

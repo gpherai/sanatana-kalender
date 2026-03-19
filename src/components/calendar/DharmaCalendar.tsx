@@ -18,7 +18,8 @@ import {
   parseCalendarEvent,
 } from "@/types/calendar";
 import { getEventType } from "@/lib/constants";
-import { logError, formatDateLocal } from "@/lib/utils";
+import { logError } from "@/lib/utils";
+import { formatDateLocal } from "@/lib/date-utils";
 import { getApproxMoonPhaseEmoji } from "@/lib/moon-phases";
 import { EventDetailModal } from "./EventDetailModal";
 import { CalendarToolbar } from "./CalendarToolbar";

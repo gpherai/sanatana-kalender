@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { Sun, Sunrise, Sunset, Moon, MoonStar, Calendar, Sparkles } from "lucide-react";
 import { MoonPhase } from "./MoonPhase";
-import { cn, formatDateLocal } from "@/lib/utils";
-import { formatTimeAgo } from "@/lib/date-utils";
+import { cn } from "@/lib/utils";
+import { formatDateLocal, formatTimeAgo } from "@/lib/date-utils";
 import { getApproximateHinduMonth } from "@/lib/panchanga-helpers";
 import type { DailyInfoResponse } from "@/types";
 

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { createEventSchema, eventQuerySchema } from "@/lib/validations";
 import { errorResponse, serverError, validationError } from "@/lib/api-response";
-import { parseCalendarDate, addDayForDisplay, formatDateLocal } from "@/lib/utils";
+import { parseCalendarDate, addDayForDisplay, formatDateLocal } from "@/lib/date-utils";
 import { Prisma } from "@prisma/client";
 import {
   Tithi,

@@ -8,6 +8,187 @@
  */
 
 // =============================================================================
+// DATE VALIDATION
+// =============================================================================
+
+/**
+ * Check if a date is valid
+ */
+export function isValidDate(date: Date): boolean {
+  return date instanceof Date && !isNaN(date.getTime());
+}
+
+// =============================================================================
+// DATE FORMATTING (Display)
+// =============================================================================
+
+/**
+ * Format date for display (Dutch locale, long format with year)
+ * Returns "Ongeldige datum" for invalid dates
+ */
+export function formatDate(
+  date: Date | string | null | undefined,
+  options?: Intl.DateTimeFormatOptions
+): string {
+  if (!date) return "Geen datum";
+
+  const d = typeof date === "string" ? new Date(date) : date;
+
+  if (!isValidDate(d)) {
+    return "Ongeldige datum";
+  }
+
+  return d.toLocaleDateString("nl-NL", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    ...options,
+  });
+}
+
+/**
+ * Format a short date (e.g., "4 dec")
+ */
+export function formatShortDate(date: Date | string): string {
+  const d = typeof date === "string" ? new Date(date) : date;
+
+  if (!isValidDate(d)) {
+    return "Ongeldige datum";
+  }
+
+  return d.toLocaleDateString("nl-NL", {
+    day: "numeric",
+    month: "short",
+  });
+}
+
+/**
+ * Format date for input fields (YYYY-MM-DD via toISOString)
+ * Returns empty string for invalid dates
+ */
+export function formatDateForInput(date: Date | string | null | undefined): string {
+  if (!date) return "";
+
+  const d = typeof date === "string" ? new Date(date) : date;
+
+  if (!isValidDate(d)) {
+    return "";
+  }
+
+  const parts = d.toISOString().split("T");
+  return parts[0] ?? "";
+}
+
+/**
+ * Format date as YYYY-MM-DD using LOCAL date components.
+ * CRITICAL: This prevents timezone shifts for calendar events.
+ * Example: A date stored as 2025-01-01 stays 2025-01-01 in Nederland.
+ */
+export function formatDateLocal(date: Date | string | null | undefined): string {
+  if (!date) return "";
+
+  const d = typeof date === "string" ? new Date(date) : date;
+
+  if (!isValidDate(d)) {
+    return "";
+  }
+
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+// =============================================================================
+// CALENDAR DATE PARSING (Best Practice for Calendar Events)
+// =============================================================================
+
+/**
+ * Parse a date string (YYYY-MM-DD) as a calendar date at UTC midnight.
+ *
+ * BEST PRACTICE: For calendar events that occur on a specific DAY regardless
+ * of timezone, always use UTC midnight to prevent timezone shift bugs when
+ * storing in PostgreSQL @db.Date columns.
+ *
+ * @param dateString - Date in YYYY-MM-DD format
+ * @returns Date object at UTC midnight
+ * @throws Error if dateString is invalid format
+ */
+export function parseCalendarDate(dateString: string): Date {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+    throw new Error(`Invalid date format: "${dateString}". Expected YYYY-MM-DD.`);
+  }
+
+  const [year, month, day] = dateString.split("-").map(Number);
+  const date = new Date(Date.UTC(year!, month! - 1, day!));
+
+  if (!isValidDate(date)) {
+    throw new Error(`Invalid date value: "${dateString}".`);
+  }
+
+  return date;
+}
+
+/**
+ * Safely parse a date string, returning null for invalid inputs.
+ */
+export function safeParseDate(dateString: string | null | undefined): Date | null {
+  if (!dateString) return null;
+
+  try {
+    return parseCalendarDate(dateString);
+  } catch {
+    return null;
+  }
+}
+
+// =============================================================================
+// DATE ARITHMETIC (react-big-calendar)
+// =============================================================================
+
+/**
+ * Add one day to a date for react-big-calendar end date display.
+ * RBC treats end dates as exclusive, so we need +1 day for correct display.
+ */
+export function addDayForDisplay(date: Date): Date {
+  const result = new Date(date);
+  result.setUTCDate(result.getUTCDate() + 1);
+  return result;
+}
+
+/**
+ * Subtract one day from a date (reverse of addDayForDisplay).
+ */
+export function subtractDayFromDisplay(date: Date): Date {
+  const result = new Date(date);
+  result.setUTCDate(result.getUTCDate() - 1);
+  return result;
+}
+
+// =============================================================================
+// DAY BOUNDARIES
+// =============================================================================
+
+/**
+ * Get the start of a day in UTC (00:00:00.000)
+ */
+export function startOfDayUTC(date: Date): Date {
+  const result = new Date(date);
+  result.setUTCHours(0, 0, 0, 0);
+  return result;
+}
+
+/**
+ * Get the end of a day in UTC (23:59:59.999)
+ */
+export function endOfDayUTC(date: Date): Date {
+  const result = new Date(date);
+  result.setUTCHours(23, 59, 59, 999);
+  return result;
+}
+
+// =============================================================================
 // DATE COMPARISON
 // =============================================================================
 

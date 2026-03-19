@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { ArrowLeft } from "lucide-react";
 import { EventForm } from "@/components/events";
 import { PageLayout } from "@/components/layout";
-import { formatDateForInput } from "@/lib/utils";
+import { formatDateForInput } from "@/lib/date-utils";
 
 interface PageProps {
   params: Promise<{ id: string }>;

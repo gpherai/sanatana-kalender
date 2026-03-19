@@ -18,7 +18,7 @@ if (typeof window !== "undefined") {
   );
 }
 
-export { PanchangaSwissService } from "./services/PanchangaSwissService";
+export { PanchangaSwissService } from "./services/panchanga-swiss-service";
 export type { DailyPanchangaFull, LocationConfig } from "./types";
 export {
   TITHI_NAMES,

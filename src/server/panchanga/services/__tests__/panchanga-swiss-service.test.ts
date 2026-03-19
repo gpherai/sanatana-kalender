@@ -57,7 +57,7 @@ vi.mock("swisseph", () => ({
   SEFLG_SPEED: 8,
 }));
 
-import { PanchangaSwissService } from "../PanchangaSwissService";
+import { PanchangaSwissService } from "../panchanga-swiss-service";
 
 describe("PanchangaSwissService", () => {
   const location = { name: "Test", lat: 1, lon: 2, tz: "UTC" };

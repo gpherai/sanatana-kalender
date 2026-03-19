@@ -3,6 +3,8 @@
 // Business logic for moon phase calculations
 // ============================================
 
+import type { MoonPhaseType } from "@prisma/client";
+
 /**
  * Determine Moon Phase Type from illumination percentage.
  * Matches Prisma MoonPhaseType enum values.
@@ -16,7 +18,10 @@
  * getMoonPhaseType(98, true)  // "FULL_MOON"
  * getMoonPhaseType(25, false) // "WANING_CRESCENT"
  */
-export function getMoonPhaseType(illuminationPct: number, waxing: boolean): string {
+export function getMoonPhaseType(
+  illuminationPct: number,
+  waxing: boolean
+): MoonPhaseType {
   if (illuminationPct < 3) return "NEW_MOON";
   if (illuminationPct > 97) return "FULL_MOON";
 
