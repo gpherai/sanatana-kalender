@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Calendar, Clock, Star, Tag, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { getEventType } from "@/lib/constants";
+import { getEventType } from "@/lib/domain";
 import { getCategoryBgClass, getCategoryDynamicStyle } from "@/lib/category-styles";
 import type { Category } from "@/types/calendar";
 

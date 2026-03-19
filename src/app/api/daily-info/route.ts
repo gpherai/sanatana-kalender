@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { errorResponse, serverError } from "@/lib/api-response";
 import { panchangaService } from "@/services/panchanga.service";
-import { DEFAULT_LOCATION } from "@/lib/constants";
+import { DEFAULT_LOCATION } from "@/lib/domain";
 import { getMoonPhaseType, getMoonPhaseEmoji, getMoonPhaseName } from "@/lib/moon-phases";
 import { detectSpecialDay } from "@/lib/panchanga-helpers";
 import type { DailyPanchangaFull } from "@/server/panchanga";

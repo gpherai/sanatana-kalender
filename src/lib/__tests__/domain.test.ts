@@ -11,7 +11,7 @@ import {
   MAAS,
   MOON_PHASES,
   DEFAULT_LOCATION,
-} from "../constants";
+} from "../domain";
 
 describe("Constants", () => {
   it("defines unique values for core enums", () => {

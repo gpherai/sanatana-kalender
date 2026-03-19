@@ -18,7 +18,7 @@ import {
   NAKSHATRAS,
   MAAS,
   PAKSHAS,
-} from "./constants";
+} from "./domain";
 import {
   TIME_REGEX_LENIENT,
   DATE_REGEX,

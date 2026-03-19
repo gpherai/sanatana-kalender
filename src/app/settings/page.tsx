@@ -23,7 +23,7 @@ import { useToast } from "@/components/ui/Toast";
 import { useTheme } from "@/components/theme";
 import { PageLayout } from "@/components/layout";
 import { ThemeSection, CalendarSection, LocationSection } from "@/components/settings";
-import { PRESET_LOCATIONS, DEFAULT_LOCATION } from "@/lib/constants";
+import { PRESET_LOCATIONS, DEFAULT_LOCATION } from "@/lib/domain";
 
 // =============================================================================
 // TYPES

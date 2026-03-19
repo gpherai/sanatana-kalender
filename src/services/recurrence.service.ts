@@ -16,7 +16,7 @@
 
 import type { Event, RecurrenceType } from "@prisma/client";
 import { prisma } from "@/lib/db";
-import { DEFAULT_LOCATION } from "@/lib/constants";
+import { DEFAULT_LOCATION } from "@/lib/domain";
 import { logDebug, logWarn } from "@/lib/utils";
 import { formatDateNL } from "@/lib/date-utils";
 

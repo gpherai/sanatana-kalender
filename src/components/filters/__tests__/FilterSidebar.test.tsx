@@ -2,7 +2,7 @@ import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { FilterSidebar } from "../FilterSidebar";
-import { CATEGORIES } from "@/lib/constants";
+import { CATEGORIES } from "@/lib/domain";
 import type { FilterState } from "@/hooks/useFilters";
 
 const BASE_FILTERS: FilterState = {

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { LocationSection } from "../LocationSection";
-import { PRESET_LOCATIONS } from "@/lib/constants";
+import { PRESET_LOCATIONS } from "@/lib/domain";
 
 describe("LocationSection", () => {
   it("calls onLocationPreset when preset is selected", () => {

@@ -12,7 +12,7 @@
  * - UI components can use CATEGORY_CATALOG directly for static lists
  *
  * @see src/scripts/seed.ts - Database seeding
- * @see src/lib/constants.ts - Re-exports for UI components
+ * @see src/lib/domain.ts - Re-exports for UI components
  */
 
 // =============================================================================
@@ -40,7 +40,7 @@ export interface CategoryDefinition {
 
 /**
  * Minimal category data for UI filter components.
- * Compatible with existing CATEGORIES format in constants.ts
+ * Compatible with existing CATEGORIES format in domain.ts
  */
 export interface CategoryOption {
   readonly value: string;

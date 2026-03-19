@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { NextRequest } from "next/server";
 import { prismaMock } from "@/__tests__/helpers/prisma-mock";
-import { DEFAULT_LOCATION } from "@/lib/constants";
+import { DEFAULT_LOCATION } from "@/lib/domain";
 import type { DailyPanchangaFull } from "@/server/panchanga";
 
 const { calculateDaily, calculateRange } = vi.hoisted(() => ({

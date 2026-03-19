@@ -2,12 +2,7 @@
 
 import { useState, useRef, useCallback, useMemo } from "react";
 import { Search, X, Filter, ChevronDown, ChevronUp } from "lucide-react";
-import {
-  CATEGORIES,
-  EVENT_TYPES,
-  IMPORTANCE_LEVELS,
-  SPECIAL_TITHIS,
-} from "@/lib/constants";
+import { CATEGORIES, EVENT_TYPES, IMPORTANCE_LEVELS, SPECIAL_TITHIS } from "@/lib/domain";
 import type { FilterState } from "@/hooks/useFilters";
 import { cn } from "@/lib/utils";
 

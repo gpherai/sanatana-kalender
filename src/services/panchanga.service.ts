@@ -16,7 +16,7 @@ import {
   type DailyPanchangaFull,
   type LocationConfig,
 } from "@/server/panchanga";
-import type { Location } from "@/lib/constants";
+import type { Location } from "@/lib/domain";
 import { DateTime } from "luxon";
 
 // =============================================================================

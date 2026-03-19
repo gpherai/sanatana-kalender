@@ -11,13 +11,7 @@ import {
   transformFormToApi,
   type EventFormData,
 } from "@/lib/validations";
-import {
-  EVENT_TYPES,
-  IMPORTANCE_LEVELS,
-  TITHIS,
-  NAKSHATRAS,
-  MAAS,
-} from "@/lib/constants";
+import { EVENT_TYPES, IMPORTANCE_LEVELS, TITHIS, NAKSHATRAS, MAAS } from "@/lib/domain";
 import type { Category } from "@/types/calendar";
 
 interface EventFormProps {

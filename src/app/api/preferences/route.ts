@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { updatePreferencesSchema } from "@/lib/validations";
 import { serverError, validationError } from "@/lib/api-response";
-import { DEFAULT_LOCATION } from "@/lib/constants";
+import { DEFAULT_LOCATION } from "@/lib/domain";
 import { Prisma } from "@prisma/client";
 import { EventType, CalendarView } from "@prisma/client";
 

@@ -28,7 +28,7 @@ import {
   generateOccurrences,
   generateOccurrencesForEvents,
 } from "@/services/recurrence.service";
-import { DEFAULT_LOCATION } from "@/lib/constants";
+import { DEFAULT_LOCATION } from "@/lib/domain";
 import { generateOccurrencesSchema } from "@/lib/validations";
 import { validationError, notFoundError, serverError } from "@/lib/api-response";
 

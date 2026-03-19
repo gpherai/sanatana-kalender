@@ -1,26 +1,19 @@
 // ============================================
-// DHARMA CALENDAR - CONSTANTS
-// Single source of truth for all enums and categories
+// DHARMA CALENDAR - DOMAIN
+// Domeindata: weergave-opties, locaties, lookup-functies
 // ============================================
 
 // --------------------------------------------
 // CATEGORIES - Imported from config (single source of truth)
 // --------------------------------------------
-import {
-  CATEGORY_CATALOG,
-  getAllCategoryOptions,
-  getCategoryByName,
-  type CategoryOption,
-} from "@/config/categories";
+import { CATEGORY_CATALOG, getAllCategoryOptions } from "@/config/categories";
 
-// Re-export for backwards compatibility
+import type { CategoryOption } from "@/config/categories";
+
 // UI components use this format: { value, label, icon, color }
 export const CATEGORIES: readonly CategoryOption[] = getAllCategoryOptions();
 
 export type CategoryValue = (typeof CATEGORY_CATALOG)[number]["name"];
-
-// Re-export helper
-export { getCategoryByName as getCategory };
 
 // --------------------------------------------
 // EVENT TYPES

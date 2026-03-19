@@ -18,7 +18,7 @@ import "dotenv/config";
 import { prisma } from "@/lib/db";
 import { CATEGORY_CATALOG } from "@/config/categories";
 import { generateOccurrences } from "@/services/recurrence.service";
-import { DEFAULT_LOCATION } from "@/lib/constants";
+import { DEFAULT_LOCATION } from "@/lib/domain";
 import { panchangaService } from "@/services/panchanga.service";
 import { parseCalendarDate } from "@/lib/date-utils";
 import {

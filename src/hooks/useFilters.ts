@@ -10,7 +10,7 @@ import {
   type CategoryValue,
   type EventTypeValue,
   type ImportanceValue,
-} from "@/lib/constants";
+} from "@/lib/domain";
 
 // ============================================================================
 // TYPES

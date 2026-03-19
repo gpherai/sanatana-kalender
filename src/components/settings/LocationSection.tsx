@@ -3,7 +3,7 @@
 import { MapPin, Sun, Moon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Section } from "@/components/ui";
-import { PRESET_LOCATIONS } from "@/lib/constants";
+import { PRESET_LOCATIONS } from "@/lib/domain";
 
 // =============================================================================
 // TYPES
