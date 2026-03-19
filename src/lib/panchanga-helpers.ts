@@ -63,10 +63,6 @@ export function getApproximateHinduMonth(date: Date): string {
  * Detect special lunar days from exact Tithi data.
  * Returns special day information if the tithi corresponds to a significant lunar event.
  *
- * @deprecated Use server-calculated specialDay from DailyInfoResponse instead.
- * This function will be removed in v2.0.0.
- * Server-side calculation provides better caching and consistency.
- *
  * @param tithi - Tithi information from Panchanga calculation
  * @returns SpecialDay object if significant, null otherwise
  *
@@ -169,10 +165,6 @@ export function detectSpecialDay(tithi: TithiInfo): SpecialDay | null {
 /**
  * Extract all special lunar days from an array of daily Panchanga data.
  * Useful for calendar month views.
- *
- * @deprecated Use server-calculated specialDay from DailyInfoResponse instead.
- * This function will be removed in v2.0.0.
- * Server-side calculation provides better caching and consistency.
  *
  * @param monthData - Array of daily info responses containing tithi data
  * @returns Array of SpecialDay objects found in the month

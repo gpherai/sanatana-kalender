@@ -187,8 +187,9 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       switch (error.code) {
         case "P2002":
-          return errorResponse("Er bestaat al een event met deze naam", 409, [
-            { field: "name", message: "Naam moet uniek zijn" },
+          // Unique constraint violation (namingKey)
+          return errorResponse("Er bestaat al een event met deze sleutel", 409, [
+            { field: "namingKey", message: "Naming key moet uniek zijn" },
           ]);
         case "P2003":
           return errorResponse("Gerelateerde data niet gevonden", 400, [

@@ -136,25 +136,12 @@ function filterValidValues(values: string[], validSet: Set<string>): string[] {
  * clearFilters();
  */
 export function useFilters() {
-  let router: ReturnType<typeof useRouter> | null = null;
-  let pathname = "";
-  let searchParams: ReturnType<typeof useSearchParams> | null = null;
-
-  try {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    router = useRouter();
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    pathname = usePathname();
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    searchParams = useSearchParams();
-  } catch {
-    // SSR/Prerender might not have navigation context
-  }
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   // Parse and validate current filters from URL
   const filters: FilterState = useMemo(() => {
-    if (!searchParams) return DEFAULT_FILTERS;
-
     // Parse arrays from comma-separated strings
     const rawCategories =
       searchParams.get("categories")?.split(",").filter(Boolean) ?? [];
@@ -179,7 +166,6 @@ export function useFilters() {
   // Update URL with new params
   const updateURL = useCallback(
     (newParams: URLSearchParams) => {
-      if (!router || !pathname) return;
       const query = newParams.toString();
       const url = query ? `${pathname}?${query}` : pathname;
       router.push(url, { scroll: false });
@@ -190,7 +176,6 @@ export function useFilters() {
   // Set a single filter value
   const setFilter = useCallback(
     <K extends keyof FilterState>(key: K, value: FilterState[K]) => {
-      if (!searchParams) return;
       const params = new URLSearchParams(searchParams.toString());
 
       // Map keys to URL param names
@@ -241,7 +226,6 @@ export function useFilters() {
 
   // Clear all filters
   const clearFilters = useCallback(() => {
-    if (!router || !pathname) return;
     router.push(pathname, { scroll: false });
   }, [router, pathname]);
 
