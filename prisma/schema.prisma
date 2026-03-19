@@ -52,6 +52,8 @@ model Event {
 
   @@index([eventType])
   @@index([categoryId])
+  @@index([recurrenceType])
+  @@index([importance])
   @@index([tags], type: Gin)
 }
 
@@ -120,7 +122,6 @@ model DailyInfo {
   isAdhika             Boolean        @default(false)
   sankranti            Sankranti?
   sankrantiTime        String?
-  maasName             String?
   maasType             String?
   lunarDay             Int?
   vikramaSamvatYear    Int?
@@ -130,10 +131,8 @@ model DailyInfo {
   samvatsaraName       String?
   samvatsaraNumber     Int?
   sunSignNumber        Int?
-  sunSignName          String?
   sunSignUpto          String?
   moonSignNumber       Int?
-  moonSignName         String?
   moonSignUpto         String?
   daysSinceSankranti   Int?
   currentRashi         String?

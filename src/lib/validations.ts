@@ -259,6 +259,24 @@ export const preferencesFormSchema = z.object({
 export type PreferencesFormData = z.infer<typeof preferencesFormSchema>;
 
 // =============================================================================
+// UPDATE OCCURRENCE SCHEMA
+// =============================================================================
+
+/**
+ * Update a specific event occurrence.
+ * All fields optional for partial updates.
+ */
+export const updateOccurrenceSchema = z.object({
+  date: dateStringSchema.optional(),
+  endDate: z.string().regex(DATE_REGEX).nullable().optional(),
+  startTime: timeStringSchema.nullable().optional(),
+  endTime: timeStringSchema.nullable().optional(),
+  notes: z.string().max(500).nullable().optional(),
+});
+
+export type UpdateOccurrencePayload = z.infer<typeof updateOccurrenceSchema>;
+
+// =============================================================================
 // GENERATE OCCURRENCES SCHEMA
 // =============================================================================
 
