@@ -184,7 +184,9 @@ dharma-calendar/
 │   │   ├── utils.ts           # Algemene utilities + logging
 │   │   └── validations.ts     # Zod schemas + enum helpers
 │   ├── scripts/               # Build/seed scripts
+│   │   ├── generate-events-from-naming.ts  # Event generator vanuit naming conventions
 │   │   ├── generate-theme-css.ts  # Theme CSS generator
+│   │   ├── seed-helpers.ts        # Seed helper functies
 │   │   └── seed.ts                # Database seed
 │   ├── server/                # Server-only code (niet bundelen in client)
 │   │   └── panchanga/         # Swiss Ephemeris integratie
@@ -265,8 +267,10 @@ docker run ... # Uses docker-entrypoint.sh
 # ✅  Called by npm scripts
 
 src/scripts/
-├── generate-theme-css.ts  # Theme CSS generation (prebuild)
-└── seed.ts                # Database seeding (post-migrate)
+├── generate-events-from-naming.ts  # Event generator vanuit naming conventions
+├── generate-theme-css.ts           # Theme CSS generation (prebuild)
+├── seed-helpers.ts                 # Seed helper functies
+└── seed.ts                         # Database seeding (post-migrate)
 
 # Gebruik (via package.json):
 npm run generate:css
@@ -393,23 +397,18 @@ Alle date operaties zijn gecentraliseerd in `src/lib/date-utils.ts` voor consist
 | **Comparison** | `isSameDay()`, `isToday()`, `isWeekend()` | Date vergelijking (UTC-based) |
 | **Calendar** | `getMonthDays()`, `getMonthStartPadding()` | Kalender grid berekeningen |
 | **Formatting** | `formatDateISO()`, `formatDateNL()`, `formatTimeAgo()` | Datum/tijd display |
-| **Moon Phase** | `getMoonPhaseEmoji()`, `getMoonPhaseIllumination()`, `getMoonPhaseInfo()` | Maanfase berekeningen |
+
+Maanfase functies staan in `src/lib/moon-phases.ts` (zie sectie hieronder).
 
 **Voordelen:**
 - ✅ Single source of truth voor date operaties
 - ✅ Consistent UTC handling
-- ✅ Geen duplicatie van moon phase constants (LUNAR_CYCLE_DAYS, KNOWN_NEW_MOON)
 - ✅ Type-safe met JSDoc documentatie
 - ✅ Tree-shakeable exports
 
 **Gebruik:**
 ```typescript
-import {
-  isSameDay,
-  getMonthDays,
-  formatTimeAgo,
-  getMoonPhaseInfo
-} from "@/lib/date-utils";
+import { isSameDay, getMonthDays, formatTimeAgo } from "@/lib/date-utils";
 
 // Date comparison (UTC)
 if (isSameDay(date1, date2)) { ... }
@@ -419,10 +418,25 @@ const days = getMonthDays(2025, 0); // January 2025
 
 // Time formatting
 const timeStr = formatTimeAgo("14:30", now); // "over 4u 30m"
+```
 
-// Moon phase (complete info)
-const moon = getMoonPhaseInfo(date);
-// => { emoji: "🌕", isSpecial: "full", percent: 98, isWaxing: true }
+#### 3.5.1b Moon Phase Utilities
+
+Alle maanfase logica is gecentraliseerd in `src/lib/moon-phases.ts`:
+
+| Categorie | Functies | Gebruik |
+|-----------|----------|---------|
+| **Exact (Swiss Ephemeris)** | `getMoonPhaseEmoji(pct, waxing)`, `getMoonPhaseType()`, `getMoonPhaseName()` | Server-side via /api/daily-info |
+| **Approximatie (client)** | `getApproxMoonPhaseEmoji(date)`, `getApproxMoonIllumination(date)` | Client-side kalender UI decoratie |
+
+```typescript
+// Server-side: exact via Swiss Ephemeris data
+import { getMoonPhaseEmoji, getMoonPhaseName } from "@/lib/moon-phases";
+const emoji = getMoonPhaseEmoji(illuminationPct, panchanga.moon.waxing);
+
+// Client-side: approximatie voor UI decoratie (geen API call nodig)
+import { getApproxMoonPhaseEmoji } from "@/lib/moon-phases";
+const { emoji, isSpecial } = getApproxMoonPhaseEmoji(date);
 ```
 
 #### 3.5.2 Calendar Dates (voor Events)
@@ -466,9 +480,7 @@ sunrise: "06:30"  // Opgeslagen als string (HH:mm) + location context
 | Display NL | Format | `formatDateNL()` uit date-utils | N/A |
 | Seed data | Calendar Date | `calendarDate(y,m,d)` | `@db.Date` |
 
-**Deprecated:**
-- ❌ `parseToUTCDate()` voor calendar events (veroorzaakt timezone bugs)
-- ❌ `createUTCDate()` voor calendar events
+**Vermijd:**
 - ❌ Locale date functions in components (gebruik date-utils)
 
 ### 3.6 Date Library Strategy: Luxon vs date-fns
@@ -841,7 +853,7 @@ Zorg ervoor dat glassmorphism elementen voldoende contrast hebben met de achterg
 | `/api/daily-info` | GET | Zon/maan/dag informatie voor datumbereik (via Swiss Ephemeris) |
 | `/api/preferences` | GET, PUT | Gebruikersvoorkeuren ophalen en bijwerken |
 | `/api/themes` | GET | Beschikbare thema's ophalen |
-| `/api/health` | GET | Health check voor monitoring (database + pool stats) |
+| `/api/health` | GET | Health check voor monitoring (database connectivity) |
 
 ### 4.3 Service Layer
 
@@ -966,14 +978,22 @@ export class PanchangaService {
   }
 }
 
-export const panchangaService = new PanchangaService(); // Singleton export
+// globalThis singleton: cache overleeft Next.js hot-reload in development
+const globalForPanchanga = globalThis as unknown as {
+  panchangaService: PanchangaService | undefined;
+};
+export const panchangaService =
+  globalForPanchanga.panchangaService ?? new PanchangaService();
+if (process.env.NODE_ENV !== "production") {
+  globalForPanchanga.panchangaService = panchangaService;
+}
 ```
 
 **Waarom class-based:**
 - ✅ **Caching vereist:** Swiss Ephemeris calculations zijn CPU-intensive (astronomical calculations)
 - ✅ **Stateful design:** LRU cache met 365 entries, 24h TTL
 - ✅ **Safe caching:** Panchanga berekeningen zijn deterministisch (zelfde input = zelfde output)
-- ✅ **Singleton pattern:** Eén cache instance delen across alle requests
+- ✅ **Singleton pattern:** Eén cache instance delen across alle requests (globalThis overleeft hot-reload)
 - ✅ **Private state:** Cache en Swiss service instance zijn internal implementation details
 
 **RecurrenceService - Functional Pattern**
@@ -1783,7 +1803,7 @@ npm run db:reset           # Reset + seed (convenience script)
 
 ### 11.3 Database Strategy
 
-1. **Calendar Dates vs Timestamps:** KRITIEK - Gebruik `parseCalendarDate()` voor kalender events (geen UTC conversie), niet `parseToUTCDate()`. UTC conversie veroorzaakt timezone bugs waar "2025-01-01" kan verschuiven naar "2024-12-31"
+1. **Calendar Dates vs Timestamps:** KRITIEK - Gebruik `parseCalendarDate()` voor kalender events (UTC midnight). Lokale midnight veroorzaakt timezone bugs waar "2025-01-01 00:00 CET" verschuift naar "2024-12-31" in de database
 2. **PostgreSQL DATE Type:** `@db.Date` slaat pure dates op (YYYY-MM-DD) zonder tijd/timezone - perfect voor kalender events
 3. **Form vs API Schemas:** Separate Zod schemas voor HTML inputs (geen null) vs database (null toegestaan)
 4. **AbortController:** Altijd gebruiken voor fetch cleanup en request deduplication
