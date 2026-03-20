@@ -67,7 +67,6 @@ describe("Event Pages", () => {
       nakshatra: null,
       maas: null,
       tags: [],
-      category: null,
       occurrences: [
         {
           id: "occ_1",

@@ -39,6 +39,18 @@ describe("API Preferences", () => {
     prismaMock.userPreference.upsert.mockResolvedValue({
       id: "default",
       currentTheme: "forest-green",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      locationName: "Den Haag",
+      locationLat: 52,
+      locationLon: 4,
+      defaultView: "month" as never,
+      weekStartsOn: 1,
+      timezone: "Europe/Amsterdam",
+      visibleEventTypes: [],
+      visibleCategories: [],
+      notificationsEnabled: false,
+      notificationDaysBefore: 1,
     });
 
     const request = new NextRequest("http://localhost/api/preferences", {

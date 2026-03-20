@@ -29,6 +29,8 @@ describe("API Events", () => {
         startTime: "09:00",
         endTime: "10:00",
         notes: "note",
+        eventId: "evt_1",
+        eventId: "evt_1",
         event: {
           id: "evt_1",
           name: "Test Event",

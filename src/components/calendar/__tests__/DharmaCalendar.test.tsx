@@ -62,6 +62,9 @@ describe("DharmaCalendar", () => {
         startTime: null,
         endTime: null,
         originalEndDate: null,
+        seriesParentEventIds: [],
+        seriesDayNumber: null,
+        hasSeriesChildren: false,
       },
     };
 
@@ -160,6 +163,9 @@ describe("DharmaCalendar", () => {
         startTime: null,
         endTime: null,
         originalEndDate: null,
+        seriesParentEventIds: [],
+        seriesDayNumber: null,
+        hasSeriesChildren: false,
       },
     };
 

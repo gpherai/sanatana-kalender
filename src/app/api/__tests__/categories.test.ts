@@ -17,6 +17,8 @@ describe("GET /api/categories", () => {
         color: "#fff",
         description: null,
         sortOrder: 1,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       },
     ]);
 

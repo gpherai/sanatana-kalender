@@ -20,7 +20,7 @@ describe("MonthGrid", () => {
       resource: {
         description: null,
         eventType: "FESTIVAL",
-        importance: "MAJOR",
+        importance: "MODERATE",
         category: null,
         categoryId: null,
         tithi: null,
@@ -31,6 +31,9 @@ describe("MonthGrid", () => {
         startTime: null,
         endTime: null,
         originalEndDate: null,
+        seriesParentEventIds: [],
+        seriesDayNumber: null,
+        hasSeriesChildren: false,
       },
     };
 

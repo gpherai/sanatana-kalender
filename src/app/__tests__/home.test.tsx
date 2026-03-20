@@ -46,6 +46,7 @@ describe("Home Page", () => {
         id: "occ_1",
         date: new Date(),
         endDate: null,
+        eventId: "evt_1",
         event: {
           id: "evt_1",
           name: "Maha Shivaratri",
