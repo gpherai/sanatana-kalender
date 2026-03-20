@@ -17,7 +17,7 @@
  * ```
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 // =============================================================================
 // TYPES
@@ -67,6 +67,12 @@ export function useFetch<T = unknown>(
   const [error, setError] = useState<Error | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
+  // Stable refs for callbacks — callers don't need to memoize them
+  const onSuccessRef = useRef(onSuccess);
+  const onErrorRef = useRef(onError);
+  onSuccessRef.current = onSuccess;
+  onErrorRef.current = onError;
+
   // Manual refetch function
   const refetch = useCallback(() => {
     setRefreshKey((prev) => prev + 1);
@@ -102,7 +108,7 @@ export function useFetch<T = unknown>(
 
         if (!signal.aborted) {
           setData(jsonData);
-          onSuccess?.(jsonData);
+          onSuccessRef.current?.(jsonData);
         }
       } catch (err) {
         // Ignore abort errors (component unmounted or refetch triggered)
@@ -114,7 +120,7 @@ export function useFetch<T = unknown>(
 
         if (!signal.aborted) {
           setError(fetchError);
-          onError?.(fetchError);
+          onErrorRef.current?.(fetchError);
         }
       } finally {
         if (!signal.aborted) {
@@ -128,7 +134,8 @@ export function useFetch<T = unknown>(
     return () => {
       controller.abort();
     };
-  }, [url, skip, refreshKey, onSuccess, onError, errorMessage]);
+    // onSuccess/onError via refs — stable without being in dep array
+  }, [url, skip, refreshKey, errorMessage]);
 
   return { data, loading, error, refetch };
 }
@@ -157,6 +164,12 @@ export function useFetchMultiple<T = unknown>(
 
   // Stable serialized key — only recompute when urls array contents change
   const urlsKey = urls.join(",");
+
+  // Stable refs for callbacks
+  const onSuccessRef = useRef(onSuccess);
+  const onErrorRef = useRef(onError);
+  onSuccessRef.current = onSuccess;
+  onErrorRef.current = onError;
 
   const refetch = useCallback(() => {
     setRefreshKey((prev) => prev + 1);
@@ -197,7 +210,7 @@ export function useFetchMultiple<T = unknown>(
 
         if (!signal.aborted) {
           setData(jsonData);
-          onSuccess?.(jsonData);
+          onSuccessRef.current?.(jsonData);
         }
       } catch (err) {
         if (err instanceof Error && err.name === "AbortError") {
@@ -208,7 +221,7 @@ export function useFetchMultiple<T = unknown>(
 
         if (!signal.aborted) {
           setError(fetchError);
-          onError?.(fetchError);
+          onErrorRef.current?.(fetchError);
         }
       } finally {
         if (!signal.aborted) {
@@ -222,9 +235,10 @@ export function useFetchMultiple<T = unknown>(
     return () => {
       controller.abort();
     };
-    // urlsKey is a stable string derived from urls — safe to use instead of the array itself
+    // onSuccess/onError via refs — stable without being in dep array
+    // urlsKey is a stable string derived from urls
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [urlsKey, skip, refreshKey, onSuccess, onError, errorMessage]);
+  }, [urlsKey, skip, refreshKey, errorMessage]);
 
   return { data, loading, error, refetch };
 }
