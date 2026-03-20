@@ -98,6 +98,7 @@ const {
 });
 
 vi.mock("swisseph", () => ({
+  swe_set_ephe_path: vi.fn(),
   swe_set_sid_mode: vi.fn(),
   swe_julday: sweJulday,
   swe_rise_trans: sweRiseTrans,
@@ -109,7 +110,8 @@ vi.mock("swisseph", () => ({
   SE_GREG_CAL: 1,
   SE_SUN: 0,
   SE_MOON: 1,
-  SEFLG_MOSEPH: 2,
+  SEFLG_SWIEPH: 2,
+  SEFLG_MOSEPH: 4,
   SE_CALC_RISE: 4,
   SE_CALC_SET: 8,
   SE_BIT_DISC_CENTER: 16,
@@ -169,9 +171,19 @@ describe("Astro Utilities", () => {
   });
 
   it("wraps swe_calc_ut results", async () => {
-    mockCalcResult.value = { longitude: 12, latitude: 3, distance: 1.5, speed: 0.1 };
+    mockCalcResult.value = {
+      longitude: 12,
+      latitude: 3,
+      distance: 1.5,
+      longitudeSpeed: 0.1,
+    } as never;
 
-    await expect(swe_calc_ut(1, 2, 3)).resolves.toEqual(mockCalcResult.value);
+    await expect(swe_calc_ut(1, 2, 3)).resolves.toEqual({
+      longitude: 12,
+      latitude: 3,
+      distance: 1.5,
+      speed: 0.1,
+    });
     expect(sweCalcUt).toHaveBeenCalledWith(1, 2, 3, expect.any(Function));
   });
 

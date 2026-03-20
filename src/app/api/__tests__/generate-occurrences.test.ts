@@ -98,7 +98,7 @@ describe("POST /api/events/generate-occurrences", () => {
     const request = new NextRequest("http://localhost/api/events/generate-occurrences", {
       method: "POST",
       body: JSON.stringify({
-        eventId: "evt_1",
+        eventId: "ckl9z5rte0000s6m1gj8h3x7d",
         startDate: "2025-01-01",
         endDate: "2025-01-02",
       }),
@@ -153,23 +153,12 @@ describe("POST /api/events/generate-occurrences", () => {
         notes: null,
       },
     ]);
-    prismaMock.eventOccurrence.upsert.mockResolvedValue({
-      id: "occ_1",
-
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      eventId: "evt_1",
-      date: new Date(),
-      endDate: null,
-      startTime: null,
-      endTime: null,
-      notes: null,
-    });
+    prismaMock.eventOccurrence.createMany.mockResolvedValue({ count: 2 });
 
     const request = new NextRequest("http://localhost/api/events/generate-occurrences", {
       method: "POST",
       body: JSON.stringify({
-        eventId: "evt_1",
+        eventId: "ckl9z5rte0000s6m1gj8h3x7d",
         startDate: "2025-01-01",
         endDate: "2025-01-05",
       }),
@@ -186,7 +175,7 @@ describe("POST /api/events/generate-occurrences", () => {
         endDate: new Date("2025-01-05"),
       })
     );
-    expect(prismaMock.eventOccurrence.upsert).toHaveBeenCalledTimes(2);
+    expect(prismaMock.eventOccurrence.createMany).toHaveBeenCalledTimes(1);
     expect(response.status).toBe(200);
     expect(json.generated).toBe(2);
   });
@@ -257,18 +246,7 @@ describe("POST /api/events/generate-occurrences", () => {
         ["evt_2", []],
       ])
     );
-    prismaMock.eventOccurrence.upsert.mockResolvedValue({
-      id: "occ_1",
-
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      eventId: "evt_1",
-      date: new Date(),
-      endDate: null,
-      startTime: null,
-      endTime: null,
-      notes: null,
-    });
+    prismaMock.eventOccurrence.createMany.mockResolvedValue({ count: 1 });
 
     const request = new NextRequest("http://localhost/api/events/generate-occurrences", {
       method: "POST",
@@ -292,7 +270,7 @@ describe("POST /api/events/generate-occurrences", () => {
         endDate: new Date("2025-01-05"),
       })
     );
-    expect(prismaMock.eventOccurrence.upsert).toHaveBeenCalledTimes(1);
+    expect(prismaMock.eventOccurrence.createMany).toHaveBeenCalledTimes(1);
     expect(response.status).toBe(200);
     expect(json.eventsProcessed).toBe(2);
     expect(json.generated).toBe(1);

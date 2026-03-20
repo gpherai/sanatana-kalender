@@ -79,7 +79,7 @@ describe("EventDetailModal", () => {
     expect(screen.getByText("A special puja for Lord Ganesha.")).toBeInTheDocument();
 
     // Notes
-    expect(screen.getByText("Bring flowers.")).toBeInTheDocument();
+    expect(screen.getByText("Please bring flowers.")).toBeInTheDocument();
 
     // Time
     expect(screen.getByText("10:00")).toBeInTheDocument();
@@ -176,6 +176,9 @@ describe("EventDetailModal", () => {
   });
 
   it("shows toast error when delete fails", async () => {
+    // Component fetches event relations on mount — first call returns OK (GET)
+    // Second call (DELETE) returns failure
+    mockFetch.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({}) });
     mockFetch.mockResolvedValueOnce({ ok: false });
 
     render(<EventDetailModal event={MOCK_EVENT} isOpen={true} onClose={vi.fn()} />);

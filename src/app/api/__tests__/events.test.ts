@@ -52,6 +52,8 @@ describe("API Events", () => {
           nakshatra: null,
           maas: null,
           tags: [],
+          seriesParentEntries: [],
+          seriesChildEntries: [],
         },
       },
     ] as never);

@@ -327,17 +327,19 @@ describe("Recurrence Service", () => {
         expect(prismaMock.dailyInfo.findMany).not.toHaveBeenCalled();
       });
 
-      it("should return empty array for MONTHLY_SOLAR", async () => {
+      it("should return empty array for MONTHLY_SOLAR when no sankranti data", async () => {
         const eventSolar: Event = {
           ...MOCK_EVENT_YEARLY,
           id: "evt_solar_monthly",
           recurrenceType: "MONTHLY_SOLAR",
         };
 
+        prismaMock.dailyInfo.findMany.mockResolvedValue([]);
+
         const result = await generateOccurrences(eventSolar, options);
 
         expect(result).toEqual([]);
-        expect(prismaMock.dailyInfo.findMany).not.toHaveBeenCalled();
+        expect(prismaMock.dailyInfo.findMany).toHaveBeenCalled();
       });
     });
 

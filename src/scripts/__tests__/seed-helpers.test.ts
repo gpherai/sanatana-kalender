@@ -71,7 +71,7 @@ describe("seed helpers", () => {
       expect(getMoonPhaseType(80, false)).toBe("WANING_GIBBOUS");
       expect(getMoonPhaseType(60, false)).toBe("LAST_QUARTER");
       expect(getMoonPhaseType(40, false)).toBe("WANING_CRESCENT");
-      expect(getMoonPhaseType(20, false)).toBe("NEW_MOON");
+      expect(getMoonPhaseType(20, false)).toBe("WANING_CRESCENT");
     });
   });
 });

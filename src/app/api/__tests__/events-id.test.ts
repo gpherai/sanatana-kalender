@@ -161,12 +161,10 @@ describe("API Events by ID", () => {
     const response = await DELETE(new NextRequest("http://localhost/api/events/test"), {
       params: Promise.resolve({ id: "ckl9z5rte0000s6m1gj8h3x7d" }),
     });
-    const json = await response.json();
 
     expect(prismaMock.event.delete).toHaveBeenCalledWith({
       where: { id: "ckl9z5rte0000s6m1gj8h3x7d" },
     });
-    expect(response.status).toBe(200);
-    expect(json.success).toBe(true);
+    expect(response.status).toBe(204);
   });
 });

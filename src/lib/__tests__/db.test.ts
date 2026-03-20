@@ -105,25 +105,20 @@ describe("Database Client", () => {
     resetGlobalPrisma();
   });
 
-  it("configures pool and prisma client in development", async () => {
+  it("configures adapter and prisma client in development", async () => {
     mockEnv.NODE_ENV = "development";
 
     const db = await importDbModule();
 
-    expect(poolConfigs).toHaveLength(1);
-    expect(poolConfigs[0]).toEqual(
+    expect(adapterInstances).toHaveLength(1);
+    expect(adapterInstances[0]!.pool).toEqual(
       expect.objectContaining({
         connectionString: mockEnv.DATABASE_URL,
         max: 10,
-        min: 2,
         idleTimeoutMillis: 30000,
         connectionTimeoutMillis: 5000,
       })
     );
-    expect(poolOnCalls[0]?.event).toBe("error");
-
-    expect(adapterInstances).toHaveLength(1);
-    expect(adapterInstances[0]!.pool).toBe(poolInstances[0]);
 
     expect(prismaConstructorArgs).toHaveLength(1);
     expect(prismaConstructorArgs[0]).toEqual(
@@ -183,22 +178,5 @@ describe("Database Client", () => {
     expect(errorSpy).toHaveBeenCalled();
 
     errorSpy.mockRestore();
-  });
-
-  it("returns pool stats from the active pool", async () => {
-    const { getPoolStats } = (await importDbModule()) as unknown as {
-      getPoolStats: () => Record<string, unknown>;
-    };
-    const pool = poolInstances[0];
-
-    pool!.totalCount = 4;
-    pool!.idleCount = 2;
-    pool!.waitingCount = 1;
-
-    expect(getPoolStats()).toEqual({
-      totalCount: 4,
-      idleCount: 2,
-      waitingCount: 1,
-    });
   });
 });

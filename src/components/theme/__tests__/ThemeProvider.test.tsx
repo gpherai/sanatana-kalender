@@ -36,13 +36,13 @@ function mockMatchMedia(matches = false) {
 describe("ThemeProvider", () => {
   beforeEach(() => {
     window.matchMedia = mockMatchMedia(false) as typeof window.matchMedia;
-    localStorage.clear();
+    localStorage.removeItem(THEME_STORAGE_KEY);
     document.documentElement.classList.remove("dark");
     document.documentElement.removeAttribute("data-theme");
   });
 
   afterEach(() => {
-    localStorage.clear();
+    localStorage.removeItem(THEME_STORAGE_KEY);
     document.documentElement.classList.remove("dark");
     document.documentElement.removeAttribute("data-theme");
   });
