@@ -18,6 +18,7 @@ import {
   NAKSHATRAS,
   MAAS,
   PAKSHAS,
+  SANKRANTIS,
 } from "./domain";
 import {
   TIME_REGEX_LENIENT,
@@ -56,6 +57,7 @@ export const tithiEnum = createEnumFromConstants(TITHIS);
 export const nakshatraEnum = createEnumFromConstants(NAKSHATRAS);
 export const maasEnum = createEnumFromConstants(MAAS);
 export const pakshaEnum = createEnumFromConstants(PAKSHAS);
+export const sankrantiEnum = createEnumFromConstants(SANKRANTIS);
 export const calendarViewEnum = z.enum(["month", "week", "day", "agenda"]);
 
 // =============================================================================
@@ -133,6 +135,9 @@ export const eventFormSchema = z.object({
   nakshatra: nakshatraEnum.optional().or(z.literal("")),
   maas: maasEnum.optional().or(z.literal("")),
 
+  // Solar info (for YEARLY_SOLAR recurrence)
+  sankranti: sankrantiEnum.optional().or(z.literal("")),
+
   // Tags as comma-separated string
   tags: z.string().optional().or(z.literal("")),
 
@@ -161,6 +166,7 @@ export function transformFormToApi(data: EventFormData) {
     tithi: data.tithi || null,
     nakshatra: data.nakshatra || null,
     maas: data.maas || null,
+    sankranti: data.sankranti || null,
     tags: data.tags
       ? data.tags
           .split(",")

@@ -56,6 +56,26 @@ export const IMPORTANCE_LEVELS = [
 export type ImportanceValue = (typeof IMPORTANCE_LEVELS)[number]["value"];
 
 // --------------------------------------------
+// SANKRANTIS (solar transitions)
+// --------------------------------------------
+export const SANKRANTIS = [
+  { value: "MESHA_SANKRANTI", label: "Mesha Sankranti (Ram / Aries)" },
+  { value: "VRISHABHA_SANKRANTI", label: "Vrishabha Sankranti (Stier / Taurus)" },
+  { value: "MITHUNA_SANKRANTI", label: "Mithuna Sankranti (Tweelingen / Gemini)" },
+  { value: "KARKA_SANKRANTI", label: "Karka Sankranti (Kreeft / Cancer)" },
+  { value: "SIMHA_SANKRANTI", label: "Simha Sankranti (Leeuw / Leo)" },
+  { value: "KANYA_SANKRANTI", label: "Kanya Sankranti (Maagd / Virgo)" },
+  { value: "TULA_SANKRANTI", label: "Tula Sankranti (Weegschaal / Libra)" },
+  { value: "VRISHCHIKA_SANKRANTI", label: "Vrishchika Sankranti (Schorpioen / Scorpio)" },
+  { value: "DHANU_SANKRANTI", label: "Dhanu Sankranti (Boogschutter / Sagittarius)" },
+  { value: "MAKARA_SANKRANTI", label: "Makara Sankranti (Steenbok / Capricorn)" },
+  { value: "KUMBHA_SANKRANTI", label: "Kumbha Sankranti (Waterman / Aquarius)" },
+  { value: "MEENA_SANKRANTI", label: "Meena Sankranti (Vissen / Pisces)" },
+] as const;
+
+export type SankrantiValue = (typeof SANKRANTIS)[number]["value"];
+
+// --------------------------------------------
 // SPECIAL TITHIS (for filtering)
 // --------------------------------------------
 export const SPECIAL_TITHIS = [

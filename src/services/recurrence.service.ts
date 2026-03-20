@@ -142,7 +142,7 @@ export async function generateOccurrences(
         break;
 
       case "YEARLY_SOLAR":
-        occurrences = generateYearlySolarOccurrences(event);
+        occurrences = await generateYearlySolarOccurrences(event, startDate, endDate);
         break;
 
       case "MONTHLY_LUNAR":
@@ -156,7 +156,7 @@ export async function generateOccurrences(
         break;
 
       case "MONTHLY_SOLAR":
-        occurrences = generateMonthlySolarOccurrences(event);
+        occurrences = await generateMonthlySolarOccurrences(event, startDate, endDate);
         break;
 
       default:
@@ -345,13 +345,44 @@ async function generateYearlyLunarOccurrences(
 // =============================================================================
 
 /**
- * Generate yearly solar occurrences (e.g., every March 14).
- * Uses the first occurrence date as template and repeats annually.
+ * Generate yearly solar occurrences tied to a specific Sankranti.
+ * Queries DailyInfo for days when the event's sankranti occurs within the range.
+ * Returns one occurrence per year (the day the sun enters the specified sign).
+ *
+ * Example: MAKARA_SANKRANTI → every year when the sun enters Makara (Capricorn).
+ * The startTime is set to the exact transit time (sankrantiTime) from DailyInfo.
  */
-function generateYearlySolarOccurrences(event: Event): GeneratedOccurrence[] {
-  throw new Error(
-    `YEARLY_SOLAR recurrence is not yet implemented (event: "${event.name}"). Use SOLAR rule type instead.`
-  );
+async function generateYearlySolarOccurrences(
+  event: Event,
+  startDate: Date,
+  endDate: Date
+): Promise<GeneratedOccurrence[]> {
+  if (!event.sankranti) {
+    logWarn(`YEARLY_SOLAR event "${event.name}" has no sankranti specified`);
+    return [];
+  }
+
+  const validSankrantiValues = Object.values(Sankranti) as string[];
+  if (!validSankrantiValues.includes(event.sankranti)) {
+    logWarn(
+      `YEARLY_SOLAR event "${event.name}" has invalid sankranti: "${event.sankranti}"`
+    );
+    return [];
+  }
+
+  const dailyData = await prisma.dailyInfo.findMany({
+    where: {
+      date: { gte: startDate, lte: endDate },
+      sankranti: event.sankranti as Sankranti,
+    },
+    select: { date: true, sankrantiTime: true },
+    orderBy: { date: "asc" },
+  });
+
+  return dailyData.map((day) => ({
+    date: day.date,
+    startTime: day.sankrantiTime ?? undefined,
+  }));
 }
 
 // =============================================================================
@@ -464,13 +495,34 @@ function isConsecutiveDay(day1: Date, day2: Date): boolean {
 // =============================================================================
 
 /**
- * Generate monthly solar occurrences (e.g., 15th of every month).
- * Uses day-of-month from reference date.
+ * Generate monthly solar occurrences — fires on every Sankranti day (~12x per year).
+ * A "solar month" begins when the sun transitions to a new sign (Sankranti).
+ * This type is used for events that should be observed on every solar month boundary,
+ * regardless of which specific Sankranti it is.
+ *
+ * Example: "Puja op elke Sankranti" → occurs ~12 times per year.
  */
-function generateMonthlySolarOccurrences(event: Event): GeneratedOccurrence[] {
-  throw new Error(
-    `MONTHLY_SOLAR recurrence is not yet implemented (event: "${event.name}").`
-  );
+async function generateMonthlySolarOccurrences(
+  event: Event,
+  startDate: Date,
+  endDate: Date
+): Promise<GeneratedOccurrence[]> {
+  const dailyData = await prisma.dailyInfo.findMany({
+    where: {
+      date: { gte: startDate, lte: endDate },
+      sankranti: { not: null },
+    },
+    select: { date: true, sankranti: true, sankrantiTime: true },
+    orderBy: { date: "asc" },
+  });
+
+  return dailyData.map((day) => ({
+    date: day.date,
+    startTime: day.sankrantiTime ?? undefined,
+    notes: day.sankranti
+      ? `${day.sankranti.replace(/_/g, " ").replace("SANKRANTI", "").trim()} Sankranti`
+      : undefined,
+  }));
 }
 
 // =============================================================================

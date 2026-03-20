@@ -11,7 +11,14 @@ import {
   transformFormToApi,
   type EventFormData,
 } from "@/lib/validations";
-import { EVENT_TYPES, IMPORTANCE_LEVELS, TITHIS, NAKSHATRAS, MAAS } from "@/lib/domain";
+import {
+  EVENT_TYPES,
+  IMPORTANCE_LEVELS,
+  TITHIS,
+  NAKSHATRAS,
+  MAAS,
+  SANKRANTIS,
+} from "@/lib/domain";
 import type { Category } from "@/types/calendar";
 
 interface EventFormProps {
@@ -42,6 +49,7 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
     tithi: initialData?.tithi ?? "",
     nakshatra: initialData?.nakshatra ?? "",
     maas: initialData?.maas ?? "",
+    sankranti: initialData?.sankranti ?? "",
     tags: initialData?.tags ?? "",
     notes: initialData?.notes ?? "",
   });
@@ -461,6 +469,39 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
           </div>
         </div>
       </div>
+
+      {/* Solar Info Section — only for YEARLY_SOLAR */}
+      {formData.recurrenceType === "YEARLY_SOLAR" && (
+        <div className="space-y-4">
+          <h3 className="text-theme-fg-muted text-sm font-medium tracking-wide uppercase">
+            Solaire Informatie
+          </h3>
+          <div>
+            <label
+              htmlFor="sankranti"
+              className="text-theme-fg-secondary mb-1 block text-sm font-medium"
+            >
+              Sankranti <span className="text-theme-error">*</span>
+            </label>
+            <select
+              id="sankranti"
+              value={formData.sankranti}
+              onChange={(e) => updateField("sankranti", e.target.value)}
+              className={cn(inputClasses, "border-theme-border")}
+            >
+              <option value="">Selecteer sankranti...</option>
+              {SANKRANTIS.map((s) => (
+                <option key={s.value} value={s.value}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
+            <p className="text-theme-fg-subtle mt-1 text-xs">
+              Welke Sankranti (zonsovergang) valt dit evenement op?
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Tags Section */}
       <div className="space-y-4">
