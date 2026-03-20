@@ -113,13 +113,11 @@ export function EventDetailModal({
   useEffect(() => {
     if (isOpen) {
       document.addEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "hidden";
       modalRef.current?.focus();
     }
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "";
     };
   }, [isOpen, handleKeyDown]);
 
