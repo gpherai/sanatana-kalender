@@ -1,15 +1,10 @@
 import path from "path";
-import { createRequire } from "module";
 import { DateTime } from "luxon";
 import * as swisseph from "swisseph";
 import type { LocationConfig } from "../types";
 
 // Resolve bundled Swiss Ephemeris data files from the swisseph package
-const _require = createRequire(import.meta.url);
-const EPHE_PATH = path.join(
-  path.dirname(_require.resolve("swisseph/package.json")),
-  "ephe"
-);
+const EPHE_PATH = path.join(process.cwd(), "node_modules/swisseph/ephe");
 
 // Set ephemeris path and Lahiri ayanamsa globally for this module
 swisseph.swe_set_ephe_path(EPHE_PATH);
