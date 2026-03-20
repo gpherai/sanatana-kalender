@@ -67,13 +67,19 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
     for (const e of seriesParentEntries) {
       parentEventMap.set(e.parent.id, e.parent);
     }
+    const childEventMap = new Map<
+      string,
+      { id: string; name: string; dayNumber: number | null }
+    >();
+    for (const e of seriesChildEntries) {
+      if (!childEventMap.has(e.child.id)) {
+        childEventMap.set(e.child.id, { ...e.child, dayNumber: e.dayNumber });
+      }
+    }
     const event = {
       ...rest,
       parentEvents: [...parentEventMap.values()],
-      childEvents: seriesChildEntries.map((e) => ({
-        ...e.child,
-        dayNumber: e.dayNumber,
-      })),
+      childEvents: [...childEventMap.values()],
     };
 
     return NextResponse.json(event);
