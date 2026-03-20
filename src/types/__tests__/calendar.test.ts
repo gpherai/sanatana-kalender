@@ -34,7 +34,7 @@ describe("Calendar types helpers", () => {
       },
     };
 
-    const parsed = parseCalendarEvent(response);
+    const parsed = parseCalendarEvent(response as never);
 
     expect(parsed.start).toBeInstanceOf(Date);
     expect(parsed.end).toBeInstanceOf(Date);

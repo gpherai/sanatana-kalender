@@ -78,10 +78,10 @@ describe("FilterSidebar", () => {
       />
     );
 
-    const checkbox = screen.getByLabelText(new RegExp(category.label));
+    const checkbox = screen.getByLabelText(new RegExp(category!.label));
     await user.click(checkbox);
 
-    expect(onToggleFilter).toHaveBeenCalledWith("categories", category.value);
+    expect(onToggleFilter).toHaveBeenCalledWith("categories", category!.value);
   });
 
   it("clears search when clear button is clicked", async () => {
@@ -123,8 +123,8 @@ describe("FilterSidebar", () => {
 
     const [sortBySelect, sortOrderSelect] = screen.getAllByRole("combobox");
 
-    fireEvent.change(sortBySelect, { target: { value: "name" } });
-    fireEvent.change(sortOrderSelect, { target: { value: "desc" } });
+    fireEvent.change(sortBySelect!, { target: { value: "name" } });
+    fireEvent.change(sortOrderSelect!, { target: { value: "desc" } });
 
     expect(onFilterChange).toHaveBeenCalledWith("sortBy", "name");
     expect(onFilterChange).toHaveBeenCalledWith("sortOrder", "desc");

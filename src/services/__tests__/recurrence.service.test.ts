@@ -81,8 +81,8 @@ describe("Recurrence Service", () => {
         );
 
         expect(result).toHaveLength(1);
-        expect(result[0].date).toEqual(new Date("2025-02-26T00:00:00.000Z"));
-        expect(result[0].endTime).toBe("23:45");
+        expect(result[0]!.date).toEqual(new Date("2025-02-26T00:00:00.000Z"));
+        expect(result[0]!.endTime).toBe("23:45");
       });
 
       it("should prefer matching maas when multiple results in the same year", async () => {
@@ -104,8 +104,8 @@ describe("Recurrence Service", () => {
         const result = await generateOccurrences(MOCK_EVENT_YEARLY, options);
 
         expect(result).toHaveLength(1);
-        expect(result[0].date).toEqual(new Date("2025-02-26T00:00:00.000Z"));
-        expect(result[0].endTime).toBe("23:45");
+        expect(result[0]!.date).toEqual(new Date("2025-02-26T00:00:00.000Z"));
+        expect(result[0]!.endTime).toBe("23:45");
       });
 
       it("should handle empty database results gracefully", async () => {
@@ -149,8 +149,8 @@ describe("Recurrence Service", () => {
         const result = await generateOccurrences(MOCK_EVENT_MONTHLY, options);
 
         expect(result).toHaveLength(2);
-        expect(result[0].date).toEqual(new Date("2025-01-11T00:00:00.000Z"));
-        expect(result[1].date).toEqual(new Date("2025-02-10T00:00:00.000Z"));
+        expect(result[0]!.date).toEqual(new Date("2025-01-11T00:00:00.000Z"));
+        expect(result[1]!.date).toEqual(new Date("2025-02-10T00:00:00.000Z"));
       });
 
       it("should handle spanning tithis (consecutive days)", async () => {
@@ -175,16 +175,16 @@ describe("Recurrence Service", () => {
         expect(result).toHaveLength(2);
 
         // Day 1: Start
-        expect(result[0].date).toEqual(new Date("2025-01-11T00:00:00.000Z"));
-        expect(result[0].startTime).toBe("00:00");
-        expect(result[0].endTime).toBe("23:59");
-        expect(result[0].notes).toContain("Begint op deze dag");
+        expect(result[0]!.date).toEqual(new Date("2025-01-11T00:00:00.000Z"));
+        expect(result[0]!.startTime).toBe("00:00");
+        expect(result[0]!.endTime).toBe("23:59");
+        expect(result[0]!.notes).toContain("Begint op deze dag");
 
         // Day 2: End
-        expect(result[1].date).toEqual(new Date("2025-01-12T00:00:00.000Z"));
-        expect(result[1].startTime).toBe("00:00");
-        expect(result[1].endTime).toBe("08:00");
-        expect(result[1].notes).toContain("Eindigt om 08:00");
+        expect(result[1]!.date).toEqual(new Date("2025-01-12T00:00:00.000Z"));
+        expect(result[1]!.startTime).toBe("00:00");
+        expect(result[1]!.endTime).toBe("08:00");
+        expect(result[1]!.notes).toContain("Eindigt om 08:00");
       });
 
       it("should treat non-consecutive days as separate occurrences", async () => {
@@ -206,10 +206,10 @@ describe("Recurrence Service", () => {
         const result = await generateOccurrences(MOCK_EVENT_MONTHLY, options);
 
         expect(result).toHaveLength(2);
-        expect(result[0].startTime).toBeUndefined();
-        expect(result[0].notes).toBeUndefined();
-        expect(result[1].startTime).toBeUndefined();
-        expect(result[1].notes).toBeUndefined();
+        expect(result[0]!.startTime).toBeUndefined();
+        expect(result[0]!.notes).toBeUndefined();
+        expect(result[1]!.startTime).toBeUndefined();
+        expect(result[1]!.notes).toBeUndefined();
       });
     });
 
@@ -244,8 +244,8 @@ describe("Recurrence Service", () => {
         );
 
         expect(result).toHaveLength(1);
-        expect(result[0].date).toEqual(new Date("2025-01-14T00:00:00.000Z"));
-        expect(result[0].startTime).toBe("14:30");
+        expect(result[0]!.date).toEqual(new Date("2025-01-14T00:00:00.000Z"));
+        expect(result[0]!.startTime).toBe("14:30");
       });
     });
 
@@ -299,7 +299,7 @@ describe("Recurrence Service", () => {
 
         await generateOccurrences(allMonthsEvent, options);
 
-        const callArgs = prismaMock.dailyInfo.findMany.mock.calls[0][0];
+        const callArgs = prismaMock.dailyInfo.findMany.mock.calls[0]![0];
         // Should NOT have isAdhika in where clause
         expect(callArgs?.where).not.toHaveProperty("isAdhika");
       });

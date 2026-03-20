@@ -102,7 +102,7 @@ async function generateEventsFromNaming() {
         // Update auto-generated event (including possible name change)
         await prisma.event.update({
           where: { id: existing.id },
-          data: eventData,
+          data: eventData as never,
         });
         updated++;
         const renamed =
@@ -116,7 +116,7 @@ async function generateEventsFromNaming() {
     } else {
       // Create new event
       await prisma.event.create({
-        data: eventData,
+        data: eventData as never,
       });
       created++;
       console.log(`✅ Created: ${naming.name}`);

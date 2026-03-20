@@ -182,7 +182,7 @@ describe("Astro Utilities", () => {
       latitude: 0,
       distance: 0,
       speed: 0,
-    };
+    } as never;
 
     await expect(swe_calc_ut(1, 2, 3)).rejects.toThrow("bad");
   });
@@ -198,7 +198,7 @@ describe("Astro Utilities", () => {
   });
 
   it("rejects swe_pheno_ut when Swiss Ephemeris returns an error", async () => {
-    mockPhenoResult.value = { error: "nope", phaseAngle: 0, phase: 0 };
+    mockPhenoResult.value = { error: "nope", phaseAngle: 0, phase: 0 } as never;
 
     await expect(swe_pheno_ut(4, 5, 6)).rejects.toThrow("nope");
   });
@@ -220,12 +220,12 @@ describe("Astro Utilities", () => {
 
     expect(sweJulday).toHaveBeenCalledWith(2025, 1, 1, 0, 1);
     expect(sweRiseTrans).toHaveBeenCalledTimes(2);
-    expect(sweRiseTrans.mock.calls[0][1]).toBe(0);
-    expect(sweRiseTrans.mock.calls[1][1]).toBe(0);
-    expect(sweRiseTrans.mock.calls[0][4]).toBe(4 | 16);
-    expect(sweRiseTrans.mock.calls[1][4]).toBe(8 | 16);
-    expect(sweRiseTrans.mock.calls[0][5]).toBe(2);
-    expect(sweRiseTrans.mock.calls[0][6]).toBe(1);
+    expect(sweRiseTrans.mock.calls[0]![1]).toBe(0);
+    expect(sweRiseTrans.mock.calls[1]![1]).toBe(0);
+    expect(sweRiseTrans.mock.calls[0]![4]).toBe(4 | 16);
+    expect(sweRiseTrans.mock.calls[1]![4]).toBe(8 | 16);
+    expect(sweRiseTrans.mock.calls[0]![5]).toBe(2);
+    expect(sweRiseTrans.mock.calls[0]![6]).toBe(1);
   });
 
   it("returns moonrise and moonset data for a date", async () => {
@@ -243,10 +243,10 @@ describe("Astro Utilities", () => {
     expect(result.moonsetTime.hour).toBe(21);
 
     expect(sweRiseTrans).toHaveBeenCalledTimes(2);
-    expect(sweRiseTrans.mock.calls[0][1]).toBe(1);
-    expect(sweRiseTrans.mock.calls[1][1]).toBe(1);
-    expect(sweRiseTrans.mock.calls[0][5]).toBe(20);
-    expect(sweRiseTrans.mock.calls[0][6]).toBe(10);
+    expect(sweRiseTrans.mock.calls[0]![1]).toBe(1);
+    expect(sweRiseTrans.mock.calls[1]![1]).toBe(1);
+    expect(sweRiseTrans.mock.calls[0]![5]).toBe(20);
+    expect(sweRiseTrans.mock.calls[0]![6]).toBe(10);
   });
 
   it("returns the ayanamsa value", async () => {

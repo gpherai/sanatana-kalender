@@ -162,9 +162,9 @@ describe("Panchanga Helpers", () => {
       const results = getSpecialLunarDays(monthData);
 
       expect(results).toHaveLength(2);
-      expect(results[0].type).toBe("ekadashi");
-      expect(results[0].date).toEqual(monthData[1].date);
-      expect(results[1].type).toBe("amavasya");
+      expect(results[0]!.type).toBe("ekadashi");
+      expect(results[0]!.date).toEqual(monthData[1]!.date);
+      expect(results[1]!.type).toBe("amavasya");
     });
 
     it("should handle string dates correctly", () => {
@@ -177,8 +177,8 @@ describe("Panchanga Helpers", () => {
 
       const results = getSpecialLunarDays(monthData);
       expect(results).toHaveLength(1);
-      expect(results[0].date).toBeInstanceOf(Date);
-      expect(results[0].date.toISOString()).toContain("2024-01-11");
+      expect(results[0]!.date).toBeInstanceOf(Date);
+      expect(results[0]!.date.toISOString()).toContain("2024-01-11");
     });
 
     it("should skip days without tithi", () => {
@@ -186,7 +186,6 @@ describe("Panchanga Helpers", () => {
         { date: new Date("2024-01-01") }, // Missing tithi
       ];
 
-      // @ts-expect-error - simulating partial data
       const results = getSpecialLunarDays(monthData);
       expect(results).toHaveLength(0);
     });

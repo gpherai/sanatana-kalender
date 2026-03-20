@@ -503,7 +503,7 @@ function isConsecutiveDay(day1: Date, day2: Date): boolean {
  * Example: "Puja op elke Sankranti" → occurs ~12 times per year.
  */
 async function generateMonthlySolarOccurrences(
-  event: Event,
+  _event: Event,
   startDate: Date,
   endDate: Date
 ): Promise<GeneratedOccurrence[]> {

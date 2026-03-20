@@ -21,7 +21,7 @@ swisseph.swe_set_sid_mode(swisseph.SE_SIDM_LAHIRI, 0, 0);
 
 // Type definitions for swisseph callback results
 interface SweRiseTransResult {
-  error?: string;
+  error?: string | any; // eslint-disable-line @typescript-eslint/no-explicit-any
   transitTime?: number;
 }
 
@@ -96,14 +96,9 @@ export const swe_calc_ut = (
       jd,
       ipl,
       iflag,
-      (result: {
-        error?: string;
-        longitude: number;
-        latitude: number;
-        distance: number;
-        longitudeSpeed?: number;
-      }) => {
-        if (result.error) reject(new Error(result.error));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (result: any) => {
+        if (result.error) reject(new Error(String(result.error)));
         else {
           resolve({
             longitude: result.longitude,
@@ -127,8 +122,9 @@ export const swe_pheno_ut = (
       jd,
       ipl,
       flags,
-      (res: { error?: string; phaseAngle: number; phase: number }) => {
-        if (res.error) reject(new Error(res.error));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (res: any) => {
+        if (res.error) reject(new Error(String(res.error)));
         // swisseph returns 'phase' for illumination fraction (0..1)
         else resolve({ phaseAngle: res.phaseAngle, phaseIllum: res.phase });
       }

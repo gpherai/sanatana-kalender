@@ -139,7 +139,7 @@ describe("DayDetailsPanel", () => {
       <DayDetailsPanel
         selectedDate={MOCK_DATE}
         selectedDayInfo={MOCK_INFO}
-        selectedDayEvents={MOCK_EVENTS}
+        selectedDayEvents={MOCK_EVENTS as never}
         selectedDaySpecial={[]}
         onEventClick={onEventClick}
         showEvents={true}

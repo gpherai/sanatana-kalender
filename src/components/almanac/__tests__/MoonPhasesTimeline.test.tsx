@@ -38,7 +38,7 @@ describe("MoonPhasesTimeline", () => {
       <MoonPhasesTimeline
         moonPhases={phases}
         month={0}
-        selectedDate={phases[0].date}
+        selectedDate={phases[0]!.date}
         onSelectDate={onSelectDate}
       />
     );
@@ -49,6 +49,6 @@ describe("MoonPhasesTimeline", () => {
     const other = screen.getByRole("button", { name: /Full Moon/i });
     await userEvent.click(other);
 
-    expect(onSelectDate).toHaveBeenCalledWith(phases[1].date);
+    expect(onSelectDate).toHaveBeenCalledWith(phases[1]!.date);
   });
 });

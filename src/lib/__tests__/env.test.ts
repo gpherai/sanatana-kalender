@@ -16,14 +16,17 @@ describe("Environment Validation", () => {
     }
 
     if (originalNodeEnv === undefined) {
+      // @ts-expect-error - mocking env
       delete process.env.NODE_ENV;
     } else {
+      // @ts-expect-error - mocking env
       process.env.NODE_ENV = originalNodeEnv;
     }
   });
 
   it("validates PostgreSQL connection strings", async () => {
     process.env.DATABASE_URL = "postgresql://user:pass@localhost:5432/test";
+    // @ts-expect-error - mocking env
     process.env.NODE_ENV = "production";
 
     const { env, isDev, isProd, isTest } = await import("../env");
@@ -37,6 +40,7 @@ describe("Environment Validation", () => {
 
   it("defaults NODE_ENV to development when missing", async () => {
     process.env.DATABASE_URL = "postgres://user:pass@localhost:5432/test";
+    // @ts-expect-error - mocking env
     delete process.env.NODE_ENV;
 
     const { env, isDev, isProd, isTest } = await import("../env");
@@ -49,6 +53,7 @@ describe("Environment Validation", () => {
 
   it("throws for invalid database URLs", async () => {
     process.env.DATABASE_URL = "mysql://user:pass@localhost:3306/test";
+    // @ts-expect-error - mocking env
     process.env.NODE_ENV = "test";
 
     const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});

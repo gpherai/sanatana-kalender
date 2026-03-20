@@ -9,8 +9,8 @@ const defaultProps = {
   onNavigate: vi.fn(),
   onView: vi.fn(),
   label: "Januari 2025",
-  localizer: {} as Record<string, never>,
-  views: ["month", "week", "agenda"],
+  localizer: { messages: {} } as unknown as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+  views: ["month", "week", "agenda"] as any, // eslint-disable-line @typescript-eslint/no-explicit-any
   children: null,
 };
 

@@ -19,7 +19,7 @@ describe("LocationSection", () => {
     );
 
     const preset = PRESET_LOCATIONS[0];
-    const button = screen.getByRole("button", { name: preset.name });
+    const button = screen.getByRole("button", { name: preset!.name });
     fireEvent.click(button);
 
     expect(onLocationPreset).toHaveBeenCalledWith(preset);

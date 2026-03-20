@@ -30,7 +30,6 @@ describe("API Events", () => {
         endTime: "10:00",
         notes: "note",
         eventId: "evt_1",
-        eventId: "evt_1",
         event: {
           id: "evt_1",
           name: "Test Event",
@@ -55,7 +54,7 @@ describe("API Events", () => {
           tags: [],
         },
       },
-    ]);
+    ] as never);
 
     const request = new NextRequest(
       "http://localhost/api/events?start=2025-01-01&end=2025-01-02"
@@ -92,12 +91,8 @@ describe("API Events", () => {
       }
       return [];
     });
-    prismaMock.event.create.mockResolvedValue({
-      id: "evt_1",
-    });
-    prismaMock.eventOccurrence.create.mockResolvedValue({
-      id: "occ_1",
-    });
+    prismaMock.event.create.mockResolvedValue({ id: "evt_1" } as never);
+    prismaMock.eventOccurrence.create.mockResolvedValue({ id: "occ_1" } as never);
 
     const request = new NextRequest("http://localhost/api/events", {
       method: "POST",

@@ -112,9 +112,7 @@ describe("API Events by ID", () => {
       ...MOCK_EVENT,
       name: "Updated Event",
     } as never);
-    prismaMock.eventOccurrence.update.mockResolvedValue({
-      id: "occ_1",
-    });
+    prismaMock.eventOccurrence.update.mockResolvedValue({ id: "occ_1" } as never);
 
     const request = new NextRequest("http://localhost/api/events/test", {
       method: "PUT",

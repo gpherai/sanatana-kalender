@@ -30,8 +30,8 @@ describe("Home Page", () => {
   });
 
   it("shows empty state when no upcoming events exist", async () => {
-    prismaMock.eventOccurrence.findMany.mockResolvedValue([]);
-    prismaMock.category.findMany.mockResolvedValue([]);
+    prismaMock.eventOccurrence.findMany.mockResolvedValue([] as never);
+    prismaMock.category.findMany.mockResolvedValue([] as never);
 
     const ui = await Home();
     render(ui);
@@ -54,7 +54,7 @@ describe("Home Page", () => {
           category: { icon: "🕉️" },
         },
       },
-    ]);
+    ] as never);
     prismaMock.category.findMany.mockResolvedValue([
       {
         id: "cat_1",
@@ -62,7 +62,7 @@ describe("Home Page", () => {
         icon: "🐘",
         color: "#fff",
       },
-    ]);
+    ] as never);
 
     const ui = await Home();
     render(ui);

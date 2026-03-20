@@ -77,7 +77,7 @@ describe("Event Pages", () => {
           notes: null,
         },
       ],
-    });
+    } as never);
 
     const ui = await EditEventPage({
       params: Promise.resolve({ id: "ckl9z5rte0000s6m1gj8h3x7d" }),

@@ -123,7 +123,7 @@ describe("Database Client", () => {
     expect(poolOnCalls[0]?.event).toBe("error");
 
     expect(adapterInstances).toHaveLength(1);
-    expect(adapterInstances[0].pool).toBe(poolInstances[0]);
+    expect(adapterInstances[0]!.pool).toBe(poolInstances[0]);
 
     expect(prismaConstructorArgs).toHaveLength(1);
     expect(prismaConstructorArgs[0]).toEqual(
@@ -186,12 +186,14 @@ describe("Database Client", () => {
   });
 
   it("returns pool stats from the active pool", async () => {
-    const { getPoolStats } = await importDbModule();
+    const { getPoolStats } = (await importDbModule()) as unknown as {
+      getPoolStats: () => Record<string, unknown>;
+    };
     const pool = poolInstances[0];
 
-    pool.totalCount = 4;
-    pool.idleCount = 2;
-    pool.waitingCount = 1;
+    pool!.totalCount = 4;
+    pool!.idleCount = 2;
+    pool!.waitingCount = 1;
 
     expect(getPoolStats()).toEqual({
       totalCount: 4,
