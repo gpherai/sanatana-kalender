@@ -386,34 +386,42 @@ export class PanchangaSwissService {
     // -------------------------------------------------------------------------
     // MAAS (Lunar Month) - Purnimanta System
     // -------------------------------------------------------------------------
-    // Traditional rule: the month is named by the Sun's rashi at the AMAVASYA
-    // that opens the month, not by the current day's Sun position.
+    // In Purnimanta months start at Purnima (full moon). Month naming rule:
     //
-    // This correctly handles adhika (intercalary) months. When an adhika month
-    // occurs, the following nija month opens with an Amavasya that falls right
-    // at or just before the next Sankranti. Using the opening Amavasya's Sun
-    // rashi ensures every day in the nija month carries the correct name,
-    // even after the Sun has already moved to the next sign.
+    //   • Shukla paksha (tithiIdx 1-15) and Amavasya day (tithiIdx 30):
+    //     use the PREVIOUS Amavasya's Sun rashi  (same as Amanta formula).
+    //   • Krishna paksha, excluding Amavasya (tithiIdx 16-29):
+    //     use the NEXT Amavasya's Sun rashi.
+    //     This shifts the dark-half month name forward one cycle, so e.g.
+    //     Jan 14 (Pratipada Krishna after Pausha Purnima Jan 13) uses the
+    //     Jan 29 Amavasya (Sun in Makara) → maasIdx=10 = MAGHA ✓.
+    //
+    // Adhika month: same Sun rashi at both Amavasya boundaries = no
+    // Sankranti in this lunar month.
     //
     // Example — 2026 Adhika Jyeshtha:
-    //   Nija Jyeshtha opens ~Jun 14 (Amavasya, Sun still in Vrishabha idx=1).
-    //   Mithuna Sankranti arrives Jun 15–16, but ALL days Jun 14–29 are
-    //   correctly labeled Jyeshtha (maasIdx = (1+1)%12 = 2) because the
-    //   opening Amavasya was still in Vrishabha.
-    //   Without this fix the old (sunSignIdx+1) formula would label Jun 16+
-    //   as Ashadha, shifting every event in H2 2026 by one month.
+    //   May 16 Amavasya (Sun in Vrishabha idx=1) and Jun 14 Amavasya (Sun
+    //   still in Vrishabha idx=1, Mithuna Sankranti arrives Jun 15) →
+    //   same rashi → isAdhika=true for all days May 17–Jun 13.
+    //   Nija Jyeshtha opens at Jun 14 Amavasya: maasIdx=(1+1)%12=2=Jyeshtha ✓.
 
-    // Step 1: Find the Amavasya boundaries of the current lunar month.
-    // These are reused for both maas naming AND adhika detection,
-    // avoiding duplicate Swiss Ephemeris round-trips.
+    // Step 1: Find Amavasya boundaries of the current lunar month.
     const prevAmavasya = await this.findNearestAmavasya(astro.sunriseJD, "backward");
     const nextAmavasya = await this.findNearestAmavasya(astro.sunriseJD, "forward");
 
-    // Step 2: Determine maas name from Sun's rashi at the opening Amavasya.
-    const rashiAtMonthStart = prevAmavasya ? await this.getSunRashi(prevAmavasya) : null;
+    const rashiAtPrevAmavasya = prevAmavasya
+      ? await this.getSunRashi(prevAmavasya)
+      : null;
+    const rashiAtNextAmavasya = nextAmavasya
+      ? await this.getSunRashi(nextAmavasya)
+      : null;
 
-    // Fall back to current Sun sign only if the Amavasya lookup fails.
-    const maasRashiIdx = rashiAtMonthStart ?? sunSignIdx;
+    // Step 2: Determine maas name.
+    // Krishna paksha (16-29) uses next Amavasya; Shukla + Amavasya use previous.
+    const useNextAmavasya = tithiIdx > 15 && tithiIdx < 30;
+    const maasRashiIdx = useNextAmavasya
+      ? (rashiAtNextAmavasya ?? sunSignIdx)
+      : (rashiAtPrevAmavasya ?? sunSignIdx);
     const maasIdx = (maasRashiIdx + 1) % 12;
     const lunarMaasName = LUNAR_MASA_NAMES[maasIdx] ?? "Unknown";
 
@@ -422,10 +430,9 @@ export class PanchangaSwissService {
     const lunarDay = tithiIdx <= 15 ? tithiIdx + 15 : tithiIdx - 15;
 
     // Step 3: Detect Adhika (intercalary) month.
-    // Reuse already-found Amavasyas: same Sun rashi at both boundaries means
-    // no Sankranti occurred in this lunar month → month is adhika.
-    const prevRashi = rashiAtMonthStart;
-    const nextRashi = nextAmavasya ? await this.getSunRashi(nextAmavasya) : null;
+    // Same Sun rashi at both Amavasya boundaries = no Sankranti in this month.
+    const prevRashi = rashiAtPrevAmavasya;
+    const nextRashi = rashiAtNextAmavasya;
     const isAdhika = prevRashi !== null && nextRashi !== null && prevRashi === nextRashi;
 
     // Step 4: Detect Sankranti (solar transition) - reuse already-computed astro data
