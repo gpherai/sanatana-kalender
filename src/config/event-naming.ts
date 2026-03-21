@@ -777,7 +777,57 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     tags: ["ekadashi", "vasten"],
   },
 
+  // === PRADOSH VRAT (maandelijks, 2x per maand) ===
+  {
+    key: "pradosh_vrat_krishna",
+    name: "Pradosh Vrat (Krishna)",
+    category: "shiva",
+    eventType: "VRAT",
+    importance: "MODERATE",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "TRAYODASHI_KRISHNA" },
+    description:
+      "Pradosh Vrat op de 13e dag van de donkere helft. Tweewekelijks vasten gewijd aan Heer Shiva en Parvati. Een van de meest heilige Shiva-observanties.",
+    tags: ["pradosh", "shiva", "vrat", "trayodashi"],
+  },
+  {
+    key: "pradosh_vrat_shukla",
+    name: "Pradosh Vrat (Shukla)",
+    category: "shiva",
+    eventType: "VRAT",
+    importance: "MODERATE",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "TRAYODASHI_SHUKLA" },
+    description:
+      "Pradosh Vrat op de 13e dag van de lichte helft. Tweewekelijks vasten gewijd aan Heer Shiva en Parvati.",
+    tags: ["pradosh", "shiva", "vrat", "trayodashi"],
+  },
+
   // === JAYANTIS (DEITY BIRTHDAYS) ===
+  {
+    key: "vaishakha_sita_navami",
+    name: "Sita Navami",
+    category: "rama",
+    eventType: "JAYANTI",
+    importance: "MODERATE",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "NAVAMI_SHUKLA", maas: "VAISHAKHA" },
+    description:
+      "Verschijningsdag van Sita Devi. De heilige dag waarop de godin Sita, echtgenote van Heer Rama, op aarde verscheen.",
+    tags: ["jayanti", "sita", "devi", "rama"],
+  },
+  {
+    key: "bhadrapada_radhashtami",
+    name: "Radhashtami",
+    category: "krishna",
+    eventType: "JAYANTI",
+    importance: "MAJOR",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "ASHTAMI_SHUKLA", maas: "BHADRAPADA" },
+    description:
+      "Verschijningsdag van Radha Rani, de geliefde van Heer Krishna. Valt precies 15 dagen na Krishna Janmashtami.",
+    tags: ["jayanti", "radha", "krishna", "bhadrapada"],
+  },
   {
     key: "chaitra_swaminarayan_jayanti",
     name: "Swaminarayan Jayanti",
@@ -850,6 +900,42 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   },
 
   // === FESTIVALS ===
+  {
+    key: "magha_ratha_saptami",
+    name: "Ratha Saptami (Surya Jayanti)",
+    category: "surya",
+    eventType: "JAYANTI",
+    importance: "MODERATE",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "SAPTAMI_SHUKLA", maas: "MAGHA" },
+    description:
+      "De formele geboortedag van Surya Dev (Zonnegod). De zon bereikt zijn hoogste kracht en rijdt zijn zevenspan-wagen (ratha). Valt in Magha Shukla Saptami.",
+    tags: ["surya", "jayanti", "ratha", "zon", "magha"],
+  },
+  {
+    key: "shravana_sawan_shivaratri",
+    name: "Sawan Shivaratri",
+    category: "shiva",
+    eventType: "FESTIVAL",
+    importance: "MAJOR",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "CHATURDASHI_KRISHNA", maas: "SHRAVANA" },
+    description:
+      "Shivaratri in de heilige maand Shravana. Bijzonder auspicieus voor Shiva-bhakta's. Wordt gevierd met nachtwaken, abhishekam en bel-bladeren.",
+    tags: ["shiva", "shivaratri", "sawan", "shravana", "vrat"],
+  },
+  {
+    key: "ashwin_mahalaya_amavasya",
+    name: "Mahalaya Amavasya",
+    category: "general",
+    eventType: "FESTIVAL",
+    importance: "MAJOR",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "AMAVASYA", maas: "ASHWIN" },
+    description:
+      "De laatste dag van Pitru Paksha (Sarvapitri Amavasya). De meest heilige dag om voorouders te eren via tarpan en shraddha. Inleiding op Sharad Navratri.",
+    tags: ["pitru", "paksha", "voorouders", "shraddha", "amavasya"],
+  },
   {
     key: "phalguna_holika_dahan",
     name: "Holika Dahan",

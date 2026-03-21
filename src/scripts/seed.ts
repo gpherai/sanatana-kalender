@@ -422,7 +422,7 @@ async function main() {
       eventType: "FESTIVAL",
       recurrenceType: "YEARLY_LUNAR",
       importance: "MAJOR",
-      categoryName: "vishnu",
+      categoryName: "general",
       tithi: "PURNIMA",
       maas: "SHRAVANA",
       tags: ["rakhi", "broer", "zus", "bescherming"],
@@ -610,7 +610,7 @@ async function main() {
       eventType: "FESTIVAL",
       recurrenceType: "YEARLY_SOLAR",
       importance: "MAJOR",
-      categoryName: "vishnu",
+      categoryName: "surya",
       tags: ["oogst", "tamil", "pongal", "zon", "overvloed"],
       occurrences: [
         {
@@ -833,7 +833,7 @@ async function main() {
       eventType: "FESTIVAL",
       recurrenceType: "YEARLY_SOLAR",
       importance: "MAJOR",
-      categoryName: "vishnu",
+      categoryName: "surya",
       tags: ["oogst", "tamil", "rijst", "koeien", "overvloed"],
       occurrences: [
         {
