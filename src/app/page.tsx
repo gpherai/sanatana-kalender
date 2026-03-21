@@ -163,7 +163,7 @@ export default async function Home() {
           <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
             <h2 className="text-theme-fg mb-4 flex items-center gap-2 text-lg font-semibold">
               <span className="text-xl">🏷️</span>
-              Categorieën
+              Godheden
             </h2>
             <div className="grid grid-cols-2 gap-2">
               {categories.map((cat) => (

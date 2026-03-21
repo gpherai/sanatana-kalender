@@ -77,7 +77,7 @@ export const CATEGORY_CATALOG: readonly CategoryDefinition[] = [
   {
     name: "vishnu",
     displayName: "Vishnu",
-    icon: "🪷",
+    icon: "🐚",
     color: "oklch(0.70 0.15 200)",
     sortOrder: 3,
     description: "The preserver and protector",
@@ -85,7 +85,7 @@ export const CATEGORY_CATALOG: readonly CategoryDefinition[] = [
   {
     name: "durga",
     displayName: "Durga",
-    icon: "⚔️",
+    icon: "🦁",
     color: "oklch(0.70 0.18 0)",
     sortOrder: 4,
     description: "The warrior goddess",
@@ -93,7 +93,7 @@ export const CATEGORY_CATALOG: readonly CategoryDefinition[] = [
   {
     name: "lakshmi",
     displayName: "Lakshmi",
-    icon: "✨",
+    icon: "🪷",
     color: "oklch(0.80 0.15 85)",
     sortOrder: 5,
     description: "Goddess of wealth and prosperity",
@@ -101,7 +101,7 @@ export const CATEGORY_CATALOG: readonly CategoryDefinition[] = [
   {
     name: "saraswati",
     displayName: "Saraswati",
-    icon: "🎵",
+    icon: "🦢",
     color: "oklch(0.85 0.10 90)",
     sortOrder: 6,
     description: "Goddess of knowledge and arts",
@@ -109,7 +109,7 @@ export const CATEGORY_CATALOG: readonly CategoryDefinition[] = [
   {
     name: "hanuman",
     displayName: "Hanuman",
-    icon: "🏔️",
+    icon: "🐒",
     color: "oklch(0.65 0.15 30)",
     sortOrder: 7,
     description: "The devoted servant of Rama",
@@ -141,7 +141,7 @@ export const CATEGORY_CATALOG: readonly CategoryDefinition[] = [
   {
     name: "skanda",
     displayName: "Skanda/Murugan",
-    icon: "🔥",
+    icon: "⚡",
     color: "oklch(0.70 0.15 15)",
     sortOrder: 11,
     description: "The god of war and victory",
