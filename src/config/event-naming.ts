@@ -785,7 +785,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     eventType: "VRAT",
     importance: "MODERATE",
     ruleType: "TITHI",
-    ruleConfig: { tithi: "TRAYODASHI_KRISHNA" },
+    ruleConfig: { tithi: "TRAYODASHI_KRISHNA", monthly: true },
     description:
       "Pradosh Vrat op de 13e dag van de donkere helft. Tweewekelijks vasten gewijd aan Heer Shiva en Parvati. Een van de meest heilige Shiva-observanties.",
     tags: ["pradosh", "shiva", "vrat", "trayodashi"],
@@ -797,7 +797,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     eventType: "VRAT",
     importance: "MODERATE",
     ruleType: "TITHI",
-    ruleConfig: { tithi: "TRAYODASHI_SHUKLA" },
+    ruleConfig: { tithi: "TRAYODASHI_SHUKLA", monthly: true },
     description:
       "Pradosh Vrat op de 13e dag van de lichte helft. Tweewekelijks vasten gewijd aan Heer Shiva en Parvati.",
     tags: ["pradosh", "shiva", "vrat", "trayodashi"],

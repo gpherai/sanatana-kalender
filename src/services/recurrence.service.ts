@@ -142,8 +142,20 @@ export async function generateOccurrences(
 
   let occurrences: GeneratedOccurrence[] = [];
 
-  // Rule-based generation (takes precedence over recurrenceType)
-  if (event.ruleType) {
+  // Monthly recurrence takes priority over ruleType-based dispatch.
+  // This allows catalog events (which have a ruleType) to still be monthly.
+  if (
+    event.recurrenceType === "MONTHLY_LUNAR" ||
+    event.recurrenceType === "MONTHLY_SOLAR"
+  ) {
+    const strategy = RECURRENCE_STRATEGIES[event.recurrenceType];
+    if (!strategy) {
+      logWarn(`Unknown recurrence type: ${event.recurrenceType}`);
+      return [];
+    }
+    occurrences = await strategy(event, startDate, endDate, location, timezone);
+  } else if (event.ruleType) {
+    // Rule-based generation (takes precedence over recurrenceType for yearly events)
     const strategy = RULE_STRATEGIES[event.ruleType];
     if (!strategy) {
       logWarn(`Rule type ${event.ruleType} not yet implemented for event ${event.name}`);

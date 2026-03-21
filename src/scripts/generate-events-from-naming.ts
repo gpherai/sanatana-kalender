@@ -36,17 +36,20 @@ async function generateEventsFromNaming() {
       continue;
     }
 
-    // Determine recurrenceType based on ruleType
-    let recurrenceType: "YEARLY_LUNAR" | "YEARLY_SOLAR" | "NONE" = "YEARLY_LUNAR";
+    // Extract matching fields from ruleConfig
+    const config = naming.ruleConfig as Record<string, unknown>;
+    const { tithi, maas, nakshatra, sankranti, isAdhikaOnly, monthly } = config;
+
+    // Determine recurrenceType based on ruleType (and optional monthly flag)
+    let recurrenceType: "YEARLY_LUNAR" | "YEARLY_SOLAR" | "MONTHLY_LUNAR" | "NONE" =
+      "YEARLY_LUNAR";
     if (naming.ruleType === "SOLAR") {
       recurrenceType = "YEARLY_SOLAR";
+    } else if (naming.ruleType === "TITHI" && monthly === true) {
+      recurrenceType = "MONTHLY_LUNAR";
     } else if (naming.ruleType === "TITHI") {
       recurrenceType = "YEARLY_LUNAR";
     }
-
-    // Extract matching fields from ruleConfig
-    const config = naming.ruleConfig as Record<string, unknown>;
-    const { tithi, maas, nakshatra, sankranti, isAdhikaOnly } = config;
 
     // When maas is an array (multi-month event like Navadurga), leave event.maas null.
     // The recurrence service reads maas directly from ruleConfig in that case.
