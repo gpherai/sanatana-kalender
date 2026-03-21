@@ -51,6 +51,9 @@ interface EventData {
   nakshatra?: Nakshatra;
   maas?: Maas;
   tags: string[];
+  /** Traditional observation time window (HH:MM, 24h). Only for events with fixed times. */
+  startTime?: string;
+  endTime?: string;
   // Optional: For NONE recurrence or seed dates for solar events
   occurrences?: Array<{ date: Date; endDate?: Date; notes?: string }>;
 }
@@ -353,7 +356,9 @@ async function main() {
       categoryName: "shiva",
       tithi: "CHATURDASHI_KRISHNA",
       maas: "PHALGUNA",
-      tags: ["vasten", "nachtelijk", "shiva", "abhishekam"],
+      tags: ["abhishekam", "nachtelijk", "shiva", "vasten"],
+      startTime: "18:00",
+      endTime: "06:00",
     },
     {
       name: "Holi",
@@ -365,7 +370,7 @@ async function main() {
       categoryName: "krishna",
       tithi: "PURNIMA",
       maas: "PHALGUNA",
-      tags: ["kleuren", "lente", "vishnu", "holika"],
+      tags: ["holika", "kleuren", "lente", "vishnu"],
     },
     {
       name: "Ram Navami",
@@ -377,7 +382,7 @@ async function main() {
       categoryName: "rama",
       tithi: "NAVAMI_SHUKLA",
       maas: "CHAITRA",
-      tags: ["rama", "geboorte", "ramayana", "avatar"],
+      tags: ["avatar", "geboorte", "rama", "ramayana"],
     },
     {
       name: "Hanuman Jayanti",
@@ -389,7 +394,7 @@ async function main() {
       categoryName: "hanuman",
       tithi: "PURNIMA",
       maas: "CHAITRA",
-      tags: ["hanuman", "geboorte", "chalisa", "sundara kanda"],
+      tags: ["chalisa", "geboorte", "hanuman", "sundara kanda"],
     },
     {
       name: "Akshaya Tritiya",
@@ -401,7 +406,7 @@ async function main() {
       categoryName: "vishnu",
       tithi: "TRITIYA_SHUKLA",
       maas: "VAISHAKHA",
-      tags: ["gunstig", "dana", "goud", "akshaya"],
+      tags: ["akshaya", "dana", "goud", "gunstig"],
     },
     {
       name: "Guru Purnima",
@@ -413,7 +418,7 @@ async function main() {
       categoryName: "vishnu",
       tithi: "PURNIMA",
       maas: "ASHADHA",
-      tags: ["guru", "vyasa", "dankbaarheid", "onderwijs"],
+      tags: ["dankbaarheid", "guru", "onderwijs", "vyasa"],
     },
     {
       name: "Raksha Bandhan",
@@ -425,7 +430,7 @@ async function main() {
       categoryName: "general",
       tithi: "PURNIMA",
       maas: "SHRAVANA",
-      tags: ["rakhi", "broer", "zus", "bescherming"],
+      tags: ["bescherming", "broer", "rakhi", "zus"],
     },
     {
       name: "Krishna Janmashtami",
@@ -437,7 +442,9 @@ async function main() {
       categoryName: "krishna",
       tithi: "ASHTAMI_KRISHNA",
       maas: "SHRAVANA",
-      tags: ["krishna", "geboorte", "middernacht", "dahi handi"],
+      tags: ["dahi handi", "geboorte", "krishna", "middernacht"],
+      startTime: "00:00",
+      endTime: "02:00",
     },
     {
       name: "Ganesh Chaturthi",
@@ -449,7 +456,7 @@ async function main() {
       categoryName: "ganesha",
       tithi: "CHATURTHI_SHUKLA",
       maas: "BHADRAPADA",
-      tags: ["ganesha", "geboorte", "visarjan", "modak"],
+      tags: ["ganesha", "geboorte", "modak", "visarjan"],
     },
     {
       name: "Navaratri",
@@ -461,7 +468,7 @@ async function main() {
       categoryName: "durga",
       tithi: "PRATIPADA_SHUKLA",
       maas: "ASHWIN",
-      tags: ["durga", "negen nachten", "devi", "garba", "dandiya"],
+      tags: ["dandiya", "devi", "durga", "garba", "negen nachten"],
     },
     {
       name: "Dussehra (Vijayadashami)",
@@ -473,7 +480,7 @@ async function main() {
       categoryName: "rama",
       tithi: "DASHAMI_SHUKLA",
       maas: "ASHWIN",
-      tags: ["rama", "ravana", "overwinning", "durga"],
+      tags: ["durga", "overwinning", "rama", "ravana"],
     },
     {
       name: "Diwali",
@@ -485,7 +492,7 @@ async function main() {
       categoryName: "lakshmi",
       tithi: "AMAVASYA",
       maas: "KARTIK",
-      tags: ["lichten", "lakshmi", "rama", "diyas", "welvaart"],
+      tags: ["diyas", "lakshmi", "lichten", "rama", "welvaart"],
     },
 
     // ==========================================
@@ -501,7 +508,7 @@ async function main() {
       categoryName: "shiva",
       tithi: "PURNIMA",
       maas: "KARTIK",
-      tags: ["lichten", "tamil", "deepam", "tiruvannamalai", "arunachala"],
+      tags: ["arunachala", "deepam", "lichten", "tamil", "tiruvannamalai"],
     },
     {
       name: "Gita Jayanti",
@@ -513,7 +520,7 @@ async function main() {
       categoryName: "krishna",
       tithi: "EKADASHI_SHUKLA",
       maas: "MARGASHIRSHA",
-      tags: ["gita", "krishna", "arjuna", "kurukshetra", "filosofie"],
+      tags: ["arjuna", "filosofie", "gita", "krishna", "kurukshetra"],
     },
     {
       name: "Vaikunta Ekadashi",
@@ -525,7 +532,7 @@ async function main() {
       categoryName: "vishnu",
       tithi: "EKADASHI_SHUKLA",
       maas: "MARGASHIRSHA",
-      tags: ["ekadashi", "vaikunta", "vishnu", "poort", "moksha"],
+      tags: ["ekadashi", "moksha", "poort", "vaikunta", "vishnu"],
     },
     {
       name: "Dattatreya Jayanti",
@@ -537,7 +544,7 @@ async function main() {
       categoryName: "dattatreya",
       tithi: "PURNIMA",
       maas: "MARGASHIRSHA",
-      tags: ["dattatreya", "guru", "trimurti", "avadhuta"],
+      tags: ["avadhuta", "dattatreya", "guru", "trimurti"],
     },
     {
       name: "Akhuratha Sankashti Chaturthi",
@@ -549,7 +556,7 @@ async function main() {
       categoryName: "ganesha",
       tithi: "CHATURTHI_KRISHNA",
       maas: "MARGASHIRSHA",
-      tags: ["ganesha", "sankashti", "chaturthi", "maandag vasten"],
+      tags: ["chaturthi", "ganesha", "maandag vasten", "sankashti"],
     },
     {
       name: "Saphala Ekadashi",
@@ -561,7 +568,7 @@ async function main() {
       categoryName: "vishnu",
       tithi: "EKADASHI_KRISHNA",
       maas: "PAUSHA",
-      tags: ["ekadashi", "vasten", "succes", "vruchten"],
+      tags: ["ekadashi", "succes", "vasten", "vruchten"],
     },
     {
       name: "Amavasya - December",
@@ -573,7 +580,7 @@ async function main() {
       categoryName: "general",
       tithi: "AMAVASYA",
       maas: "PAUSHA",
-      tags: ["amavasya", "nieuwe maan", "voorouders", "meditatie"],
+      tags: ["amavasya", "meditatie", "nieuwe maan", "voorouders"],
     },
 
     // ==========================================
@@ -589,7 +596,7 @@ async function main() {
       categoryName: "vishnu",
       tithi: "EKADASHI_SHUKLA",
       maas: "PAUSHA",
-      tags: ["ekadashi", "vasten", "kinderen", "zegen"],
+      tags: ["ekadashi", "kinderen", "vasten", "zegen"],
     },
     {
       name: "Pausha Purnima",
@@ -601,7 +608,7 @@ async function main() {
       categoryName: "vishnu",
       tithi: "PURNIMA",
       maas: "PAUSHA",
-      tags: ["purnima", "volle maan", "baden", "liefdadigheid"],
+      tags: ["baden", "liefdadigheid", "purnima", "volle maan"],
     },
     {
       name: "Thai Pongal",
@@ -611,7 +618,7 @@ async function main() {
       recurrenceType: "YEARLY_SOLAR",
       importance: "MAJOR",
       categoryName: "surya",
-      tags: ["oogst", "tamil", "pongal", "zon", "overvloed"],
+      tags: ["oogst", "overvloed", "pongal", "tamil", "zon"],
       occurrences: [
         {
           date: calendarDate(2026, 1, 14),
@@ -634,7 +641,7 @@ async function main() {
       categoryName: "saraswati",
       tithi: "PANCHAMI_SHUKLA",
       maas: "MAGHA",
-      tags: ["saraswati", "kennis", "lente", "geel", "muziek"],
+      tags: ["geel", "kennis", "lente", "muziek", "saraswati"],
     },
     {
       name: "Varuthini Ekadashi",
@@ -646,7 +653,7 @@ async function main() {
       categoryName: "vishnu",
       tithi: "EKADASHI_KRISHNA",
       maas: "VAISHAKHA",
-      tags: ["ekadashi", "vasten", "vishnu", "moksha"],
+      tags: ["ekadashi", "moksha", "vasten", "vishnu"],
     },
     {
       name: "Narasimha Jayanti",
@@ -658,7 +665,7 @@ async function main() {
       categoryName: "narasimha",
       tithi: "CHATURDASHI_SHUKLA",
       maas: "VAISHAKHA",
-      tags: ["narasimha", "avatar", "prahlada", "bescherming"],
+      tags: ["avatar", "bescherming", "narasimha", "prahlada"],
     },
     {
       name: "Shani Jayanti",
@@ -670,7 +677,7 @@ async function main() {
       categoryName: "general",
       tithi: "AMAVASYA",
       maas: "JYESHTHA",
-      tags: ["shani", "saturnus", "til", "graha"],
+      tags: ["graha", "saturnus", "shani", "til"],
     },
     {
       name: "Jagannath Rath Yatra",
@@ -682,7 +689,7 @@ async function main() {
       categoryName: "vishnu",
       tithi: "DWITIYA_SHUKLA",
       maas: "ASHADHA",
-      tags: ["jagannath", "puri", "ratha", "processie"],
+      tags: ["jagannath", "processie", "puri", "ratha"],
     },
     {
       name: "Karwa Chauth",
@@ -694,7 +701,7 @@ async function main() {
       categoryName: "durga",
       tithi: "CHATURTHI_KRISHNA",
       maas: "KARTIK",
-      tags: ["vasten", "huwelijk", "maan", "vrouwen"],
+      tags: ["huwelijk", "maan", "vasten", "vrouwen"],
     },
     {
       name: "Tulsi Vivah",
@@ -706,7 +713,7 @@ async function main() {
       categoryName: "vishnu",
       tithi: "DWADASHI_SHUKLA",
       maas: "KARTIK",
-      tags: ["tulsi", "vishnu", "huwelijk", "shaligram"],
+      tags: ["huwelijk", "shaligram", "tulsi", "vishnu"],
     },
 
     // ==========================================
@@ -722,7 +729,7 @@ async function main() {
       categoryName: "vishnu",
       tithi: "EKADASHI_KRISHNA",
       maas: "MAGHA",
-      tags: ["ekadashi", "vasten", "til", "sesam"],
+      tags: ["ekadashi", "sesam", "til", "vasten"],
     },
     {
       name: "Jaya Ekadashi",
@@ -734,7 +741,7 @@ async function main() {
       categoryName: "vishnu",
       tithi: "EKADASHI_SHUKLA",
       maas: "MAGHA",
-      tags: ["ekadashi", "vasten", "vishnu", "overwinning"],
+      tags: ["ekadashi", "overwinning", "vasten", "vishnu"],
     },
     {
       name: "Vijaya Ekadashi",
@@ -746,7 +753,7 @@ async function main() {
       categoryName: "vishnu",
       tithi: "EKADASHI_KRISHNA",
       maas: "PHALGUNA",
-      tags: ["ekadashi", "vasten", "rama", "overwinning"],
+      tags: ["ekadashi", "overwinning", "rama", "vasten"],
     },
     {
       name: "Amalaki Ekadashi",
@@ -758,7 +765,7 @@ async function main() {
       categoryName: "vishnu",
       tithi: "EKADASHI_SHUKLA",
       maas: "PHALGUNA",
-      tags: ["ekadashi", "vasten", "amla", "vishnu"],
+      tags: ["amla", "ekadashi", "vasten", "vishnu"],
     },
     {
       name: "Papmochani Ekadashi",
@@ -770,7 +777,7 @@ async function main() {
       categoryName: "vishnu",
       tithi: "EKADASHI_KRISHNA",
       maas: "CHAITRA",
-      tags: ["ekadashi", "vasten", "zuivering", "zonden"],
+      tags: ["ekadashi", "vasten", "zonden", "zuivering"],
     },
     {
       name: "Kamada Ekadashi",
@@ -782,7 +789,7 @@ async function main() {
       categoryName: "vishnu",
       tithi: "EKADASHI_SHUKLA",
       maas: "CHAITRA",
-      tags: ["ekadashi", "vasten", "wensen", "verlossing"],
+      tags: ["ekadashi", "vasten", "verlossing", "wensen"],
     },
     {
       name: "Devshayani Ekadashi",
@@ -794,7 +801,7 @@ async function main() {
       categoryName: "vishnu",
       tithi: "EKADASHI_SHUKLA",
       maas: "ASHADHA",
-      tags: ["ekadashi", "vasten", "chaturmas", "vishnu slaapt"],
+      tags: ["chaturmas", "ekadashi", "vasten", "vishnu slaapt"],
     },
     {
       name: "Prabodhini Ekadashi (Dev Uthani)",
@@ -806,7 +813,7 @@ async function main() {
       categoryName: "vishnu",
       tithi: "EKADASHI_SHUKLA",
       maas: "KARTIK",
-      tags: ["ekadashi", "vasten", "vishnu ontwaakt", "huwelijksseizoen"],
+      tags: ["ekadashi", "huwelijksseizoen", "vasten", "vishnu ontwaakt"],
     },
     {
       name: "Mokshada Ekadashi",
@@ -818,7 +825,7 @@ async function main() {
       categoryName: "vishnu",
       tithi: "EKADASHI_SHUKLA",
       maas: "MARGASHIRSHA",
-      tags: ["ekadashi", "vasten", "moksha", "gita", "bevrijding"],
+      tags: ["bevrijding", "ekadashi", "gita", "moksha", "vasten"],
     },
 
     // ==========================================
@@ -834,7 +841,7 @@ async function main() {
       recurrenceType: "YEARLY_SOLAR",
       importance: "MAJOR",
       categoryName: "surya",
-      tags: ["oogst", "tamil", "rijst", "koeien", "overvloed"],
+      tags: ["koeien", "oogst", "overvloed", "rijst", "tamil"],
       occurrences: [
         {
           date: calendarDate(2025, 1, 14),
@@ -857,7 +864,7 @@ async function main() {
       categoryName: "ganesha",
       tithi: "CHATURTHI_SHUKLA",
       maas: "MAGHA",
-      tags: ["ganesha", "jayanti", "geboorte", "modak", "durva"],
+      tags: ["durva", "ganesha", "geboorte", "jayanti", "modak"],
     },
     {
       name: "Sakat Chauth (Sankashti)",
@@ -869,7 +876,7 @@ async function main() {
       categoryName: "ganesha",
       tithi: "CHATURTHI_KRISHNA",
       maas: "MAGHA",
-      tags: ["ganesha", "sankashti", "sakat", "tilkut", "vasten"],
+      tags: ["ganesha", "sakat", "sankashti", "tilkut", "vasten"],
     },
     {
       name: "Angaraki Sankashti Chaturthi",
@@ -880,7 +887,7 @@ async function main() {
       importance: "MAJOR",
       categoryName: "ganesha",
       tithi: "CHATURTHI_KRISHNA",
-      tags: ["ganesha", "sankashti", "angaraki", "dinsdag", "mangalvar"],
+      tags: ["angaraki", "dinsdag", "ganesha", "mangalvar", "sankashti"],
       occurrences: [
         {
           date: calendarDate(2025, 4, 15),
@@ -909,7 +916,7 @@ async function main() {
       importance: "MINOR",
       categoryName: "ganesha",
       tithi: "CHATURTHI_SHUKLA",
-      tags: ["ganesha", "vinayaka", "chaturthi", "nieuw begin", "maandelijks"],
+      tags: ["chaturthi", "ganesha", "maandelijks", "nieuw begin", "vinayaka"],
       occurrences: [
         { date: calendarDate(2025, 1, 3), notes: "Eerste Vinayaka Chaturthi 2025" },
         { date: calendarDate(2025, 2, 1) },
@@ -933,7 +940,7 @@ async function main() {
       importance: "MODERATE",
       categoryName: "ganesha",
       tithi: "CHATURTHI_KRISHNA",
-      tags: ["ganesha", "sankashti", "vasten", "maan", "maandelijks"],
+      tags: ["ganesha", "maan", "maandelijks", "sankashti", "vasten"],
       occurrences: [
         // 2025 Sankashti dates
         { date: calendarDate(2025, 1, 17), notes: "Shakambhari Sankashti" },
@@ -974,7 +981,7 @@ async function main() {
       categoryName: "ganesha",
       tithi: "CHATURDASHI_SHUKLA",
       maas: "BHADRAPADA",
-      tags: ["ganesha", "visarjan", "anant chaturdashi", "processie"],
+      tags: ["anant chaturdashi", "ganesha", "processie", "visarjan"],
     },
 
     // ==========================================
@@ -1002,7 +1009,7 @@ async function main() {
       categoryName: "skanda",
       tithi: "PURNIMA",
       maas: "MAGHA",
-      tags: ["murugan", "kavadi", "tamil", "maleisië", "devotie"],
+      tags: ["devotie", "kavadi", "maleisië", "murugan", "tamil"],
     },
   ];
 
@@ -1045,6 +1052,8 @@ async function main() {
           nakshatra: eventData.nakshatra,
           maas: eventData.maas,
           tags: eventData.tags,
+          startTime: eventData.startTime ?? null,
+          endTime: eventData.endTime ?? null,
         },
       });
     } else {
@@ -1060,6 +1069,8 @@ async function main() {
           nakshatra: eventData.nakshatra,
           maas: eventData.maas,
           tags: eventData.tags,
+          startTime: eventData.startTime ?? null,
+          endTime: eventData.endTime ?? null,
         },
       });
     }

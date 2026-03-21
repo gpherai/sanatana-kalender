@@ -35,6 +35,14 @@ export interface EventNaming {
   description?: string;
   tags?: string[];
   /**
+   * Traditional observation time window (HH:MM format, 24h).
+   * Only set for events with a well-known fixed time (e.g. midnight puja).
+   * Sunrise/sunset-dependent events (Pradosh, Shivaratri) are NOT given
+   * a static time — their timing must be calculated from the panchang.
+   */
+  startTime?: string;
+  endTime?: string;
+  /**
    * Keys of parent events in this catalog that this event belongs to.
    * Supports many-to-many: one event (e.g. a goddess day) can belong to
    * multiple parent series (e.g. Chaitra Navratri and Sharad Navratri).
@@ -62,7 +70,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     },
     description:
       "Ekadashi in de Pausha Shukla paksha. Wordt verondersteld nageslacht (zonen) en algemene voorspoed te schenken.",
-    tags: ["ekadashi", "vasten", "zonen", "voorspoed"],
+    tags: ["ekadashi", "vasten", "voorspoed", "zonen"],
   },
   {
     key: "pausha_saphala_ekadashi",
@@ -77,7 +85,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     },
     description:
       'Betekent "vruchtbaar/succesvol". Het vasten (vrat) brengt succes in alle ondernemingen.',
-    tags: ["ekadashi", "vasten", "succes"],
+    tags: ["ekadashi", "succes", "vasten"],
   },
   {
     key: "magha_sattila_ekadashi",
@@ -91,7 +99,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       maas: "MAGHA",
     },
     description: "Het offeren van sesam (til) in zeven vormen zuivert papa (zonden).",
-    tags: ["ekadashi", "vasten", "til", "sesam"],
+    tags: ["ekadashi", "sesam", "til", "vasten"],
   },
   {
     key: "magha_jaya_ekadashi",
@@ -106,7 +114,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     },
     description:
       "Het vasten (vrat) bevrijdt van onwetendheid en brengt spirituele overwinning (jaya).",
-    tags: ["ekadashi", "vasten", "overwinning"],
+    tags: ["ekadashi", "overwinning", "vasten"],
   },
   {
     key: "phalguna_vijaya_ekadashi",
@@ -121,7 +129,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     },
     description:
       "Heer Rama hield een vrat op deze dag voordat Hij naar Lanka vertrok om Sita te redden.",
-    tags: ["ekadashi", "vasten", "rama", "overwinning"],
+    tags: ["ekadashi", "overwinning", "rama", "vasten"],
   },
   {
     key: "phalguna_amalaki_ekadashi",
@@ -135,7 +143,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       maas: "PHALGUNA",
     },
     description: "Gewijd aan de amalaki (amla) boom, heilig voor Heer Vishnu.",
-    tags: ["ekadashi", "vasten", "amla", "vishnu"],
+    tags: ["amla", "ekadashi", "vasten", "vishnu"],
   },
   {
     key: "chaitra_papmochani_ekadashi",
@@ -150,7 +158,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     },
     description:
       'Betekent "verwijderaar van zonden". Een krachtige Ekadashi die alle papa (zonden) zuivert.',
-    tags: ["ekadashi", "vasten", "zuivering", "zonden"],
+    tags: ["ekadashi", "vasten", "zonden", "zuivering"],
   },
   {
     key: "chaitra_kamada_ekadashi",
@@ -165,7 +173,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     },
     description:
       "Ekadashi die alle wensen (kama) vervult. Een Gandharva werd bevrijd van een vloek door deze vrat.",
-    tags: ["ekadashi", "vasten", "wensen", "verlossing"],
+    tags: ["ekadashi", "vasten", "verlossing", "wensen"],
   },
   {
     key: "vaishakha_varuthini_ekadashi",
@@ -180,7 +188,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     },
     description:
       "Vernietigt de grootste papa (zonden) en biedt bescherming tegen moeilijkheden.",
-    tags: ["ekadashi", "vasten", "bescherming"],
+    tags: ["bescherming", "ekadashi", "vasten"],
   },
   {
     key: "vaishakha_mohini_ekadashi",
@@ -195,7 +203,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     },
     description:
       "Vernoemd naar de Mohini avatar van Vishnu. Zeer gunstig voor het bereiken van moksha (bevrijding).",
-    tags: ["ekadashi", "vasten", "mohini", "moksha"],
+    tags: ["ekadashi", "mohini", "moksha", "vasten"],
   },
   {
     key: "jyeshtha_apara_ekadashi",
@@ -225,7 +233,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     },
     description:
       "De meest sobere Ekadashi - vasten (vrat) zonder zelfs water te drinken. Ook bekend als Bhima's Ekadashi.",
-    tags: ["ekadashi", "vasten", "nirjala", "bhima"],
+    tags: ["bhima", "ekadashi", "nirjala", "vasten"],
   },
   {
     key: "ashadha_yogini_ekadashi",
@@ -240,7 +248,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     },
     description:
       "Zuivert papa (zonden) van vele levens en schenkt spirituele vooruitgang.",
-    tags: ["ekadashi", "vasten", "yoga"],
+    tags: ["ekadashi", "vasten", "yoga", "zuivering"],
   },
   {
     key: "ashadha_devshayani_ekadashi",
@@ -255,7 +263,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     },
     description:
       "Begin van Chaturmas - de vier heilige maanden waarin Heer Vishnu in yoga-nidra verblijft.",
-    tags: ["ekadashi", "vasten", "chaturmas", "vishnu"],
+    tags: ["chaturmas", "ekadashi", "vasten", "vishnu"],
   },
   {
     key: "shravana_kamika_ekadashi",
@@ -269,7 +277,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       maas: "SHRAVANA",
     },
     description: "Eén van de belangrijkste Ekadashis. Schenkt moksha (bevrijding).",
-    tags: ["ekadashi", "vasten", "moksha"],
+    tags: ["ekadashi", "moksha", "vasten"],
   },
   {
     key: "shravana_putrada_ekadashi",
@@ -283,7 +291,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       maas: "SHRAVANA",
     },
     description: "Schenkt nageslacht en heft kinderloosheid op.",
-    tags: ["ekadashi", "vasten", "kinderen"],
+    tags: ["ekadashi", "kinderen", "vasten"],
   },
   {
     key: "bhadrapada_aja_ekadashi",
@@ -312,7 +320,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     },
     description:
       "Heer Vishnu draait Zich om op Zijn zij tijdens Zijn goddelijke slaap. Het midden van Chaturmas.",
-    tags: ["ekadashi", "vasten", "chaturmas"],
+    tags: ["chaturmas", "ekadashi", "vasten"],
   },
   {
     key: "ashwin_indira_ekadashi",
@@ -354,7 +362,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       maas: "KARTIK",
     },
     description: "Schenkt moksha (bevrijding) en vernietigt alle papa (zonden).",
-    tags: ["ekadashi", "vasten", "rama"],
+    tags: ["ekadashi", "rama", "vasten"],
   },
   {
     key: "kartik_prabodhini_ekadashi",
@@ -369,7 +377,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     },
     description:
       "Einde van Chaturmas - Heer Vishnu ontwaakt. Ook bekend als Dev Uthani Ekadashi.",
-    tags: ["ekadashi", "vasten", "chaturmas", "dev uthani"],
+    tags: ["chaturmas", "dev uthani", "ekadashi", "vasten"],
   },
   {
     key: "margashirsha_utpanna_ekadashi",
@@ -383,7 +391,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       maas: "MARGASHIRSHA",
     },
     description: "Viert de verschijning van Ekadashi Devi. Een zeer krachtige vrat.",
-    tags: ["ekadashi", "vasten", "devi"],
+    tags: ["devi", "ekadashi", "vasten"],
   },
   {
     key: "margashirsha_mokshada_ekadashi",
@@ -398,7 +406,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     },
     description:
       "Schenkt moksha (bevrijding). In Zuid-India ook wel Vaikuntha Ekadashi genoemd.",
-    tags: ["ekadashi", "vasten", "moksha", "vaikuntha"],
+    tags: ["ekadashi", "moksha", "vaikuntha", "vasten"],
   },
 
   // ==========================================================================
@@ -417,7 +425,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     },
     description:
       "De Zon treedt het teken Makara (Steenbok) binnen. Oogstfeest en het begin van Uttarayana (de noordwaartse reis van de Zon).",
-    tags: ["sankranti", "zon", "oogst", "uttarayana"],
+    tags: ["oogst", "sankranti", "uttarayana", "zon"],
   },
   {
     key: "kumbha_sankranti",
@@ -458,7 +466,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     },
     description:
       "De Zon treedt het teken Mesha (Ram) binnen. Hindoestaanse zonne-nieuwjaar. In Kerala ook Vishu genoemd.",
-    tags: ["sankranti", "zon", "nieuwjaar", "vishu"],
+    tags: ["nieuwjaar", "sankranti", "vishu", "zon"],
   },
   {
     key: "vrishabha_sankranti",
@@ -498,7 +506,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     },
     description:
       "De Zon treedt het teken Karka (Kreeft) binnen. Begin van Dakshinayana (de zuidwaartse reis van de Zon).",
-    tags: ["sankranti", "zon", "dakshinayana"],
+    tags: ["dakshinayana", "sankranti", "zon"],
   },
   {
     key: "simha_sankranti",
@@ -583,7 +591,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     },
     description:
       "Eerbetoon aan spirituele en academische leraren (guru's). De dag van Vyasa Purnima.",
-    tags: ["purnima", "guru", "vyasa", "leraar"],
+    tags: ["guru", "leraar", "purnima", "vyasa"],
   },
   {
     key: "kartik_kartik_purnima",
@@ -598,7 +606,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     },
     description:
       "De meest gunstige Purnima (volle maan). Karthigai Deepam in Zuid-India.",
-    tags: ["purnima", "deepam", "licht"],
+    tags: ["deepam", "kartik", "licht", "purnima", "tripuri"],
   },
   {
     key: "pausha_pausha_purnima",
@@ -613,7 +621,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     },
     description:
       "Volle maan (Purnima) van de maand Pausha. Gunstig voor dana (liefdadigheid) en rituele baden.",
-    tags: ["purnima", "liefdadigheid"],
+    tags: ["liefdadigheid", "purnima"],
   },
   {
     key: "magha_magha_purnima",
@@ -643,7 +651,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     },
     description:
       "Volle maan (Purnima) voor Holi. Holika Dahan vindt plaats op deze nacht.",
-    tags: ["purnima", "holi", "holika dahan"],
+    tags: ["holi", "holika dahan", "purnima"],
   },
 
   // === ADDITIONAL PURNIMAS ===
@@ -674,7 +682,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       maas: "VAISHAKHA",
     },
     description: "Buddha Purnima. De verschijning van Heer Boeddha.",
-    tags: ["purnima", "buddha"],
+    tags: ["buddha", "purnima"],
   },
   {
     key: "jyeshtha_jyeshtha_purnima",
@@ -702,7 +710,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       maas: "ASHADHA",
     },
     description: "Guru Purnima. Eerbetoon aan spirituele leraren.",
-    tags: ["purnima", "guru"],
+    tags: ["guru", "purnima"],
   },
   {
     key: "shravana_shravana_purnima",
@@ -758,7 +766,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       maas: "MARGASHIRSHA",
     },
     description: "Volle maan (Purnima) van de maand Margashirsha. Dattatreya Jayanti.",
-    tags: ["purnima"],
+    tags: ["dattatreya", "jayanti", "margashirsha", "purnima"],
   },
 
   // === EKADASHI (ADDITIONAL) ===
@@ -774,7 +782,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       maas: "SHRAVANA",
     },
     description: "Tweede Kamika Ekadashi waargenomen in de Shravana Krishna paksha.",
-    tags: ["ekadashi", "vasten"],
+    tags: ["adhika", "ekadashi", "kamika", "shravana", "vasten"],
   },
 
   // === KALASHTAMI (maandelijks, Bhairava) ===
@@ -788,7 +796,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleConfig: { tithi: "ASHTAMI_KRISHNA", monthly: true },
     description:
       "Maandelijkse vastendag voor Kala Bhairava op de 8e dag van de donkere helft. De Krishna Ashtami is Bhairava's heilige dag.",
-    tags: ["bhairava", "kalashtami", "vrat", "ashtami", "maandelijks"],
+    tags: ["ashtami", "bhairava", "kalashtami", "maandelijks", "vrat"],
   },
 
   // === PRADOSH VRAT (maandelijks, 2x per maand) ===
@@ -802,7 +810,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleConfig: { tithi: "TRAYODASHI_KRISHNA", monthly: true },
     description:
       "Pradosh Vrat op de 13e dag van de donkere helft. Tweewekelijks vasten gewijd aan Heer Shiva en Parvati. Een van de meest heilige Shiva-observanties.",
-    tags: ["pradosh", "shiva", "vrat", "trayodashi"],
+    tags: ["pradosh", "shiva", "trayodashi", "vrat"],
   },
   {
     key: "pradosh_vrat_shukla",
@@ -814,7 +822,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleConfig: { tithi: "TRAYODASHI_SHUKLA", monthly: true },
     description:
       "Pradosh Vrat op de 13e dag van de lichte helft. Tweewekelijks vasten gewijd aan Heer Shiva en Parvati.",
-    tags: ["pradosh", "shiva", "vrat", "trayodashi"],
+    tags: ["pradosh", "shiva", "trayodashi", "vrat"],
   },
 
   // === JAYANTIS (DEITY BIRTHDAYS) ===
@@ -828,7 +836,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleConfig: { tithi: "PANCHAMI_SHUKLA", maas: "MAGHA" },
     description:
       "Verschijningsdag van Godin Saraswati. Valt op Vasant Panchami. Verering van kennis, muziek en kunsten.",
-    tags: ["jayanti", "saraswati", "vasant", "panchami", "kennis"],
+    tags: ["jayanti", "kennis", "panchami", "saraswati", "vasant"],
   },
   {
     key: "margashirsha_lakshmi_jayanti",
@@ -840,7 +848,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleConfig: { tithi: "PURNIMA", maas: "MARGASHIRSHA" },
     description:
       "Verschijningsdag van Godin Lakshmi. De Margashirsha Purnima wordt in Noord-Indiase traditie als haar jayanti gevierd.",
-    tags: ["jayanti", "lakshmi", "purnima", "margashirsha", "rijkdom"],
+    tags: ["jayanti", "lakshmi", "margashirsha", "purnima", "rijkdom"],
   },
   {
     key: "vaishakha_vaikasi_visakam",
@@ -852,7 +860,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleConfig: { nakshatra: "VISHAKHA", maas: "VAISHAKHA" },
     description:
       "Verschijningsdag van Murugan (Skanda) in de Tamil traditie. Gevierd op de dag dat de Vishakha-nakshatra valt in de maand Vaishakha.",
-    tags: ["jayanti", "murugan", "skanda", "visakam", "tamil"],
+    tags: ["jayanti", "murugan", "skanda", "tamil", "visakam"],
   },
   {
     key: "vaishakha_sita_navami",
@@ -864,7 +872,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleConfig: { tithi: "NAVAMI_SHUKLA", maas: "VAISHAKHA" },
     description:
       "Verschijningsdag van Sita Devi. De heilige dag waarop de godin Sita, echtgenote van Heer Rama, op aarde verscheen.",
-    tags: ["jayanti", "sita", "devi", "rama"],
+    tags: ["devi", "jayanti", "rama", "sita"],
   },
   {
     key: "bhadrapada_radhashtami",
@@ -876,7 +884,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleConfig: { tithi: "ASHTAMI_SHUKLA", maas: "BHADRAPADA" },
     description:
       "Verschijningsdag van Radha Rani, de geliefde van Heer Krishna. Valt precies 15 dagen na Krishna Janmashtami.",
-    tags: ["jayanti", "radha", "krishna", "bhadrapada"],
+    tags: ["bhadrapada", "jayanti", "krishna", "radha"],
   },
   {
     key: "chaitra_swaminarayan_jayanti",
@@ -904,7 +912,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       maas: "VAISHAKHA",
     },
     description: "Verschijning van Heer Parashurama, de 6e avatar van Vishnu.",
-    tags: ["jayanti", "parashurama", "avatar"],
+    tags: ["avatar", "jayanti", "parashurama"],
   },
   {
     key: "jyeshtha_narada_jayanti",
@@ -932,7 +940,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       maas: "SHRAVANA",
     },
     description: "Verschijningsdag van de heilige Gayatri Mantra.",
-    tags: ["jayanti", "gayatri", "mantra"],
+    tags: ["gayatri", "jayanti", "mantra"],
   },
   {
     key: "bhadrapada_balarama_jayanti",
@@ -946,7 +954,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       maas: "BHADRAPADA",
     },
     description: "Verschijning van Heer Balarama, de oudere broer van Heer Krishna.",
-    tags: ["jayanti", "balarama"],
+    tags: ["balarama", "jayanti"],
   },
 
   // === FESTIVALS ===
@@ -960,7 +968,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleConfig: { tithi: "SAPTAMI_SHUKLA", maas: "MAGHA" },
     description:
       "De formele geboortedag van Surya Dev (Zonnegod). De zon bereikt zijn hoogste kracht en rijdt zijn zevenspan-wagen (ratha). Valt in Magha Shukla Saptami.",
-    tags: ["surya", "jayanti", "ratha", "zon", "magha"],
+    tags: ["jayanti", "magha", "ratha", "surya", "zon"],
   },
   {
     key: "shravana_sawan_shivaratri",
@@ -972,7 +980,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleConfig: { tithi: "CHATURDASHI_KRISHNA", maas: "SHRAVANA" },
     description:
       "Shivaratri in de heilige maand Shravana. Bijzonder auspicieus voor Shiva-bhakta's. Wordt gevierd met nachtwaken, abhishekam en bel-bladeren.",
-    tags: ["shiva", "shivaratri", "sawan", "shravana", "vrat"],
+    tags: ["sawan", "shiva", "shivaratri", "shravana", "vrat"],
   },
   {
     key: "ashwin_mahalaya_amavasya",
@@ -984,7 +992,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleConfig: { tithi: "AMAVASYA", maas: "ASHWIN" },
     description:
       "De laatste dag van Pitru Paksha (Sarvapitri Amavasya). De meest heilige dag om voorouders te eren via tarpan en shraddha. Inleiding op Sharad Navratri.",
-    tags: ["pitru", "paksha", "voorouders", "shraddha", "amavasya"],
+    tags: ["amavasya", "paksha", "pitru", "shraddha", "voorouders"],
   },
   {
     key: "phalguna_holika_dahan",
@@ -999,7 +1007,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     },
     description:
       "De nacht van het heilige vreugdevuur voor Holi. De verbranding van Holika.",
-    tags: ["holi", "festival", "vuur"],
+    tags: ["festival", "holi", "vuur"],
   },
   {
     key: "shravana_hariyali_teej",
@@ -1013,7 +1021,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       maas: "SHRAVANA",
     },
     description: "Groene Teej. Geleefd door vrouwen voor huwelijksgeluk.",
-    tags: ["teej", "festival", "vrouwen"],
+    tags: ["festival", "teej", "vrouwen"],
   },
   {
     key: "bhadrapada_hartalika_teej",
@@ -1027,7 +1035,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       maas: "BHADRAPADA",
     },
     description: "Teej gewijd aan de vereniging van Heer Shiva en Godin Parvati.",
-    tags: ["teej", "festival", "shiva", "parvati"],
+    tags: ["festival", "parvati", "shiva", "teej"],
   },
   {
     key: "kartik_chhath_puja",
@@ -1055,7 +1063,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       maas: "KARTIK",
     },
     description: "De dag na Diwali. Verering van de heilige Govardhan berg.",
-    tags: ["govardhan", "festival", "krishna"],
+    tags: ["festival", "govardhan", "krishna"],
   },
   {
     key: "kartik_kali_puja",
@@ -1067,7 +1075,9 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleConfig: { tithi: "AMAVASYA", maas: "KARTIK" },
     description:
       "Kali Puja (Shyama Puja) op de nacht van Diwali. In Oost-India (Bengalen) wordt op Kartika Amavasya niet Lakshmi maar Maa Kali vereerd met nacht-puja's, diyas en offers.",
-    tags: ["kali", "puja", "diwali", "bengalen", "amavasya", "kartik"],
+    tags: ["amavasya", "bengalen", "diwali", "kali", "kartik", "puja"],
+    startTime: "20:00",
+    endTime: "22:00",
   },
   {
     key: "kartik_kali_chaudas",
@@ -1082,7 +1092,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     },
     description:
       "Kali Chaudas (ook Narak Chaturdashi). Verering van Maa Kali op de veertiende dag van de donkere helft van Kartik. Valt de dag voor Diwali.",
-    tags: ["kali", "festival", "diwali", "chaturdashi"],
+    tags: ["chaturdashi", "diwali", "festival", "kali"],
   },
   {
     key: "margashirsha_kalabhairav_jayanti",
@@ -1119,7 +1129,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     },
     description:
       "Ekadashi in de Adhika (schrikkel) Jyeshtha maand. Komt alleen voor in jaren met een Adhika maand.",
-    tags: ["ekadashi", "vasten", "adhika", "padmini"],
+    tags: ["adhika", "ekadashi", "padmini", "vasten"],
   },
   {
     key: "adhika_jyeshtha_parama_ekadashi",
@@ -1135,7 +1145,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     },
     description:
       "Ekadashi in de Krishna paksha van Adhika Jyeshtha. Komt alleen voor in jaren met een Adhika maand.",
-    tags: ["ekadashi", "vasten", "adhika", "parama"],
+    tags: ["adhika", "ekadashi", "parama", "vasten"],
   },
   {
     key: "adhika_jyeshtha_purnima",
@@ -1151,7 +1161,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     },
     description:
       "Volle maan (Purnima) van de Adhika (schrikkel) Jyeshtha maand. Komt alleen voor in jaren met een Adhika maand.",
-    tags: ["purnima", "adhika", "jyeshtha"],
+    tags: ["adhika", "jyeshtha", "purnima"],
   },
 
   // ==========================================================================
@@ -1172,7 +1182,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleConfig: { tithi: "PRATIPADA_SHUKLA", maas: "CHAITRA", durationDays: 9 },
     description:
       "Negen heilige nachten gewijd aan de negen vormen van Godin Durga in het voorjaar (Vasant Navratri). Begint op Chaitra Shukla Pratipada en eindigt op Ram Navami.",
-    tags: ["navratri", "durga", "festival", "negen nachten", "vastijd", "vasant"],
+    tags: ["durga", "festival", "navratri", "negen nachten", "vasant", "vastijd"],
   },
 
   // --- Sharad (Maha) Navratri — begint Ashwin Shukla Pratipada ---
@@ -1186,7 +1196,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleConfig: { tithi: "PRATIPADA_SHUKLA", maas: "ASHWIN", durationDays: 9 },
     description:
       "Negen heilige nachten gewijd aan de negen vormen van Godin Durga in het najaar (Maha Navratri). Begint op Ashwin Shukla Pratipada en eindigt op Navami voor Vijayadashami.",
-    tags: ["navratri", "durga", "festival", "negen nachten", "vastijd", "sharad", "maha"],
+    tags: ["durga", "festival", "maha", "navratri", "negen nachten", "sharad", "vastijd"],
   },
 
   // --- Navadurga — de 9 godinnen, gedeeld door beide Navratris ---
@@ -1204,7 +1214,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     dayNumber: 1,
     description:
       "Dag 1 van Navratri. Verering van Maa Shailputri – dochter van de berg, incarnatie van Godin Parvati. Symbool van kracht en toewijding.",
-    tags: ["navratri", "durga", "shailputri", "parvati", "navadurga"],
+    tags: ["durga", "navadurga", "navratri", "parvati", "shailputri"],
   },
   {
     key: "navadurga_dag2_brahmacharini",
@@ -1218,7 +1228,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     dayNumber: 2,
     description:
       "Dag 2 van Navratri. Verering van Maa Brahmacharini – de ascetische godin, symbool van zelfbeheersing en boete.",
-    tags: ["navratri", "durga", "brahmacharini", "navadurga"],
+    tags: ["brahmacharini", "durga", "navadurga", "navratri"],
   },
   {
     key: "navadurga_dag3_chandraghanta",
@@ -1232,7 +1242,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     dayNumber: 3,
     description:
       "Dag 3 van Navratri. Verering van Maa Chandraghanta – dapperheid en bescherming, met een halve maan op haar voorhoofd.",
-    tags: ["navratri", "durga", "chandraghanta", "navadurga"],
+    tags: ["chandraghanta", "durga", "navadurga", "navratri"],
   },
   {
     key: "navadurga_dag4_kushmanda",
@@ -1246,7 +1256,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     dayNumber: 4,
     description:
       "Dag 4 van Navratri. Verering van Maa Kushmanda – zij die het universum schiep met haar goddelijke glimlach.",
-    tags: ["navratri", "durga", "kushmanda", "navadurga"],
+    tags: ["durga", "kushmanda", "navadurga", "navratri"],
   },
   {
     key: "navadurga_dag5_skandamata",
@@ -1260,7 +1270,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     dayNumber: 5,
     description:
       "Dag 5 van Navratri. Verering van Maa Skandamata – moeder van Lord Kartikeya, symbool van moederliefde en bescherming.",
-    tags: ["navratri", "durga", "skandamata", "navadurga"],
+    tags: ["durga", "navadurga", "navratri", "skandamata"],
   },
   {
     key: "navadurga_dag6_katyayani",
@@ -1274,7 +1284,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     dayNumber: 6,
     description:
       "Dag 6 van Navratri. Verering van Maa Katyayani – de strijdersgodin, een felle verschijning van Durga.",
-    tags: ["navratri", "durga", "katyayani", "navadurga"],
+    tags: ["durga", "katyayani", "navadurga", "navratri"],
   },
   {
     key: "navadurga_dag7_kaalratri",
@@ -1288,7 +1298,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     dayNumber: 7,
     description:
       "Dag 7 van Navratri. Verering van Maa Kaalratri – vernietiger van duisternis en onwetendheid.",
-    tags: ["navratri", "durga", "kaalratri", "navadurga"],
+    tags: ["durga", "kaalratri", "navadurga", "navratri"],
   },
   {
     key: "navadurga_dag8_mahagauri",
@@ -1302,7 +1312,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     dayNumber: 8,
     description:
       "Dag 8 van Navratri (Durga Ashtami). Verering van Maa Mahagauri – godin van zuiverheid en vrede.",
-    tags: ["navratri", "durga", "mahagauri", "ashtami", "navadurga"],
+    tags: ["ashtami", "durga", "mahagauri", "navadurga", "navratri"],
   },
   {
     key: "navadurga_dag9_siddhidatri",
@@ -1316,6 +1326,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     dayNumber: 9,
     description:
       "Dag 9 van Navratri (Navami). Verering van Maa Siddhidatri – schenker van volmaaktheid en alle siddhis.",
-    tags: ["navratri", "durga", "siddhidatri", "navami", "navadurga"],
+    tags: ["durga", "navadurga", "navami", "navratri", "siddhidatri"],
   },
 ];

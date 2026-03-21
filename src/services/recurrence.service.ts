@@ -182,6 +182,23 @@ export async function generateOccurrences(
     occurrences = occurrences.slice(0, maxOccurrences);
   }
 
+  // Propagate event-level default times to occurrences that have no panchang-derived time
+  const eventStartTime = (event as Record<string, unknown>).startTime as
+    | string
+    | null
+    | undefined;
+  const eventEndTime = (event as Record<string, unknown>).endTime as
+    | string
+    | null
+    | undefined;
+  if (eventStartTime || eventEndTime) {
+    occurrences = occurrences.map((occ) => ({
+      ...occ,
+      startTime: occ.startTime ?? eventStartTime ?? undefined,
+      endTime: occ.endTime ?? eventEndTime ?? undefined,
+    }));
+  }
+
   logDebug(`Generated ${occurrences.length} occurrences for "${event.name}"`);
 
   return occurrences;
