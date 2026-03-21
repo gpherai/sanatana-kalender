@@ -123,6 +123,9 @@ Events staan in een hiërarchie via de `EventSeriesEntry` junction table (many-t
 - `YEARLY_LUNAR` — jaarlijks op een specifieke tithi (bijv. Krishna Chaturdashi)
 - `MONTHLY_LUNAR` — maandelijks op een tithi (bijv. alle Ekadashi's = 24x per jaar)
 - `YEARLY_SOLAR` — jaarlijks op een Sankranti of vaste datum
+- `MONTHLY_SOLAR` — elke Sankranti (~12x per jaar)
+
+De engine gebruikt een strategy registry: nieuw recurrence-type toevoegen = één regel in de `RECURRENCE_STRATEGIES` map.
 
 ### Panchanga
 
@@ -145,6 +148,7 @@ sanatana-kalender/
 │   ├── config/              # Configuratie (events, categorieën, thema's)
 │   ├── hooks/               # Custom hooks
 │   ├── lib/                 # Utilities
+│   ├── repositories/        # Data access layer (complexe query-constructie)
 │   ├── scripts/             # TypeScript scripts (seed, generate, check)
 │   ├── services/            # Business logic (recurrence, panchanga)
 │   └── types/               # TypeScript types
@@ -194,4 +198,4 @@ Private project — Alle rechten voorbehouden.
 
 ---
 
-**Versie:** 0.10.0 | **Laatst bijgewerkt:** 18 maart 2026
+**Versie:** 0.11.0 | **Laatst bijgewerkt:** 21 maart 2026

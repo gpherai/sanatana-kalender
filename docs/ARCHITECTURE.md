@@ -1,7 +1,7 @@
 # 🗏️ Dharma Calendar - Architecture Document
 
-> **Versie:** 3.9
-> **Laatst bijgewerkt:** 26 december 2025 - Drik Panchang Extended Fields Implementation
+> **Versie:** 4.0
+> **Laatst bijgewerkt:** 21 maart 2026 - Repository Pattern + Strategy Registry
 
 ---
 
@@ -197,10 +197,12 @@ dharma-calendar/
 │   │       │   └── astro.ts           # Astronomische utilities
 │   │       ├── constants.ts           # Panchanga constanten
 │   │       └── types.ts               # Panchanga types
+│   ├── repositories/          # Data access layer (complexe query-constructie)
+│   │   └── event.repository.ts    # Event occurrence filter-queries
 │   ├── services/              # Business logica (server-only)
 │   │   ├── index.ts           # Barrel export (met server-only notes)
 │   │   ├── panchanga.service.ts   # Panchanga calculations wrapper
-│   │   └── recurrence.service.ts  # Event recurrence generation
+│   │   └── recurrence.service.ts  # Event recurrence generation (strategy registry)
 │   └── types/                 # TypeScript types
 │       ├── index.ts           # Barrel export
 │       ├── api.ts             # API types
@@ -863,7 +865,7 @@ De service layer wordt alleen gebruikt voor complexe business logica. Alle servi
 |---------|---------|----------------------|
 | `PanchangaSwissService` | `/server/panchanga/` | Swiss Ephemeris integratie voor Vedische astronomie (Tithi, Nakshatra, Yoga, Karana met exacte eindtijden) + astronomische berekeningen (sunrise/sunset, moonrise/moonset) |
 | `panchangaService` | `/services/panchanga.service.ts` | Wrapper voor PanchangaSwissService, exposeert high-level API voor daily info calculations, LRU caching (365 dagen, 24h TTL) |
-| `recurrenceService` | `/services/recurrence.service.ts` | Event recurrence generation (YEARLY_LUNAR, YEARLY_SOLAR, MONTHLY_LUNAR, MONTHLY_SOLAR) |
+| `recurrenceService` | `/services/recurrence.service.ts` | Event recurrence generation via strategy registry (YEARLY_LUNAR, YEARLY_SOLAR, MONTHLY_LUNAR, MONTHLY_SOLAR, ruleTypes SOLAR/TITHI). Nieuw recurrence-type toevoegen = één regel in `RECURRENCE_STRATEGIES` map. |
 
 **Architectuur Principes:**
 
@@ -872,7 +874,7 @@ De service layer wordt alleen gebruikt voor complexe business logica. Alle servi
    - `/server/panchanga/` = Low-level Swiss Ephemeris wrapper
    - `/services/` = High-level business logic die server modules gebruikt
 3. **Thin Controllers Pattern:** API routes fungeren als "thin controllers" - HTTP handling, validatie, error responses
-4. **No Repository Pattern:** Prisma IS al een repository/DAL layer - extra abstractie is needless overhead
+4. **Targeted Repository Pattern:** Voor complexe query-constructie (meerdere filters, conditionals) wordt een repository gebruikt om de controller dun te houden. Simpele Prisma-queries blijven direct in de route.
 5. **Pragmatic Over Pure:** Architectuur dient de code, niet andersom - YAGNI principle
 
 #### 4.3.1 API Routes vs Services: Decision Framework
@@ -927,39 +929,37 @@ Wanneer je een API route schrijft of reviewt, check:
 □ Gebruikt het alleen Prisma queries? (geen native addons, external APIs)
 ```
 
-**Voorbeeld: Events API (grensgeval)**
+**Voorbeeld: Events API**
 
-De `/api/events` route heeft ~250 regels met:
-- Complex query building (WHERE clauses, filters)
-- Data transformatie (database → calendar format)
-- Prisma joins (occurrences + category)
+De `/api/events` route delegeert filterbouw naar `src/repositories/event.repository.ts`:
+- **Repository:** `buildEventWhere()` + `findEventOccurrences()` — WHERE-clausule constructie, joins, sortering
+- **Route:** validatie, aanroep repository, response transformatie (database → calendar format)
 
-**Is dit OK?** ✅ Ja, omdat:
-- Het is specifiek voor dit endpoint (niet herbruikbaar)
-- Het is vooral Prisma orchestratie, geen business logica
-- Het is nog leesbaar en maintainable
+**Wanneer naar repository:**
+- Filter-logica > ~40 regels of conditionals
+- Query-patronen die in meerdere endpoints herbruikt kunnen worden
+- Onafhankelijk testbaar moeten zijn
 
-**Extract naar service als:**
-- Route groeit > 300 regels
-- Query building wordt hergebruikt in andere endpoints
-- Complexe business rules worden toegevoegd (bijv. "hide events during Rahu Kalam")
+**Wanneer direct in route (geen repository):**
+- Enkelvoudige Prisma-queries (`findMany`, `findUnique`, `upsert`) zonder complexe filters
+- CRUD met validatie maar zonder multi-filter WHERE-constructie
 
 **Waarom NIET alles via services?**
 
 Moderne architectuur (2025) is **pragmatisch**, niet **dogmatisch**:
 
-| Anti-pattern (2015) | Modern Pattern (2025) |
-|---------------------|----------------------|
-| Repository over Prisma | Prisma IS het repository |
+| Anti-pattern | Modern Pattern |
+|--------------|----------------|
+| Repository voor elke entity | Repository alleen voor complexe query-constructie |
 | Service voor elke entity | Services voor business logica |
 | Altijd 3-layer architectuur | Vertical slice waar nodig |
 | Abstractie "just in case" | YAGNI - build when needed |
 
-**Voordelen van thin controllers:**
-- ✅ **Minder boilerplate** - Geen needless `EventService.findAll()` wrapper om `prisma.event.findMany()`
-- ✅ **Sneller ontwikkelen** - Direct van validatie naar database, geen extra lagen
-- ✅ **Eenvoudiger debugging** - Minder files om door te navigeren
-- ✅ **Duidelijke grens** - 200 regels = tijd om te refactoren
+**Voordelen van thin controllers + gerichte repository:**
+- ✅ **Minder boilerplate** - Enkelvoudige Prisma-queries blijven direct in de route
+- ✅ **Sneller ontwikkelen** - Direct van validatie naar database voor eenvoudige CRUD
+- ✅ **Eenvoudiger debugging** - Complexe filter-logica geïsoleerd in repository, niet verstopt in een lange handler
+- ✅ **Duidelijke grens** - Filter-logica > ~40 regels → naar repository
 
 #### 4.3.2 Service Pattern Design Decisions
 
