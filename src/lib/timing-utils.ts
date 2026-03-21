@@ -21,7 +21,8 @@ export interface TimeWindow {
  * Returns null if the string is invalid.
  */
 export function parseTimeToMinutes(time: string): number | null {
-  const match = /^(\d{1,2}):(\d{2})$/.exec(time);
+  // Accept "HH:MM" or "HH:MM:SS" (seconds are ignored — DailyInfo stores times with seconds)
+  const match = /^(\d{1,2}):(\d{2})(?::\d{2})?$/.exec(time);
   if (!match) return null;
   const hours = parseInt(match[1]!, 10);
   const minutes = parseInt(match[2]!, 10);
@@ -110,9 +111,13 @@ export function calculatePradoshKaal(sunset: string): TimeWindow | null {
  * @returns Time window, or null if sunrise time is invalid
  */
 export function calculateSunriseWindow(sunrise: string): TimeWindow | null {
+  // Format startTime through the parser to strip seconds and normalise to "HH:MM"
+  const startMinutes = parseTimeToMinutes(sunrise);
+  if (startMinutes === null) return null;
+  const start = formatMinutesToTime(startMinutes);
   const end = addMinutesToTime(sunrise, 120);
   if (!end) return null;
-  return { startTime: sunrise, endTime: end };
+  return { startTime: start, endTime: end };
 }
 
 /**
