@@ -1,8 +1,101 @@
 # 📝 Dharma Calendar - Development Changelog
 
-> **Huidige Versie:** 0.14.1
-> **Status:** Production Ready + Service Layer Guidelines
-> **Laatst bijgewerkt:** 26 december 2025
+> **Huidige Versie:** 0.15.0
+> **Status:** Production Ready
+> **Laatst bijgewerkt:** 21 maart 2026
+
+---
+
+## Session 43 - Code Cleanup & Documentatie (21 maart 2026)
+
+### 🧹 Dead Code Verwijderd
+
+- `useFetchMultiple` hook — nergens in gebruik, verwijderd uit `useFetch.ts` en `hooks/index.ts`
+- `ColorModeSelect` component — niet in UI geplaatst, verwijderd samen met bijbehorende test
+- Ongebruikte Prisma type re-exports in `calendar.ts` (`Paksha`, `RecurrenceType`, `CalendarView`, `MoonPhaseType`)
+- Dode re-exports van theme-constanten in `theme/index.ts` (`DEFAULT_THEME_NAME`, `THEME_NAMES`, etc.)
+- Ad-hoc dev scripts `check_jan_simple.mjs` en `quick_check.mjs`
+
+**Resultaat:** 450 regels dode code verwijderd, 323 tests slagen.
+
+### 📚 Documentatie Bijgewerkt
+
+- `TODO.md` volledig opgeschoond: voltooide items afgevinkt, verouderde backlog verwijderd
+- `DATABASE_PROCEDURES.md`: naming catalog sync stap toegevoegd, fout in `parseCalendarDate` importpad hersteld (`@/lib/utils` → `@/lib/date-utils`)
+- `ARCHITECTURE.md` v4.0: repository pattern gedocumenteerd, strategie-registry beschreven
+- `README.md` v0.11.0: `repositories/` toegevoegd aan structuur, `MONTHLY_SOLAR` toegevoegd
+
+---
+
+## Session 42 - Repository Pattern & Strategy Registry (21 maart 2026)
+
+### 🏗️ Architectuurverbeteringen
+
+**Repository Pattern voor events:**
+- Nieuw bestand `src/repositories/event.repository.ts`
+- Filter-bouwlogica (~60 regels) verplaatst uit `GET /api/events` naar de repository
+- `buildEventWhere()` + `findEventOccurrences()` — onafhankelijk testbaar
+- Route is nu: valideer → repository aanroepen → response formatteren
+
+**Strategy Registry voor recurrence:**
+- Switch-statements in `recurrence.service.ts` vervangen door twee mappen:
+  ```typescript
+  const RULE_STRATEGIES = { SOLAR, TITHI };
+  const RECURRENCE_STRATEGIES = { YEARLY_LUNAR, YEARLY_SOLAR, MONTHLY_LUNAR, MONTHLY_SOLAR };
+  ```
+- Nieuw recurrence-type toevoegen = één regel in de map (Open/Closed Principle)
+
+**Bestanden:**
+- `src/repositories/event.repository.ts` — NIEUW
+- `src/app/api/events/route.ts` — GET vereenvoudigd
+- `src/services/recurrence.service.ts` — switch vervangen door strategy maps
+
+---
+
+## Session 41 - Code Review Verbeteringen (maart 2026)
+
+### 🔧 Code Review Fixes (K1-K3, H1-H6, G3, G5, G6, G9-G11)
+
+**Kwaliteit (K):**
+- K1: Expliciete return types op alle public service functies
+- K2: `noUncheckedIndexedAccess` array-toegang verbeterd
+- K3: Gedeelde Prisma-foutafhandeling utility
+
+**Hardening (H):**
+- H1-H3: `prisma.$transaction` voor atomaire delete+insert in generate-occurrences
+- H4-H6: Verbeterde validatie, error codes en logging
+
+**Gemini review (G):**
+- G3: Moon phase drempelwaarden gecorrigeerd naar astronomisch correcte 45/55% (was 25/50/75%)
+- G5, G6: Logging en waarschuwingen verbeterd
+- G9-G11: Diverse kleinere verbeteringen
+
+**Bestanden gewijzigd:** 14 bestanden, 324 tests slagen.
+
+---
+
+## Session 40 - Datum Bereik Filter (maart 2026)
+
+### ✨ Nieuwe Feature: Datum Bereik Filter
+
+- Datum bereik filter toegevoegd aan filterzijbalk
+- Start- en einddatum selectie voor events
+- Filterzijbalk herindeling voor betere bruikbaarheid
+
+---
+
+## Session 39 - Purnimanta Maas Berekening Fix (maart 2026)
+
+### 🐛 Bug Fix: Krishna Paksha Maas
+
+**Probleem:** Purnimanta maas berekening gaf verkeerde maand voor Krishna paksha tithis.
+
+**Oorzaak:** In het Purnimanta systeem begint een maand op Purnima (volle maan). Krishna paksha (afnemende maan) valt daardoor aan het begin van de volgende maand — dit werd niet correct berekend.
+
+**Oplossing:** Maas-berekening aangepast zodat Krishna paksha tithis correct aan de volgende Purnimanta maand worden toegewezen.
+
+**Bestanden:**
+- `src/server/panchanga/services/panchanga-swiss-service.ts`
 
 ---
 
@@ -618,10 +711,14 @@ docs/
 
 | Versie | Datum | Highlights |
 |--------|-------|------------|
-| **0.11.0** | **19 dec 2025** | **Code quality audit, conditional logging, theme consistency** |
+| **0.15.0** | **21 mrt 2026** | **Repository pattern, strategy registry, code cleanup** |
+| 0.14.1 | mrt 2026 | Code review fixes K1-K3 H1-H6 G3 G5 G6 G9-G11, moon phase 45/55% |
+| 0.14.0 | mrt 2026 | Datum bereik filter, filterzijbalk herindeling |
+| 0.13.0 | mrt 2026 | Purnimanta maas fix (Krishna paksha) |
+| 0.12.0 | 26 dec 2025 | Almanac redesign, moonrise/moonset, semantic token migratie |
+| 0.11.0 | 19 dec 2025 | Code quality audit, conditional logging, theme consistency |
 | 0.10.0 | 10 dec 2025 | Theme System Refactor v2 |
 | 0.9.0 | 5 dec 2025 | Shri Ganesha theme, CSS generator |
-| 0.8.1 | 3 dec 2025 | Theme cleanup |
 | 0.8.0 | 3 dec 2025 | ADR-001, theme refactor |
 | 0.7.0 | 28 nov 2025 | Code audit |
 | 0.6.0 | 28 nov 2025 | Docker deployment |
@@ -640,8 +737,10 @@ docs/
 - **Theme Tokens:** `text-theme-primary` niet `text-orange-500`
 - **Barrel Exports:** `index.ts` in elke component folder
 - **CSS-Driven Theming:** `data-theme` attribute + CSS selectors
+- **Targeted Repository Pattern:** Complexe filter-logica in `src/repositories/`, simpele Prisma-queries direct in route
+- **Strategy Registry:** Nieuwe recurrence-types toevoegen via map, geen switch aanpassen
 
 ---
 
-**Laatst bijgewerkt:** 19 december 2025  
+**Laatst bijgewerkt:** 21 maart 2026
 **Status:** Production Ready
