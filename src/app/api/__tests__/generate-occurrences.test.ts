@@ -83,7 +83,6 @@ describe("POST /api/events/generate-occurrences", () => {
 
       description: null,
       eventType: "OTHER",
-      importance: "MODERATE",
       categoryId: null,
       tithi: null,
       nakshatra: null,
@@ -129,7 +128,6 @@ describe("POST /api/events/generate-occurrences", () => {
 
       description: null,
       eventType: "OTHER",
-      importance: "MODERATE",
       categoryId: null,
       tithi: null,
       nakshatra: null,
@@ -200,7 +198,6 @@ describe("POST /api/events/generate-occurrences", () => {
 
         description: null,
         eventType: "OTHER",
-        importance: "MODERATE",
         categoryId: null,
         tithi: null,
         nakshatra: null,
@@ -226,7 +223,6 @@ describe("POST /api/events/generate-occurrences", () => {
 
         description: null,
         eventType: "OTHER",
-        importance: "MODERATE",
         categoryId: null,
         tithi: null,
         nakshatra: null,

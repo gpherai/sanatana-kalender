@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Calendar, Clock, Star, Tag, ChevronRight } from "lucide-react";
+import { Calendar, Clock, Tag, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getEventType } from "@/lib/domain";
 import {
@@ -22,7 +22,6 @@ interface EventCardProps {
   // Category is now a full object from the database
   category?: Category | null;
   eventType: string;
-  importance: string;
   tithi?: string | null;
   nakshatra?: string | null;
   tags?: string[];
@@ -40,7 +39,6 @@ export function EventCard({
   endTime,
   category,
   eventType,
-  importance,
   tithi,
   nakshatra,
   tags = [],
@@ -50,7 +48,6 @@ export function EventCard({
   // Category is now a full object, no need to look up
   const categoryData = category;
   const eventTypeData = getEventType(eventType);
-  const isMajor = importance === "MAJOR";
 
   // Calculate duration for multi-day events
   const durationDays = endDate
@@ -87,7 +84,6 @@ export function EventCard({
     "shadow-sm hover:shadow-xl",
     "transition-all duration-300 ease-out",
     "hover:-translate-y-1",
-    isMajor && "ring-2 ring-theme-warning/50",
     className
   );
 
@@ -100,14 +96,6 @@ export function EventCard({
           backgroundColor: categoryData?.color ?? "oklch(0.6 0.15 250)",
         }}
       />
-
-      {/* Major Event Badge */}
-      {isMajor && (
-        <div className="bg-theme-warning-bg text-theme-warning absolute top-3 right-3 flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium">
-          <Star className="h-3 w-3 fill-current" />
-          Belangrijk
-        </div>
-      )}
 
       <div className="p-5 pl-6">
         {/* Header: Icon + Title */}
@@ -264,24 +252,15 @@ export function EventCardCompact({
   date,
   category,
   eventType,
-  importance,
   onClick,
   className,
 }: Pick<
   EventCardProps,
-  | "id"
-  | "name"
-  | "date"
-  | "category"
-  | "eventType"
-  | "importance"
-  | "onClick"
-  | "className"
+  "id" | "name" | "date" | "category" | "eventType" | "onClick" | "className"
 >) {
   // Category is now a full object
   const categoryData = category;
   const eventTypeData = getEventType(eventType);
-  const isMajor = importance === "MAJOR";
 
   const compactClassName = cn(
     "group flex items-center gap-3 p-3 rounded-xl w-full text-left",
@@ -311,7 +290,6 @@ export function EventCardCompact({
           <span className="text-theme-fg group-hover:text-theme-primary truncate text-sm font-medium transition-colors">
             {name}
           </span>
-          {isMajor && <Star className="fill-theme-warning text-theme-warning h-3 w-3" />}
         </div>
         <div className="text-theme-fg-muted text-xs">
           {new Date(date).toLocaleDateString("nl-NL", {

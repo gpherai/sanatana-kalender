@@ -51,7 +51,6 @@ describe("DharmaCalendar", () => {
       resource: {
         description: null,
         eventType: "FESTIVAL",
-        importance: "MAJOR",
         category: null,
         categoryId: null,
         tithi: null,
@@ -152,7 +151,6 @@ describe("DharmaCalendar", () => {
       resource: {
         description: null,
         eventType: "FESTIVAL",
-        importance: "MAJOR",
         category: null,
         categoryId: null,
         tithi: null,
@@ -190,7 +188,7 @@ describe("DharmaCalendar", () => {
     expect(await screen.findByTestId("event-modal")).toHaveTextContent("Test Event");
   });
 
-  it("builds event styles based on category color and importance", async () => {
+  it("builds event styles based on category color", async () => {
     const fetchMock = vi.mocked(fetch);
     fetchMock.mockResolvedValue({
       ok: true,
@@ -210,13 +208,11 @@ describe("DharmaCalendar", () => {
     const event = {
       resource: {
         category: { color: "#123456" },
-        importance: "MAJOR",
       },
     };
 
     const result = eventPropGetter(event);
     expect(result.style.backgroundColor).toBe("#123456");
-    expect(result.style.fontWeight).toBe("bold");
   });
 
   it("marks weekends with a background style", async () => {

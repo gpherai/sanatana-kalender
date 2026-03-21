@@ -63,13 +63,11 @@ describe("useFetch", () => {
   it("uses custom errorMessage on HTTP error", async () => {
     vi.stubGlobal(
       "fetch",
-      vi
-        .fn()
-        .mockResolvedValue({
-          ok: false,
-          status: 500,
-          statusText: "Internal Server Error",
-        })
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 500,
+        statusText: "Internal Server Error",
+      })
     );
 
     const { result } = renderHook(() =>

@@ -91,7 +91,7 @@ export function MonthGrid({
           const dayEvents = eventsMap.get(dateStr) || [];
           const daySpecial = specialDaysMap.get(dateStr) || [];
           const moonPhase = moonPhasesMap.get(dateStr);
-          const hasMajorEvent = dayEvents.some((e) => e.resource.importance === "MAJOR");
+          const hasEvents = dayEvents.length > 0;
           const isSelected = isSameDay(date, selectedDate);
           const isTodayDate = isToday(date);
 
@@ -105,7 +105,7 @@ export function MonthGrid({
                   ? "bg-theme-primary ring-theme-primary ring-offset-theme-surface text-white shadow-lg ring-2 ring-offset-2"
                   : isTodayDate
                     ? "bg-theme-primary-15 ring-theme-primary ring-1"
-                    : hasMajorEvent && showEvents
+                    : hasEvents && showEvents
                       ? "bg-[var(--theme-almanac-event-cell-bg)] hover:bg-[var(--theme-almanac-event-cell-bg-hover)]"
                       : moonPhase && showMoonPhases
                         ? "bg-[var(--theme-almanac-moon-cell-bg)] hover:bg-[var(--theme-almanac-moon-cell-bg-hover)]"

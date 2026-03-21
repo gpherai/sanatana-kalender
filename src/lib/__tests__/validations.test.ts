@@ -46,7 +46,6 @@ describe("Validations", () => {
         endTime: "",
         notes: "",
         eventType: "OTHER",
-        importance: "MODERATE",
         recurrenceType: "NONE",
         // Optional fields
         categoryId: "",
@@ -68,15 +67,11 @@ describe("Validations", () => {
 
     it("should process tags correctly", () => {
       const formData: Partial<EventFormData> &
-        Pick<
-          EventFormData,
-          "name" | "date" | "eventType" | "importance" | "recurrenceType"
-        > = {
+        Pick<EventFormData, "name" | "date" | "eventType" | "recurrenceType"> = {
         name: "Test",
         date: "2025-01-01",
         tags: "tag1, TAG2,  tag3 ",
         eventType: "OTHER",
-        importance: "MODERATE",
         recurrenceType: "NONE",
       };
 
@@ -87,15 +82,11 @@ describe("Validations", () => {
 
     it("should handle empty tags", () => {
       const formData: Partial<EventFormData> &
-        Pick<
-          EventFormData,
-          "name" | "date" | "eventType" | "importance" | "recurrenceType"
-        > = {
+        Pick<EventFormData, "name" | "date" | "eventType" | "recurrenceType"> = {
         name: "Test",
         date: "2025-01-01",
         tags: "",
         eventType: "OTHER",
-        importance: "MODERATE",
         recurrenceType: "NONE",
       };
 
@@ -175,7 +166,6 @@ describe("Validations", () => {
       };
 
       const result = createEventSchema.parse(payload);
-      expect(result.importance).toBe("MODERATE");
       expect(result.recurrenceType).toBe("NONE");
       expect(result.tags).toEqual([]);
     });
@@ -200,7 +190,6 @@ describe("Validations", () => {
 
     it("should allow empty payloads", () => {
       expect(updateEventSchema.parse({})).toEqual({
-        importance: "MODERATE",
         recurrenceType: "NONE",
         tags: [],
       });

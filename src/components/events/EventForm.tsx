@@ -11,14 +11,7 @@ import {
   transformFormToApi,
   type EventFormData,
 } from "@/lib/validations";
-import {
-  EVENT_TYPES,
-  IMPORTANCE_LEVELS,
-  TITHIS,
-  NAKSHATRAS,
-  MAAS,
-  SANKRANTIS,
-} from "@/lib/domain";
+import { EVENT_TYPES, TITHIS, NAKSHATRAS, MAAS, SANKRANTIS } from "@/lib/domain";
 import type { Category } from "@/types/calendar";
 
 interface EventFormProps {
@@ -40,7 +33,6 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
     description: initialData?.description ?? "",
     eventType: initialData?.eventType ?? "FESTIVAL",
     categoryId: initialData?.categoryId ?? "",
-    importance: initialData?.importance ?? "MODERATE",
     recurrenceType: initialData?.recurrenceType ?? "NONE",
     date: initialData?.date ?? "",
     endDate: initialData?.endDate ?? "",
@@ -219,8 +211,8 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
           />
         </div>
 
-        {/* Type, Category, Importance Row */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        {/* Type and Category Row */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {/* Event Type */}
           <div>
             <label
@@ -268,30 +260,6 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
               {categories?.map((cat) => (
                 <option key={cat.id} value={cat.id}>
                   {cat.icon} {cat.displayName}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Importance */}
-          <div>
-            <label
-              htmlFor="importance"
-              className="text-theme-fg-secondary mb-1 block text-sm font-medium"
-            >
-              Belang
-            </label>
-            <select
-              id="importance"
-              value={formData.importance}
-              onChange={(e) =>
-                updateField("importance", e.target.value as EventFormData["importance"])
-              }
-              className={cn(inputClasses, "border-theme-border")}
-            >
-              {IMPORTANCE_LEVELS.map((level) => (
-                <option key={level.value} value={level.value}>
-                  {level.label}
                 </option>
               ))}
             </select>

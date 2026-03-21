@@ -40,7 +40,7 @@ describe("Home Page", () => {
     expect(screen.getByText("Voeg er een toe")).toBeInTheDocument();
   });
 
-  it("renders major events when present", async () => {
+  it("renders upcoming events when present", async () => {
     prismaMock.eventOccurrence.findMany.mockResolvedValue([
       {
         id: "occ_1",
@@ -50,7 +50,6 @@ describe("Home Page", () => {
         event: {
           id: "evt_1",
           name: "Maha Shivaratri",
-          importance: "MAJOR",
           category: { icon: "🕉️" },
         },
       },
@@ -67,7 +66,7 @@ describe("Home Page", () => {
     const ui = await Home();
     render(ui);
 
-    expect(screen.getByText("Belangrijke Events (7 dagen)")).toBeInTheDocument();
+    expect(screen.getByText("Binnenkort (7 dagen)")).toBeInTheDocument();
     expect(screen.getByText("Maha Shivaratri")).toBeInTheDocument();
   });
 });

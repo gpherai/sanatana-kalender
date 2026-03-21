@@ -38,7 +38,6 @@ export default async function EditEventPage({ params }: PageProps) {
     description: event.description ?? "",
     eventType: event.eventType as string,
     categoryId: event.categoryId ?? "",
-    importance: event.importance as string,
     recurrenceType: event.recurrenceType as string,
     date: firstOccurrence ? formatDateForInput(firstOccurrence.date) : "",
     endDate: firstOccurrence?.endDate ? formatDateForInput(firstOccurrence.endDate) : "",

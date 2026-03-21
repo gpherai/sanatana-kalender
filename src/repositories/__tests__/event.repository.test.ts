@@ -77,19 +77,6 @@ describe("findEventOccurrences", () => {
     });
   });
 
-  it("applies valid importance filter", async () => {
-    await findEventOccurrences({ importance: ["MAJOR", "MODERATE"] });
-    const where = getWhereArg();
-    expect(where.event).toMatchObject({
-      importance: { in: ["MAJOR", "MODERATE"] },
-    });
-  });
-
-  it("omits importance filter when all values are invalid", async () => {
-    await findEventOccurrences({ importance: ["CRITICAL", "UNKNOWN"] });
-    expect(getWhereArg()).toEqual({});
-  });
-
   it("applies valid tithi filter", async () => {
     await findEventOccurrences({ tithis: ["PURNIMA", "AMAVASYA"] });
     const where = getWhereArg();

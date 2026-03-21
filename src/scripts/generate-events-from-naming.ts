@@ -61,7 +61,6 @@ async function generateEventsFromNaming() {
       description: naming.description || null,
       eventType: naming.eventType,
       recurrenceType,
-      importance: naming.importance,
       categoryId: category.id,
 
       // Matching criteria

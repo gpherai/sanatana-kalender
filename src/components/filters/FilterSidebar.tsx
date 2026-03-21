@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useMemo } from "react";
 import { Search, X, Filter, ChevronDown, ChevronUp } from "lucide-react";
-import { CATEGORIES, EVENT_TYPES, IMPORTANCE_LEVELS, SPECIAL_TITHIS } from "@/lib/domain";
+import { CATEGORIES, EVENT_TYPES, SPECIAL_TITHIS } from "@/lib/domain";
 import type { FilterState } from "@/hooks/useFilters";
 import { cn } from "@/lib/utils";
 
@@ -10,7 +10,7 @@ interface FilterSidebarProps {
   filters: FilterState;
   onFilterChange: <K extends keyof FilterState>(key: K, value: FilterState[K]) => void;
   onToggleFilter: (
-    key: "categories" | "eventTypes" | "importances" | "specialTithis",
+    key: "categories" | "eventTypes" | "specialTithis",
     value: string
   ) => void;
   onClearFilters: () => void;
@@ -341,20 +341,6 @@ export function FilterSidebar({
               icon={tithi.icon}
               checked={filters.specialTithis.includes(tithi.value)}
               onChange={() => onToggleFilter("specialTithis", tithi.value)}
-            />
-          ))}
-        </div>
-      </FilterSection>
-
-      {/* Belangrijkheid */}
-      <FilterSection title="Belangrijkheid" icon="⭐" defaultOpen={false}>
-        <div className="space-y-0.5">
-          {IMPORTANCE_LEVELS.map((imp) => (
-            <CheckboxItem
-              key={imp.value}
-              label={imp.label}
-              checked={filters.importances.includes(imp.value)}
-              onChange={() => onToggleFilter("importances", imp.value)}
             />
           ))}
         </div>

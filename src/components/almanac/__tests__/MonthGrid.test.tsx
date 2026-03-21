@@ -8,9 +8,7 @@ import type { DailyInfoResponse } from "@/types";
 import type { SpecialDay } from "@/lib/panchanga-helpers";
 
 // Reusable minimal event fixture
-function makeEvent(
-  importance: "MAJOR" | "MODERATE" | "MINOR" = "MODERATE"
-): CalendarEventResponse {
+function makeEvent(): CalendarEventResponse {
   return {
     id: "occ_1",
     eventId: "evt_1",
@@ -21,7 +19,6 @@ function makeEvent(
     resource: {
       description: null,
       eventType: "FESTIVAL",
-      importance,
       category: null,
       categoryId: null,
       tithi: null,
@@ -138,7 +135,7 @@ describe("MonthGrid", () => {
         days={[DAY]}
         startPadding={0}
         dailyInfoMap={new Map()}
-        eventsMap={new Map([[dateKey, [makeEvent("MAJOR")]]])}
+        eventsMap={new Map([[dateKey, [makeEvent()]]])}
         specialDaysMap={new Map()}
         moonPhasesMap={new Map()}
         selectedDate={OTHER_DATE}
@@ -163,7 +160,7 @@ describe("MonthGrid", () => {
         days={[DAY]}
         startPadding={0}
         dailyInfoMap={new Map()}
-        eventsMap={new Map([[dateKey, [makeEvent("MAJOR")]]])}
+        eventsMap={new Map([[dateKey, [makeEvent()]]])}
         specialDaysMap={new Map()}
         moonPhasesMap={new Map()}
         selectedDate={OTHER_DATE}

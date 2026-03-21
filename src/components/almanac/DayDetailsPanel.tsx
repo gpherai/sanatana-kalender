@@ -303,17 +303,12 @@ export function DayDetailsPanel({
                   onClick={() => onEventClick(event)}
                   className={cn(
                     "w-full rounded-lg p-3 text-left transition-all hover:shadow-md",
-                    event.resource.importance === "MAJOR"
-                      ? "bg-[var(--theme-almanac-event-major-bg)] hover:bg-[var(--theme-almanac-event-major-bg-hover)]"
-                      : "bg-theme-surface-hover hover:bg-theme-surface"
+                    "bg-theme-surface-hover hover:bg-theme-surface"
                   )}
                 >
                   <div className="flex items-center gap-2">
                     <span>{event.resource.category?.icon || "📅"}</span>
                     <span className="text-theme-fg font-medium">{event.title}</span>
-                    {event.resource.importance === "MAJOR" && (
-                      <Star className="h-3 w-3 fill-[var(--theme-almanac-event-major-star)] text-[var(--theme-almanac-event-major-star)]" />
-                    )}
                   </div>
 
                   {/* Spanning event indicator */}

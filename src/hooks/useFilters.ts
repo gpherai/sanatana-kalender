@@ -5,11 +5,9 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import {
   CATEGORIES,
   EVENT_TYPES,
-  IMPORTANCE_LEVELS,
   SPECIAL_TITHIS,
   type CategoryValue,
   type EventTypeValue,
-  type ImportanceValue,
 } from "@/lib/domain";
 
 // ============================================================================
@@ -37,7 +35,6 @@ export interface FilterState {
   dateTo: string; // YYYY-MM-DD or ""
   categories: string[];
   eventTypes: string[];
-  importances: string[];
   specialTithis: string[];
   sortBy: SortBy;
   sortOrder: SortOrder;
@@ -52,7 +49,6 @@ export const DEFAULT_FILTERS: FilterState = {
   dateTo: "",
   categories: [],
   eventTypes: [],
-  importances: [],
   specialTithis: [],
   sortBy: "date",
   sortOrder: "asc",
@@ -91,11 +87,6 @@ const VALID_CATEGORIES = new Set(CATEGORIES.map((c) => c.value));
  * Valid event type values from constants
  */
 const VALID_EVENT_TYPES = new Set(EVENT_TYPES.map((t) => t.value));
-
-/**
- * Valid importance values from constants
- */
-const VALID_IMPORTANCES = new Set(IMPORTANCE_LEVELS.map((i) => i.value));
 
 /**
  * Valid special tithi values from constants
@@ -150,8 +141,6 @@ export function useFilters() {
     const rawCategories =
       searchParams.get("categories")?.split(",").filter(Boolean) ?? [];
     const rawEventTypes = searchParams.get("types")?.split(",").filter(Boolean) ?? [];
-    const rawImportances =
-      searchParams.get("importance")?.split(",").filter(Boolean) ?? [];
     const rawSpecialTithis = searchParams.get("tithis")?.split(",").filter(Boolean) ?? [];
 
     return {
@@ -161,7 +150,6 @@ export function useFilters() {
       // Validate arrays against known values
       categories: filterValidValues(rawCategories, VALID_CATEGORIES),
       eventTypes: filterValidValues(rawEventTypes, VALID_EVENT_TYPES),
-      importances: filterValidValues(rawImportances, VALID_IMPORTANCES),
       specialTithis: filterValidValues(rawSpecialTithis, VALID_SPECIAL_TITHIS),
       // Validate sort params with whitelist
       sortBy: validateSortBy(searchParams.get("sortBy")),
@@ -191,7 +179,6 @@ export function useFilters() {
         dateTo: "to",
         categories: "categories",
         eventTypes: "types",
-        importances: "importance",
         specialTithis: "tithis",
         sortBy: "sortBy",
         sortOrder: "order",
@@ -219,10 +206,7 @@ export function useFilters() {
 
   // Toggle a value in an array filter
   const toggleFilter = useCallback(
-    (
-      key: "categories" | "eventTypes" | "importances" | "specialTithis",
-      value: string
-    ) => {
+    (key: "categories" | "eventTypes" | "specialTithis", value: string) => {
       const currentValues = filters[key];
       const newValues = currentValues.includes(value)
         ? currentValues.filter((v) => v !== value)
@@ -249,7 +233,6 @@ export function useFilters() {
     if (filters.dateFrom || filters.dateTo) count++;
     if (filters.categories.length > 0) count++;
     if (filters.eventTypes.length > 0) count++;
-    if (filters.importances.length > 0) count++;
     if (filters.specialTithis.length > 0) count++;
     return count;
   }, [filters]);
@@ -263,7 +246,6 @@ export function useFilters() {
     if (filters.dateFrom || filters.dateTo) count++;
     count += filters.categories.length;
     count += filters.eventTypes.length;
-    count += filters.importances.length;
     count += filters.specialTithis.length;
     return count;
   }, [filters]);
@@ -280,8 +262,6 @@ export function useFilters() {
     if (filters.dateTo) params.set("end", filters.dateTo);
     if (filters.categories.length) params.set("categories", filters.categories.join(","));
     if (filters.eventTypes.length) params.set("types", filters.eventTypes.join(","));
-    if (filters.importances.length)
-      params.set("importance", filters.importances.join(","));
     if (filters.specialTithis.length)
       params.set("tithis", filters.specialTithis.join(","));
     params.set("sortBy", filters.sortBy);
@@ -308,4 +288,4 @@ export function useFilters() {
 // TYPE EXPORTS
 // ============================================================================
 
-export type { SortBy, SortOrder, CategoryValue, EventTypeValue, ImportanceValue };
+export type { SortBy, SortOrder, CategoryValue, EventTypeValue };

@@ -44,10 +44,6 @@ export default async function Home() {
     orderBy: { sortOrder: "asc" },
   });
 
-  // Group events by importance
-  const majorEvents = upcomingEvents.filter((e) => e.event.importance === "MAJOR");
-  const otherEvents = upcomingEvents.filter((e) => e.event.importance !== "MAJOR");
-
   return (
     <PageLayout spacing>
       {/* Hero: Today's Info */}
@@ -62,62 +58,14 @@ export default async function Home() {
 
         {/* Sidebar */}
         <div className="space-y-6 xl:col-span-1">
-          {/* Major Upcoming Events (7 days) */}
-          {majorEvents.length > 0 && (
-            <div className="bg-theme-gradient-subtle border-theme-primary-20 rounded-2xl border p-5 shadow-lg">
-              <h2 className="text-theme-fg mb-4 flex items-center gap-2 text-lg font-semibold">
-                <span className="text-xl">⭐</span>
-                Belangrijke Events (7 dagen)
-              </h2>
-              <div className="space-y-3">
-                {majorEvents.slice(0, 5).map((occ) => {
-                  const category = occ.event.category;
-                  return (
-                    <Link
-                      key={occ.id}
-                      href={`/events/${occ.event.id}`}
-                      className="group bg-theme-surface-raised/60 hover:bg-theme-surface-raised block rounded-xl p-4 backdrop-blur-sm transition-all hover:shadow-md"
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="text-2xl">{category?.icon || "📅"}</div>
-                        <div className="min-w-0 flex-1">
-                          <div className="group-hover:text-theme-primary text-theme-fg font-medium transition-colors">
-                            {occ.event.name}
-                          </div>
-                          <div className="text-theme-fg-muted mt-0.5 text-sm">
-                            {new Date(occ.date).toLocaleDateString("nl-NL", {
-                              weekday: "short",
-                              day: "numeric",
-                              month: "long",
-                            })}
-                          </div>
-                          {occ.endDate && (
-                            <div className="text-theme-primary mt-1 text-xs">
-                              {Math.ceil(
-                                (new Date(occ.endDate).getTime() -
-                                  new Date(occ.date).getTime()) /
-                                  (1000 * 60 * 60 * 24)
-                              ) + 1}{" "}
-                              dagen
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Other Upcoming Events (7 days) */}
+          {/* Upcoming Events (7 days) */}
           <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
             <h2 className="text-theme-fg mb-4 flex items-center gap-2 text-lg font-semibold">
               <span className="text-xl">📿</span>
               Binnenkort (7 dagen)
             </h2>
 
-            {otherEvents.length === 0 && majorEvents.length === 0 ? (
+            {upcomingEvents.length === 0 ? (
               <div className="py-8 text-center">
                 <div className="mb-3 text-4xl">🙏</div>
                 <p className="text-theme-fg-muted text-sm">Geen aankomende events</p>
@@ -131,7 +79,7 @@ export default async function Home() {
               </div>
             ) : (
               <div className="space-y-2">
-                {otherEvents.slice(0, 7).map((occ) => {
+                {upcomingEvents.slice(0, 7).map((occ) => {
                   const category = occ.event.category;
                   return (
                     <Link

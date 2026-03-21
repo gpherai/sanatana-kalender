@@ -39,7 +39,6 @@ model Event {
   description    String?
   eventType      EventType         @default(OTHER)
   recurrenceType RecurrenceType    @default(NONE)
-  importance     Importance        @default(MODERATE)
   categoryId     String?
   tithi          Tithi?
   nakshatra      Nakshatra?
@@ -65,7 +64,6 @@ model Event {
   @@index([eventType])
   @@index([categoryId])
   @@index([recurrenceType])
-  @@index([importance])
   @@index([tags], type: Gin)
 }
 
@@ -217,12 +215,6 @@ enum RuleType {
   TITHI_NAKSHATRA
   WEEKDAY_TITHI
   CUSTOM
-}
-
-enum Importance {
-  MAJOR
-  MODERATE
-  MINOR
 }
 
 enum CalendarView {

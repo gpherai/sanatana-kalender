@@ -5,8 +5,8 @@
  * Uses Prisma enums for type safety.
  */
 
-import type { EventType, Importance, Tithi, Nakshatra, Maas } from "@prisma/client";
-import { EventType as EventTypeEnum, Importance as ImportanceEnum } from "@prisma/client";
+import type { EventType, Tithi, Nakshatra, Maas } from "@prisma/client";
+import { EventType as EventTypeEnum } from "@prisma/client";
 import { TIME_REGEX } from "@/lib/patterns";
 
 // =============================================================================
@@ -14,7 +14,7 @@ import { TIME_REGEX } from "@/lib/patterns";
 // =============================================================================
 
 // Re-export enums used in CalendarEvent/CalendarEventResource shapes
-export type { EventType, Importance, Tithi, Nakshatra, Maas };
+export type { EventType, Tithi, Nakshatra, Maas };
 
 // =============================================================================
 // CATEGORY TYPE
@@ -44,7 +44,6 @@ export interface Category {
 export interface CalendarEventResource {
   description: string | null;
   eventType: EventType;
-  importance: Importance;
   category: Category | null;
   categoryId: string | null;
   tithi: Tithi | null;
@@ -72,7 +71,6 @@ export interface CalendarEventResource {
 export interface CalendarEventResourceResponse {
   description: string | null;
   eventType: string;
-  importance: string;
   category: Category | null;
   categoryId: string | null;
   tithi: string | null;
@@ -160,7 +158,6 @@ export function parseCalendarEvent(event: CalendarEventResponse): CalendarEvent 
       ...event.resource,
       // Cast validated string enums back to typed enums
       eventType: event.resource.eventType as EventType,
-      importance: event.resource.importance as Importance,
       tithi: event.resource.tithi as Tithi | null,
       nakshatra: event.resource.nakshatra as Nakshatra | null,
       maas: event.resource.maas as Maas | null,
@@ -184,14 +181,6 @@ export function parseCalendarEvent(event: CalendarEventResponse): CalendarEvent 
  */
 export function isValidEventType(value: string): value is EventType {
   return Object.values(EventTypeEnum).includes(value as EventType);
-}
-
-/**
- * Type guard to check if a string is a valid Importance.
- * Uses the Prisma-generated enum for accuracy.
- */
-export function isValidImportance(value: string): value is Importance {
-  return Object.values(ImportanceEnum).includes(value as Importance);
 }
 
 /**

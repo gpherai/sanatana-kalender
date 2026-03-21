@@ -36,7 +36,6 @@ const MOCK_TODAY_EVENTS = [
     resource: {
       category: { icon: "🐘" },
       eventType: "PUJA",
-      importance: "MAJOR",
     },
   },
 ];

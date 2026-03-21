@@ -9,7 +9,6 @@ import {
   Nakshatra,
   Maas,
   EventType,
-  Importance,
   RecurrenceType,
 } from "@prisma/client";
 import { findEventOccurrences } from "@/repositories/event.repository";
@@ -28,7 +27,6 @@ function parseQueryParams(searchParams: URLSearchParams) {
     search: searchParams.get("search")?.trim() || undefined,
     categories: searchParams.get("categories")?.split(",").filter(Boolean),
     types: searchParams.get("types")?.split(",").filter(Boolean),
-    importance: searchParams.get("importance")?.split(",").filter(Boolean),
     tithis: searchParams.get("tithis")?.split(",").filter(Boolean),
     sortBy: searchParams.get("sortBy") ?? undefined,
     order: searchParams.get("order") ?? undefined,
@@ -74,7 +72,6 @@ export async function GET(request: NextRequest) {
         resource: {
           description: occ.event.description,
           eventType: occ.event.eventType,
-          importance: occ.event.importance,
           category: occ.event.category,
           categoryId: occ.event.categoryId,
           tithi: occ.event.tithi,
@@ -135,7 +132,6 @@ export async function POST(request: NextRequest) {
           description: data.description ?? null,
           eventType: data.eventType as EventType,
           categoryId: data.categoryId ?? null,
-          importance: (data.importance ?? "MODERATE") as Importance,
           recurrenceType: data.recurrenceType as RecurrenceType,
           tithi: (data.tithi as Tithi) ?? null,
           nakshatra: (data.nakshatra as Nakshatra) ?? null,

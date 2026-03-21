@@ -29,7 +29,6 @@ export interface EventNaming {
     | "SANKRANTI"
     | "ECLIPSE"
     | "OTHER";
-  importance: "MAJOR" | "MODERATE" | "MINOR";
   ruleType: RuleType;
   ruleConfig: Record<string, unknown>;
   description?: string;
@@ -69,7 +68,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Putrada Ekadashi",
     category: "vishnu",
     eventType: "VRAT",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "EKADASHI_SHUKLA",
@@ -84,7 +82,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Saphala Ekadashi",
     category: "vishnu",
     eventType: "VRAT",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "EKADASHI_KRISHNA",
@@ -99,7 +96,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Sat-tila Ekadashi",
     category: "vishnu",
     eventType: "VRAT",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "EKADASHI_KRISHNA",
@@ -113,7 +109,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Jaya Ekadashi",
     category: "vishnu",
     eventType: "VRAT",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "EKADASHI_SHUKLA",
@@ -128,7 +123,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Vijaya Ekadashi",
     category: "vishnu",
     eventType: "VRAT",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "EKADASHI_KRISHNA",
@@ -143,7 +137,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Amalaki Ekadashi",
     category: "vishnu",
     eventType: "VRAT",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "EKADASHI_SHUKLA",
@@ -157,7 +150,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Papmochani Ekadashi",
     category: "vishnu",
     eventType: "VRAT",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "EKADASHI_KRISHNA",
@@ -172,7 +164,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Kamada Ekadashi",
     category: "vishnu",
     eventType: "VRAT",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "EKADASHI_SHUKLA",
@@ -187,7 +178,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Varuthini Ekadashi",
     category: "vishnu",
     eventType: "VRAT",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "EKADASHI_KRISHNA",
@@ -202,7 +192,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Mohini Ekadashi",
     category: "vishnu",
     eventType: "VRAT",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "EKADASHI_SHUKLA",
@@ -217,7 +206,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Apara Ekadashi",
     category: "vishnu",
     eventType: "VRAT",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "EKADASHI_KRISHNA",
@@ -232,7 +220,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Nirjala Ekadashi",
     category: "vishnu",
     eventType: "VRAT",
-    importance: "MAJOR",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "EKADASHI_SHUKLA",
@@ -247,7 +234,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Yogini Ekadashi",
     category: "vishnu",
     eventType: "VRAT",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "EKADASHI_KRISHNA",
@@ -262,7 +248,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Devshayani Ekadashi",
     category: "vishnu",
     eventType: "VRAT",
-    importance: "MAJOR",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "EKADASHI_SHUKLA",
@@ -277,7 +262,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Kamika Ekadashi",
     category: "vishnu",
     eventType: "VRAT",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "EKADASHI_KRISHNA",
@@ -291,7 +275,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Putrada Ekadashi (Shravana)",
     category: "vishnu",
     eventType: "VRAT",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "EKADASHI_SHUKLA",
@@ -305,7 +288,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Aja Ekadashi",
     category: "vishnu",
     eventType: "VRAT",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "EKADASHI_KRISHNA",
@@ -319,7 +301,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Parsva Ekadashi",
     category: "vishnu",
     eventType: "VRAT",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "EKADASHI_SHUKLA",
@@ -334,7 +315,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Indira Ekadashi",
     category: "vishnu",
     eventType: "VRAT",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "EKADASHI_KRISHNA",
@@ -348,7 +328,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Papankusha Ekadashi",
     category: "vishnu",
     eventType: "VRAT",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "EKADASHI_SHUKLA",
@@ -362,7 +341,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Rama Ekadashi",
     category: "vishnu",
     eventType: "VRAT",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "EKADASHI_KRISHNA",
@@ -376,7 +354,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Prabodhini Ekadashi",
     category: "vishnu",
     eventType: "VRAT",
-    importance: "MAJOR",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "EKADASHI_SHUKLA",
@@ -391,7 +368,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Utpanna Ekadashi",
     category: "vishnu",
     eventType: "VRAT",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "EKADASHI_KRISHNA",
@@ -405,7 +381,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Mokshada Ekadashi",
     category: "vishnu",
     eventType: "VRAT",
-    importance: "MAJOR",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "EKADASHI_SHUKLA",
@@ -425,7 +400,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Makara Sankranti",
     category: "surya",
     eventType: "SANKRANTI",
-    importance: "MAJOR",
     ruleType: "SOLAR",
     ruleConfig: {
       sankranti: "MAKARA_SANKRANTI",
@@ -439,7 +413,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Kumbha Sankranti",
     category: "surya",
     eventType: "SANKRANTI",
-    importance: "MODERATE",
     ruleType: "SOLAR",
     ruleConfig: {
       sankranti: "KUMBHA_SANKRANTI",
@@ -452,7 +425,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Meena Sankranti",
     category: "surya",
     eventType: "SANKRANTI",
-    importance: "MODERATE",
     ruleType: "SOLAR",
     ruleConfig: {
       sankranti: "MEENA_SANKRANTI",
@@ -466,7 +438,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Mesha Sankranti",
     category: "surya",
     eventType: "SANKRANTI",
-    importance: "MAJOR",
     ruleType: "SOLAR",
     ruleConfig: {
       sankranti: "MESHA_SANKRANTI",
@@ -480,7 +451,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Vrishabha Sankranti",
     category: "surya",
     eventType: "SANKRANTI",
-    importance: "MODERATE",
     ruleType: "SOLAR",
     ruleConfig: {
       sankranti: "VRISHABHA_SANKRANTI",
@@ -493,7 +463,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Mithuna Sankranti",
     category: "surya",
     eventType: "SANKRANTI",
-    importance: "MODERATE",
     ruleType: "SOLAR",
     ruleConfig: {
       sankranti: "MITHUNA_SANKRANTI",
@@ -506,7 +475,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Karka Sankranti",
     category: "surya",
     eventType: "SANKRANTI",
-    importance: "MAJOR",
     ruleType: "SOLAR",
     ruleConfig: {
       sankranti: "KARKA_SANKRANTI",
@@ -520,7 +488,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Simha Sankranti",
     category: "surya",
     eventType: "SANKRANTI",
-    importance: "MODERATE",
     ruleType: "SOLAR",
     ruleConfig: {
       sankranti: "SIMHA_SANKRANTI",
@@ -533,7 +500,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Kanya Sankranti",
     category: "surya",
     eventType: "SANKRANTI",
-    importance: "MODERATE",
     ruleType: "SOLAR",
     ruleConfig: {
       sankranti: "KANYA_SANKRANTI",
@@ -546,7 +512,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Tula Sankranti",
     category: "surya",
     eventType: "SANKRANTI",
-    importance: "MODERATE",
     ruleType: "SOLAR",
     ruleConfig: {
       sankranti: "TULA_SANKRANTI",
@@ -559,7 +524,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Vrishchika Sankranti",
     category: "surya",
     eventType: "SANKRANTI",
-    importance: "MODERATE",
     ruleType: "SOLAR",
     ruleConfig: {
       sankranti: "VRISHCHIKA_SANKRANTI",
@@ -572,7 +536,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Dhanu Sankranti",
     category: "surya",
     eventType: "SANKRANTI",
-    importance: "MODERATE",
     ruleType: "SOLAR",
     ruleConfig: {
       sankranti: "DHANU_SANKRANTI",
@@ -590,7 +553,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Guru Purnima",
     category: "general",
     eventType: "FESTIVAL",
-    importance: "MAJOR",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "PURNIMA",
@@ -605,7 +567,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Kartik Purnima",
     category: "general",
     eventType: "FESTIVAL",
-    importance: "MAJOR",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "PURNIMA",
@@ -620,7 +581,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Pausha Purnima",
     category: "general",
     eventType: "TITHI",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "PURNIMA",
@@ -635,7 +595,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Magha Purnima",
     category: "general",
     eventType: "TITHI",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "PURNIMA",
@@ -650,7 +609,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Holi Purnima",
     category: "general",
     eventType: "FESTIVAL",
-    importance: "MAJOR",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "PURNIMA",
@@ -667,7 +625,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Chaitra Purnima",
     category: "general",
     eventType: "TITHI",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "PURNIMA",
@@ -682,7 +639,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Vaishakha Purnima",
     category: "general",
     eventType: "TITHI",
-    importance: "MAJOR",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "PURNIMA",
@@ -696,7 +652,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Jyeshtha Purnima",
     category: "general",
     eventType: "TITHI",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "PURNIMA",
@@ -710,7 +665,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Ashadha Purnima",
     category: "general",
     eventType: "TITHI",
-    importance: "MAJOR",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "PURNIMA",
@@ -724,7 +678,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Shravana Purnima",
     category: "general",
     eventType: "TITHI",
-    importance: "MAJOR",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "PURNIMA",
@@ -738,7 +691,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Bhadrapada Purnima",
     category: "general",
     eventType: "TITHI",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "PURNIMA",
@@ -752,7 +704,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Sharad Purnima",
     category: "general",
     eventType: "TITHI",
-    importance: "MAJOR",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "PURNIMA",
@@ -766,7 +717,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Margashirsha Purnima",
     category: "general",
     eventType: "TITHI",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "PURNIMA",
@@ -782,7 +732,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Gauna Kamika Ekadashi",
     category: "vishnu",
     eventType: "VRAT",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "EKADASHI_KRISHNA",
@@ -798,7 +747,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Kalashtami",
     category: "bhairava",
     eventType: "VRAT",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: { tithi: "ASHTAMI_KRISHNA", monthly: true },
     description:
@@ -812,7 +760,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Pradosh Vrat (Krishna)",
     category: "shiva",
     eventType: "VRAT",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: { tithi: "TRAYODASHI_KRISHNA", monthly: true },
     description:
@@ -825,7 +772,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Pradosh Vrat (Shukla)",
     category: "shiva",
     eventType: "VRAT",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: { tithi: "TRAYODASHI_SHUKLA", monthly: true },
     description:
@@ -840,7 +786,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Saraswati Jayanti",
     category: "saraswati",
     eventType: "JAYANTI",
-    importance: "MAJOR",
     ruleType: "TITHI",
     ruleConfig: { tithi: "PANCHAMI_SHUKLA", maas: "MAGHA" },
     description:
@@ -852,7 +797,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Lakshmi Jayanti",
     category: "lakshmi",
     eventType: "JAYANTI",
-    importance: "MAJOR",
     ruleType: "TITHI",
     ruleConfig: { tithi: "PURNIMA", maas: "MARGASHIRSHA" },
     description:
@@ -864,7 +808,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Vaikasi Visakam",
     category: "skanda",
     eventType: "JAYANTI",
-    importance: "MAJOR",
     ruleType: "NAKSHATRA",
     ruleConfig: { nakshatra: "VISHAKHA", maas: "VAISHAKHA" },
     description:
@@ -876,7 +819,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Sita Navami",
     category: "rama",
     eventType: "JAYANTI",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: { tithi: "NAVAMI_SHUKLA", maas: "VAISHAKHA" },
     description:
@@ -888,7 +830,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Radhashtami",
     category: "krishna",
     eventType: "JAYANTI",
-    importance: "MAJOR",
     ruleType: "TITHI",
     ruleConfig: { tithi: "ASHTAMI_SHUKLA", maas: "BHADRAPADA" },
     description:
@@ -900,7 +841,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Swaminarayan Jayanti",
     category: "vishnu",
     eventType: "JAYANTI",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "NAVAMI_SHUKLA",
@@ -914,7 +854,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Parashurama Jayanti",
     category: "vishnu",
     eventType: "JAYANTI",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "TRITIYA_SHUKLA",
@@ -928,7 +867,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Narada Jayanti",
     category: "general",
     eventType: "JAYANTI",
-    importance: "MINOR",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "PRATIPADA_KRISHNA",
@@ -942,7 +880,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Gayatri Jayanti",
     category: "general",
     eventType: "JAYANTI",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "PURNIMA",
@@ -956,7 +893,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Balarama Jayanti",
     category: "vishnu",
     eventType: "JAYANTI",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "SHASHTHI_SHUKLA",
@@ -972,7 +908,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Ratha Saptami (Surya Jayanti)",
     category: "surya",
     eventType: "JAYANTI",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: { tithi: "SAPTAMI_SHUKLA", maas: "MAGHA" },
     description:
@@ -985,7 +920,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Sawan Shivaratri",
     category: "shiva",
     eventType: "FESTIVAL",
-    importance: "MAJOR",
     ruleType: "TITHI",
     ruleConfig: { tithi: "CHATURDASHI_KRISHNA", maas: "SHRAVANA" },
     description:
@@ -997,7 +931,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Mahalaya Amavasya",
     category: "general",
     eventType: "FESTIVAL",
-    importance: "MAJOR",
     ruleType: "TITHI",
     ruleConfig: { tithi: "AMAVASYA", maas: "ASHWIN" },
     description:
@@ -1009,7 +942,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Holika Dahan",
     category: "general",
     eventType: "FESTIVAL",
-    importance: "MAJOR",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "PURNIMA",
@@ -1024,7 +956,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Hariyali Teej",
     category: "durga",
     eventType: "FESTIVAL",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "TRITIYA_SHUKLA",
@@ -1038,7 +969,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Hartalika Teej",
     category: "durga",
     eventType: "FESTIVAL",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "TRITIYA_SHUKLA",
@@ -1052,7 +982,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Chhath Puja",
     category: "surya",
     eventType: "FESTIVAL",
-    importance: "MAJOR",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "SHASHTHI_SHUKLA",
@@ -1066,7 +995,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Govardhan Puja",
     category: "krishna",
     eventType: "FESTIVAL",
-    importance: "MAJOR",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "PRATIPADA_SHUKLA",
@@ -1080,7 +1008,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Kali Puja",
     category: "kali",
     eventType: "PUJA",
-    importance: "MAJOR",
     ruleType: "TITHI",
     ruleConfig: { tithi: "AMAVASYA", maas: "KARTIK" },
     description:
@@ -1093,7 +1020,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Kali Chaudas",
     category: "kali",
     eventType: "FESTIVAL",
-    importance: "MAJOR",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "CHATURDASHI_KRISHNA",
@@ -1108,7 +1034,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Kala Bhairava Ashtami",
     category: "bhairava",
     eventType: "JAYANTI",
-    importance: "MAJOR",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "ASHTAMI_KRISHNA",
@@ -1129,7 +1054,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Padmini Ekadashi",
     category: "vishnu",
     eventType: "VRAT",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "EKADASHI_SHUKLA",
@@ -1145,7 +1069,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Parama Ekadashi",
     category: "vishnu",
     eventType: "VRAT",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "EKADASHI_KRISHNA",
@@ -1161,7 +1084,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Adhika Jyeshtha Purnima",
     category: "general",
     eventType: "TITHI",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "PURNIMA",
@@ -1186,7 +1108,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Chaitra Navratri",
     category: "durga",
     eventType: "FESTIVAL",
-    importance: "MAJOR",
     ruleType: "TITHI",
     ruleConfig: { tithi: "PRATIPADA_SHUKLA", maas: "CHAITRA", durationDays: 9 },
     description:
@@ -1200,7 +1121,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Sharad Navratri",
     category: "durga",
     eventType: "FESTIVAL",
-    importance: "MAJOR",
     ruleType: "TITHI",
     ruleConfig: { tithi: "PRATIPADA_SHUKLA", maas: "ASHWIN", durationDays: 9 },
     description:
@@ -1216,7 +1136,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Maa Shailputri",
     category: "durga",
     eventType: "PUJA",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: { tithi: "PRATIPADA_SHUKLA", maas: ["CHAITRA", "ASHWIN"] },
     parentKeys: ["chaitra_navratri", "sharad_navratri"],
@@ -1230,7 +1149,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Maa Brahmacharini",
     category: "durga",
     eventType: "PUJA",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: { tithi: "DWITIYA_SHUKLA", maas: ["CHAITRA", "ASHWIN"] },
     parentKeys: ["chaitra_navratri", "sharad_navratri"],
@@ -1244,7 +1162,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Maa Chandraghanta",
     category: "durga",
     eventType: "PUJA",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: { tithi: "TRITIYA_SHUKLA", maas: ["CHAITRA", "ASHWIN"] },
     parentKeys: ["chaitra_navratri", "sharad_navratri"],
@@ -1258,7 +1175,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Maa Kushmanda",
     category: "durga",
     eventType: "PUJA",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: { tithi: "CHATURTHI_SHUKLA", maas: ["CHAITRA", "ASHWIN"] },
     parentKeys: ["chaitra_navratri", "sharad_navratri"],
@@ -1272,7 +1188,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Maa Skandamata",
     category: "durga",
     eventType: "PUJA",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: { tithi: "PANCHAMI_SHUKLA", maas: ["CHAITRA", "ASHWIN"] },
     parentKeys: ["chaitra_navratri", "sharad_navratri"],
@@ -1286,7 +1201,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Maa Katyayani",
     category: "durga",
     eventType: "PUJA",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: { tithi: "SHASHTHI_SHUKLA", maas: ["CHAITRA", "ASHWIN"] },
     parentKeys: ["chaitra_navratri", "sharad_navratri"],
@@ -1300,7 +1214,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Maa Kaalratri",
     category: "durga",
     eventType: "PUJA",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: { tithi: "SAPTAMI_SHUKLA", maas: ["CHAITRA", "ASHWIN"] },
     parentKeys: ["chaitra_navratri", "sharad_navratri"],
@@ -1314,7 +1227,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Maa Mahagauri",
     category: "durga",
     eventType: "PUJA",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: { tithi: "ASHTAMI_SHUKLA", maas: ["CHAITRA", "ASHWIN"] },
     parentKeys: ["chaitra_navratri", "sharad_navratri"],
@@ -1328,7 +1240,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Maa Siddhidatri",
     category: "durga",
     eventType: "PUJA",
-    importance: "MODERATE",
     ruleType: "TITHI",
     ruleConfig: { tithi: "NAVAMI_SHUKLA", maas: ["CHAITRA", "ASHWIN"] },
     parentKeys: ["chaitra_navratri", "sharad_navratri"],

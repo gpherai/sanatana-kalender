@@ -9,7 +9,6 @@ const MOCK_EVENT = {
   description: null,
   eventType: "FESTIVAL" as never,
   recurrenceType: "NONE",
-  importance: "MODERATE",
   categoryId: null,
   category: null,
   tithi: null,

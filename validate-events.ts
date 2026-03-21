@@ -7,7 +7,6 @@ EVENT_NAMING_CATALOG.forEach((e) => {
   if (!e.description || e.description.length < 10)
     missingInfo.push(`${e.key}: Missing or very short description`);
   if (!e.tags || e.tags.length === 0) missingInfo.push(`${e.key}: Missing tags`);
-  if (!e.importance) missingInfo.push(`${e.key}: Missing importance`);
   if (!e.category) missingInfo.push(`${e.key}: Missing category`);
   // Check if general category is overused for specific deity days
   if (

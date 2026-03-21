@@ -30,7 +30,6 @@ const MOCK_EVENT: CalendarEvent = {
   resource: {
     description: "A special puja for Lord Ganesha.",
     eventType: "PUJA",
-    importance: "MODERATE",
     category: {
       id: "cat_1",
       name: "ganesha",

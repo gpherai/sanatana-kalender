@@ -1,9 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { EventType, Importance } from "@prisma/client";
+import { EventType } from "@prisma/client";
 import {
   parseCalendarEvent,
   isValidEventType,
-  isValidImportance,
   isValidTimeString,
   toTimeString,
 } from "../calendar";
@@ -20,7 +19,6 @@ describe("Calendar types helpers", () => {
       resource: {
         description: "desc",
         eventType: EventType.FESTIVAL,
-        importance: Importance.MAJOR,
         category: null,
         categoryId: null,
         tithi: null,
@@ -40,14 +38,11 @@ describe("Calendar types helpers", () => {
     expect(parsed.end).toBeInstanceOf(Date);
     expect(parsed.resource.originalEndDate).toBeInstanceOf(Date);
     expect(parsed.resource.eventType).toBe(EventType.FESTIVAL);
-    expect(parsed.resource.importance).toBe(Importance.MAJOR);
   });
 
   it("validates enum strings", () => {
     expect(isValidEventType(EventType.FESTIVAL)).toBe(true);
     expect(isValidEventType("BAD_VALUE")).toBe(false);
-    expect(isValidImportance(Importance.MINOR)).toBe(true);
-    expect(isValidImportance("BAD_VALUE")).toBe(false);
   });
 
   it("validates and converts time strings", () => {

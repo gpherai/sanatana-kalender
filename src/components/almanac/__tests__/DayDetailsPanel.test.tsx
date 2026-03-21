@@ -63,7 +63,6 @@ const MOCK_EVENTS = [
       },
       categoryId: "test_id",
       eventType: "OTHER",
-      importance: "MODERATE",
       description: "Test description",
       tithi: null,
       nakshatra: null,

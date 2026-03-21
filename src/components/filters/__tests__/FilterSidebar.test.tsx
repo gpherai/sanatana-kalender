@@ -11,7 +11,6 @@ const BASE_FILTERS: FilterState = {
   dateTo: "",
   categories: [],
   eventTypes: [],
-  importances: [],
   specialTithis: [],
   sortBy: "date",
   sortOrder: "asc",

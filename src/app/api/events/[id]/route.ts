@@ -9,14 +9,7 @@ import {
 } from "@/lib/api-response";
 import { parseCalendarDate } from "@/lib/date-utils";
 import { Prisma } from "@prisma/client";
-import {
-  EventType,
-  Importance,
-  RecurrenceType,
-  Tithi,
-  Nakshatra,
-  Maas,
-} from "@prisma/client";
+import { EventType, RecurrenceType, Tithi, Nakshatra, Maas } from "@prisma/client";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -149,9 +142,6 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
           ...(data.description !== undefined && { description: data.description }),
           ...(data.eventType !== undefined && { eventType: data.eventType as EventType }),
           ...(data.categoryId !== undefined && { categoryId: data.categoryId }),
-          ...(data.importance !== undefined && {
-            importance: data.importance as Importance,
-          }),
           ...(data.recurrenceType !== undefined && {
             recurrenceType: data.recurrenceType as RecurrenceType,
           }),

@@ -142,11 +142,6 @@ export function DharmaCalendar() {
       padding: "2px 4px",
     };
 
-    // Add importance indicator
-    if (event.resource.importance === "MAJOR") {
-      style.fontWeight = "bold";
-    }
-
     return { style };
   }, []);
 

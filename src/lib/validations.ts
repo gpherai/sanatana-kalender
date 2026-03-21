@@ -12,7 +12,6 @@
 import { z } from "zod";
 import {
   EVENT_TYPES,
-  IMPORTANCE_LEVELS,
   RECURRENCE_TYPES,
   TITHIS,
   NAKSHATRAS,
@@ -50,7 +49,6 @@ export function createEnumFromConstants<T extends readonly { value: string }[]>(
 // =============================================================================
 
 const eventTypeEnum = createEnumFromConstants(EVENT_TYPES);
-const importanceEnum = createEnumFromConstants(IMPORTANCE_LEVELS);
 const recurrenceEnum = createEnumFromConstants(RECURRENCE_TYPES);
 const tithiEnum = createEnumFromConstants(TITHIS);
 const nakshatraEnum = createEnumFromConstants(NAKSHATRAS);
@@ -116,8 +114,6 @@ export const eventFormSchema = z.object({
 
   categoryId: optionalCuidSchema,
 
-  importance: importanceEnum.default("MODERATE"),
-
   recurrenceType: recurrenceEnum.default("NONE"),
 
   // Date fields
@@ -159,7 +155,6 @@ export function transformFormToApi(data: EventFormData) {
     description: data.description?.trim() || null,
     eventType: data.eventType,
     categoryId: data.categoryId || null,
-    importance: data.importance,
     recurrenceType: data.recurrenceType,
     tithi: data.tithi || null,
     nakshatra: data.nakshatra || null,
@@ -192,7 +187,6 @@ export const createEventSchema = z.object({
   description: z.string().max(500).nullable().optional(),
   eventType: eventTypeEnum,
   categoryId: z.string().cuid().nullable().optional(),
-  importance: importanceEnum.default("MODERATE"),
   recurrenceType: recurrenceEnum.default("NONE"),
   tithi: tithiEnum.nullable().optional(),
   nakshatra: nakshatraEnum.nullable().optional(),
@@ -296,7 +290,6 @@ export const eventQuerySchema = z.object({
   search: z.string().max(100).optional(),
   categories: z.array(z.string().max(50)).max(20).optional(),
   types: z.array(z.string().max(20)).max(20).optional(),
-  importance: z.array(z.string().max(20)).max(20).optional(),
   tithis: z.array(z.string().max(30)).max(20).optional(),
   sortBy: z.enum(["date", "name"]).optional(),
   order: z.enum(["asc", "desc"]).optional(),

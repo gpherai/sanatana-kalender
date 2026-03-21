@@ -35,7 +35,6 @@ describe("API Events", () => {
           name: "Test Event",
           description: null,
           eventType: "FESTIVAL",
-          importance: "MAJOR",
           categoryId: "cat_1",
           category: {
             id: "cat_1",

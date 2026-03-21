@@ -37,14 +37,12 @@ describe("EventCard", () => {
         endTime="10:00"
         category={CATEGORY}
         eventType="FESTIVAL"
-        importance="MAJOR"
         tithi="Pratipada"
         nakshatra="Ashwini"
         tags={["alpha", "beta", "gamma", "delta", "epsilon"]}
       />
     );
 
-    expect(screen.getByText("Belangrijk")).toBeInTheDocument();
     expect(screen.getByText("Event description")).toBeInTheDocument();
     expect(screen.getByText("09:00 - 10:00")).toBeInTheDocument();
     expect(screen.getByText(/Pratipada/)).toBeInTheDocument();
@@ -60,7 +58,6 @@ describe("EventCard", () => {
         name="No Category"
         date={new Date(2025, 0, 1)}
         eventType="OTHER"
-        importance="MINOR"
       />
     );
 
@@ -75,7 +72,6 @@ describe("EventCard", () => {
         date={new Date(2025, 0, 1)}
         category={CATEGORY}
         eventType="FESTIVAL"
-        importance="MODERATE"
       />
     );
 
@@ -92,7 +88,6 @@ describe("EventCard", () => {
         date={new Date(2025, 0, 1)}
         category={CATEGORY}
         eventType="FESTIVAL"
-        importance="MODERATE"
         onClick={onClick}
       />
     );
@@ -113,7 +108,6 @@ describe("EventCardCompact", () => {
         date={new Date(2025, 0, 1)}
         category={CATEGORY}
         eventType="FESTIVAL"
-        importance="MODERATE"
       />
     );
 
@@ -130,7 +124,6 @@ describe("EventCardCompact", () => {
         date={new Date(2025, 0, 1)}
         category={CATEGORY}
         eventType="FESTIVAL"
-        importance="MAJOR"
         onClick={onClick}
       />
     );

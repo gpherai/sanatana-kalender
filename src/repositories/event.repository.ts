@@ -7,7 +7,7 @@
  * @module repositories/event
  */
 
-import { Prisma, EventType, Importance, Tithi } from "@prisma/client";
+import { Prisma, EventType, Tithi } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import type { EventQueryParams } from "@/lib/validations";
 
@@ -36,15 +36,6 @@ function buildEventWhere(params: EventQueryParams): Prisma.EventWhereInput {
     ) as EventType[];
     if (validTypes.length > 0) {
       where.eventType = { in: validTypes };
-    }
-  }
-
-  if (params.importance && params.importance.length > 0) {
-    const validImportances = params.importance.filter((i) =>
-      Object.keys(Importance).includes(i)
-    ) as Importance[];
-    if (validImportances.length > 0) {
-      where.importance = { in: validImportances };
     }
   }
 

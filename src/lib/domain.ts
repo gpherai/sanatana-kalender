@@ -43,17 +43,6 @@ export const RECURRENCE_TYPES = [
 ] as const;
 
 // --------------------------------------------
-// IMPORTANCE LEVELS
-// --------------------------------------------
-export const IMPORTANCE_LEVELS = [
-  { value: "MAJOR", label: "Major", color: "red" },
-  { value: "MODERATE", label: "Moderate", color: "yellow" },
-  { value: "MINOR", label: "Minor", color: "gray" },
-] as const;
-
-export type ImportanceValue = (typeof IMPORTANCE_LEVELS)[number]["value"];
-
-// --------------------------------------------
 // SANKRANTIS (solar transitions)
 // --------------------------------------------
 export const SANKRANTIS = [

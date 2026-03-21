@@ -31,10 +31,6 @@ for (let i = 1; i < blocks.length; i++) {
     missingInfo.push(`${name}: Missing categoryName`);
   }
 
-  if (!block.includes("importance:")) {
-    missingInfo.push(`${name}: Missing importance`);
-  }
-
   count++;
 }
 
@@ -43,5 +39,5 @@ if (missingInfo.length > 0) {
   console.log("Issues found:");
   console.log(missingInfo.join("\n"));
 } else {
-  console.log("All events have descriptions, categories, and importance!");
+  console.log("All events have descriptions and categories!");
 }

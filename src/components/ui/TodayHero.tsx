@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { Sun, Sunrise, Sunset, Moon, MoonStar, Calendar, Sparkles } from "lucide-react";
 import { MoonPhase } from "./MoonPhase";
-import { cn } from "@/lib/utils";
 import { formatDateLocal, formatTimeAgo } from "@/lib/date-utils";
 import { getApproximateHinduMonth } from "@/lib/panchanga-helpers";
 import type { DailyInfoResponse } from "@/types";
@@ -14,7 +13,6 @@ interface TodayEvent {
   name: string;
   category: CalendarEventResourceResponse["category"];
   eventType: string;
-  importance: string;
   date: string;
 }
 
@@ -78,7 +76,6 @@ export function TodayHero() {
               name: e.title,
               category: e.resource.category,
               eventType: e.resource.eventType,
-              importance: e.resource.importance,
               date: e.start,
             }))
           );
@@ -423,16 +420,10 @@ export function TodayHero() {
               {todayEvents.map((event) => (
                 <div
                   key={event.id}
-                  className={cn(
-                    "flex items-center gap-2 rounded-full px-4 py-2 backdrop-blur-sm",
-                    event.importance === "MAJOR"
-                      ? "bg-[var(--theme-warning-bg)] text-[var(--theme-warning-fg)] ring-1 ring-[var(--theme-warning-border)]"
-                      : "bg-[var(--theme-glass-bg)] text-white/90"
-                  )}
+                  className="flex items-center gap-2 rounded-full bg-[var(--theme-glass-bg)] px-4 py-2 text-white/90 backdrop-blur-sm"
                 >
                   {event.category?.icon && <span>{event.category.icon}</span>}
                   <span className="font-medium">{event.name}</span>
-                  {event.importance === "MAJOR" && <span className="ml-1">⭐</span>}
                 </div>
               ))}
             </div>

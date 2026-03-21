@@ -8,7 +8,6 @@ import {
   Calendar,
   Tag,
   Moon,
-  Star,
   Pencil,
   Trash2,
   Clock,
@@ -263,12 +262,6 @@ export function EventDetailModal({
               {eventType && (
                 <span className="bg-theme-surface-overlay text-theme-fg-secondary inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-sm backdrop-blur-sm">
                   {eventType.icon} {eventType.label}
-                </span>
-              )}
-              {event.resource.importance === "MAJOR" && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-amber-400/30 px-2.5 py-1 text-sm font-medium text-amber-700 backdrop-blur-sm dark:text-amber-300">
-                  <Star className="h-3.5 w-3.5 fill-current" />
-                  Belangrijk
                 </span>
               )}
             </div>

@@ -61,7 +61,6 @@ describe("Event Pages", () => {
       description: null,
       eventType: "FESTIVAL",
       categoryId: null,
-      importance: "MODERATE",
       recurrenceType: "NONE",
       tithi: null,
       nakshatra: null,

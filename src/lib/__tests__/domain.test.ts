@@ -3,7 +3,6 @@ import {
   CATEGORIES,
   EVENT_TYPES,
   RECURRENCE_TYPES,
-  IMPORTANCE_LEVELS,
   PAKSHAS,
   TITHIS,
   TITHIS_BY_PAKSHA,
@@ -22,9 +21,6 @@ describe("Constants", () => {
 
     const recurrenceValues = RECURRENCE_TYPES.map((t) => t.value);
     expect(uniqueCount(recurrenceValues)).toBe(recurrenceValues.length);
-
-    const importanceValues = IMPORTANCE_LEVELS.map((t) => t.value);
-    expect(uniqueCount(importanceValues)).toBe(importanceValues.length);
 
     const pakshaValues = PAKSHAS.map((t) => t.value);
     expect(uniqueCount(pakshaValues)).toBe(pakshaValues.length);
