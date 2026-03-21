@@ -2,6 +2,15 @@ generator client {
   provider = "prisma-client-js"
 }
 
+/// How to derive the observation time window for an event occurrence.
+/// Times are calculated from DailyInfo sunrise/sunset for that specific date.
+enum TimingType {
+  NISHITA_KAAL /// Midpoint of the night: sunset + (nextSunrise - sunset) / 2 ± 30min
+  PRADOSH_KAAL /// Twilight window: sunset - 90min to sunset + 45min
+  SUNRISE      /// Sunrise-based: sunrise to sunrise + 2h
+  SUNSET       /// Sunset-based: sunset - 30min to sunset + 1h
+}
+
 datasource db {
   provider = "postgresql"
 }
@@ -45,6 +54,7 @@ model Event {
   tags           String[]          @default([])
   startTime      String?
   endTime        String?
+  timingType     TimingType?
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
   category             Category?             @relation(fields: [categoryId], references: [id])

@@ -20,6 +20,7 @@ import { prisma } from "@/lib/db";
 import { DEFAULT_LOCATION } from "@/lib/domain";
 import { logDebug, logWarn } from "@/lib/utils";
 import { formatDateNL } from "@/lib/date-utils";
+import { calculateTimingWindow } from "@/lib/timing-utils";
 
 // =============================================================================
 // TYPES
@@ -182,26 +183,99 @@ export async function generateOccurrences(
     occurrences = occurrences.slice(0, maxOccurrences);
   }
 
-  // Propagate event-level default times to occurrences that have no panchang-derived time
-  const eventStartTime = (event as Record<string, unknown>).startTime as
-    | string
-    | null
-    | undefined;
-  const eventEndTime = (event as Record<string, unknown>).endTime as
-    | string
-    | null
-    | undefined;
-  if (eventStartTime || eventEndTime) {
+  // Apply dynamic timing if configured
+  if (event.timingType) {
+    occurrences = await applyDynamicTiming(occurrences, event.timingType);
+  } else if (event.startTime || event.endTime) {
+    // Fallback: propagate static event-level times to occurrences without panchang-derived times
     occurrences = occurrences.map((occ) => ({
       ...occ,
-      startTime: occ.startTime ?? eventStartTime ?? undefined,
-      endTime: occ.endTime ?? eventEndTime ?? undefined,
+      startTime: occ.startTime ?? event.startTime ?? undefined,
+      endTime: occ.endTime ?? event.endTime ?? undefined,
     }));
   }
 
   logDebug(`Generated ${occurrences.length} occurrences for "${event.name}"`);
 
   return occurrences;
+}
+
+/**
+ * Apply astronomical timing calculations to generated occurrences.
+ *
+ * For each occurrence, queries DailyInfo for the occurrence date (and the
+ * following day for NISHITA_KAAL which needs next-day sunrise). Occurrences
+ * that already have a panchang-derived startTime are not overwritten.
+ */
+async function applyDynamicTiming(
+  occurrences: GeneratedOccurrence[],
+  timingType: NonNullable<Event["timingType"]>
+): Promise<GeneratedOccurrence[]> {
+  if (occurrences.length === 0) return occurrences;
+
+  // Collect all dates we need DailyInfo for.
+  // NISHITA_KAAL also needs sunrise of the *following* day.
+  const datesToFetch = new Set<string>();
+  for (const occ of occurrences) {
+    const isoDate = occ.date.toISOString().split("T")[0]!;
+    datesToFetch.add(isoDate);
+    if (timingType === "NISHITA_KAAL") {
+      const nextDay = new Date(occ.date);
+      nextDay.setDate(nextDay.getDate() + 1);
+      datesToFetch.add(nextDay.toISOString().split("T")[0]!);
+    }
+  }
+
+  // Batch query DailyInfo for all needed dates
+  const dailyInfoRows = await prisma.dailyInfo.findMany({
+    where: {
+      date: { in: Array.from(datesToFetch).map((d) => new Date(d)) },
+    },
+    select: {
+      date: true,
+      sunrise: true,
+      sunset: true,
+    },
+  });
+
+  // Index by ISO date string for fast lookup
+  const byDate = new Map<string, { sunrise: string | null; sunset: string | null }>();
+  for (const row of dailyInfoRows) {
+    byDate.set(row.date.toISOString().split("T")[0]!, {
+      sunrise: row.sunrise,
+      sunset: row.sunset,
+    });
+  }
+
+  return occurrences.map((occ) => {
+    // Never overwrite a time already set by the panchang strategy
+    if (occ.startTime) return occ;
+
+    const isoDate = occ.date.toISOString().split("T")[0]!;
+    const dayInfo = byDate.get(isoDate);
+
+    let nextSunrise: string | null = null;
+    if (timingType === "NISHITA_KAAL") {
+      const nextDay = new Date(occ.date);
+      nextDay.setDate(nextDay.getDate() + 1);
+      nextSunrise = byDate.get(nextDay.toISOString().split("T")[0]!)?.sunrise ?? null;
+    }
+
+    const window = calculateTimingWindow(timingType, {
+      sunrise: dayInfo?.sunrise ?? null,
+      sunset: dayInfo?.sunset ?? null,
+      nextSunrise,
+    });
+
+    if (!window) {
+      logWarn(
+        `Could not calculate ${timingType} for ${formatDateNL(occ.date)} — missing DailyInfo`
+      );
+      return occ;
+    }
+
+    return { ...occ, startTime: window.startTime, endTime: window.endTime };
+  });
 }
 
 // =============================================================================

@@ -35,10 +35,17 @@ export interface EventNaming {
   description?: string;
   tags?: string[];
   /**
-   * Traditional observation time window (HH:MM format, 24h).
-   * Only set for events with a well-known fixed time (e.g. midnight puja).
-   * Sunrise/sunset-dependent events (Pradosh, Shivaratri) are NOT given
-   * a static time — their timing must be calculated from the panchang.
+   * How to derive the observation time window for each occurrence.
+   * - NISHITA_KAAL: midpoint of the night (Janmashtami, Shivaratri, Kali Puja)
+   * - PRADOSH_KAAL: sunset - 1h30 to sunset + 45min (Pradosh Vrat)
+   * - SUNRISE: sunrise to sunrise + 2h (Ratha Saptami, Chhath morning)
+   * - SUNSET: sunset - 30min to sunset + 1h (evening rituals)
+   * Times are calculated per occurrence from DailyInfo sunrise/sunset data.
+   */
+  timingType?: "NISHITA_KAAL" | "PRADOSH_KAAL" | "SUNRISE" | "SUNSET";
+  /**
+   * Static observation time (HH:MM, 24h). Only for events with a truly
+   * fixed clock time independent of sunrise/sunset. Prefer timingType instead.
    */
   startTime?: string;
   endTime?: string;
@@ -811,6 +818,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     description:
       "Pradosh Vrat op de 13e dag van de donkere helft. Tweewekelijks vasten gewijd aan Heer Shiva en Parvati. Een van de meest heilige Shiva-observanties.",
     tags: ["pradosh", "shiva", "trayodashi", "vrat"],
+    timingType: "PRADOSH_KAAL",
   },
   {
     key: "pradosh_vrat_shukla",
@@ -823,6 +831,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     description:
       "Pradosh Vrat op de 13e dag van de lichte helft. Tweewekelijks vasten gewijd aan Heer Shiva en Parvati.",
     tags: ["pradosh", "shiva", "trayodashi", "vrat"],
+    timingType: "PRADOSH_KAAL",
   },
 
   // === JAYANTIS (DEITY BIRTHDAYS) ===
@@ -969,6 +978,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     description:
       "De formele geboortedag van Surya Dev (Zonnegod). De zon bereikt zijn hoogste kracht en rijdt zijn zevenspan-wagen (ratha). Valt in Magha Shukla Saptami.",
     tags: ["jayanti", "magha", "ratha", "surya", "zon"],
+    timingType: "SUNRISE",
   },
   {
     key: "shravana_sawan_shivaratri",
@@ -1076,6 +1086,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     description:
       "Kali Puja (Shyama Puja) op de nacht van Diwali. In Oost-India (Bengalen) wordt op Kartika Amavasya niet Lakshmi maar Maa Kali vereerd met nacht-puja's, diyas en offers.",
     tags: ["amavasya", "bengalen", "diwali", "kali", "kartik", "puja"],
+    timingType: "NISHITA_KAAL",
   },
   {
     key: "kartik_kali_chaudas",

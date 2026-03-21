@@ -51,7 +51,9 @@ interface EventData {
   nakshatra?: Nakshatra;
   maas?: Maas;
   tags: string[];
-  /** Traditional observation time window (HH:MM, 24h). Only for events with fixed times. */
+  /** Dynamic timing type (calculated from DailyInfo sunrise/sunset per occurrence). */
+  timingType?: "NISHITA_KAAL" | "PRADOSH_KAAL" | "SUNRISE" | "SUNSET";
+  /** Static observation time (HH:MM, 24h). Only for events with truly fixed clock times. */
   startTime?: string;
   endTime?: string;
   // Optional: For NONE recurrence or seed dates for solar events
@@ -357,6 +359,7 @@ async function main() {
       tithi: "CHATURDASHI_KRISHNA",
       maas: "PHALGUNA",
       tags: ["abhishekam", "nachtelijk", "shiva", "vasten"],
+      timingType: "NISHITA_KAAL",
     },
     {
       name: "Holi",
@@ -441,6 +444,7 @@ async function main() {
       tithi: "ASHTAMI_KRISHNA",
       maas: "SHRAVANA",
       tags: ["dahi handi", "geboorte", "krishna", "middernacht"],
+      timingType: "NISHITA_KAAL",
     },
     {
       name: "Ganesh Chaturthi",
@@ -1048,6 +1052,7 @@ async function main() {
           nakshatra: eventData.nakshatra,
           maas: eventData.maas,
           tags: eventData.tags,
+          timingType: eventData.timingType ?? null,
           startTime: eventData.startTime ?? null,
           endTime: eventData.endTime ?? null,
         },
@@ -1065,6 +1070,7 @@ async function main() {
           nakshatra: eventData.nakshatra,
           maas: eventData.maas,
           tags: eventData.tags,
+          timingType: eventData.timingType ?? null,
           startTime: eventData.startTime ?? null,
           endTime: eventData.endTime ?? null,
         },

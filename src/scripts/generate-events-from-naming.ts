@@ -79,7 +79,8 @@ async function generateEventsFromNaming() {
 
       tags: naming.tags || [],
 
-      // Optional time window (only for events with well-known fixed times)
+      // Timing configuration
+      timingType: naming.timingType ?? null,
       startTime: naming.startTime ?? null,
       endTime: naming.endTime ?? null,
     };
