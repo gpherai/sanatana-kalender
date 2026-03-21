@@ -7,6 +7,8 @@ import type { FilterState } from "@/hooks/useFilters";
 
 const BASE_FILTERS: FilterState = {
   search: "",
+  dateFrom: "",
+  dateTo: "",
   categories: [],
   eventTypes: [],
   importances: [],

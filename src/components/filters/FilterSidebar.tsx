@@ -158,6 +158,63 @@ function SearchInput({
   );
 }
 
+/**
+ * Single date input in DD-MM-JJJJ format with auto-dash insertion.
+ * Stores value as YYYY-MM-DD string (compatible with the API).
+ */
+function DateInput({
+  value,
+  onChange,
+}: {
+  value: string; // YYYY-MM-DD or ""
+  onChange: (val: string) => void;
+}) {
+  const toDisplay = (iso: string) =>
+    iso ? `${iso.slice(8, 10)}-${iso.slice(5, 7)}-${iso.slice(0, 4)}` : "";
+
+  const [inputVal, setInputVal] = useState(() => toDisplay(value));
+
+  const handleChange = useCallback(
+    (raw: string) => {
+      // Strip non-digits, then reinsert dashes at positions 2 and 4
+      const digits = raw.replace(/\D/g, "").slice(0, 8);
+      let formatted = digits;
+      if (digits.length > 4) {
+        formatted = `${digits.slice(0, 2)}-${digits.slice(2, 4)}-${digits.slice(4)}`;
+      } else if (digits.length > 2) {
+        formatted = `${digits.slice(0, 2)}-${digits.slice(2)}`;
+      }
+      setInputVal(formatted);
+
+      if (digits.length === 8) {
+        const iso = `${digits.slice(4)}-${digits.slice(2, 4)}-${digits.slice(0, 2)}`;
+        if (!isNaN(new Date(iso).getTime())) onChange(iso);
+      } else if (!digits) {
+        onChange("");
+      }
+    },
+    [onChange]
+  );
+
+  return (
+    <input
+      type="text"
+      inputMode="numeric"
+      placeholder="DD-MM-JJJJ"
+      value={inputVal}
+      maxLength={10}
+      onChange={(e) => handleChange(e.target.value)}
+      className={cn(
+        "w-32 rounded-lg px-2 py-1.5 text-sm",
+        "bg-theme-surface-raised",
+        "border-theme-border border",
+        "ring-theme-primary-50 focus:border-theme-primary focus:ring-2 focus:outline-none",
+        "placeholder:text-theme-fg-subtle"
+      )}
+    />
+  );
+}
+
 export function FilterSidebar({
   filters,
   onFilterChange,
@@ -212,8 +269,39 @@ export function FilterSidebar({
         />
       </div>
 
-      {/* Categories */}
-      <FilterSection title="Categorieën" icon="🏷️">
+      {/* Periode */}
+      <FilterSection title="Periode" icon="📆" defaultOpen={false}>
+        <div className="space-y-2">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <DateInput
+              key={filters.dateFrom ? "from-filled" : "from-empty"}
+              value={filters.dateFrom}
+              onChange={(v) => onFilterChange("dateFrom", v)}
+            />
+            <span className="text-theme-fg-muted text-xs select-none">→</span>
+            <DateInput
+              key={filters.dateTo ? "to-filled" : "to-empty"}
+              value={filters.dateTo}
+              onChange={(v) => onFilterChange("dateTo", v)}
+            />
+            {(filters.dateFrom || filters.dateTo) && (
+              <button
+                onClick={() => {
+                  onFilterChange("dateFrom", "");
+                  onFilterChange("dateTo", "");
+                }}
+                className="text-theme-fg-muted hover:text-theme-primary transition-colors"
+                title="Periode wissen"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
+        </div>
+      </FilterSection>
+
+      {/* Godheden */}
+      <FilterSection title="Godheden" icon="🏷️">
         <div className="space-y-0.5">
           {CATEGORIES.map((cat) => (
             <CheckboxItem
@@ -228,8 +316,8 @@ export function FilterSidebar({
         </div>
       </FilterSection>
 
-      {/* Event Types */}
-      <FilterSection title="Event Type" icon="📅">
+      {/* Soort evenement */}
+      <FilterSection title="Soort evenement" icon="📋">
         <div className="space-y-0.5">
           {EVENT_TYPES.map((type) => (
             <CheckboxItem
@@ -243,8 +331,8 @@ export function FilterSidebar({
         </div>
       </FilterSection>
 
-      {/* Special Tithis */}
-      <FilterSection title="Speciale Dagen" icon="🌙" defaultOpen={false}>
+      {/* Speciale Dagen */}
+      <FilterSection title="Speciale dagen" icon="🌙" defaultOpen={false}>
         <div className="space-y-0.5">
           {SPECIAL_TITHIS.map((tithi) => (
             <CheckboxItem
@@ -258,7 +346,7 @@ export function FilterSidebar({
         </div>
       </FilterSection>
 
-      {/* Importance */}
+      {/* Belangrijkheid */}
       <FilterSection title="Belangrijkheid" icon="⭐" defaultOpen={false}>
         <div className="space-y-0.5">
           {IMPORTANCE_LEVELS.map((imp) => (
@@ -272,7 +360,7 @@ export function FilterSidebar({
         </div>
       </FilterSection>
 
-      {/* Sort Options */}
+      {/* Sortering */}
       <FilterSection title="Sortering" icon="↕️" defaultOpen={false}>
         <div className="space-y-2">
           <div>

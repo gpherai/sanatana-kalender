@@ -33,6 +33,8 @@ type SortOrder = (typeof VALID_SORT_ORDER)[number];
  */
 export interface FilterState {
   search: string;
+  dateFrom: string; // YYYY-MM-DD or ""
+  dateTo: string; // YYYY-MM-DD or ""
   categories: string[];
   eventTypes: string[];
   importances: string[];
@@ -46,6 +48,8 @@ export interface FilterState {
  */
 export const DEFAULT_FILTERS: FilterState = {
   search: "",
+  dateFrom: "",
+  dateTo: "",
   categories: [],
   eventTypes: [],
   importances: [],
@@ -152,6 +156,8 @@ export function useFilters() {
 
     return {
       search: searchParams.get("search") ?? "",
+      dateFrom: searchParams.get("from") ?? "",
+      dateTo: searchParams.get("to") ?? "",
       // Validate arrays against known values
       categories: filterValidValues(rawCategories, VALID_CATEGORIES),
       eventTypes: filterValidValues(rawEventTypes, VALID_EVENT_TYPES),
@@ -181,6 +187,8 @@ export function useFilters() {
       // Map keys to URL param names
       const paramMap: Record<keyof FilterState, string> = {
         search: "search",
+        dateFrom: "from",
+        dateTo: "to",
         categories: "categories",
         eventTypes: "types",
         importances: "importance",
@@ -238,6 +246,7 @@ export function useFilters() {
   const activeFilterCount = useMemo(() => {
     let count = 0;
     if (filters.search) count++;
+    if (filters.dateFrom || filters.dateTo) count++;
     if (filters.categories.length > 0) count++;
     if (filters.eventTypes.length > 0) count++;
     if (filters.importances.length > 0) count++;
@@ -251,6 +260,7 @@ export function useFilters() {
   const activeFilterItemCount = useMemo(() => {
     let count = 0;
     if (filters.search) count++;
+    if (filters.dateFrom || filters.dateTo) count++;
     count += filters.categories.length;
     count += filters.eventTypes.length;
     count += filters.importances.length;
@@ -266,6 +276,8 @@ export function useFilters() {
     const params = new URLSearchParams();
 
     if (filters.search) params.set("search", filters.search);
+    if (filters.dateFrom) params.set("start", filters.dateFrom);
+    if (filters.dateTo) params.set("end", filters.dateTo);
     if (filters.categories.length) params.set("categories", filters.categories.join(","));
     if (filters.eventTypes.length) params.set("types", filters.eventTypes.join(","));
     if (filters.importances.length)
