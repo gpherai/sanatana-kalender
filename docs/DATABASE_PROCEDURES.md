@@ -1,21 +1,34 @@
 # Database Procedures
 
+> **Laatst bijgewerkt:** 21 maart 2026
+
+---
+
 ## Database Reset & Seed Procedure
 
 Na een database reset moeten **altijd** de volgende stappen worden uitgevoerd:
 
 ### Stap 1: Database reset en seed
+
 ```bash
 npm run db:reset
 ```
 
-Dit voert uit:
-- Prisma migrate reset
-- Seeding van DailyInfo (panchanga data)
-- Seeding van Events
-- **Let op:** Seed script genereert NIET altijd alle occurrences compleet
+Dit voert uit (`prisma migrate reset --force && tsx ... seed.ts`):
+- Alle migraties opnieuw toepassen (reset met `--force`, geen bevestigingsprompt)
+- Seeding van categorieën
+- Seeding van DailyInfo (panchanga data voor meerdere jaren)
+- Seeding van Events (basisset)
 
-### Stap 2: Occurrences regenereren (VERPLICHT)
+### Stap 2: Event naming catalog synchroniseren
+
+```bash
+npx tsx --tsconfig tsconfig.json src/scripts/generate-events-from-naming.ts
+```
+
+Dit synchroniseert de events in `src/config/event-naming.ts` naar de database. Events worden opgezocht via hun stabiele `namingKey` en aangemaakt of bijgewerkt. Parent-child series worden ook gekoppeld.
+
+### Stap 3: Occurrences regenereren (VERPLICHT)
 
 **⚠️ BELANGRIJK:** Na elke seed/reset altijd occurrences regenereren via API:
 
@@ -26,7 +39,7 @@ npm run dev
 # Wacht tot server draait, dan:
 curl -X POST http://localhost:3000/api/events/generate-occurrences \
   -H "Content-Type: application/json" \
-  -d '{"startDate":"2025-01-01", "endDate":"2027-12-31", "replace": true}'
+  -d '{"startDate":"2025-01-01", "endDate":"2029-12-31", "replace": true}'
 ```
 
 **Waarom nodig:**
@@ -36,20 +49,20 @@ curl -X POST http://localhost:3000/api/events/generate-occurrences \
 
 ### Verificatie
 
-Check of alle YEARLY_LUNAR events occurrences hebben:
+Check of alle events occurrences hebben:
 
 ```bash
-# Gebruik je eigen DATABASE_URL uit .env of pas aan voor je omgeving
-npx tsx -e "
-import { prisma } from './src/lib/db';
+npx tsx --tsconfig tsconfig.json -e "
+import { prisma } from './src/lib/db.ts';
 const events = await prisma.event.findMany({
-  where: { recurrenceType: 'YEARLY_LUNAR' },
-  select: { name: true, _count: { select: { occurrences: true } } }
+  where: { recurrenceType: { not: 'NONE' } },
+  select: { name: true, recurrenceType: true, _count: { select: { occurrences: true } } }
 });
 const missing = events.filter(e => e._count.occurrences === 0);
 console.log(missing.length === 0
   ? '✅ Alle events hebben occurrences'
-  : \`❌ \${missing.length} events missen occurrences\`);
+  : \`❌ \${missing.length} events missen occurrences:\`);
+missing.forEach(e => console.log(\`  - \${e.name} (\${e.recurrenceType})\`));
 await prisma.\$disconnect();
 "
 ```
@@ -60,7 +73,7 @@ await prisma.\$disconnect();
 
 ### Huidige implementatie: Udaya Tithi (Astronomisch)
 
-De applicatie gebruikt **udaya tithi** - de tithi die prevails bij zonsopgang.
+De applicatie gebruikt **udaya tithi** — de tithi die prevaleert bij zonsopgang.
 
 - **Bron:** Swiss Ephemeris (wetenschappelijk accurate berekeningen)
 - **Verificatie:** Komt exact overeen met Drik Panchang daily panchang
@@ -86,7 +99,7 @@ Voor religieuze observance (bijvoorbeeld Ekadashi vastendagen) gelden soms ander
 
 **✅ Correct (huidige implementatie):**
 ```typescript
-import { parseCalendarDate } from '@/lib/utils';
+import { parseCalendarDate } from '@/lib/date-utils';
 
 // Voor calendar events (festivals, tithis)
 const date = parseCalendarDate('2025-01-09');
@@ -111,9 +124,9 @@ const date = new Date(year, month - 1, day);
 - Local midnight (00:00 CET) wordt 23:00 UTC **vorige dag** → verkeerde datum in DB
 - **Oplossing:** `parseCalendarDate()` gebruikt `Date.UTC()` → UTC midnight → correcte datum
 
-**Implementatie details:**
+**Implementatie:**
 ```typescript
-// src/lib/utils.ts line 148
+// src/lib/date-utils.ts
 export function parseCalendarDate(dateString: string): Date {
   const [year, month, day] = dateString.split('-').map(Number);
   const date = new Date(Date.UTC(year!, month! - 1, day!));
@@ -133,23 +146,24 @@ export function parseCalendarDate(dateString: string): Date {
 
 **Oplossing:**
 1. Controleer of `parseCalendarDate()` wordt gebruikt voor alle event dates
-2. Check `src/lib/utils.ts` - moet `Date.UTC()` gebruiken
+2. Check `src/lib/date-utils.ts` — moet `Date.UTC()` gebruiken
 3. Reseed database en regenereer occurrences
 
-### Issue: YEARLY_LUNAR events hebben geen occurrences
+### Issue: Events hebben geen occurrences
 
 **Symptoom:** Events gedefinieerd maar verschijnen niet in kalender
 
-**Oorzaak:** Occurrences niet gegenereerd na seed
+**Oorzaak:** Occurrences niet gegenereerd na seed, of naming catalog niet gesynchroniseerd
 
 **Oplossing:**
-1. Run API endpoint: `POST /api/events/generate-occurrences`
-2. Zie "Database Reset & Seed Procedure" hierboven
+1. Run stap 2 (naming catalog sync) en stap 3 (occurrences regenereren) uit de reset procedure
+2. Verifieer met het verificatie-script hierboven
 
 ---
 
-## Contact & Referenties
+## Referenties
 
 - **Drik Panchang:** https://www.drikpanchang.com (referentie voor verificatie)
 - **Swiss Ephemeris:** Astronomische engine voor panchanga berekeningen
 - **Panchanga Service:** `src/services/panchanga.service.ts`
+- **Naming Catalog:** `src/config/event-naming.ts` (single source of truth voor events)
