@@ -777,6 +777,20 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     tags: ["ekadashi", "vasten"],
   },
 
+  // === KALASHTAMI (maandelijks, Bhairava) ===
+  {
+    key: "kalashtami_monthly",
+    name: "Kalashtami",
+    category: "bhairava",
+    eventType: "VRAT",
+    importance: "MODERATE",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "ASHTAMI_KRISHNA", monthly: true },
+    description:
+      "Maandelijkse vastendag voor Kala Bhairava op de 8e dag van de donkere helft. De Krishna Ashtami is Bhairava's heilige dag.",
+    tags: ["bhairava", "kalashtami", "vrat", "ashtami", "maandelijks"],
+  },
+
   // === PRADOSH VRAT (maandelijks, 2x per maand) ===
   {
     key: "pradosh_vrat_krishna",
@@ -1042,6 +1056,18 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     },
     description: "De dag na Diwali. Verering van de heilige Govardhan berg.",
     tags: ["govardhan", "festival", "krishna"],
+  },
+  {
+    key: "kartik_kali_puja",
+    name: "Kali Puja",
+    category: "kali",
+    eventType: "PUJA",
+    importance: "MAJOR",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "AMAVASYA", maas: "KARTIK" },
+    description:
+      "Kali Puja (Shyama Puja) op de nacht van Diwali. In Oost-India (Bengalen) wordt op Kartika Amavasya niet Lakshmi maar Maa Kali vereerd met nacht-puja's, diyas en offers.",
+    tags: ["kali", "puja", "diwali", "bengalen", "amavasya", "kartik"],
   },
   {
     key: "kartik_kali_chaudas",
