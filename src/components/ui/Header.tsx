@@ -15,7 +15,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, ListTodo, Settings, Plus, BookOpen } from "lucide-react";
-import { ColorModeToggle } from "@/components/theme";
+import { ColorModeToggle } from "@/components/theme/ColorModeToggle";
 import { cn } from "@/lib/utils";
 
 const navItems = [

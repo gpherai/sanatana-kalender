@@ -763,20 +763,6 @@ export function getStandardThemes(): readonly ThemeDefinition[] {
 }
 
 /**
- * Get all classic themes (standard themes without gradients).
- */
-export function getClassicThemes(): readonly ThemeDefinition[] {
-  return THEME_CATALOG.filter((t) => t.category === "classic");
-}
-
-/**
- * Get all revamped themes (standard themes with subtle gradients).
- */
-export function getRevampedThemes(): readonly ThemeDefinition[] {
-  return THEME_CATALOG.filter((t) => t.category === "revamped");
-}
-
-/**
  * Get themes by category.
  */
 export function getThemesByCategory(category: ThemeCategory): readonly ThemeDefinition[] {

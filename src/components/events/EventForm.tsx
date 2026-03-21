@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Save, Loader2, X, Plus } from "lucide-react";
 import { cn, logError } from "@/lib/utils";
 import { useToast } from "@/components/ui/Toast";
-import { useFetch } from "@/hooks";
+import { useFetch } from "@/hooks/useFetch";
 import {
   eventFormSchema,
   transformFormToApi,

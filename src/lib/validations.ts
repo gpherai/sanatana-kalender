@@ -17,7 +17,6 @@ import {
   TITHIS,
   NAKSHATRAS,
   MAAS,
-  PAKSHAS,
   SANKRANTIS,
 } from "./domain";
 import {
@@ -50,15 +49,14 @@ export function createEnumFromConstants<T extends readonly { value: string }[]>(
 // ENUM SCHEMAS (from constants)
 // =============================================================================
 
-export const eventTypeEnum = createEnumFromConstants(EVENT_TYPES);
-export const importanceEnum = createEnumFromConstants(IMPORTANCE_LEVELS);
-export const recurrenceEnum = createEnumFromConstants(RECURRENCE_TYPES);
-export const tithiEnum = createEnumFromConstants(TITHIS);
-export const nakshatraEnum = createEnumFromConstants(NAKSHATRAS);
-export const maasEnum = createEnumFromConstants(MAAS);
-export const pakshaEnum = createEnumFromConstants(PAKSHAS);
-export const sankrantiEnum = createEnumFromConstants(SANKRANTIS);
-export const calendarViewEnum = z.enum(["month", "week", "day", "agenda"]);
+const eventTypeEnum = createEnumFromConstants(EVENT_TYPES);
+const importanceEnum = createEnumFromConstants(IMPORTANCE_LEVELS);
+const recurrenceEnum = createEnumFromConstants(RECURRENCE_TYPES);
+const tithiEnum = createEnumFromConstants(TITHIS);
+const nakshatraEnum = createEnumFromConstants(NAKSHATRAS);
+const maasEnum = createEnumFromConstants(MAAS);
+const sankrantiEnum = createEnumFromConstants(SANKRANTIS);
+const calendarViewEnum = z.enum(["month", "week", "day", "agenda"]);
 
 // =============================================================================
 // REUSABLE FIELD SCHEMAS
@@ -68,7 +66,7 @@ export const calendarViewEnum = z.enum(["month", "week", "day", "agenda"]);
 export const cuidSchema = z.string().cuid();
 
 /** Optional CUID (accepts empty string as undefined) */
-export const optionalCuidSchema = cuidSchema.optional().or(z.literal(""));
+const optionalCuidSchema = cuidSchema.optional().or(z.literal(""));
 
 /** Date string in YYYY-MM-DD format (strict - for form inputs) */
 export const dateStringSchema = z.string().regex(DATE_REGEX, ERROR_MESSAGES.INVALID_DATE);
@@ -207,15 +205,11 @@ export const createEventSchema = z.object({
   notes: z.string().max(500).nullable().optional(),
 });
 
-export type CreateEventPayload = z.infer<typeof createEventSchema>;
-
 /**
  * Update event API schema.
  * All fields optional for partial updates.
  */
 export const updateEventSchema = createEventSchema.partial();
-
-export type UpdateEventPayload = z.infer<typeof updateEventSchema>;
 
 // =============================================================================
 // USER PREFERENCES SCHEMAS
@@ -247,23 +241,6 @@ export const updatePreferencesSchema = z.object({
   notificationDaysBefore: z.number().int().min(0).max(30).optional(),
 });
 
-export type UpdatePreferencesPayload = z.infer<typeof updatePreferencesSchema>;
-
-/**
- * Preferences form schema (client-side).
- */
-export const preferencesFormSchema = z.object({
-  currentTheme: z.string().min(1, ERROR_MESSAGES.REQUIRED_THEME),
-  defaultView: calendarViewEnum,
-  weekStartsOn: z.coerce.number().int().min(0).max(6),
-  timezone: z.string().min(1, ERROR_MESSAGES.REQUIRED_TIMEZONE),
-  locationName: z.string().min(1, ERROR_MESSAGES.REQUIRED_LOCATION).max(100),
-  locationLat: z.coerce.number().min(-90).max(90),
-  locationLon: z.coerce.number().min(-180).max(180),
-});
-
-export type PreferencesFormData = z.infer<typeof preferencesFormSchema>;
-
 // =============================================================================
 // UPDATE OCCURRENCE SCHEMA
 // =============================================================================
@@ -279,8 +256,6 @@ export const updateOccurrenceSchema = z.object({
   endTime: timeStringSchema.nullable().optional(),
   notes: z.string().max(500).nullable().optional(),
 });
-
-export type UpdateOccurrencePayload = z.infer<typeof updateOccurrenceSchema>;
 
 // =============================================================================
 // GENERATE OCCURRENCES SCHEMA
@@ -305,8 +280,6 @@ export const generateOccurrencesSchema = z.object({
   maxOccurrences: z.number().int().positive().max(5000).optional(),
   replace: z.boolean().default(false),
 });
-
-export type GenerateOccurrencesPayload = z.infer<typeof generateOccurrencesSchema>;
 
 // =============================================================================
 // QUERY PARAMETER SCHEMAS

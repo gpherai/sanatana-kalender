@@ -22,7 +22,7 @@ vi.mock("next/navigation", () => ({
   notFound,
 }));
 
-vi.mock("@/components/events", () => ({
+vi.mock("@/components/events/EventForm", () => ({
   EventForm: (props: { mode: string }) => eventFormMock(props),
 }));
 

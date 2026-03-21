@@ -42,8 +42,6 @@ export const RECURRENCE_TYPES = [
   { value: "MONTHLY_SOLAR", label: "Maandelijks (Solaar)" },
 ] as const;
 
-export type RecurrenceTypeValue = (typeof RECURRENCE_TYPES)[number]["value"];
-
 // --------------------------------------------
 // IMPORTANCE LEVELS
 // --------------------------------------------
@@ -73,8 +71,6 @@ export const SANKRANTIS = [
   { value: "MEENA_SANKRANTI", label: "Meena Sankranti (Vissen / Pisces)" },
 ] as const;
 
-export type SankrantiValue = (typeof SANKRANTIS)[number]["value"];
-
 // --------------------------------------------
 // SPECIAL TITHIS (for filtering)
 // --------------------------------------------
@@ -82,8 +78,6 @@ export const SPECIAL_TITHIS = [
   { value: "PURNIMA", label: "Purnima (Volle Maan)", icon: "🌕" },
   { value: "AMAVASYA", label: "Amavasya (Nieuwe Maan)", icon: "🌑" },
 ] as const;
-
-export type SpecialTithiValue = (typeof SPECIAL_TITHIS)[number]["value"];
 
 // --------------------------------------------
 // PAKSHAS (lunar fortnights)
@@ -100,8 +94,6 @@ export const PAKSHAS = [
     description: "Waning moon (dark fortnight)",
   },
 ] as const;
-
-export type PakshaValue = (typeof PAKSHAS)[number]["value"];
 
 // --------------------------------------------
 // TITHIS (30 lunar days)
@@ -140,8 +132,6 @@ export const TITHIS = [
   { value: "CHATURDASHI_KRISHNA", label: "Chaturdashi", paksha: "Krishna", day: 14 },
   { value: "AMAVASYA", label: "Amavasya (New Moon)", paksha: "Krishna", day: 15 },
 ] as const;
-
-export type TithiValue = (typeof TITHIS)[number]["value"];
 
 // Grouped by Paksha for dropdown
 export const TITHIS_BY_PAKSHA = {
@@ -182,8 +172,6 @@ export const NAKSHATRAS = [
   { value: "REVATI", label: "Revati", deity: "Pushan" },
 ] as const;
 
-export type NakshatraValue = (typeof NAKSHATRAS)[number]["value"];
-
 // --------------------------------------------
 // MAAS (12 lunar months)
 // --------------------------------------------
@@ -202,8 +190,6 @@ export const MAAS = [
   { value: "PHALGUNA", label: "Phalguna", season: "Shishir (Winter)" },
 ] as const;
 
-export type MaasValue = (typeof MAAS)[number]["value"];
-
 // --------------------------------------------
 // MOON PHASES
 // --------------------------------------------
@@ -217,8 +203,6 @@ export const MOON_PHASES = [
   { value: "LAST_QUARTER", label: "Last Quarter", emoji: "🌗" },
   { value: "WANING_CRESCENT", label: "Waning Crescent", emoji: "🌘" },
 ] as const;
-
-export type MoonPhaseValue = (typeof MOON_PHASES)[number]["value"];
 
 // --------------------------------------------
 // THEMES
@@ -306,11 +290,4 @@ export function getNakshatra(value: string) {
  */
 export function getMaas(value: string) {
   return MAAS.find((m) => m.value === value);
-}
-
-/**
- * Get paksha by value
- */
-export function getPaksha(value: string) {
-  return PAKSHAS.find((p) => p.value === value);
 }

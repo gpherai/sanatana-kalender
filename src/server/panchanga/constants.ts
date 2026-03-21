@@ -317,14 +317,3 @@ export const SAMVATSARA_NAMES = [
 ] as const;
 
 // =============================================================================
-// TYPE EXPORTS
-// =============================================================================
-
-export type TithiName = (typeof TITHI_NAMES)[number];
-export type NakshatraName = (typeof NAKSHATRA_NAMES)[number];
-export type YogaName = (typeof YOGA_NAMES)[number];
-export type KaranaName = (typeof KARANA_NAMES)[number];
-export type VaraName = (typeof VARA_NAMES)[number];
-export type LunarMasaName = (typeof LUNAR_MASA_NAMES)[number];
-export type SolarMasaName = (typeof SOLAR_MASA_NAMES)[number];
-export type SamvatsaraName = (typeof SAMVATSARA_NAMES)[number];

@@ -20,21 +20,3 @@ if (typeof window !== "undefined") {
 
 export { PanchangaSwissService } from "./services/panchanga-swiss-service";
 export type { DailyPanchangaFull, LocationConfig } from "./types";
-export {
-  TITHI_NAMES,
-  NAKSHATRA_NAMES,
-  YOGA_NAMES,
-  KARANA_NAMES,
-  VARA_NAMES,
-  LUNAR_MASA_NAMES,
-  SOLAR_MASA_NAMES,
-} from "./constants";
-export type {
-  TithiName,
-  NakshatraName,
-  YogaName,
-  KaranaName,
-  VaraName,
-  LunarMasaName,
-  SolarMasaName,
-} from "./constants";

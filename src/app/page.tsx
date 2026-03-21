@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { ArrowRight, Plus } from "lucide-react";
 import { prisma } from "@/lib/db";
-import { DharmaCalendar } from "@/components/calendar";
-import { TodayHero } from "@/components/ui";
+import { DharmaCalendar } from "@/components/calendar/DharmaCalendar";
+import { TodayHero } from "@/components/ui/TodayHero";
 import { PageLayout } from "@/components/layout";
 import { getCategoryBgClass } from "@/lib/category-styles";
 

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { Header, ToastProvider } from "@/components/ui";
-import { ThemeProvider } from "@/components/theme";
+import { Header } from "@/components/ui/Header";
+import { ToastProvider } from "@/components/ui/Toast";
+import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import {
   DEFAULT_THEME_NAME,
   DEFAULT_COLOR_MODE,

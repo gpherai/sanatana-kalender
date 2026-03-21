@@ -1,7 +1,7 @@
 "use client";
 
 import { Calendar } from "lucide-react";
-import { Section } from "@/components/ui";
+import { Section } from "@/components/ui/Section";
 
 // =============================================================================
 // TYPES

@@ -4,8 +4,8 @@ import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { Plus, LayoutGrid, List, SlidersHorizontal } from "lucide-react";
 import { FilterSidebar } from "@/components/filters";
-import { EventDetailModal } from "@/components/calendar";
-import { EventCard } from "@/components/events";
+import { EventDetailModal } from "@/components/calendar/EventDetailModal";
+import { EventCard } from "@/components/events/EventCard";
 import { PageLayout } from "@/components/layout";
 import { useFilters } from "@/hooks/useFilters";
 import {

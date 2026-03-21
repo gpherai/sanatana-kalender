@@ -9,8 +9,9 @@ const mockUseFetch = vi.fn();
 const toastSuccess = vi.fn();
 const toastError = vi.fn();
 
-vi.mock("@/hooks", async () => {
-  const actual = await vi.importActual<typeof import("@/hooks")>("@/hooks");
+vi.mock("@/hooks/useFetch", async () => {
+  const actual =
+    await vi.importActual<typeof import("@/hooks/useFetch")>("@/hooks/useFetch");
   return {
     ...actual,
     useFetch: (...args: unknown[]) => mockUseFetch(...args),

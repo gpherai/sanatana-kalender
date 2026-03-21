@@ -105,7 +105,7 @@ class PanchangaCache {
  * Provides high-level interface for Panchanga calculations with caching.
  * This is the layer between API routes and the Swiss Ephemeris engine.
  */
-export class PanchangaService {
+class PanchangaService {
   private swissService = new PanchangaSwissService();
   private cache = new PanchangaCache();
 

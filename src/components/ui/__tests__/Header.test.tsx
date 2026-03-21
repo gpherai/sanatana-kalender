@@ -8,7 +8,7 @@ vi.mock("next/navigation", () => ({
 }));
 
 // Mock Theme Toggle to simplify test
-vi.mock("@/components/theme", () => ({
+vi.mock("@/components/theme/ColorModeToggle", () => ({
   ColorModeToggle: () => <button data-testid="theme-toggle">Theme</button>,
 }));
 

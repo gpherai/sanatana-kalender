@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { EventForm } from "@/components/events";
+import { EventForm } from "@/components/events/EventForm";
 import { PageLayout } from "@/components/layout";
 
 export default function NewEventPage() {

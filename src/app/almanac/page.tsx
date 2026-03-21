@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import { EventDetailModal } from "@/components/calendar";
+import { EventDetailModal } from "@/components/calendar/EventDetailModal";
 import { PageLayout } from "@/components/layout";
 import {
   AlmanacHeader,

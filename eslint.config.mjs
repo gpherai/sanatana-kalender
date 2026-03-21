@@ -12,6 +12,14 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Non-app directories that should not be linted
+    "_dev/**",
+    "coverage/**",
+    "e2e/**",
+    "scripts/**",
+    "prisma/**",
+    // Root config files (not app code)
+    "*.config.{ts,mjs,js,cjs}",
   ]),
   {
     rules: {

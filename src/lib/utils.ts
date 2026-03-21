@@ -62,13 +62,6 @@ export function logDebug(message: string, ...args: unknown[]): void {
 // ============================================================================
 
 /**
- * Sleep utility for async operations
- */
-export function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-/**
  * Truncate text to a maximum length
  */
 export function truncate(text: string, maxLength: number): string {

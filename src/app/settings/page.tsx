@@ -20,7 +20,7 @@ import { useRouter } from "next/navigation";
 import { Loader2, Check, CloudOff, Cloud } from "lucide-react";
 import { logError } from "@/lib/utils";
 import { useToast } from "@/components/ui/Toast";
-import { useTheme } from "@/components/theme";
+import { useTheme } from "@/components/theme/ThemeProvider";
 import { PageLayout } from "@/components/layout";
 import { ThemeSection, CalendarSection, LocationSection } from "@/components/settings";
 import { PRESET_LOCATIONS, DEFAULT_LOCATION } from "@/lib/domain";
