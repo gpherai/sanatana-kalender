@@ -51,6 +51,14 @@ export function getCategoryBgClass(
  * </div>
  * ```
  */
+/**
+ * Get category text className with lightness adjusted for readability.
+ * Light mode: L clamped to [0.35, 0.55]. Dark mode: L clamped to [0.68, 0.82].
+ */
+export function getCategoryTextClass(categoryName: string): string {
+  return `text-category-${categoryName}`;
+}
+
 export function getCategoryBorderClass(
   categoryName: string,
   opacity: OpacityLevel = 20

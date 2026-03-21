@@ -4,7 +4,11 @@ import Link from "next/link";
 import { Calendar, Clock, Star, Tag, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getEventType } from "@/lib/domain";
-import { getCategoryBgClass, getCategoryDynamicStyle } from "@/lib/category-styles";
+import {
+  getCategoryBgClass,
+  getCategoryDynamicStyle,
+  getCategoryTextClass,
+} from "@/lib/category-styles";
 import type { Category } from "@/types/calendar";
 
 interface EventCardProps {
@@ -134,14 +138,17 @@ export function EventCard({
               <span
                 className={cn(
                   "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
-                  categoryData?.name ? getCategoryBgClass(categoryData.name, 15) : ""
+                  categoryData?.name ? getCategoryBgClass(categoryData.name, 15) : "",
+                  categoryData?.name ? getCategoryTextClass(categoryData.name) : ""
                 )}
-                style={{
-                  ...((!categoryData?.name &&
-                    getCategoryDynamicStyle("oklch(0.6 0.15 250)", 15)) ||
-                    {}),
-                  color: categoryData?.color ?? "oklch(0.5 0.15 250)",
-                }}
+                style={
+                  !categoryData?.name
+                    ? {
+                        ...getCategoryDynamicStyle("oklch(0.6 0.15 250)", 15),
+                        color: "oklch(0.5 0.15 250)",
+                      }
+                    : undefined
+                }
               >
                 {categoryData?.displayName ?? "Algemeen"}
               </span>

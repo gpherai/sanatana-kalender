@@ -1009,6 +1009,26 @@ function generateCategoryColorUtilities(): string {
   }
 
   css += `
+/* === TEXT CLASSES === */
+`;
+
+  // Text color classes per category — lightness adjusted for readability in both modes.
+  // Light mode: clamp L to [0.35, 0.55] (readable on white backgrounds)
+  // Dark mode: clamp L to [0.68, 0.82] (readable on dark backgrounds)
+  for (const category of CATEGORY_CATALOG) {
+    const match = category.color.match(/oklch\(([0-9.]+)\s+([0-9.]+)\s+([0-9.]+)\)/);
+    if (match) {
+      const l = parseFloat(match[1]!);
+      const c = match[2];
+      const h = match[3];
+      const lightL = Math.min(Math.max(l, 0.35), 0.55).toFixed(2);
+      const darkL = Math.min(Math.max(l, 0.68), 0.82).toFixed(2);
+      css += `.text-category-${category.name} { color: oklch(${lightL} ${c} ${h}); }\n`;
+      css += `.dark .text-category-${category.name} { color: oklch(${darkL} ${c} ${h}); }\n`;
+    }
+  }
+
+  css += `
 /* === FALLBACK: Custom Property for Dynamic Cases === */
 :root { --category-color: transparent; }
 `;
