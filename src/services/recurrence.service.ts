@@ -81,6 +81,8 @@ type RecurrenceStrategy = (
 const RULE_STRATEGIES: Record<string, RecurrenceStrategy> = {
   SOLAR: generateSolarRuleOccurrences,
   TITHI: generateYearlyLunarOccurrences,
+  NAKSHATRA: generateNakshatraRuleOccurrences,
+  TITHI_NAKSHATRA: generateNakshatraRuleOccurrences,
 };
 
 /**
@@ -345,6 +347,63 @@ async function generateYearlyLunarOccurrences(
         endTime: day.tithiEndTime ?? undefined,
       };
     });
+}
+
+// =============================================================================
+// NAKSHATRA RULE-BASED GENERATION
+// =============================================================================
+
+/**
+ * Generate yearly occurrences based on nakshatra (lunar mansion).
+ * Matches events to days when a specific nakshatra occurs, optionally within a specific maas.
+ *
+ * Example: Vaikasi Visakam — Vishakha nakshatra in Vaishakha maas.
+ */
+async function generateNakshatraRuleOccurrences(
+  event: Event,
+  startDate: Date,
+  endDate: Date,
+  _location: { name: string; lat: number; lon: number },
+  _timezone: string
+): Promise<GeneratedOccurrence[]> {
+  const config = (event.ruleConfig as Record<string, unknown>) ?? {};
+  const nakshatraValue = (config.nakshatra ?? event.nakshatra) as string | null;
+
+  if (!nakshatraValue) {
+    logWarn(`Nakshatra event "${event.name}" has no nakshatra specified`);
+    return [];
+  }
+
+  const dailyData = await prisma.dailyInfo.findMany({
+    where: {
+      date: { gte: startDate, lte: endDate },
+      nakshatra: nakshatraValue as never,
+      isAdhika: false,
+    },
+    orderBy: { date: "asc" },
+    select: { date: true, nakshatraEndTime: true, maas: true },
+  });
+
+  // Optional maas filter from ruleConfig
+  const maasFilter = config.maas as string | undefined;
+
+  // One occurrence per year (first matching day)
+  const occurrencesByYear = new Map<number, (typeof dailyData)[0]>();
+
+  for (const day of dailyData) {
+    if (maasFilter && day.maas !== maasFilter) continue;
+    const year = day.date.getUTCFullYear();
+    if (!occurrencesByYear.has(year)) {
+      occurrencesByYear.set(year, day);
+    }
+  }
+
+  return Array.from(occurrencesByYear.values())
+    .sort((a, b) => a.date.getTime() - b.date.getTime())
+    .map((day) => ({
+      date: day.date,
+      endTime: day.nakshatraEndTime ?? undefined,
+    }));
 }
 
 // =============================================================================

@@ -805,6 +805,42 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
 
   // === JAYANTIS (DEITY BIRTHDAYS) ===
   {
+    key: "magha_saraswati_jayanti",
+    name: "Saraswati Jayanti",
+    category: "saraswati",
+    eventType: "JAYANTI",
+    importance: "MAJOR",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "PANCHAMI_SHUKLA", maas: "MAGHA" },
+    description:
+      "Verschijningsdag van Godin Saraswati. Valt op Vasant Panchami. Verering van kennis, muziek en kunsten.",
+    tags: ["jayanti", "saraswati", "vasant", "panchami", "kennis"],
+  },
+  {
+    key: "margashirsha_lakshmi_jayanti",
+    name: "Lakshmi Jayanti",
+    category: "lakshmi",
+    eventType: "JAYANTI",
+    importance: "MAJOR",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "PURNIMA", maas: "MARGASHIRSHA" },
+    description:
+      "Verschijningsdag van Godin Lakshmi. De Margashirsha Purnima wordt in Noord-Indiase traditie als haar jayanti gevierd.",
+    tags: ["jayanti", "lakshmi", "purnima", "margashirsha", "rijkdom"],
+  },
+  {
+    key: "vaishakha_vaikasi_visakam",
+    name: "Vaikasi Visakam",
+    category: "skanda",
+    eventType: "JAYANTI",
+    importance: "MAJOR",
+    ruleType: "NAKSHATRA",
+    ruleConfig: { nakshatra: "VISHAKHA", maas: "VAISHAKHA" },
+    description:
+      "Verschijningsdag van Murugan (Skanda) in de Tamil traditie. Gevierd op de dag dat de Vishakha-nakshatra valt in de maand Vaishakha.",
+    tags: ["jayanti", "murugan", "skanda", "visakam", "tamil"],
+  },
+  {
     key: "vaishakha_sita_navami",
     name: "Sita Navami",
     category: "rama",
