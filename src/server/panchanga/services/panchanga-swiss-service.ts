@@ -1,14 +1,9 @@
 import path from "path";
-import { createRequire } from "module";
 import { DateTime } from "luxon";
 import * as swisseph from "swisseph";
 
 // Resolve bundled Swiss Ephemeris data files from the swisseph package
-const _require = createRequire(import.meta.url);
-const EPHE_PATH = path.join(
-  path.dirname(_require.resolve("swisseph/package.json")),
-  "ephe"
-);
+const EPHE_PATH = path.join(process.cwd(), "node_modules/swisseph/ephe");
 import type { DailyPanchangaFull, LocationConfig } from "../types";
 import {
   calculateSunriseSunset,
