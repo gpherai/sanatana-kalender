@@ -59,6 +59,42 @@ export interface RecurrenceOptions {
 const DEFAULT_MAX_OCCURRENCES = 1000; // Safety limit
 
 // =============================================================================
+// STRATEGY REGISTRIES
+// =============================================================================
+
+/**
+ * Unified signature for all recurrence strategy functions.
+ * Functions that don't need location/timezone simply ignore those parameters.
+ */
+type RecurrenceStrategy = (
+  event: Event,
+  startDate: Date,
+  endDate: Date,
+  location: { name: string; lat: number; lon: number },
+  timezone: string
+) => Promise<GeneratedOccurrence[]>;
+
+/**
+ * Registry of rule-type strategies.
+ * Add new ruleType handlers here without modifying the dispatch logic.
+ */
+const RULE_STRATEGIES: Record<string, RecurrenceStrategy> = {
+  SOLAR: generateSolarRuleOccurrences,
+  TITHI: generateYearlyLunarOccurrences,
+};
+
+/**
+ * Registry of recurrenceType strategies.
+ * Add new recurrenceType handlers here without modifying the dispatch logic.
+ */
+const RECURRENCE_STRATEGIES: Record<string, RecurrenceStrategy> = {
+  YEARLY_LUNAR: generateYearlyLunarOccurrences,
+  YEARLY_SOLAR: generateYearlySolarOccurrences,
+  MONTHLY_LUNAR: generateMonthlyLunarOccurrences,
+  MONTHLY_SOLAR: generateMonthlySolarOccurrences,
+};
+
+// =============================================================================
 // MAIN RECURRENCE ENGINE
 // =============================================================================
 
@@ -106,63 +142,22 @@ export async function generateOccurrences(
 
   let occurrences: GeneratedOccurrence[] = [];
 
-  // NEW: Rule-based generation (takes precedence over recurrenceType)
+  // Rule-based generation (takes precedence over recurrenceType)
   if (event.ruleType) {
-    switch (event.ruleType) {
-      case "SOLAR":
-        occurrences = await generateSolarRuleOccurrences(event, startDate, endDate);
-        break;
-      case "TITHI":
-        // TITHI rules use the existing YEARLY_LUNAR logic
-        occurrences = await generateYearlyLunarOccurrences(
-          event,
-          startDate,
-          endDate,
-          location,
-          timezone
-        );
-        break;
-      default:
-        logWarn(
-          `Rule type ${event.ruleType} not yet implemented for event ${event.name}`
-        );
-        return [];
+    const strategy = RULE_STRATEGIES[event.ruleType];
+    if (!strategy) {
+      logWarn(`Rule type ${event.ruleType} not yet implemented for event ${event.name}`);
+      return [];
     }
+    occurrences = await strategy(event, startDate, endDate, location, timezone);
   } else {
     // Fallback to recurrenceType logic
-    switch (event.recurrenceType) {
-      case "YEARLY_LUNAR":
-        occurrences = await generateYearlyLunarOccurrences(
-          event,
-          startDate,
-          endDate,
-          location,
-          timezone
-        );
-        break;
-
-      case "YEARLY_SOLAR":
-        occurrences = await generateYearlySolarOccurrences(event, startDate, endDate);
-        break;
-
-      case "MONTHLY_LUNAR":
-        occurrences = await generateMonthlyLunarOccurrences(
-          event,
-          startDate,
-          endDate,
-          location,
-          timezone
-        );
-        break;
-
-      case "MONTHLY_SOLAR":
-        occurrences = await generateMonthlySolarOccurrences(event, startDate, endDate);
-        break;
-
-      default:
-        logWarn(`Unknown recurrence type: ${event.recurrenceType}`);
-        return [];
+    const strategy = RECURRENCE_STRATEGIES[event.recurrenceType];
+    if (!strategy) {
+      logWarn(`Unknown recurrence type: ${event.recurrenceType}`);
+      return [];
     }
+    occurrences = await strategy(event, startDate, endDate, location, timezone);
   }
 
   // Apply safety limit

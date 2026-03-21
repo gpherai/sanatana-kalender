@@ -3,8 +3,8 @@ import { prisma } from "@/lib/db";
 import { createEventSchema, eventQuerySchema } from "@/lib/validations";
 import { errorResponse, serverError, validationError } from "@/lib/api-response";
 import { parseCalendarDate, addDayForDisplay, formatDateLocal } from "@/lib/date-utils";
-import { Prisma } from "@prisma/client";
 import {
+  Prisma,
   Tithi,
   Nakshatra,
   Maas,
@@ -12,6 +12,7 @@ import {
   Importance,
   RecurrenceType,
 } from "@prisma/client";
+import { findEventOccurrences } from "@/repositories/event.repository";
 
 // ============================================================================
 // Helper: Parse Query Parameters
@@ -56,98 +57,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const params = paramsResult.data;
-
-    // Build where clause for occurrences
-    const occurrenceWhere: Prisma.EventOccurrenceWhereInput = {};
-
-    if (params.start && params.end) {
-      occurrenceWhere.date = {
-        gte: new Date(params.start),
-        lte: new Date(params.end),
-      };
-    }
-
-    // Build where clause for events
-    const eventWhere: Prisma.EventWhereInput = {};
-
-    // Search filter (name, description, tags)
-    if (params.search) {
-      eventWhere.OR = [
-        { name: { contains: params.search, mode: "insensitive" } },
-        { description: { contains: params.search, mode: "insensitive" } },
-        { tags: { has: params.search.toLowerCase() } },
-      ];
-    }
-
-    // Category filter - filter by category.name for backwards compatibility
-    if (params.categories && params.categories.length > 0) {
-      eventWhere.category = { name: { in: params.categories } };
-    }
-
-    // Event type filter - validate against enum
-    if (params.types && params.types.length > 0) {
-      const validTypes = params.types.filter((t) =>
-        Object.keys(EventType).includes(t)
-      ) as EventType[];
-      if (validTypes.length > 0) {
-        eventWhere.eventType = { in: validTypes };
-      }
-    }
-
-    // Importance filter - validate against enum
-    if (params.importance && params.importance.length > 0) {
-      const validImportances = params.importance.filter((i) =>
-        Object.keys(Importance).includes(i)
-      ) as Importance[];
-      if (validImportances.length > 0) {
-        eventWhere.importance = { in: validImportances };
-      }
-    }
-
-    // Special tithi filter - validate against enum
-    if (params.tithis && params.tithis.length > 0) {
-      const validTithis = params.tithis.filter((t) =>
-        Object.keys(Tithi).includes(t)
-      ) as Tithi[];
-      if (validTithis.length > 0) {
-        eventWhere.tithi = { in: validTithis };
-      }
-    }
-
-    // Add event filter to occurrence query
-    if (Object.keys(eventWhere).length > 0) {
-      occurrenceWhere.event = eventWhere;
-    }
-
-    // Determine sort order
-    const order = params.order === "desc" ? "desc" : "asc";
-    const orderBy: Prisma.EventOccurrenceOrderByWithRelationInput[] = [];
-
-    if (params.sortBy === "name") {
-      orderBy.push({ event: { name: order } });
-    } else {
-      orderBy.push({ date: order });
-    }
-
-    // Fetch occurrences with their parent events AND category
-    const occurrences = await prisma.eventOccurrence.findMany({
-      where: occurrenceWhere,
-      include: {
-        event: {
-          include: {
-            category: true,
-            seriesParentEntries: {
-              select: { parentEventId: true, dayNumber: true, sortOrder: true },
-            },
-            seriesChildEntries: {
-              select: { childEventId: true },
-            },
-          },
-        },
-      },
-      orderBy,
-    });
+    const occurrences = await findEventOccurrences(paramsResult.data);
 
     // Transform to calendar-friendly format
     const calendarEvents = occurrences.map((occ) => {
