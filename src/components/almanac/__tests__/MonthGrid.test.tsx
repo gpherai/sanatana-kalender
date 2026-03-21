@@ -102,7 +102,6 @@ describe("MonthGrid", () => {
 
   it("applies today styling when the day is today", () => {
     const today = new Date();
-    const dateKey = formatDateISO(today);
     const otherDate = new Date(2000, 0, 1); // not today
 
     render(
