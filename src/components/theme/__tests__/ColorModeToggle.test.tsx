@@ -1,9 +1,9 @@
 import { vi } from "vitest";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ThemeProvider } from "../ThemeProvider";
-import { ColorModeToggle, ColorModeSelect } from "../ColorModeToggle";
+import { ColorModeToggle } from "../ColorModeToggle";
 
 function mockMatchMedia(matches = false) {
   return vi.fn().mockImplementation((query) => ({
@@ -42,21 +42,6 @@ describe("ColorModeToggle", () => {
 
     await waitFor(() => {
       expect(screen.getByLabelText(/Switch to light mode/i)).toBeInTheDocument();
-    });
-  });
-
-  it("updates color mode via select", async () => {
-    render(
-      <ThemeProvider defaultColorMode="light">
-        <ColorModeSelect />
-      </ThemeProvider>
-    );
-
-    const select = await screen.findByLabelText("Kleurmodus selecteren");
-    fireEvent.change(select, { target: { value: "dark" } });
-
-    await waitFor(() => {
-      expect(document.documentElement.classList.contains("dark")).toBe(true);
     });
   });
 });

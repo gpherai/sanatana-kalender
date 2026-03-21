@@ -18,7 +18,7 @@ export { ThemeProvider, useTheme } from "./ThemeProvider";
 // COMPONENTS
 // =============================================================================
 
-export { ColorModeToggle, ColorModeSelect } from "./ColorModeToggle";
+export { ColorModeToggle } from "./ColorModeToggle";
 
 // =============================================================================
 // TYPES (re-exported from config for convenience)
@@ -30,16 +30,4 @@ export type {
   ThemeOption,
   ThemeColors,
   PersistedThemeState,
-} from "@/config/themes";
-
-// =============================================================================
-// CONSTANTS (re-exported from config for convenience)
-// =============================================================================
-
-export {
-  DEFAULT_THEME_NAME,
-  DEFAULT_COLOR_MODE,
-  THEME_STORAGE_KEY,
-  THEME_NAMES,
-  isValidThemeName,
 } from "@/config/themes";

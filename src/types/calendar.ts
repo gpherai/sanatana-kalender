@@ -5,17 +5,7 @@
  * Uses Prisma enums for type safety.
  */
 
-import type {
-  EventType,
-  Importance,
-  Tithi,
-  Nakshatra,
-  Maas,
-  Paksha,
-  RecurrenceType,
-  CalendarView,
-  MoonPhaseType,
-} from "@prisma/client";
+import type { EventType, Importance, Tithi, Nakshatra, Maas } from "@prisma/client";
 import { EventType as EventTypeEnum, Importance as ImportanceEnum } from "@prisma/client";
 import { TIME_REGEX } from "@/lib/patterns";
 
@@ -23,18 +13,8 @@ import { TIME_REGEX } from "@/lib/patterns";
 // RE-EXPORT PRISMA ENUMS
 // =============================================================================
 
-// Re-export all Prisma enums for convenient imports
-export type {
-  EventType,
-  Importance,
-  Tithi,
-  Nakshatra,
-  Maas,
-  Paksha,
-  RecurrenceType,
-  CalendarView,
-  MoonPhaseType,
-};
+// Re-export enums used in CalendarEvent/CalendarEventResource shapes
+export type { EventType, Importance, Tithi, Nakshatra, Maas };
 
 // =============================================================================
 // CATEGORY TYPE

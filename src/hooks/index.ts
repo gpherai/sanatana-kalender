@@ -6,9 +6,4 @@ export {
   type SortBy,
   type SortOrder,
 } from "./useFilters";
-export {
-  useFetch,
-  useFetchMultiple,
-  type UseFetchOptions,
-  type UseFetchResult,
-} from "./useFetch";
+export { useFetch, type UseFetchOptions, type UseFetchResult } from "./useFetch";
