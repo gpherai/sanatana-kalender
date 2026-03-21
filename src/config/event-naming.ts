@@ -1076,8 +1076,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     description:
       "Kali Puja (Shyama Puja) op de nacht van Diwali. In Oost-India (Bengalen) wordt op Kartika Amavasya niet Lakshmi maar Maa Kali vereerd met nacht-puja's, diyas en offers.",
     tags: ["amavasya", "bengalen", "diwali", "kali", "kartik", "puja"],
-    startTime: "20:00",
-    endTime: "22:00",
   },
   {
     key: "kartik_kali_chaudas",

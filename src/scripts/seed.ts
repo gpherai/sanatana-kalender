@@ -357,8 +357,6 @@ async function main() {
       tithi: "CHATURDASHI_KRISHNA",
       maas: "PHALGUNA",
       tags: ["abhishekam", "nachtelijk", "shiva", "vasten"],
-      startTime: "18:00",
-      endTime: "06:00",
     },
     {
       name: "Holi",
@@ -443,8 +441,6 @@ async function main() {
       tithi: "ASHTAMI_KRISHNA",
       maas: "SHRAVANA",
       tags: ["dahi handi", "geboorte", "krishna", "middernacht"],
-      startTime: "00:00",
-      endTime: "02:00",
     },
     {
       name: "Ganesh Chaturthi",
