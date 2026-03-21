@@ -921,6 +921,36 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     description: "De dag na Diwali. Verering van de heilige Govardhan berg.",
     tags: ["govardhan", "festival", "krishna"],
   },
+  {
+    key: "kartik_kali_chaudas",
+    name: "Kali Chaudas",
+    category: "kali",
+    eventType: "FESTIVAL",
+    importance: "MAJOR",
+    ruleType: "TITHI",
+    ruleConfig: {
+      tithi: "CHATURDASHI_KRISHNA",
+      maas: "KARTIK",
+    },
+    description:
+      "Kali Chaudas (ook Narak Chaturdashi). Verering van Maa Kali op de veertiende dag van de donkere helft van Kartik. Valt de dag voor Diwali.",
+    tags: ["kali", "festival", "diwali", "chaturdashi"],
+  },
+  {
+    key: "margashirsha_kalabhairav_jayanti",
+    name: "Kala Bhairava Ashtami",
+    category: "bhairava",
+    eventType: "JAYANTI",
+    importance: "MAJOR",
+    ruleType: "TITHI",
+    ruleConfig: {
+      tithi: "ASHTAMI_KRISHNA",
+      maas: "MARGASHIRSHA",
+    },
+    description:
+      "Kalabhairav Jayanti. De verschijningsdag van Kala Bhairava, de heer van de tijd en bewaker van Kashi. Ashtami van de donkere helft van Margashirsha.",
+    tags: ["bhairava", "jayanti", "kashi", "shiva"],
+  },
 
   // ==========================================================================
   // ADHIKA MAAS EVENTS

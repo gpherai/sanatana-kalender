@@ -113,7 +113,7 @@ export function EventCard({
             className={cn(
               "h-12 w-12 flex-shrink-0 rounded-xl",
               "flex items-center justify-center text-2xl",
-              "transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3",
+              "transition-transform duration-300 group-hover:scale-110",
               categoryData?.name ? getCategoryBgClass(categoryData.name, 15) : ""
             )}
             style={
