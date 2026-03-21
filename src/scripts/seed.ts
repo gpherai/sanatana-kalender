@@ -655,7 +655,7 @@ async function main() {
       eventType: "JAYANTI",
       recurrenceType: "YEARLY_LUNAR",
       importance: "MODERATE",
-      categoryName: "vishnu",
+      categoryName: "narasimha",
       tithi: "CHATURDASHI_SHUKLA",
       maas: "VAISHAKHA",
       tags: ["narasimha", "avatar", "prahlada", "bescherming"],

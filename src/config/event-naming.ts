@@ -882,7 +882,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "bhadrapada_hartalika_teej",
     name: "Hartalika Teej",
-    category: "shiva",
+    category: "durga",
     eventType: "FESTIVAL",
     importance: "MODERATE",
     ruleType: "TITHI",
