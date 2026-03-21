@@ -38,8 +38,9 @@
 //
 
 /**
- * Daily astronomical and panchanga information
- * Returned by /api/daily-info endpoint
+ * Base fields shared by all /api/daily-info responses.
+ * The full response shape (with structured tithi, nakshatra, etc.) is in DailyInfoResponse (src/types/api.ts).
+ * This interface covers only the scalar fields that DailyInfoResponse does not override.
  */
 export interface DailyInfoData {
   date: string; // YYYY-MM-DD
@@ -53,15 +54,6 @@ export interface DailyInfoData {
   moonPhasePercent: number;
   moonPhaseType: string | null;
   isWaxing: boolean;
-  tithi: string | null;
-  tithiEndTime: string | null;
-  nakshatra: string | null;
-  nakshatraEndTime: string | null;
-  yogaName: string | null;
-  yogaEndTime: string | null;
-  karanaName: string | null;
-  karanaType: string | null;
-  karanaEndTime: string | null;
-  maas: string | null;
-  paksha: string | null;
+  // Note: tithi, nakshatra, yoga, karana, maas are structured objects in DailyInfoResponse.
+  // They are omitted here and overridden there via Omit<DailyInfoData, ...>.
 }

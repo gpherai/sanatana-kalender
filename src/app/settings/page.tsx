@@ -67,8 +67,18 @@ function useAutoSave<T>(
 ) {
   const [status, setStatus] = useState<SaveStatus>("idle");
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isMountedRef = useRef(true);
   const isFirstRender = useRef(true);
   const lastSavedData = useRef<string>("");
+
+  // Track mounted state to prevent setState after unmount
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     // Skip first render
@@ -96,12 +106,16 @@ function useAutoSave<T>(
     timeoutRef.current = setTimeout(async () => {
       try {
         await saveFn(data);
-        lastSavedData.current = currentData;
-        setStatus("saved");
-        setTimeout(() => setStatus("idle"), 2000);
+        if (isMountedRef.current) {
+          lastSavedData.current = currentData;
+          setStatus("saved");
+          setTimeout(() => {
+            if (isMountedRef.current) setStatus("idle");
+          }, 2000);
+        }
       } catch (error) {
         logError("Auto-save failed", error);
-        setStatus("error");
+        if (isMountedRef.current) setStatus("error");
       }
     }, delay);
 

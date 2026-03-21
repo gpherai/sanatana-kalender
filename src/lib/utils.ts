@@ -24,28 +24,25 @@ export function cn(...inputs: ClassValue[]) {
 const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
 
 /**
- * Log error message only in development.
- * Use instead of console.error for non-critical errors.
+ * Log error message in all environments.
+ * Errors always need to be visible — silencing them in production hides real failures.
  *
  * @example
  * logError("Failed to fetch", error);
  */
 export function logError(message: string, ...args: unknown[]): void {
-  if (IS_DEVELOPMENT) {
-    console.error(`[Error] ${message}`, ...args);
-  }
+  console.error(`[Error] ${message}`, ...args);
 }
 
 /**
- * Log warning message only in development.
+ * Log warning message in all environments.
+ * Warnings indicate unexpected but non-fatal situations that should be visible.
  *
  * @example
  * logWarn("Deprecated API used");
  */
 export function logWarn(message: string, ...args: unknown[]): void {
-  if (IS_DEVELOPMENT) {
-    console.warn(`[Warn] ${message}`, ...args);
-  }
+  console.warn(`[Warn] ${message}`, ...args);
 }
 
 /**

@@ -17,6 +17,11 @@ import { POST } from "../events/generate-occurrences/route";
 describe("POST /api/events/generate-occurrences", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Make $transaction execute the callback with prismaMock as the transaction client
+    prismaMock.$transaction.mockImplementation((fn: unknown) => {
+      if (typeof fn === "function") return fn(prismaMock);
+      return Promise.all(fn as Promise<unknown>[]);
+    });
   });
 
   it("requires start and end dates", async () => {

@@ -222,7 +222,7 @@ export function DayDetailsPanel({
         <div className="rounded-xl bg-[var(--theme-almanac-special-card-bg)] p-4 shadow">
           <h4 className="mb-2 flex items-center gap-2 text-sm font-semibold text-[var(--theme-almanac-special-heading)]">
             <Sparkles className="h-4 w-4" />
-            Speciale Maandag
+            Speciale dag
           </h4>
           <div className="space-y-2">
             {selectedDaySpecial.map((special, i) => (

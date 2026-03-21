@@ -121,46 +121,52 @@ export default function AlmanacPage() {
   const isInitialMount = useRef(true);
 
   // Fetch month data
-  const fetchMonthData = useCallback(async (y: number, m: number) => {
-    setLoading(true);
-    const controller = new AbortController();
+  const fetchMonthData = useCallback(
+    async (y: number, m: number, signal: AbortSignal) => {
+      setLoading(true);
 
-    try {
-      const firstDay = new Date(y, m, 1);
-      const lastDay = new Date(y, m + 1, 0);
-      const start = formatDateISO(firstDay);
-      const end = formatDateISO(lastDay);
+      try {
+        const firstDay = new Date(y, m, 1);
+        const lastDay = new Date(y, m + 1, 0);
+        const start = formatDateISO(firstDay);
+        const end = formatDateISO(lastDay);
 
-      const [dailyRes, eventsRes] = await Promise.all([
-        fetch(`/api/daily-info?start=${start}&end=${end}`, { signal: controller.signal }),
-        fetch(`/api/events?start=${start}T00:00:00.000Z&end=${end}T23:59:59.999Z`, {
-          signal: controller.signal,
-        }),
-      ]);
+        const [dailyRes, eventsRes] = await Promise.all([
+          fetch(`/api/daily-info?start=${start}&end=${end}`, { signal }),
+          fetch(`/api/events?start=${start}T00:00:00.000Z&end=${end}T23:59:59.999Z`, {
+            signal,
+          }),
+        ]);
 
-      if (dailyRes.ok) {
-        const data: DailyInfoResponse[] = await dailyRes.json();
-        setMonthData(data);
-        if (data[0]) {
-          setLocation(data[0].locationName);
+        if (dailyRes.ok) {
+          const data: DailyInfoResponse[] = await dailyRes.json();
+          setMonthData(data);
+          if (data[0]) {
+            setLocation(data[0].locationName);
+          }
+        }
+
+        if (eventsRes.ok) {
+          const data: CalendarEventResponse[] = await eventsRes.json();
+          setMonthEvents(data);
+        }
+      } catch (error) {
+        if (error instanceof Error && error.name !== "AbortError") {
+          console.error("Error fetching month data:", error);
+        }
+      } finally {
+        if (!signal.aborted) {
+          setLoading(false);
         }
       }
-
-      if (eventsRes.ok) {
-        const data: CalendarEventResponse[] = await eventsRes.json();
-        setMonthEvents(data);
-      }
-    } catch (error) {
-      if (error instanceof Error && error.name !== "AbortError") {
-        console.error("Error fetching month data:", error);
-      }
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    },
+    []
+  );
 
   useEffect(() => {
-    fetchMonthData(year, month);
+    const controller = new AbortController();
+    fetchMonthData(year, month, controller.signal);
+    return () => controller.abort();
   }, [year, month, fetchMonthData]);
 
   // Preserve scroll position when selecting different dates within same month
@@ -336,11 +342,13 @@ export default function AlmanacPage() {
       )}
 
       {/* Event Detail Modal */}
-      <EventDetailModal
-        event={selectedEvent!}
-        isOpen={!!selectedEvent}
-        onClose={handleCloseModal}
-      />
+      {selectedEvent && (
+        <EventDetailModal
+          event={selectedEvent}
+          isOpen={true}
+          onClose={handleCloseModal}
+        />
+      )}
     </PageLayout>
   );
 }

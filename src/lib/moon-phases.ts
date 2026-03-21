@@ -9,6 +9,13 @@ import type { MoonPhaseType } from "@prisma/client";
  * Determine Moon Phase Type from illumination percentage.
  * Matches Prisma MoonPhaseType enum values.
  *
+ * Thresholds (astronomical convention):
+ *   0–3%   = New Moon (near-invisible)
+ *   3–45%  = Crescent (growing/shrinking)
+ *   45–55% = Quarter (~50% illuminated)
+ *   55–97% = Gibbous (more than half lit)
+ *   >97%   = Full Moon
+ *
  * @param illuminationPct - Moon illumination percentage (0-100)
  * @param waxing - Whether the moon is waxing (growing) or waning (shrinking)
  * @returns Moon phase type string matching Prisma enum
@@ -26,13 +33,12 @@ export function getMoonPhaseType(
   if (illuminationPct > 97) return "FULL_MOON";
 
   if (waxing) {
-    if (illuminationPct < 25) return "WAXING_CRESCENT";
-    if (illuminationPct < 50) return "FIRST_QUARTER";
-    if (illuminationPct < 75) return "WAXING_GIBBOUS";
-    return "FULL_MOON";
+    if (illuminationPct < 45) return "WAXING_CRESCENT";
+    if (illuminationPct < 55) return "FIRST_QUARTER";
+    return "WAXING_GIBBOUS";
   } else {
-    if (illuminationPct > 75) return "WANING_GIBBOUS";
-    if (illuminationPct > 50) return "LAST_QUARTER";
+    if (illuminationPct > 55) return "WANING_GIBBOUS";
+    if (illuminationPct > 45) return "LAST_QUARTER";
     return "WANING_CRESCENT";
   }
 }
@@ -54,13 +60,12 @@ export function getMoonPhaseEmoji(pct: number, waxing: boolean): string {
   if (pct > 97) return "🌕";
 
   if (waxing) {
-    if (pct < 25) return "🌒";
-    if (pct < 50) return "🌓";
-    if (pct < 75) return "🌔";
-    return "🌕";
+    if (pct < 45) return "🌒";
+    if (pct < 55) return "🌓";
+    return "🌔";
   } else {
-    if (pct > 75) return "🌖";
-    if (pct > 50) return "🌗";
+    if (pct > 55) return "🌖";
+    if (pct > 45) return "🌗";
     return "🌘";
   }
 }

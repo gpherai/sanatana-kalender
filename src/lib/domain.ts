@@ -252,12 +252,13 @@ export interface LocationWithTimezone extends Location {
 }
 
 /**
- * Default location: Den Haag, Netherlands (precise coordinates)
+ * Default location: Den Haag, Netherlands.
+ * Coordinates match the database defaults in UserPreference and DailyInfo models.
  */
 export const DEFAULT_LOCATION: LocationWithTimezone = {
   name: "Den Haag",
-  lat: 52.078525871758096,
-  lon: 4.331036597783044,
+  lat: 52.0705,
+  lon: 4.3007,
   timezone: "Europe/Amsterdam",
 } as const;
 

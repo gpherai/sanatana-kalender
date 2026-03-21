@@ -156,6 +156,8 @@ model DailyInfo {
   updatedAt            DateTime       @updatedAt
 
   @@index([tithi])
+  @@index([sankranti])
+  @@index([sankranti, date])
 }
 
 /// User preferences (single-user for now)

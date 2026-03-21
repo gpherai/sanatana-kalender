@@ -255,7 +255,9 @@ export function getMonthDays(year: number, month: number): Date[] {
   const lastDay = new Date(year, month + 1, 0);
 
   for (let d = 1; d <= lastDay.getDate(); d++) {
-    days.push(new Date(Date.UTC(year, month, d)));
+    // Use local dates (matching getMonthStartPadding) to avoid timezone-driven
+    // off-by-one errors on the calendar grid.
+    days.push(new Date(year, month, d));
   }
   return days;
 }

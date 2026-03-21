@@ -29,6 +29,7 @@ import {
   generateOccurrencesForEvents,
 } from "@/services/recurrence.service";
 import { DEFAULT_LOCATION } from "@/lib/domain";
+import { parseCalendarDate } from "@/lib/date-utils";
 import { generateOccurrencesSchema } from "@/lib/validations";
 import { validationError, notFoundError, serverError } from "@/lib/api-response";
 
@@ -44,8 +45,8 @@ export async function POST(request: NextRequest) {
 
     const data = result.data;
 
-    const startDate = new Date(data.startDate);
-    const endDate = new Date(data.endDate);
+    const startDate = parseCalendarDate(data.startDate);
+    const endDate = parseCalendarDate(data.endDate);
 
     if (startDate > endDate) {
       return NextResponse.json(
@@ -89,38 +90,38 @@ export async function POST(request: NextRequest) {
         maxOccurrences,
       });
 
-      // Optionally delete existing occurrences in range
-      let deletedCount = 0;
-      if (replace) {
-        const deleteResult = await prisma.eventOccurrence.deleteMany({
-          where: {
-            eventId: event.id,
-            date: {
-              gte: startDate,
-              lte: endDate,
+      // Delete + insert in a single transaction to prevent partial state on failure
+      const { deletedCount, generatedCount } = await prisma.$transaction(async (tx) => {
+        let deleted = 0;
+        if (replace) {
+          const deleteResult = await tx.eventOccurrence.deleteMany({
+            where: {
+              eventId: event.id,
+              date: { gte: startDate, lte: endDate },
             },
-          },
-        });
-        deletedCount = deleteResult.count;
-      }
+          });
+          deleted = deleteResult.count;
+        }
 
-      // Insert new occurrences using bulk createMany (skipDuplicates for non-replace case)
-      const createResult = await prisma.eventOccurrence.createMany({
-        data: occurrences.map((occ) => ({
-          eventId: event.id,
-          date: occ.date,
-          endDate: occ.endDate,
-          startTime: occ.startTime,
-          endTime: occ.endTime,
-          notes: occ.notes,
-        })),
-        skipDuplicates: true,
+        const createResult = await tx.eventOccurrence.createMany({
+          data: occurrences.map((occ) => ({
+            eventId: event.id,
+            date: occ.date,
+            endDate: occ.endDate,
+            startTime: occ.startTime,
+            endTime: occ.endTime,
+            notes: occ.notes,
+          })),
+          skipDuplicates: true,
+        });
+
+        return { deletedCount: deleted, generatedCount: createResult.count };
       });
 
       return NextResponse.json({
         message: `Generated occurrences for "${event.name}"`,
         eventId: event.id,
-        generated: createResult.count,
+        generated: generatedCount,
         deleted: deletedCount,
       });
     }
@@ -154,38 +155,35 @@ export async function POST(request: NextRequest) {
     let totalGenerated = 0;
     let totalDeleted = 0;
 
-    // Process each event
-    for (const [eventId, occurrences] of occurrencesMap.entries()) {
-      // Optionally delete existing occurrences in range
-      if (replace) {
-        const deleteResult = await prisma.eventOccurrence.deleteMany({
-          where: {
-            eventId,
-            date: {
-              gte: startDate,
-              lte: endDate,
+    // Process all events in a single transaction to prevent partial state on failure
+    await prisma.$transaction(async (tx) => {
+      for (const [eventId, occurrences] of occurrencesMap.entries()) {
+        if (replace) {
+          const deleteResult = await tx.eventOccurrence.deleteMany({
+            where: {
+              eventId,
+              date: { gte: startDate, lte: endDate },
             },
-          },
-        });
-        totalDeleted += deleteResult.count;
-      }
+          });
+          totalDeleted += deleteResult.count;
+        }
 
-      // Insert new occurrences using bulk createMany (skipDuplicates for non-replace case)
-      if (occurrences.length > 0) {
-        const insertResult = await prisma.eventOccurrence.createMany({
-          data: occurrences.map((occ) => ({
-            eventId,
-            date: occ.date,
-            endDate: occ.endDate,
-            startTime: occ.startTime,
-            endTime: occ.endTime,
-            notes: occ.notes,
-          })),
-          skipDuplicates: true,
-        });
-        totalGenerated += insertResult.count;
+        if (occurrences.length > 0) {
+          const insertResult = await tx.eventOccurrence.createMany({
+            data: occurrences.map((occ) => ({
+              eventId,
+              date: occ.date,
+              endDate: occ.endDate,
+              startTime: occ.startTime,
+              endTime: occ.endTime,
+              notes: occ.notes,
+            })),
+            skipDuplicates: true,
+          });
+          totalGenerated += insertResult.count;
+        }
       }
-    }
+    });
 
     return NextResponse.json({
       message: `Generated occurrences for ${eventsWithRecurrence.length} events`,

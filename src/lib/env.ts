@@ -82,6 +82,10 @@ function validateEnv() {
  * Validated environment variables.
  * Use this instead of process.env for type-safe access.
  *
+ * In test environments the schema is still validated — tests must supply
+ * DATABASE_URL (e.g. via .env.test or vitest setup). This ensures that the
+ * same validation runs everywhere and prevents silent misconfiguration.
+ *
  * @example
  * import { env } from '@/lib/env';
  * const dbUrl = env.DATABASE_URL; // Type-safe, guaranteed to exist

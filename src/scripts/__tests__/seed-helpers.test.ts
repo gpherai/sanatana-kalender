@@ -62,14 +62,14 @@ describe("seed helpers", () => {
 
     it("maps waxing ranges", () => {
       expect(getMoonPhaseType(10, true)).toBe("WAXING_CRESCENT");
-      expect(getMoonPhaseType(30, true)).toBe("FIRST_QUARTER");
+      expect(getMoonPhaseType(50, true)).toBe("FIRST_QUARTER");
       expect(getMoonPhaseType(60, true)).toBe("WAXING_GIBBOUS");
-      expect(getMoonPhaseType(80, true)).toBe("FULL_MOON");
+      expect(getMoonPhaseType(80, true)).toBe("WAXING_GIBBOUS");
     });
 
     it("maps waning ranges", () => {
       expect(getMoonPhaseType(80, false)).toBe("WANING_GIBBOUS");
-      expect(getMoonPhaseType(60, false)).toBe("LAST_QUARTER");
+      expect(getMoonPhaseType(50, false)).toBe("LAST_QUARTER");
       expect(getMoonPhaseType(40, false)).toBe("WANING_CRESCENT");
       expect(getMoonPhaseType(20, false)).toBe("WANING_CRESCENT");
     });
