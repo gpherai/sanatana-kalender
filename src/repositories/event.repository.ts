@@ -63,10 +63,15 @@ export async function findEventOccurrences(params: EventQueryParams) {
   const occurrenceWhere: Prisma.EventOccurrenceWhereInput = {};
 
   if (params.start && params.end) {
-    occurrenceWhere.date = {
-      gte: new Date(params.start),
-      lte: new Date(params.end),
-    };
+    const start = new Date(params.start);
+    const end = new Date(params.end);
+    // Include occurrences that overlap the range:
+    // - No endDate: start date falls within range
+    // - Has endDate: event period [date, endDate] overlaps [start, end]
+    occurrenceWhere.OR = [
+      { date: { gte: start, lte: end }, endDate: null },
+      { date: { lte: end }, endDate: { gte: start } },
+    ];
   }
 
   const eventWhere = buildEventWhere(params);

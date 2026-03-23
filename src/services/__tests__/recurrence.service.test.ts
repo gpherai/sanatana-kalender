@@ -156,7 +156,8 @@ describe("Recurrence Service", () => {
       });
 
       it("should handle spanning tithis (consecutive days)", async () => {
-        // Mock a tithi that spans two consecutive days (Jan 11 and Jan 12)
+        // A tithi that spans two consecutive calendar days (Jan 11 and Jan 12 both have tithi at sunrise).
+        // New behaviour: one occurrence with endDate, not two separate occurrences.
         const mockDbResponse = [
           {
             date: new Date("2025-01-11T00:00:00.000Z"),
@@ -174,19 +175,11 @@ describe("Recurrence Service", () => {
 
         const result = await generateOccurrences(MOCK_EVENT_MONTHLY, options);
 
-        expect(result).toHaveLength(2);
-
-        // Day 1: Start
+        // One occurrence spanning both days
+        expect(result).toHaveLength(1);
         expect(result[0]!.date).toEqual(new Date("2025-01-11T00:00:00.000Z"));
-        expect(result[0]!.startTime).toBe("00:00");
-        expect(result[0]!.endTime).toBe("23:59");
-        expect(result[0]!.notes).toContain("Begint op deze dag");
-
-        // Day 2: End
-        expect(result[1]!.date).toEqual(new Date("2025-01-12T00:00:00.000Z"));
-        expect(result[1]!.startTime).toBe("00:00");
-        expect(result[1]!.endTime).toBe("08:00");
-        expect(result[1]!.notes).toContain("Eindigt om 08:00");
+        expect(result[0]!.endDate).toEqual(new Date("2025-01-12T00:00:00.000Z"));
+        expect(result[0]!.endTime).toBe("08:00");
       });
 
       it("should treat non-consecutive days as separate occurrences", async () => {
@@ -304,6 +297,80 @@ describe("Recurrence Service", () => {
         const callArgs = prismaMock.dailyInfo.findMany.mock.calls[0]![0];
         // Should NOT have isAdhika in where clause
         expect(callArgs?.where).not.toHaveProperty("isAdhika");
+      });
+    });
+
+    describe("WEEKDAY_TITHI", () => {
+      const angarakiEvent: Event = {
+        ...MOCK_EVENT_YEARLY,
+        id: "evt_angaraki",
+        name: "Angaraki Sankashti Chaturthi",
+        recurrenceType: "MONTHLY_LUNAR",
+        ruleType: "WEEKDAY_TITHI",
+        ruleConfig: { weekday: 2 }, // dinsdag
+        tithi: "CHATURTHI_KRISHNA",
+      };
+
+      it("should only return tithi dates that fall on the specified weekday", async () => {
+        // Jan 7 2025 = dinsdag, Jan 8 2025 = woensdag
+        const mockDbResponse = [
+          { date: new Date("2025-01-07T00:00:00.000Z"), tithiEndTime: "18:30" }, // dinsdag
+          { date: new Date("2025-02-05T00:00:00.000Z"), tithiEndTime: "20:00" }, // woensdag — skip
+        ];
+
+        prismaMock.dailyInfo.findMany.mockResolvedValue(mockDbResponse as DailyInfo[]);
+
+        const result = await generateOccurrences(angarakiEvent, options);
+
+        expect(result).toHaveLength(1);
+        expect(result[0]!.date).toEqual(new Date("2025-01-07T00:00:00.000Z"));
+        expect(result[0]!.endTime).toBe("18:30");
+      });
+
+      it("should return empty array when no tithi dates fall on the weekday", async () => {
+        const mockDbResponse = [
+          { date: new Date("2025-02-05T00:00:00.000Z"), tithiEndTime: "20:00" }, // woensdag
+        ];
+
+        prismaMock.dailyInfo.findMany.mockResolvedValue(mockDbResponse as DailyInfo[]);
+
+        const result = await generateOccurrences(angarakiEvent, options);
+
+        expect(result).toHaveLength(0);
+      });
+
+      it("should return empty array when tithi is missing", async () => {
+        const eventWithoutTithi: Event = { ...angarakiEvent, tithi: null };
+
+        const result = await generateOccurrences(eventWithoutTithi, options);
+
+        expect(result).toEqual([]);
+        expect(prismaMock.dailyInfo.findMany).not.toHaveBeenCalled();
+      });
+
+      it("should return empty array when weekday is missing from ruleConfig", async () => {
+        const eventWithoutWeekday: Event = { ...angarakiEvent, ruleConfig: {} };
+
+        prismaMock.dailyInfo.findMany.mockResolvedValue([]);
+
+        const result = await generateOccurrences(eventWithoutWeekday, options);
+
+        expect(result).toEqual([]);
+      });
+
+      it("should query with isAdhika: false", async () => {
+        prismaMock.dailyInfo.findMany.mockResolvedValue([]);
+
+        await generateOccurrences(angarakiEvent, options);
+
+        expect(prismaMock.dailyInfo.findMany).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: expect.objectContaining({
+              tithi: "CHATURTHI_KRISHNA",
+              isAdhika: false,
+            }),
+          })
+        );
       });
     });
 

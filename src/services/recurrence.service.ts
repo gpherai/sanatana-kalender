@@ -20,7 +20,11 @@ import { prisma } from "@/lib/db";
 import { DEFAULT_LOCATION } from "@/lib/domain";
 import { logDebug, logWarn } from "@/lib/utils";
 import { formatDateNL } from "@/lib/date-utils";
-import { calculateTimingWindow } from "@/lib/timing-utils";
+import {
+  calculateTimingWindow,
+  parseTimeToMinutes,
+  formatMinutesToTime,
+} from "@/lib/timing-utils";
 
 // =============================================================================
 // TYPES
@@ -84,6 +88,7 @@ const RULE_STRATEGIES: Record<string, RecurrenceStrategy> = {
   TITHI: generateYearlyLunarOccurrences,
   NAKSHATRA: generateNakshatraRuleOccurrences,
   TITHI_NAKSHATRA: generateNakshatraRuleOccurrences,
+  WEEKDAY_TITHI: generateWeekdayTithiOccurrences,
 };
 
 /**
@@ -145,9 +150,19 @@ export async function generateOccurrences(
 
   let occurrences: GeneratedOccurrence[] = [];
 
-  // Monthly recurrence takes priority over ruleType-based dispatch.
-  // This allows catalog events (which have a ruleType) to still be monthly.
-  if (
+  // WEEKDAY_TITHI takes full precedence — handles its own frequency internally
+  // (queries all matching tithis, then filters by weekday).
+  if (event.ruleType === "WEEKDAY_TITHI") {
+    occurrences = await generateWeekdayTithiOccurrences(
+      event,
+      startDate,
+      endDate,
+      location,
+      timezone
+    );
+  } else if (
+    // Monthly recurrence takes priority over other ruleType-based dispatch.
+    // This allows catalog events (which have a ruleType) to still be monthly.
     event.recurrenceType === "MONTHLY_LUNAR" ||
     event.recurrenceType === "MONTHLY_SOLAR"
   ) {
@@ -424,20 +439,23 @@ async function generateYearlyLunarOccurrences(
       : 1;
 
   // Convert to occurrences with end times
-  return Array.from(occurrencesByKey.values())
-    .sort((a, b) => a.date.getTime() - b.date.getTime())
-    .map((day) => {
-      const endDate =
-        durationDays > 1
-          ? new Date(day.date.getTime() + (durationDays - 1) * 24 * 60 * 60 * 1000)
-          : undefined;
-      return {
-        date: day.date,
-        endDate,
-        startTime: undefined,
-        endTime: day.tithiEndTime ?? undefined,
-      };
-    });
+  const selectedDays = Array.from(occurrencesByKey.values()).sort(
+    (a, b) => a.date.getTime() - b.date.getTime()
+  );
+
+  // Multi-day festivals use a fixed duration — no tithi-spanning detection needed
+  if (durationDays > 1) {
+    return selectedDays.map((day) => ({
+      date: day.date,
+      endDate: new Date(day.date.getTime() + (durationDays - 1) * 24 * 60 * 60 * 1000),
+      startTime: undefined,
+      endTime: day.tithiEndTime ?? undefined,
+    }));
+  }
+
+  // Single-day events: detect if tithi started in the evening of the previous calendar day
+  const prevDayMap = await fetchPreviousDayData(selectedDays.map((d) => d.date));
+  return selectedDays.map((day) => computeTithiOccurrence(day, day, prevDayMap));
 }
 
 // =============================================================================
@@ -495,6 +513,55 @@ async function generateNakshatraRuleOccurrences(
       date: day.date,
       endTime: day.nakshatraEndTime ?? undefined,
     }));
+}
+
+// =============================================================================
+// WEEKDAY + TITHI RULE-BASED GENERATION
+// =============================================================================
+
+/**
+ * Generate occurrences for events that only occur when a specific tithi falls
+ * on a specific weekday (e.g., Angaraki Sankashti = Krishna Chaturthi on Tuesday).
+ *
+ * Queries all matching tithi dates in the range, then filters by weekday.
+ * ruleConfig must contain: { weekday: number } (0=Sunday … 6=Saturday, JS getUTCDay())
+ *
+ * Example: Angaraki Sankashti Chaturthi
+ *   tithi: CHATURTHI_KRISHNA, ruleConfig: { weekday: 2 } → all Tuesdays with this tithi
+ */
+async function generateWeekdayTithiOccurrences(
+  event: Event,
+  startDate: Date,
+  endDate: Date,
+  _location: { name: string; lat: number; lon: number },
+  _timezone: string
+): Promise<GeneratedOccurrence[]> {
+  if (!event.tithi) {
+    logWarn(`WEEKDAY_TITHI event "${event.name}" has no tithi specified`);
+    return [];
+  }
+
+  const config = (event.ruleConfig as Record<string, unknown>) ?? {};
+  const weekday = config.weekday;
+
+  if (typeof weekday !== "number") {
+    logWarn(`WEEKDAY_TITHI event "${event.name}" missing numeric weekday in ruleConfig`);
+    return [];
+  }
+
+  const dailyData = await prisma.dailyInfo.findMany({
+    where: {
+      date: { gte: startDate, lte: endDate },
+      tithi: event.tithi,
+      isAdhika: false,
+    },
+    orderBy: { date: "asc" },
+    select: { date: true, tithiEndTime: true },
+  });
+
+  const matchingDays = dailyData.filter((day) => day.date.getUTCDay() === weekday);
+  const prevDayMap = await fetchPreviousDayData(matchingDays.map((d) => d.date));
+  return matchingDays.map((day) => computeTithiOccurrence(day, day, prevDayMap));
 }
 
 // =============================================================================
@@ -566,66 +633,33 @@ async function generateMonthlyLunarOccurrences(
   // Fetch ALL dates matching the target tithi from database (with end times)
   const dailyData = await prisma.dailyInfo.findMany({
     where: {
-      date: {
-        gte: startDate,
-        lte: endDate,
-      },
+      date: { gte: startDate, lte: endDate },
       tithi: event.tithi,
     },
-    orderBy: {
-      date: "asc",
-    },
-    select: {
-      date: true,
-      tithiEndTime: true,
-    },
+    orderBy: { date: "asc" },
+    select: { date: true, tithiEndTime: true },
   });
 
-  // Process dailyData to detect spanning tithis
-  const occurrences: GeneratedOccurrence[] = [];
+  // Batch-fetch previous day data to detect actual tithi start times
+  const prevDayMap = await fetchPreviousDayData(dailyData.map((d) => d.date));
 
-  for (let i = 0; i < dailyData.length; i++) {
-    const current = dailyData[i]!;
-    const next = dailyData[i + 1];
-
-    // Check if this is part of a spanning tithi (next day is consecutive)
-    const currentDate = new Date(current.date);
-    const isSpanning = next && isConsecutiveDay(currentDate, new Date(next.date));
-
-    if (isSpanning) {
-      // This is the FIRST day of a spanning tithi
-      occurrences.push({
-        date: current.date,
-        startTime: "00:00", // Could calculate from previous tithi end
-        endTime: "23:59", // Continues into next day
-        notes: `Begint op deze dag, loopt door tot ${formatDateNL(next.date)}`,
-      });
+  // Group consecutive days into "tithi windows"
+  // (a tithi lasting > 24h appears on 2+ consecutive calendar days at sunrise)
+  type DayRow = (typeof dailyData)[0];
+  const windows: { firstDay: DayRow; lastDay: DayRow }[] = [];
+  for (const day of dailyData) {
+    const last = windows[windows.length - 1];
+    if (last && isConsecutiveDay(new Date(last.lastDay.date), new Date(day.date))) {
+      last.lastDay = day;
     } else {
-      // Check if this is the SECOND day of a spanning tithi
-      const prev = dailyData[i - 1];
-      const isPrevConsecutive =
-        prev && isConsecutiveDay(new Date(prev.date), currentDate);
-
-      if (isPrevConsecutive) {
-        // This is the LAST day of a spanning tithi
-        occurrences.push({
-          date: current.date,
-          startTime: "00:00", // Continues from previous day
-          endTime: current.tithiEndTime ?? undefined,
-          notes: `Eindigt om ${current.tithiEndTime || "onbekende tijd"}`,
-        });
-      } else {
-        // Single-day occurrence
-        occurrences.push({
-          date: current.date,
-          startTime: undefined,
-          endTime: current.tithiEndTime ?? undefined,
-        });
-      }
+      windows.push({ firstDay: day, lastDay: day });
     }
   }
 
-  return occurrences;
+  // One GeneratedOccurrence per window, with real start/end times and spanning endDate
+  return windows.map(({ firstDay, lastDay }) =>
+    computeTithiOccurrence(firstDay, lastDay, prevDayMap)
+  );
 }
 
 /**
@@ -645,6 +679,94 @@ function isConsecutiveDay(day1: Date, day2: Date): boolean {
     nextDay.getUTCMonth() === m2 &&
     nextDay.getUTCDate() === d2
   );
+}
+
+// =============================================================================
+// TITHI TIMING HELPERS
+// =============================================================================
+
+/**
+ * Batch-fetch DailyInfo for the day BEFORE each provided date.
+ * Returns a map: ISO string of current date → previous day's { tithiEndTime, sunrise }.
+ *
+ * Used to determine the actual start time of a tithi:
+ * prevDay.tithiEndTime = moment the previous tithi ended = moment the current tithi began.
+ */
+async function fetchPreviousDayData(
+  dates: Date[]
+): Promise<Map<string, { tithiEndTime: string | null; sunrise: string | null }>> {
+  if (dates.length === 0) return new Map();
+
+  const prevDates = dates.map((d) => {
+    const prev = new Date(d);
+    prev.setUTCDate(prev.getUTCDate() - 1);
+    return prev;
+  });
+
+  const rows = await prisma.dailyInfo.findMany({
+    where: { date: { in: prevDates } },
+    select: { date: true, tithiEndTime: true, sunrise: true },
+  });
+
+  // Key by the NEXT day (the original date) → prev day data
+  const map = new Map<string, { tithiEndTime: string | null; sunrise: string | null }>();
+  for (const row of rows) {
+    const nextDay = new Date(row.date);
+    nextDay.setUTCDate(nextDay.getUTCDate() + 1);
+    map.set(nextDay.toISOString().split("T")[0]!, {
+      tithiEndTime: row.tithiEndTime,
+      sunrise: row.sunrise,
+    });
+  }
+
+  return map;
+}
+
+/**
+ * Compute a GeneratedOccurrence for a tithi window.
+ *
+ * A window spans firstDay..lastDay (consecutive days that both have the same tithi at sunrise).
+ * prevDayMap provides the previous day's data to detect if the tithi started the evening before.
+ *
+ * Convention: prevDay.tithiEndTime = when the previous tithi ended = when THIS tithi began.
+ * If that time >= prevDay.sunrise, the tithi started in the EVENING → shift occDate back one day.
+ */
+function computeTithiOccurrence(
+  firstDay: { date: Date; tithiEndTime: string | null },
+  lastDay: { date: Date; tithiEndTime: string | null },
+  prevDayMap: Map<string, { tithiEndTime: string | null; sunrise: string | null }>
+): GeneratedOccurrence {
+  const firstKey = firstDay.date.toISOString().split("T")[0]!;
+  const prevInfo = prevDayMap.get(firstKey);
+
+  // Normalize "HH:MM:SS" → "HH:MM" (DailyInfo stores times with seconds)
+  const normalizeTime = (t: string): string => {
+    const min = parseTimeToMinutes(t);
+    return min !== null ? formatMinutesToTime(min) : t;
+  };
+
+  let occDate = firstDay.date;
+  let startTime: string | undefined = undefined;
+  const endTime: string | undefined = lastDay.tithiEndTime
+    ? normalizeTime(lastDay.tithiEndTime)
+    : undefined;
+
+  // If the tithi started in the evening of the previous calendar day, shift occDate back
+  if (prevInfo?.tithiEndTime && prevInfo.sunrise) {
+    const prevEndMin = parseTimeToMinutes(prevInfo.tithiEndTime);
+    const prevSunriseMin = parseTimeToMinutes(prevInfo.sunrise);
+    if (prevEndMin !== null && prevSunriseMin !== null && prevEndMin >= prevSunriseMin) {
+      const prevDate = new Date(firstDay.date);
+      prevDate.setUTCDate(prevDate.getUTCDate() - 1);
+      occDate = prevDate;
+      startTime = normalizeTime(prevInfo.tithiEndTime);
+    }
+  }
+
+  // endDate is set when the occurrence spans multiple calendar days
+  const endDate = lastDay.date.getTime() !== occDate.getTime() ? lastDay.date : undefined;
+
+  return { date: occDate, startTime, endDate, endTime };
 }
 
 // =============================================================================

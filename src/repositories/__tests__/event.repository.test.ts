@@ -93,10 +93,14 @@ describe("findEventOccurrences", () => {
   it("applies date range filter when both start and end are given", async () => {
     await findEventOccurrences({ start: "2025-01-01", end: "2025-01-31" });
     const where = getWhereArg();
-    expect(where.date).toEqual({
-      gte: new Date("2025-01-01"),
-      lte: new Date("2025-01-31"),
-    });
+    // Date range uses OR to include spanning events (events whose endDate overlaps the range)
+    expect(where.OR).toEqual([
+      {
+        date: { gte: new Date("2025-01-01"), lte: new Date("2025-01-31") },
+        endDate: null,
+      },
+      { date: { lte: new Date("2025-01-31") }, endDate: { gte: new Date("2025-01-01") } },
+    ]);
   });
 
   it("omits date filter when only start is given", async () => {

@@ -3,7 +3,7 @@
 import { Sun, Moon, Sparkles, Star } from "lucide-react";
 import { MoonPhase } from "@/components/ui/MoonPhase";
 import { cn } from "@/lib/utils";
-import { isToday } from "@/lib/date-utils";
+import { isToday, formatDateISO } from "@/lib/date-utils";
 import { getApproximateHinduMonth, type SpecialDay } from "@/lib/panchanga-helpers";
 import type { DailyInfoResponse } from "@/types";
 import type { CalendarEventResponse } from "@/types/calendar";
@@ -81,6 +81,7 @@ export function DayDetailsPanel({
 }: DayDetailsPanelProps) {
   const selectedSanskritDay = SANSKRIT_DAYS[(selectedDate.getDay() + 6) % 7]!;
   const selectedHinduMonth = getApproximateHinduMonth(selectedDate);
+  const selectedDateStr = formatDateISO(selectedDate);
 
   return (
     <div className="w-full space-y-4 lg:sticky lg:top-20 lg:w-72 lg:flex-shrink-0 lg:self-start">
@@ -297,52 +298,65 @@ export function DayDetailsPanel({
           </h4>
           {selectedDayEvents.length > 0 ? (
             <div className="space-y-2">
-              {selectedDayEvents.map((event) => (
-                <button
-                  key={event.id}
-                  onClick={() => onEventClick(event)}
-                  className={cn(
-                    "w-full rounded-lg p-3 text-left transition-all hover:shadow-md",
-                    "bg-theme-surface-hover hover:bg-theme-surface"
-                  )}
-                >
-                  <div className="flex items-center gap-2">
-                    <span>{event.resource.category?.icon || "📅"}</span>
-                    <span className="text-theme-fg font-medium">{event.title}</span>
-                  </div>
+              {selectedDayEvents.map((event) => {
+                const eventStartKey = event.start.split("T")[0]!;
+                const isStartDay = eventStartKey === selectedDateStr;
+                const isSpanning =
+                  event.resource.originalEndDate !== null &&
+                  event.resource.originalEndDate !== eventStartKey;
 
-                  {/* Spanning event indicator */}
-                  {(event.resource.startTime ||
-                    event.resource.endTime ||
-                    event.resource.notes) && (
-                    <div className="mt-1 flex items-center gap-2 text-xs">
-                      {event.resource.startTime &&
-                        event.resource.startTime === "00:00" &&
-                        event.resource.endTime && (
+                return (
+                  <button
+                    key={event.id}
+                    onClick={() => onEventClick(event)}
+                    className={cn(
+                      "w-full rounded-lg p-3 text-left transition-all hover:shadow-md",
+                      "bg-theme-surface-hover hover:bg-theme-surface"
+                    )}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span>{event.resource.category?.icon || "📅"}</span>
+                      <span className="text-theme-fg font-medium">{event.title}</span>
+                    </div>
+
+                    {/* Time badges + spanning indicator */}
+                    {(event.resource.startTime ||
+                      event.resource.endTime ||
+                      isSpanning ||
+                      event.resource.notes) && (
+                      <div className="mt-1 flex flex-wrap items-center gap-1 text-xs">
+                        {event.resource.startTime && (
                           <span className="rounded bg-[var(--theme-almanac-moon-badge-bg)] px-2 py-0.5 text-[var(--theme-almanac-moon-badge-fg)]">
+                            {isStartDay ? "Begint " : ""}
+                            {event.resource.startTime}
+                          </span>
+                        )}
+                        {event.resource.endTime && (
+                          <span className="rounded bg-[var(--theme-almanac-special-badge-bg)] px-2 py-0.5 text-[var(--theme-almanac-special-badge-fg)]">
                             Eindigt {event.resource.endTime}
                           </span>
                         )}
-                      {event.resource.endTime && event.resource.endTime === "23:59" && (
-                        <span className="rounded bg-[var(--theme-almanac-special-badge-bg)] px-2 py-0.5 text-[var(--theme-almanac-special-badge-fg)]">
-                          Loopt door
-                        </span>
-                      )}
-                      {event.resource.notes && (
-                        <span className="text-theme-fg-muted">
-                          {event.resource.notes}
-                        </span>
-                      )}
-                    </div>
-                  )}
+                        {isSpanning && isStartDay && !event.resource.endTime && (
+                          <span className="rounded bg-[var(--theme-almanac-special-badge-bg)] px-2 py-0.5 text-[var(--theme-almanac-special-badge-fg)]">
+                            Loopt door
+                          </span>
+                        )}
+                        {event.resource.notes && (
+                          <span className="text-theme-fg-muted">
+                            {event.resource.notes}
+                          </span>
+                        )}
+                      </div>
+                    )}
 
-                  {event.resource.description && (
-                    <p className="text-theme-fg-muted mt-1 line-clamp-2 text-xs">
-                      {event.resource.description}
-                    </p>
-                  )}
-                </button>
-              ))}
+                    {event.resource.description && (
+                      <p className="text-theme-fg-muted mt-1 line-clamp-2 text-xs">
+                        {event.resource.description}
+                      </p>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           ) : (
             <p className="text-theme-fg-muted text-center text-sm">Geen events</p>

@@ -225,10 +225,18 @@ export default function AlmanacPage() {
   const eventsMap = useMemo(() => {
     const map = new Map<string, CalendarEventResponse[]>();
     monthEvents.forEach((e) => {
-      const key = e.start.split("T")[0]!;
-      const existing = map.get(key) || [];
-      existing.push(e);
-      map.set(key, existing);
+      const startKey = e.start.split("T")[0]!;
+      const endKey = e.resource.originalEndDate ?? startKey;
+      // Add event to every calendar day it spans (handles tithi spanning + multi-day festivals)
+      let current = new Date(startKey + "T00:00:00Z");
+      const end = new Date(endKey + "T00:00:00Z");
+      while (current <= end) {
+        const key = current.toISOString().split("T")[0]!;
+        const existing = map.get(key) ?? [];
+        existing.push(e);
+        map.set(key, existing);
+        current = new Date(current.getTime() + 24 * 60 * 60 * 1000);
+      }
     });
     return map;
   }, [monthEvents]);

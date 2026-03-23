@@ -30,7 +30,15 @@ import {
   convertSankrantiToEnum,
 } from "@/scripts/seed-helpers";
 import { DateTime } from "luxon";
-import type { Tithi, Nakshatra, Maas, EventType, RecurrenceType } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import type {
+  Tithi,
+  Nakshatra,
+  Maas,
+  EventType,
+  RecurrenceType,
+  RuleType,
+} from "@prisma/client";
 
 // Event interface for type safety
 interface EventData {
@@ -42,6 +50,8 @@ interface EventData {
   tithi?: Tithi;
   nakshatra?: Nakshatra;
   maas?: Maas;
+  ruleType?: RuleType;
+  ruleConfig?: Prisma.InputJsonValue;
   tags: string[];
   /** Dynamic timing type (calculated from DailyInfo sunrise/sunset per occurrence). */
   timingType?: "NISHITA_KAAL" | "PRADOSH_KAAL" | "SUNRISE" | "SUNSET";
@@ -834,28 +844,12 @@ async function main() {
       description:
         "De meest gunstige Sankashti Chaturthi - wanneer deze op dinsdag (Mangalvar) valt. Dinsdag is de dag van Hanuman en Mars, wat de kracht van het vasten versterkt.",
       eventType: "VRAT",
-      recurrenceType: "NONE", // Must be manual: occurs when K.C. falls on Tuesday (weekday constraint)
+      recurrenceType: "MONTHLY_LUNAR",
+      ruleType: "WEEKDAY_TITHI",
+      ruleConfig: { weekday: 2 }, // 2 = dinsdag (JS getUTCDay: 0=zondag … 6=zaterdag)
       categoryName: "ganesha",
       tithi: "CHATURTHI_KRISHNA",
       tags: ["angaraki", "dinsdag", "ganesha", "mangalvar", "sankashti"],
-      occurrences: [
-        {
-          date: calendarDate(2025, 4, 15),
-          notes: "Angaraki Sankashti - dinsdag, extra gunstig",
-        },
-        {
-          date: calendarDate(2025, 9, 9),
-          notes: "Angaraki Sankashti - dinsdag",
-        },
-        {
-          date: calendarDate(2026, 3, 31),
-          notes: "Angaraki Sankashti - dinsdag",
-        },
-        {
-          date: calendarDate(2026, 8, 25),
-          notes: "Angaraki Sankashti - dinsdag",
-        },
-      ],
     },
     {
       name: "Vinayaka Chaturthi (Maandelijks)",
@@ -995,6 +989,8 @@ async function main() {
           tithi: eventData.tithi,
           nakshatra: eventData.nakshatra,
           maas: eventData.maas,
+          ruleType: eventData.ruleType,
+          ruleConfig: eventData.ruleConfig,
           tags: eventData.tags,
           timingType: eventData.timingType ?? null,
           startTime: eventData.startTime ?? null,
@@ -1012,6 +1008,8 @@ async function main() {
           tithi: eventData.tithi,
           nakshatra: eventData.nakshatra,
           maas: eventData.maas,
+          ruleType: eventData.ruleType,
+          ruleConfig: eventData.ruleConfig,
           tags: eventData.tags,
           timingType: eventData.timingType ?? null,
           startTime: eventData.startTime ?? null,
@@ -1053,6 +1051,12 @@ async function main() {
 
   console.log(`   ✓ ${eventCount} events created/updated`);
   console.log(`   ✓ ${manualOccurrenceCount} manual occurrences inserted`);
+
+  // Cleanup: verwijder eerder hardcoded Angaraki occurrences (nu auto-gegenereerd via WEEKDAY_TITHI)
+  const angarakiEntry = createdEvents.get("Angaraki Sankashti Chaturthi");
+  if (angarakiEntry) {
+    await prisma.eventOccurrence.deleteMany({ where: { eventId: angarakiEntry.id } });
+  }
 
   // Step 2: Auto-generate occurrences for events with recurrence
   console.log("🔁 Auto-generating occurrences (2025-2027)...");
