@@ -84,7 +84,8 @@ describe("Recurrence Service", () => {
 
         expect(result).toHaveLength(1);
         expect(result[0]!.date).toEqual(new Date("2025-02-26T00:00:00.000Z"));
-        expect(result[0]!.endTime).toBe("23:45");
+        // FESTIVAL events don't get endTime (only VRAT events get timing detection)
+        expect(result[0]!.endTime).toBeUndefined();
       });
 
       it("should prefer matching maas when multiple results in the same year", async () => {
@@ -107,7 +108,8 @@ describe("Recurrence Service", () => {
 
         expect(result).toHaveLength(1);
         expect(result[0]!.date).toEqual(new Date("2025-02-26T00:00:00.000Z"));
-        expect(result[0]!.endTime).toBe("23:45");
+        // FESTIVAL events don't get endTime (only VRAT events get timing detection)
+        expect(result[0]!.endTime).toBeUndefined();
       });
 
       it("should handle empty database results gracefully", async () => {

@@ -1248,4 +1248,17 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       "Dag 9 van Navratri (Navami). Verering van Maa Siddhidatri – schenker van volmaaktheid en alle siddhis.",
     tags: ["durga", "navadurga", "navami", "navratri", "siddhidatri"],
   },
+
+  // --- Dasha Mahavidyas ---
+  {
+    key: "ma_tara_jayanti",
+    name: "Ma Tara Jayanti",
+    category: "kali",
+    eventType: "JAYANTI",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "NAVAMI_SHUKLA", maas: "CHAITRA" },
+    description:
+      "Geboortedag van Ma Tara, de tweede van de Dasha Mahavidyas. Tara belichaamt bevrijdende kennis en bescherming bij het oversteken van het oceaan van samsara. Wordt voornamelijk in de tantrische tradities van Bengalen en Assam vereerd.",
+    tags: ["chaitra", "dasha mahavidyas", "jayanti", "mahavidya", "navami", "tara"],
+  },
 ];

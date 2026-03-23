@@ -15,7 +15,7 @@
  */
 
 import type { Event, RecurrenceType } from "@prisma/client";
-import { Sankranti } from "@prisma/client";
+import { Sankranti, EventType } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { DEFAULT_LOCATION } from "@/lib/domain";
 import { logDebug, logWarn } from "@/lib/utils";
@@ -453,9 +453,15 @@ async function generateYearlyLunarOccurrences(
     }));
   }
 
-  // Single-day events: detect if tithi started in the evening of the previous calendar day
-  const prevDayMap = await fetchPreviousDayData(selectedDays.map((d) => d.date));
-  return selectedDays.map((day) => computeTithiOccurrence(day, day, prevDayMap));
+  // Single-day VRAT events: detect if tithi started in the evening of the previous calendar day.
+  // Timing matters for fasting (vasten): you need to know when to start/stop.
+  // For non-vrat events (festivals, pujas, jayantis): keep the calendar day without times.
+  if (event.eventType === EventType.VRAT) {
+    const prevDayMap = await fetchPreviousDayData(selectedDays.map((d) => d.date));
+    return selectedDays.map((day) => computeTithiOccurrence(day, day, prevDayMap));
+  }
+
+  return selectedDays.map((day) => ({ date: day.date }));
 }
 
 // =============================================================================
