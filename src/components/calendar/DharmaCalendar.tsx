@@ -192,7 +192,7 @@ export function DharmaCalendar() {
   );
 
   return (
-    <div className="relative h-[calc(100vh-12rem)] min-h-[500px]">
+    <div className="relative h-[calc(100vh-6rem)] min-h-[600px]">
       {(!mounted || loading) && (
         <div className="bg-theme-surface-overlay absolute inset-0 z-10 flex items-center justify-center rounded-xl">
           <div className="flex flex-col items-center gap-2">

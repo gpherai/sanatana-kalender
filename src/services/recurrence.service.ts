@@ -521,9 +521,18 @@ async function generateYearlyLunarOccurrences(
 
       // Only add if the standard query found nothing for this year/maas
       if (!occurrencesByKey.has(key)) {
+        // kshayaNextDay: place the occurrence on the following calendar day.
+        // For series child events (e.g. Maa Siddhidatri = Day 9 of Navratri)
+        // this ensures every festival day maps to a distinct calendar date.
+        const kshayaNextDay =
+          (event.ruleConfig as Record<string, unknown>)?.kshayaNextDay === true;
+        const occDate = kshayaNextDay
+          ? new Date(day.date.getTime() + 24 * 60 * 60 * 1000)
+          : day.date;
+
         occurrencesByKey.set(key, {
-          date: day.date,
-          tithiEndTime: null, // kshaya tithi end time not derivable from predecessor data
+          date: occDate,
+          tithiEndTime: null,
           maas: day.maas,
           isAdhika: day.isAdhika,
         });

@@ -179,11 +179,20 @@ export const CATEGORY_CATALOG: readonly CategoryDefinition[] = [
     description: "Fierce goddess of time and liberation, destroyer of evil",
   },
   {
+    name: "tara",
+    displayName: "Ma Tara",
+    icon: "⭐",
+    color: "oklch(0.42 0.17 230)",
+    sortOrder: 16,
+    description:
+      "Second of the Dasha Mahavidyas, goddess of liberation and guidance across the ocean of samsara",
+  },
+  {
     name: "general",
     displayName: "General",
     icon: "📅",
     color: "oklch(0.70 0.10 180)",
-    sortOrder: 16,
+    sortOrder: 17,
     description: "General festivals and observances",
   },
 ] as const;

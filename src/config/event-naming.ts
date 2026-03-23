@@ -1241,7 +1241,11 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     category: "durga",
     eventType: "PUJA",
     ruleType: "TITHI",
-    ruleConfig: { tithi: "NAVAMI_SHUKLA", maas: ["CHAITRA", "ASHWIN"] },
+    ruleConfig: {
+      tithi: "NAVAMI_SHUKLA",
+      maas: ["CHAITRA", "ASHWIN"],
+      kshayaNextDay: true,
+    },
     parentKeys: ["chaitra_navratri", "sharad_navratri"],
     dayNumber: 9,
     description:
@@ -1253,7 +1257,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "ma_tara_jayanti",
     name: "Ma Tara Jayanti",
-    category: "kali",
+    category: "tara",
     eventType: "JAYANTI",
     ruleType: "TITHI",
     ruleConfig: { tithi: "NAVAMI_SHUKLA", maas: "CHAITRA" },
