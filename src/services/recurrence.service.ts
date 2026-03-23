@@ -14,7 +14,7 @@
  * @module services/recurrence
  */
 
-import type { Event, RecurrenceType } from "@prisma/client";
+import type { Event, RecurrenceType, Tithi } from "@prisma/client";
 import { Sankranti, EventType } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { DEFAULT_LOCATION } from "@/lib/domain";
@@ -25,6 +25,54 @@ import {
   parseTimeToMinutes,
   formatMinutesToTime,
 } from "@/lib/timing-utils";
+
+// =============================================================================
+// KSHAYA TITHI PREDECESSOR MAP
+// =============================================================================
+
+/**
+ * Maps each tithi to the one that precedes it in the lunar cycle.
+ *
+ * A kshaya ("lost") tithi never occurs at sunrise. It starts after sunrise on
+ * day D (when its predecessor ends) and ends before sunrise on day D+1.
+ * To detect it: find days where the predecessor tithi's tithiEndTime >= sunrise.
+ *
+ * Example: NAVAMI_SHUKLA in Chaitra 2026 is kshaya.
+ *   On Mar 26: ASHTAMI_SHUKLA active at sunrise, ends at 07:18 (> sunrise ~06:33).
+ *   → NAVAMI_SHUKLA starts 07:18 on Mar 26. Calendar date = Mar 26.
+ */
+const TITHI_PREDECESSOR: Partial<Record<Tithi, Tithi>> = {
+  PRATIPADA_SHUKLA: "AMAVASYA",
+  DWITIYA_SHUKLA: "PRATIPADA_SHUKLA",
+  TRITIYA_SHUKLA: "DWITIYA_SHUKLA",
+  CHATURTHI_SHUKLA: "TRITIYA_SHUKLA",
+  PANCHAMI_SHUKLA: "CHATURTHI_SHUKLA",
+  SHASHTHI_SHUKLA: "PANCHAMI_SHUKLA",
+  SAPTAMI_SHUKLA: "SHASHTHI_SHUKLA",
+  ASHTAMI_SHUKLA: "SAPTAMI_SHUKLA",
+  NAVAMI_SHUKLA: "ASHTAMI_SHUKLA",
+  DASHAMI_SHUKLA: "NAVAMI_SHUKLA",
+  EKADASHI_SHUKLA: "DASHAMI_SHUKLA",
+  DWADASHI_SHUKLA: "EKADASHI_SHUKLA",
+  TRAYODASHI_SHUKLA: "DWADASHI_SHUKLA",
+  CHATURDASHI_SHUKLA: "TRAYODASHI_SHUKLA",
+  PURNIMA: "CHATURDASHI_SHUKLA",
+  PRATIPADA_KRISHNA: "PURNIMA",
+  DWITIYA_KRISHNA: "PRATIPADA_KRISHNA",
+  TRITIYA_KRISHNA: "DWITIYA_KRISHNA",
+  CHATURTHI_KRISHNA: "TRITIYA_KRISHNA",
+  PANCHAMI_KRISHNA: "CHATURTHI_KRISHNA",
+  SHASHTHI_KRISHNA: "PANCHAMI_KRISHNA",
+  SAPTAMI_KRISHNA: "SHASHTHI_KRISHNA",
+  ASHTAMI_KRISHNA: "SAPTAMI_KRISHNA",
+  NAVAMI_KRISHNA: "ASHTAMI_KRISHNA",
+  DASHAMI_KRISHNA: "NAVAMI_KRISHNA",
+  EKADASHI_KRISHNA: "DASHAMI_KRISHNA",
+  DWADASHI_KRISHNA: "EKADASHI_KRISHNA",
+  TRAYODASHI_KRISHNA: "DWADASHI_KRISHNA",
+  CHATURDASHI_KRISHNA: "TRAYODASHI_KRISHNA",
+  AMAVASYA: "CHATURDASHI_KRISHNA",
+};
 
 // =============================================================================
 // TYPES
@@ -429,6 +477,57 @@ async function generateYearlyLunarOccurrences(
 
     if (!occurrencesByKey.has(key)) {
       occurrencesByKey.set(key, day);
+    }
+  }
+
+  // Kshaya tithi fallback: a kshaya tithi never occurs at sunrise, so the standard
+  // query above misses it. Detect it by finding days where the predecessor tithi
+  // ends AFTER sunrise — the kshaya tithi then starts on that same calendar day.
+  const predecessorTithi = TITHI_PREDECESSOR[event.tithi];
+  if (predecessorTithi) {
+    const kshayaWhere: Record<string, unknown> = {
+      date: { gte: startDate, lte: endDate },
+      tithi: predecessorTithi,
+    };
+    if (event.isAdhikaOnly) {
+      kshayaWhere.isAdhika = true;
+    } else if (!event.includeAdhika) {
+      kshayaWhere.isAdhika = false;
+    }
+
+    const kshayaCandidates = await prisma.dailyInfo.findMany({
+      where: kshayaWhere as never,
+      select: {
+        date: true,
+        tithiEndTime: true,
+        sunrise: true,
+        maas: true,
+        isAdhika: true,
+      },
+      orderBy: { date: "asc" },
+    });
+
+    for (const day of kshayaCandidates) {
+      if (maasValues && (!day.maas || !maasValues.includes(day.maas))) continue;
+
+      const endMin = parseTimeToMinutes(day.tithiEndTime ?? "");
+      const sunriseMin = parseTimeToMinutes(day.sunrise ?? "");
+      if (endMin === null || sunriseMin === null) continue;
+      // Predecessor ends after sunrise → kshaya tithi starts on this same calendar day
+      if (endMin < sunriseMin) continue;
+
+      const year = day.date.getUTCFullYear();
+      const key = isMultiMaas && day.maas ? `${year}-${day.maas}` : String(year);
+
+      // Only add if the standard query found nothing for this year/maas
+      if (!occurrencesByKey.has(key)) {
+        occurrencesByKey.set(key, {
+          date: day.date,
+          tithiEndTime: null, // kshaya tithi end time not derivable from predecessor data
+          maas: day.maas,
+          isAdhika: day.isAdhika,
+        });
+      }
     }
   }
 
