@@ -4,7 +4,6 @@ import { prisma } from "@/lib/db";
 import { DharmaCalendar } from "@/components/calendar/DharmaCalendar";
 import { TodayHero } from "@/components/ui/TodayHero";
 import { PageLayout } from "@/components/layout";
-import { getCategoryBgClass } from "@/lib/category-styles";
 
 export const dynamic = "force-dynamic";
 
@@ -116,19 +115,21 @@ export default async function Home() {
               <span className="text-xl">🏷️</span>
               Godheden
             </h2>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-1.5">
               {categories.map((cat) => (
                 <div
                   key={cat.id}
-                  className="hover:bg-theme-surface-hover flex cursor-default items-center gap-2 rounded-lg p-2 transition-colors"
+                  className="flex cursor-default items-center gap-2 rounded-r-lg border-l-[3px] px-2.5 py-1.5 transition-colors"
+                  style={{
+                    borderLeftColor: cat.color,
+                    background: `color-mix(in oklch, ${cat.color} 10%, transparent)`,
+                  }}
                   title={cat.displayName}
                 >
-                  <span
-                    className={`flex h-6 w-6 items-center justify-center rounded-full text-sm ${getCategoryBgClass(cat.name, 20)}`}
-                  >
-                    {cat.icon}
+                  <span className="text-sm leading-none">{cat.icon}</span>
+                  <span className="text-theme-fg-secondary truncate text-xs font-medium">
+                    {cat.displayName}
                   </span>
-                  <span className="text-theme-fg-muted text-sm">{cat.displayName}</span>
                 </div>
               ))}
             </div>

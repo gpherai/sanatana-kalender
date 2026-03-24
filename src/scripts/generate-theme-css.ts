@@ -120,11 +120,11 @@ function generateRootVariables(): string {
      ═══════════════════════════════════════════════════════════════════════════ */
 
   /* Backgrounds */
-  --theme-bg: oklch(1 0 0);                          /* Page background */
-  --theme-bg-subtle: oklch(0.985 0.002 60);          /* Subtle background (zinc-50) */
+  --theme-bg: oklch(0.97 0.006 60);                  /* Page background (warm light gray) */
+  --theme-bg-subtle: oklch(0.96 0.007 60);           /* Subtle background */
   --theme-surface: oklch(1 0 0);                     /* Cards, elevated surfaces */
-  --theme-surface-raised: oklch(0.985 0.002 60);    /* Raised surface */
-  --theme-surface-overlay: oklch(1 0 0 / 0.9);      /* Modals, dropdowns */
+  --theme-surface-raised: oklch(1 0 0);              /* Raised surface (white on warm bg) */
+  --theme-surface-overlay: oklch(1 0 0 / 0.95);     /* Modals, dropdowns */
 
   /* Text colors */
   --theme-fg: oklch(0.141 0.005 285);               /* Primary text (zinc-900) */
@@ -139,8 +139,8 @@ function generateRootVariables(): string {
   --theme-divider: oklch(0.920 0.004 286);          /* Dividers */
 
   /* Interactive states */
-  --theme-hover: oklch(0.968 0.003 286);            /* Hover background (zinc-100) */
-  --theme-active: oklch(0.920 0.004 286);           /* Active/pressed (zinc-200) */
+  --theme-hover: oklch(0.94 0.006 60);              /* Hover background (warm gray) */
+  --theme-active: oklch(0.91 0.008 60);             /* Active/pressed */
   --theme-disabled: oklch(0.920 0.004 286);         /* Disabled elements */
   --theme-ring: var(--theme-primary);               /* Focus ring color */
 
@@ -690,7 +690,8 @@ function generateTailwindIntegration(): string {
   --color-primary: var(--theme-primary);
   --color-secondary: var(--theme-secondary);
   --color-accent: var(--theme-accent);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-montserrat);
+  --font-display: var(--font-playfair);
   --font-mono: var(--font-geist-mono);
 }
 `;
@@ -705,6 +706,10 @@ body {
   background: var(--background);
   color: var(--foreground);
   min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display), Georgia, "Times New Roman", serif;
 }
 
 html {
@@ -789,6 +794,7 @@ function generateUtilityClasses(): string {
 .bg-theme-surface-raised { background-color: var(--theme-surface-raised); }
 .bg-theme-surface-overlay { background-color: var(--theme-surface-overlay); }
 .bg-theme-hover { background-color: var(--theme-hover); }
+.bg-theme-surface-hover { background-color: var(--theme-hover); }
 .bg-theme-active { background-color: var(--theme-active); }
 
 /* === SEMANTIC TEXT === */

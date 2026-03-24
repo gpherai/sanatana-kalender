@@ -133,8 +133,8 @@ export function DharmaCalendar() {
     // Base style
     const style: React.CSSProperties = {
       backgroundColor: categoryData?.color ?? "oklch(0.6 0.15 250)",
-      borderRadius: "4px",
-      opacity: 0.9,
+      borderRadius: "999px",
+      opacity: 1,
       color: "white",
       border: "none",
       display: "block",

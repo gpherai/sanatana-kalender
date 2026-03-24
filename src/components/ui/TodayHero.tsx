@@ -163,7 +163,7 @@ export function TodayHero() {
               </span>
             </div>
 
-            <h1 className="mb-1 text-4xl font-bold text-white md:text-5xl">
+            <h1 className="mb-1 font-sans text-4xl font-bold text-white md:text-5xl">
               {today.toLocaleDateString("nl-NL", {
                 day: "numeric",
                 month: "long",
