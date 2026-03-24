@@ -25,7 +25,7 @@
     "db:cleanup": "tsx --tsconfig tsconfig.json src/scripts/cleanup-legacy-events.ts",
     "db:events": "tsx --tsconfig tsconfig.json src/scripts/generate-events-from-naming.ts",
     "db:occurrences": "tsx --tsconfig tsconfig.json src/scripts/generate-occurrences.ts",
-    "db:setup": "npm run db:seed && npm run db:events && npm run db:occurrences -- --start 2025-01-01 --end 2027-12-31 --replace",
+    "db:setup": "npm run db:seed && npm run db:events && npm run db:occurrences -- --start 2026-01-01 --end 2030-12-31 --replace",
     "generate:css": "tsx --tsconfig tsconfig.json src/scripts/generate-theme-css.ts",
     "db:studio": "prisma studio",
     "db:reset": "prisma migrate reset --force && npm run db:setup",

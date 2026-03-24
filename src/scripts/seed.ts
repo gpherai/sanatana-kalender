@@ -31,34 +31,46 @@ async function main() {
   // ============================================
   // 0. DAILY INFO (populate Panchanga data using Swiss Ephemeris)
   // ============================================
-  console.log("🌙 Generating DailyInfo for 2025-2027...");
+  console.log("🌙 Generating DailyInfo for 2025-2030...");
 
   const dailyInfoStart = DateTime.fromObject(
     { year: 2025, month: 1, day: 1 },
     { zone: DEFAULT_LOCATION.timezone }
   );
   const dailyInfoEnd = DateTime.fromObject(
-    { year: 2027, month: 12, day: 31 },
+    { year: 2030, month: 12, day: 31 },
     { zone: DEFAULT_LOCATION.timezone }
   );
 
-  // Check if we already have data
-  const existingDailyInfo = await prisma.dailyInfo.count({
-    where: {
-      date: {
-        gte: dailyInfoStart.toJSDate(),
-        lte: dailyInfoEnd.toJSDate(),
-      },
-    },
+  // Find the highest date already in the database to avoid recalculating existing data
+  const latestRow = await prisma.dailyInfo.findFirst({
+    orderBy: { date: "desc" },
+    select: { date: true },
   });
+  const latestDate = latestRow?.date
+    ? DateTime.fromJSDate(latestRow.date, { zone: DEFAULT_LOCATION.timezone })
+    : null;
 
-  if (existingDailyInfo === 0 || process.env.FORCE_RESEED === "true") {
-    console.log("   Computing Panchanga data (Swiss Ephemeris)...");
+  const forceReseed = process.env.FORCE_RESEED === "true";
+  const needsFill = forceReseed || !latestDate || latestDate < dailyInfoEnd;
 
-    let current = dailyInfoStart;
+  if (needsFill) {
+    // Start from day after the last existing record (unless forced full reseed)
+    const fillFrom =
+      forceReseed || !latestDate ? dailyInfoStart : latestDate.plus({ days: 1 });
+
+    if (!forceReseed && latestDate) {
+      console.log(
+        `   Extending from ${fillFrom.toISODate()} to ${dailyInfoEnd.toISODate()}...`
+      );
+    } else {
+      console.log("   Computing Panchanga data (Swiss Ephemeris)...");
+    }
+
+    let current = fillFrom;
     let insertedCount = 0;
     let errorCount = 0;
-    const total = Math.ceil(dailyInfoEnd.diff(dailyInfoStart, "days").days) + 1;
+    const total = Math.ceil(dailyInfoEnd.diff(fillFrom, "days").days) + 1;
 
     while (current <= dailyInfoEnd) {
       try {
@@ -236,16 +248,18 @@ async function main() {
       current = current.plus({ days: 1 });
     }
 
-    console.log(`   ✅ DailyInfo seeded: ${insertedCount} days, ${errorCount} errors`);
+    console.log(
+      `   ✅ DailyInfo bijgevuld: ${insertedCount} dagen, ${errorCount} fouten`
+    );
 
     if (errorCount > 0) {
       console.warn(`   ⚠️  ${errorCount} days failed - review errors above`);
     }
   } else {
     console.log(
-      `   ℹ️  DailyInfo already exists (${existingDailyInfo} records). Skipping.`
+      `   ℹ️  DailyInfo already up-to-date tot ${latestDate?.toISODate()}. Skipping.`
     );
-    console.log(`      Use FORCE_RESEED=true to regenerate.`);
+    console.log(`      Use FORCE_RESEED=true to regenerate all.`);
   }
 
   // ============================================
@@ -321,7 +335,7 @@ async function main() {
 
   console.log("\n✅ Seeding complete!");
   console.log(
-    "   Volgende stap: npm run db:events && npm run db:occurrences -- --start 2025-01-01 --end 2027-12-31 --replace"
+    "   Volgende stap: npm run db:events && npm run db:occurrences -- --start 2026-01-01 --end 2030-12-31 --replace"
   );
   console.log("   Of alles in één keer: npm run db:setup\n");
 }
