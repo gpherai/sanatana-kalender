@@ -407,17 +407,6 @@ async function main() {
       tags: ["akshaya", "dana", "goud", "gunstig"],
     },
     {
-      name: "Guru Purnima",
-      description:
-        "Dag ter ere van spirituele leraren (guru's). Traditioneel de geboortedag van Ved Vyasa, de auteur van de Mahabharata. Studenten drukken dankbaarheid uit aan hun leraren.",
-      eventType: "PUJA",
-      recurrenceType: "YEARLY_LUNAR",
-      categoryName: "vishnu",
-      tithi: "PURNIMA",
-      maas: "ASHADHA",
-      tags: ["dankbaarheid", "guru", "onderwijs", "vyasa"],
-    },
-    {
       name: "Raksha Bandhan",
       description:
         "Festival van de broeder-zuster band. Zussen binden een rakhi (beschermende draad) om de pols van hun broers, die beloven hen te beschermen.",
@@ -441,28 +430,6 @@ async function main() {
       timingType: "NISHITA_KAAL",
     },
     {
-      name: "Ganesh Chaturthi",
-      description:
-        "Verschijningsdag van Heer Ganesha, de god van wijsheid en nieuw begin. Tien dagen van festiviteiten met dagelijkse puja's, eindigend met visarjan (onderdompeling) op Anant Chaturdashi.",
-      eventType: "FESTIVAL",
-      recurrenceType: "YEARLY_LUNAR",
-      categoryName: "ganesha",
-      tithi: "CHATURTHI_SHUKLA",
-      maas: "BHADRAPADA",
-      tags: ["ganesha", "geboorte", "modak", "visarjan"],
-    },
-    {
-      name: "Navaratri",
-      description:
-        "Negen nachten gewijd aan Godin Durga in haar negen vormen. Elke dag heeft een specifieke kleur en vorm van de Devi. Wordt afgesloten met Vijayadashami (Dussehra).",
-      eventType: "FESTIVAL",
-      recurrenceType: "YEARLY_LUNAR",
-      categoryName: "durga",
-      tithi: "PRATIPADA_SHUKLA",
-      maas: "ASHWIN",
-      tags: ["dandiya", "devi", "durga", "garba", "negen nachten"],
-    },
-    {
       name: "Dussehra (Vijayadashami)",
       description:
         "Overwinning van Heer Rama op Ravana en van Godin Durga op Mahishasura. Symboliseert de triomf van goed over kwaad. Ravana-effigie's worden verbrand.",
@@ -472,17 +439,6 @@ async function main() {
       tithi: "DASHAMI_SHUKLA",
       maas: "ASHWIN",
       tags: ["durga", "overwinning", "rama", "ravana"],
-    },
-    {
-      name: "Diwali",
-      description:
-        "Het festival van lichten. Viert de terugkeer van Heer Rama naar Ayodhya na 14 jaar ballingschap. Huizen worden verlicht met diyas en er wordt Lakshmi puja gedaan voor welvaart.",
-      eventType: "FESTIVAL",
-      recurrenceType: "YEARLY_LUNAR",
-      categoryName: "lakshmi",
-      tithi: "AMAVASYA",
-      maas: "KARTIK",
-      tags: ["diyas", "lakshmi", "lichten", "rama", "welvaart"],
     },
 
     // ==========================================
@@ -544,17 +500,6 @@ async function main() {
       tags: ["chaturthi", "ganesha", "maandag vasten", "sankashti"],
     },
     {
-      name: "Saphala Ekadashi",
-      description:
-        "Betekent 'vruchtbaar/succesvol'. Het vasten op deze dag brengt succes in alle ondernemingen en helpt spirituele vooruitgang. Valt in de Krishna paksha van Pausha maand.",
-      eventType: "VRAT",
-      recurrenceType: "YEARLY_LUNAR",
-      categoryName: "vishnu",
-      tithi: "EKADASHI_KRISHNA",
-      maas: "PAUSHA",
-      tags: ["ekadashi", "succes", "vasten", "vruchten"],
-    },
-    {
       name: "Amavasya - December",
       description:
         "Nieuwe maan dag. Traditioneel een dag voor pitru tarpan (voorouder verering) en introspectie. Gunstig voor meditatie en spirituele praktijken.",
@@ -569,28 +514,6 @@ async function main() {
     // ==========================================
     // JANUARY 2026 EVENTS
     // ==========================================
-    {
-      name: "Putrada Ekadashi",
-      description:
-        "Ekadashi in Pausha Shukla paksha. Het vasten op deze dag wordt geloofd zonen te schenken aan degenen die ernaar verlangen. Ook gunstig voor algemene voorspoed.",
-      eventType: "VRAT",
-      recurrenceType: "YEARLY_LUNAR",
-      categoryName: "vishnu",
-      tithi: "EKADASHI_SHUKLA",
-      maas: "PAUSHA",
-      tags: ["ekadashi", "kinderen", "vasten", "zegen"],
-    },
-    {
-      name: "Pausha Purnima",
-      description:
-        "Volle maan in Pausha maand. Een gunstige dag voor rituele baden, dana (liefdadigheid), en spirituele praktijken. Markeert het midden van de winter.",
-      eventType: "TITHI",
-      recurrenceType: "YEARLY_LUNAR",
-      categoryName: "vishnu",
-      tithi: "PURNIMA",
-      maas: "PAUSHA",
-      tags: ["baden", "liefdadigheid", "purnima", "volle maan"],
-    },
     {
       name: "Thai Pongal",
       description:
@@ -611,28 +534,6 @@ async function main() {
     // ==========================================
     // 2025 PUJA'S & JAYANTI'S
     // ==========================================
-    {
-      name: "Vasant Panchami (Saraswati Puja)",
-      description:
-        "Geboortedag van Goddess Saraswati, godin van kennis, muziek en kunst. Studenten vereren boeken en muziekinstrumenten. Gele kleding wordt gedragen als symbool van de lente.",
-      eventType: "PUJA",
-      recurrenceType: "YEARLY_LUNAR",
-      categoryName: "saraswati",
-      tithi: "PANCHAMI_SHUKLA",
-      maas: "MAGHA",
-      tags: ["geel", "kennis", "lente", "muziek", "saraswati"],
-    },
-    {
-      name: "Varuthini Ekadashi",
-      description:
-        "Een belangrijke Ekadashi in Vaishakha maand. Het vasten op deze dag wordt gezegd alle zonden weg te nemen en moksha te bevorderen.",
-      eventType: "VRAT",
-      recurrenceType: "YEARLY_LUNAR",
-      categoryName: "vishnu",
-      tithi: "EKADASHI_KRISHNA",
-      maas: "VAISHAKHA",
-      tags: ["ekadashi", "moksha", "vasten", "vishnu"],
-    },
     {
       name: "Narasimha Jayanti",
       description:
@@ -690,107 +591,9 @@ async function main() {
     },
 
     // ==========================================
-    // EKADASHI VRATS 2025 (Full year)
+    // EKADASHI VRATS
+    // (Volledig beheerd via event-naming.ts + generate-events-from-naming.ts)
     // ==========================================
-    {
-      name: "Sat-tila Ekadashi",
-      description:
-        "Ekadashi in Magha maand. Het offeren van til (sesam) in zeven vormen (sapta-tila) is traditioneel op deze dag voor het zuiveren van zonden.",
-      eventType: "VRAT",
-      recurrenceType: "YEARLY_LUNAR",
-      categoryName: "vishnu",
-      tithi: "EKADASHI_KRISHNA",
-      maas: "MAGHA",
-      tags: ["ekadashi", "sesam", "til", "vasten"],
-    },
-    {
-      name: "Jaya Ekadashi",
-      description:
-        "Deze Ekadashi valt in Magha Shukla paksha. Het vasten bevrijdt van onwetendheid en brengt spirituele overwinning (jaya).",
-      eventType: "VRAT",
-      recurrenceType: "YEARLY_LUNAR",
-      categoryName: "vishnu",
-      tithi: "EKADASHI_SHUKLA",
-      maas: "MAGHA",
-      tags: ["ekadashi", "overwinning", "vasten", "vishnu"],
-    },
-    {
-      name: "Vijaya Ekadashi",
-      description:
-        "Ekadashi voor spirituele overwinning. Lord Rama vastte op deze dag voordat hij naar Lanka ging om Sita te redden.",
-      eventType: "VRAT",
-      recurrenceType: "YEARLY_LUNAR",
-      categoryName: "vishnu",
-      tithi: "EKADASHI_KRISHNA",
-      maas: "PHALGUNA",
-      tags: ["ekadashi", "overwinning", "rama", "vasten"],
-    },
-    {
-      name: "Amalaki Ekadashi",
-      description:
-        "Ekadashi gewijd aan de amalaki (amla) boom, heilig voor Lord Vishnu. Het vasten rond een amalaki boom brengt grote verdienste.",
-      eventType: "VRAT",
-      recurrenceType: "YEARLY_LUNAR",
-      categoryName: "vishnu",
-      tithi: "EKADASHI_SHUKLA",
-      maas: "PHALGUNA",
-      tags: ["amla", "ekadashi", "vasten", "vishnu"],
-    },
-    {
-      name: "Papmochani Ekadashi",
-      description:
-        "Betekent 'verwijderaar van zonden'. Een krachtige Ekadashi die alle papa (zonden) uit verleden levens kan zuiveren.",
-      eventType: "VRAT",
-      recurrenceType: "YEARLY_LUNAR",
-      categoryName: "vishnu",
-      tithi: "EKADASHI_KRISHNA",
-      maas: "CHAITRA",
-      tags: ["ekadashi", "vasten", "zonden", "zuivering"],
-    },
-    {
-      name: "Kamada Ekadashi",
-      description:
-        "Ekadashi die alle wensen (kama) vervult. Het verhaal vertelt van een Gandharva die door dit vasten van een vloek werd bevrijd.",
-      eventType: "VRAT",
-      recurrenceType: "YEARLY_LUNAR",
-      categoryName: "vishnu",
-      tithi: "EKADASHI_SHUKLA",
-      maas: "CHAITRA",
-      tags: ["ekadashi", "vasten", "verlossing", "wensen"],
-    },
-    {
-      name: "Devshayani Ekadashi",
-      description:
-        "Begin van Chaturmas, de vier maanden waarin Lord Vishnu slaapt. Geen huwelijken of nieuwe ondernemingen worden gestart tot Prabodhini Ekadashi.",
-      eventType: "VRAT",
-      recurrenceType: "YEARLY_LUNAR",
-      categoryName: "vishnu",
-      tithi: "EKADASHI_SHUKLA",
-      maas: "ASHADHA",
-      tags: ["chaturmas", "ekadashi", "vasten", "vishnu slaapt"],
-    },
-    {
-      name: "Prabodhini Ekadashi (Dev Uthani)",
-      description:
-        "Lord Vishnu ontwaakt uit zijn vier maanden slaap. Dit markeert het einde van Chaturmas en het begin van het huwelijksseizoen.",
-      eventType: "VRAT",
-      recurrenceType: "YEARLY_LUNAR",
-      categoryName: "vishnu",
-      tithi: "EKADASHI_SHUKLA",
-      maas: "KARTIK",
-      tags: ["ekadashi", "huwelijksseizoen", "vasten", "vishnu ontwaakt"],
-    },
-    {
-      name: "Mokshada Ekadashi",
-      description:
-        "Ekadashi voor moksha (bevrijding). Valt samen met Gita Jayanti. Het luisteren naar en reciteren van de Bhagavad Gita is bijzonder verdienstelijk.",
-      eventType: "VRAT",
-      recurrenceType: "YEARLY_LUNAR",
-      categoryName: "vishnu",
-      tithi: "EKADASHI_SHUKLA",
-      maas: "MARGASHIRSHA",
-      tags: ["bevrijding", "ekadashi", "gita", "moksha", "vasten"],
-    },
 
     // ==========================================
     // SANKRANTI & SOLAR EVENTS
@@ -852,29 +655,6 @@ async function main() {
       tags: ["angaraki", "dinsdag", "ganesha", "mangalvar", "sankashti"],
     },
     {
-      name: "Vinayaka Chaturthi (Maandelijks)",
-      description:
-        "Maandelijkse viering op Shukla Paksha Chaturthi. Gunstig voor het starten van nieuwe ondernemingen, studies en belangrijke beslissingen. Ganesha wordt aangeroepen als Vighnaharta.",
-      eventType: "PUJA",
-      recurrenceType: "MONTHLY_LUNAR",
-      categoryName: "ganesha",
-      tithi: "CHATURTHI_SHUKLA",
-      tags: ["chaturthi", "ganesha", "maandelijks", "nieuw begin", "vinayaka"],
-      occurrences: [
-        { date: calendarDate(2025, 1, 3), notes: "Eerste Vinayaka Chaturthi 2025" },
-        { date: calendarDate(2025, 2, 1) },
-        { date: calendarDate(2025, 3, 3) },
-        { date: calendarDate(2025, 4, 1) },
-        { date: calendarDate(2025, 5, 1) },
-        { date: calendarDate(2025, 5, 31) },
-        { date: calendarDate(2025, 6, 29) },
-        { date: calendarDate(2025, 7, 29) },
-        { date: calendarDate(2025, 10, 25) },
-        { date: calendarDate(2025, 11, 24) },
-        { date: calendarDate(2025, 12, 23) },
-      ],
-    },
-    {
       name: "Sankashti Chaturthi (Maandelijks)",
       description:
         "Maandelijkse Ganesha viering op Krishna Paksha Chaturthi. Devotees vasten de hele dag en breken het vasten na maanzicht. Ganesha Atharvashirsha wordt gereciteerd.",
@@ -912,17 +692,6 @@ async function main() {
         { date: calendarDate(2026, 11, 27) },
         { date: calendarDate(2026, 12, 26) },
       ],
-    },
-    {
-      name: "Ganesha Visarjan",
-      description:
-        "De onderdompeling van Ganesha murti's op Anant Chaturdashi, 10 dagen na Ganesh Chaturthi. Grote processies begeleiden de beelden naar water voor visarjan.",
-      eventType: "FESTIVAL",
-      recurrenceType: "YEARLY_LUNAR",
-      categoryName: "ganesha",
-      tithi: "CHATURDASHI_SHUKLA",
-      maas: "BHADRAPADA",
-      tags: ["anant chaturdashi", "ganesha", "processie", "visarjan"],
     },
 
     // ==========================================
