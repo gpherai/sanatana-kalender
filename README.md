@@ -85,21 +85,14 @@ npm run validate     # Format check + lint + type check
 ```bash
 npm run db:generate          # Regenereer Prisma client
 npm run db:push              # Push schema changes naar database
-npm run db:seed              # Seed database (categorieën)
+npm run db:migrate           # Run Prisma migrations
+npm run db:seed              # Seed: DailyInfo + categorieën + voorkeuren
+npm run db:events            # Sync event-naming catalog → database
+npm run db:occurrences       # Genereer EventOccurrence records (CLI, geen server nodig)
+npm run db:cleanup           # Verwijder legacy events zonder namingKey
+npm run db:setup             # Alles in één: seed + events + occurrences
+npm run db:reset             # Hard reset + db:setup
 npm run db:studio            # Open Prisma Studio GUI
-npm run db:reset             # Reset en reseed database
-```
-
-### Events & Occurrences
-
-```bash
-# Genereer/update events uit de naming catalog (src/config/event-naming.ts)
-npx tsx --tsconfig tsconfig.json src/scripts/generate-events-from-naming.ts
-
-# Genereer occurrences voor alle events via API
-curl -X POST http://localhost:3000/api/events/generate-occurrences \
-  -H "Content-Type: application/json" \
-  -d '{"replace": true}'
 ```
 
 Zie [docs/DATABASE_PROCEDURES.md](docs/DATABASE_PROCEDURES.md) voor volledige procedures.
@@ -116,16 +109,32 @@ Het script `generate-events-from-naming.ts` synchroniseert de catalog naar de da
 
 Events staan in een hiërarchie via de `EventSeriesEntry` junction table (many-to-many). Zo kunnen de 9 Navadurga-godinnen zowel bij Chaitra Navratri als Sharad Navratri horen. In de events-lijst worden child events direct onder hun parent getoond.
 
+### Event Pipeline (3 lagen)
+
+```
+src/config/event-naming.ts   ← catalog (pure data, type-safe ruleConfig)
+        ↓ npm run db:events
+src/scripts/generate-events-from-naming.ts  ← sync naar DB
+        ↓ npm run db:occurrences
+src/scripts/generate-occurrences.ts         ← genereer EventOccurrence records
+```
+
+Elke laag is onafhankelijk uitvoerbaar. Geen HTTP-server nodig.
+
 ### Recurrence Engine
 
 `src/services/recurrence.service.ts` genereert `EventOccurrence` records op basis van een event's `recurrenceType` en `ruleConfig`:
 
 - `YEARLY_LUNAR` — jaarlijks op een specifieke tithi (bijv. Krishna Chaturdashi)
 - `MONTHLY_LUNAR` — maandelijks op een tithi (bijv. alle Ekadashi's = 24x per jaar)
-- `YEARLY_SOLAR` — jaarlijks op een Sankranti of vaste datum
+- `YEARLY_SOLAR` — jaarlijks op een Sankranti
 - `MONTHLY_SOLAR` — elke Sankranti (~12x per jaar)
 
-De engine gebruikt een strategy registry: nieuw recurrence-type toevoegen = één regel in de `RECURRENCE_STRATEGIES` map.
+De service delegeert core logica aan `src/engine/` — pure functies zonder DB-toegang (`computeTithiOccurrence`, `groupConsecutiveDays`, `selectFirstPerYear`). Die zijn unit-testbaar zonder database.
+
+### Type-safe ruleConfig
+
+`src/config/rule-config.types.ts` definieert TypeScript interfaces per `ruleType` (`TithiRuleConfig`, `SolarRuleConfig`, `NakshatraRuleConfig`, `WeekdayTithiRuleConfig`, etc.). `EventNaming` is een gediscrimineerde unie — de compiler checkt catalog-entries automatisch.
 
 ### Panchanga
 
@@ -198,4 +207,4 @@ Private project — Alle rechten voorbehouden.
 
 ---
 
-**Versie:** 0.11.0 | **Laatst bijgewerkt:** 21 maart 2026
+**Versie:** 0.10.0 | **Laatst bijgewerkt:** 24 maart 2026
