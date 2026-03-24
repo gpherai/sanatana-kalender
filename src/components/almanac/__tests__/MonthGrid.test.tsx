@@ -19,8 +19,7 @@ function makeEvent(): CalendarEventResponse {
     resource: {
       description: null,
       eventType: "FESTIVAL",
-      category: null,
-      categoryId: null,
+      categories: [],
       tithi: null,
       nakshatra: null,
       maas: null,

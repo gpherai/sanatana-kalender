@@ -52,16 +52,17 @@ const MOCK_EVENTS = [
     end: "2025-01-02",
     allDay: true,
     resource: {
-      category: {
-        id: "test_id",
-        name: "test",
-        displayName: "Test",
-        icon: "🧪",
-        color: "oklch(0.6 0.15 250)",
-        description: null,
-        sortOrder: 0,
-      },
-      categoryId: "test_id",
+      categories: [
+        {
+          id: "test_id",
+          name: "test",
+          displayName: "Test",
+          icon: "🧪",
+          color: "oklch(0.6 0.15 250)",
+          description: null,
+          sortOrder: 0,
+        },
+      ],
       eventType: "OTHER",
       description: "Test description",
       tithi: null,

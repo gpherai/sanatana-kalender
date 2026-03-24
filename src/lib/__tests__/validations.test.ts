@@ -48,7 +48,6 @@ describe("Validations", () => {
         eventType: "OTHER",
         recurrenceType: "NONE",
         // Optional fields
-        categoryId: "",
         endDate: "",
         tithi: "",
         nakshatra: "",

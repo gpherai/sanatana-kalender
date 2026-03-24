@@ -16,7 +16,7 @@ const MOCK_EVENT_YEARLY: Event = {
   maas: "PHALGUNA",
   description: "Great Night of Shiva",
   eventType: "FESTIVAL",
-  categoryId: "cat_1",
+  categories: [],
   createdAt: new Date(),
   updatedAt: new Date(),
   nakshatra: null,

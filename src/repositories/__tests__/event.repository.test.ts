@@ -52,7 +52,7 @@ describe("findEventOccurrences", () => {
     await findEventOccurrences({ categories: ["Shakti", "Vishnu"] });
     const where = getWhereArg();
     expect(where.event).toMatchObject({
-      category: { name: { in: ["Shakti", "Vishnu"] } },
+      categories: { some: { category: { name: { in: ["Shakti", "Vishnu"] } } } },
     });
   });
 

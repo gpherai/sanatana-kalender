@@ -83,7 +83,7 @@ describe("POST /api/events/generate-occurrences", () => {
 
       description: null,
       eventType: "OTHER",
-      categoryId: null,
+      categories: [],
       tithi: null,
       nakshatra: null,
       maas: null,
@@ -128,7 +128,7 @@ describe("POST /api/events/generate-occurrences", () => {
 
       description: null,
       eventType: "OTHER",
-      categoryId: null,
+      categories: [],
       tithi: null,
       nakshatra: null,
       maas: null,
@@ -198,7 +198,7 @@ describe("POST /api/events/generate-occurrences", () => {
 
         description: null,
         eventType: "OTHER",
-        categoryId: null,
+        categories: [],
         tithi: null,
         nakshatra: null,
         maas: null,
@@ -223,7 +223,7 @@ describe("POST /api/events/generate-occurrences", () => {
 
         description: null,
         eventType: "OTHER",
-        categoryId: null,
+        categories: [],
         tithi: null,
         nakshatra: null,
         maas: null,

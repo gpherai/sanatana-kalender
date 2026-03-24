@@ -34,7 +34,7 @@ const MOCK_TODAY_EVENTS = [
     title: "New Year Puja",
     start: "2025-01-01",
     resource: {
-      category: { icon: "🐘" },
+      categories: [{ icon: "🐘" }],
       eventType: "PUJA",
     },
   },

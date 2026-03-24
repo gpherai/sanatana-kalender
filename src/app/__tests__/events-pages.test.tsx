@@ -60,7 +60,7 @@ describe("Event Pages", () => {
       name: "Edit Event",
       description: null,
       eventType: "FESTIVAL",
-      categoryId: null,
+      categories: [{ categoryId: "cat_1", category: { name: "ganesha", icon: "🐘" } }],
       recurrenceType: "NONE",
       tithi: null,
       nakshatra: null,

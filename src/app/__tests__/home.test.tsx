@@ -50,7 +50,7 @@ describe("Home Page", () => {
         event: {
           id: "evt_1",
           name: "Maha Shivaratri",
-          category: { icon: "🕉️" },
+          categories: [{ category: { icon: "🕉️" } }],
         },
       },
     ] as never);

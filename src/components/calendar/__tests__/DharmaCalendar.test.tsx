@@ -51,8 +51,7 @@ describe("DharmaCalendar", () => {
       resource: {
         description: null,
         eventType: "FESTIVAL",
-        category: null,
-        categoryId: null,
+        categories: [],
         tithi: null,
         nakshatra: null,
         maas: null,
@@ -151,8 +150,7 @@ describe("DharmaCalendar", () => {
       resource: {
         description: null,
         eventType: "FESTIVAL",
-        category: null,
-        categoryId: null,
+        categories: [],
         tithi: null,
         nakshatra: null,
         maas: null,
@@ -207,7 +205,7 @@ describe("DharmaCalendar", () => {
 
     const event = {
       resource: {
-        category: { color: "#123456" },
+        categories: [{ color: "#123456" }],
       },
     };
 

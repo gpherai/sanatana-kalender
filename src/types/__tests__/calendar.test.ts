@@ -19,8 +19,7 @@ describe("Calendar types helpers", () => {
       resource: {
         description: "desc",
         eventType: EventType.FESTIVAL,
-        category: null,
-        categoryId: null,
+        categories: [],
         tithi: null,
         nakshatra: null,
         maas: null,
