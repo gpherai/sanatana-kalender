@@ -22,6 +22,7 @@
     "db:migrate:deploy": "prisma migrate deploy",
     "db:migrate:reset": "prisma migrate reset",
     "db:seed": "tsx --tsconfig tsconfig.json src/scripts/seed.ts",
+    "db:cleanup": "tsx --tsconfig tsconfig.json src/scripts/cleanup-legacy-events.ts",
     "db:events": "tsx --tsconfig tsconfig.json src/scripts/generate-events-from-naming.ts",
     "db:occurrences": "tsx --tsconfig tsconfig.json src/scripts/generate-occurrences.ts",
     "db:setup": "npm run db:seed && npm run db:events && npm run db:occurrences -- --start 2025-01-01 --end 2027-12-31 --replace",

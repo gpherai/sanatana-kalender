@@ -8,58 +8,56 @@
  * This file follows the same pattern but for events.
  */
 
-export type RuleType =
-  | "TITHI" // Match specific tithi (Ekadashi, Purnima, etc.)
-  | "SOLAR" // Match Sankranti (solar transitions)
-  | "NAKSHATRA" // Match nakshatra
-  | "TITHI_NAKSHATRA" // Both tithi AND nakshatra
-  | "WEEKDAY_TITHI" // Specific weekday + tithi
-  | "CUSTOM"; // Complex rules
+import type { RuleConfigMap } from "@/config/rule-config.types";
 
-export interface EventNaming {
-  key: string;
-  name: string;
-  /** Category names ordered by priority. First = primary (color/icon on calendar). */
-  categories: string[];
-  /** Alternative names or names from other traditions for the same event */
-  aliases?: string[];
-  eventType:
-    | "FESTIVAL"
-    | "PUJA"
-    | "VRAT"
-    | "JAYANTI"
-    | "TITHI"
-    | "SANKRANTI"
-    | "ECLIPSE"
-    | "OTHER";
-  ruleType: RuleType;
-  ruleConfig: Record<string, unknown>;
-  description?: string;
-  tags?: string[];
-  /**
-   * How to derive the observation time window for each occurrence.
-   * - NISHITA_KAAL: midpoint of the night (Janmashtami, Shivaratri, Kali Puja)
-   * - PRADOSH_KAAL: sunset - 1h30 to sunset + 45min (Pradosh Vrat)
-   * - SUNRISE: sunrise to sunrise + 2h (Ratha Saptami, Chhath morning)
-   * - SUNSET: sunset - 30min to sunset + 1h (evening rituals)
-   * Times are calculated per occurrence from DailyInfo sunrise/sunset data.
-   */
-  timingType?: "NISHITA_KAAL" | "PRADOSH_KAAL" | "SUNRISE" | "SUNSET" | "MADHYAHNA";
-  /**
-   * Static observation time (HH:MM, 24h). Only for events with a truly
-   * fixed clock time independent of sunrise/sunset. Prefer timingType instead.
-   */
-  startTime?: string;
-  endTime?: string;
-  /**
-   * Keys of parent events in this catalog that this event belongs to.
-   * Supports many-to-many: one event (e.g. a goddess day) can belong to
-   * multiple parent series (e.g. Chaitra Navratri and Sharad Navratri).
-   */
-  parentKeys?: string[];
-  /** Position within the parent series (1-based) */
-  dayNumber?: number;
-}
+export type RuleType = keyof RuleConfigMap;
+
+export type EventNaming = {
+  [K in RuleType]: {
+    key: string;
+    name: string;
+    /** Category names ordered by priority. First = primary (color/icon on calendar). */
+    categories: string[];
+    /** Alternative names or names from other traditions for the same event */
+    aliases?: string[];
+    eventType:
+      | "FESTIVAL"
+      | "PUJA"
+      | "VRAT"
+      | "JAYANTI"
+      | "TITHI"
+      | "SANKRANTI"
+      | "ECLIPSE"
+      | "OTHER";
+    ruleType: K;
+    ruleConfig: RuleConfigMap[K];
+    description?: string;
+    tags?: string[];
+    /**
+     * How to derive the observation time window for each occurrence.
+     * - NISHITA_KAAL: midpoint of the night (Janmashtami, Shivaratri, Kali Puja)
+     * - PRADOSH_KAAL: sunset - 1h30 to sunset + 45min (Pradosh Vrat)
+     * - SUNRISE: sunrise to sunrise + 2h (Ratha Saptami, Chhath morning)
+     * - SUNSET: sunset - 30min to sunset + 1h (evening rituals)
+     * Times are calculated per occurrence from DailyInfo sunrise/sunset data.
+     */
+    timingType?: "NISHITA_KAAL" | "PRADOSH_KAAL" | "SUNRISE" | "SUNSET" | "MADHYAHNA";
+    /**
+     * Static observation time (HH:MM, 24h). Only for events with a truly
+     * fixed clock time independent of sunrise/sunset. Prefer timingType instead.
+     */
+    startTime?: string;
+    endTime?: string;
+    /**
+     * Keys of parent events in this catalog that this event belongs to.
+     * Supports many-to-many: one event (e.g. a goddess day) can belong to
+     * multiple parent series (e.g. Chaitra Navratri and Sharad Navratri).
+     */
+    parentKeys?: string[];
+    /** Position within the parent series (1-based) */
+    dayNumber?: number;
+  };
+}[RuleType];
 
 export const EVENT_NAMING_CATALOG: EventNaming[] = [
   // ==========================================================================

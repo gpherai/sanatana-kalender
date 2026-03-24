@@ -1,0 +1,18 @@
+/**
+ * Pure Rule Engine
+ *
+ * Exports all types and pure helper functions used by the recurrence service.
+ * None of these functions touch the database — they operate on pre-fetched rows.
+ *
+ * Entry points:
+ *   import { computeTithiOccurrence, groupConsecutiveDays, ... } from "@/engine"
+ */
+
+export type { DailyInfoRow, GeneratedOccurrence, PrevDayInfo } from "./types";
+export {
+  isConsecutiveDay,
+  groupConsecutiveDays,
+  selectFirstPerYear,
+  isPredecessorEndsAfterSunrise,
+  computeTithiOccurrence,
+} from "./tithi-helpers";
