@@ -1417,4 +1417,315 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       "Maandelijkse viering van Heer Ganesha op de Shukla Chaturthi van elke maand. De Madhyahna-puja is het meest auspicieuze moment voor Ganesha-verering.",
     tags: ["chaturthi", "ganesha", "maandelijks", "puja", "vinayaka"],
   },
+
+  // ==========================================================================
+  // SANKASHTI CHATURTHI (MAANDELIJKS + SPECIALE GEVALLEN)
+  // ==========================================================================
+  {
+    key: "sankashti_chaturthi_monthly",
+    name: "Sankashti Chaturthi",
+    categories: ["ganesha"],
+    eventType: "VRAT",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "CHATURTHI_KRISHNA", monthly: true },
+    description:
+      "Maandelijkse Ganesha viering op Krishna Paksha Chaturthi. Devotees vasten de hele dag en breken het vasten na maanzicht. Ganesha Atharvashirsha wordt gereciteerd.",
+    tags: ["ganesha", "maan", "maandelijks", "sankashti", "vasten"],
+  },
+  {
+    key: "angaraki_sankashti_chaturthi",
+    name: "Angaraki Sankashti Chaturthi",
+    categories: ["ganesha"],
+    eventType: "VRAT",
+    ruleType: "WEEKDAY_TITHI",
+    ruleConfig: { tithi: "CHATURTHI_KRISHNA", weekday: 2 },
+    description:
+      "De meest gunstige Sankashti Chaturthi — wanneer deze op dinsdag (Mangalvar) valt. Dinsdag is de dag van Hanuman en Mars, wat de kracht van het vasten versterkt.",
+    tags: ["angaraki", "dinsdag", "ganesha", "mangalvar", "sankashti"],
+  },
+  {
+    key: "magha_sakat_chauth",
+    name: "Sakat Chauth",
+    categories: ["ganesha"],
+    aliases: ["Tilkut Chauth", "Lambodara Sankashti"],
+    eventType: "VRAT",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "CHATURTHI_KRISHNA", maas: "MAGHA" },
+    description:
+      "Ook bekend als Tilkut Chauth of Lambodara Sankashti. Eerste Sankashti Chaturthi van het jaar. Devotees vasten tot maanzicht en bieden til (sesam) laddoos aan Ganesha.",
+    tags: ["ganesha", "sakat", "sankashti", "tilkut", "vasten"],
+  },
+  {
+    key: "margashirsha_akhuratha_sankashti",
+    name: "Akhuratha Sankashti Chaturthi",
+    categories: ["ganesha"],
+    eventType: "VRAT",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "CHATURTHI_KRISHNA", maas: "MARGASHIRSHA" },
+    description:
+      "Maandelijkse Chaturthi gewijd aan Lord Ganesha. Devotees vasten en breken het vasten na het zien van de maan. December's Sankashti wordt Akhuratha genoemd.",
+    tags: ["chaturthi", "ganesha", "maandelijks", "sankashti"],
+  },
+  {
+    key: "magha_ganesh_jayanti",
+    name: "Ganesh Jayanti",
+    categories: ["ganesha"],
+    eventType: "JAYANTI",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "CHATURTHI_SHUKLA", maas: "MAGHA" },
+    description:
+      "Geboortedag van Lord Ganesha volgens de Magha traditie. Wordt gevierd op Shukla Chaturthi in de Magha maand. Devotees vasten, voeren puja's uit en bieden modak en durva gras aan.",
+    tags: ["durva", "ganesha", "geboorte", "jayanti", "modak"],
+  },
+
+  // ==========================================================================
+  // GROTE FESTIVALS
+  // ==========================================================================
+  {
+    key: "phalguna_maha_shivaratri",
+    name: "Maha Shivaratri",
+    categories: ["shiva"],
+    eventType: "FESTIVAL",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "CHATURDASHI_KRISHNA", maas: "PHALGUNA" },
+    timingType: "NISHITA_KAAL",
+    description:
+      "De grote nacht van Shiva. Bhakta's houden een vrat (vasten) en blijven de hele nacht wakker ter ere van Heer Shiva. Er worden speciale abhishekam rituelen uitgevoerd met melk, honing en bilvabladeren.",
+    tags: ["abhishekam", "nachtelijk", "shiva", "vasten"],
+  },
+  {
+    key: "phalguna_holi",
+    name: "Holi",
+    categories: ["krishna"],
+    eventType: "FESTIVAL",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "PURNIMA", maas: "PHALGUNA" },
+    description:
+      "Het festival van kleuren. Viert de overwinning van goed over kwaad en de komst van de lente. De avond ervoor wordt Holika Dahan gevierd met een ritueel vreugdevuur.",
+    tags: ["holika", "kleuren", "lente", "vishnu"],
+  },
+  {
+    key: "chaitra_ram_navami",
+    name: "Ram Navami",
+    categories: ["rama"],
+    eventType: "JAYANTI",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "NAVAMI_SHUKLA", maas: "CHAITRA" },
+    description:
+      "Verschijningsdag van Heer Rama, de zevende avatar van Vishnu. Wordt gevierd met bhajans, het lezen van de Ramayana en het aanbieden van prasad in tempels.",
+    tags: ["avatar", "geboorte", "rama", "ramayana"],
+  },
+  {
+    key: "chaitra_hanuman_jayanti",
+    name: "Hanuman Jayanti",
+    categories: ["hanuman"],
+    eventType: "JAYANTI",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "PURNIMA", maas: "CHAITRA" },
+    description:
+      "Verschijningsdag van Heer Hanuman, de trouwe dienaar van Heer Rama. Bhakta's bezoeken tempels en reciteren de Hanuman Chalisa en Sundara Kanda.",
+    tags: ["chalisa", "geboorte", "hanuman", "sundara kanda"],
+  },
+  {
+    key: "vaishakha_akshaya_tritiya",
+    name: "Akshaya Tritiya",
+    categories: ["vishnu"],
+    eventType: "TITHI",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "TRITIYA_SHUKLA", maas: "VAISHAKHA" },
+    description:
+      "Een van de meest gunstige dagen in de Hindu kalender. Elke goede daad, dana, of japa verricht op deze dag geeft onvergankelijke (akshaya) verdienste.",
+    tags: ["akshaya", "dana", "goud", "gunstig"],
+  },
+  {
+    key: "shravana_raksha_bandhan",
+    name: "Raksha Bandhan",
+    categories: ["general"],
+    eventType: "FESTIVAL",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "PURNIMA", maas: "SHRAVANA" },
+    description:
+      "Festival van de broeder-zuster band. Zussen binden een rakhi (beschermende draad) om de pols van hun broers, die beloven hen te beschermen.",
+    tags: ["bescherming", "broer", "rakhi", "zus"],
+  },
+  {
+    key: "shravana_krishna_janmashtami",
+    name: "Krishna Janmashtami",
+    categories: ["krishna"],
+    eventType: "JAYANTI",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "ASHTAMI_KRISHNA", maas: "SHRAVANA" },
+    timingType: "NISHITA_KAAL",
+    description:
+      "Verschijningsdag van Heer Krishna. Wordt gevierd met een vrat (vasten) tot middernacht (het geboorte-moment), gevolgd door aarti, bhajans en het breken van de vasten met prasad.",
+    tags: ["dahi handi", "geboorte", "krishna", "middernacht"],
+  },
+  {
+    key: "ashwin_dussehra",
+    name: "Dussehra",
+    categories: ["rama"],
+    aliases: ["Vijayadashami"],
+    eventType: "FESTIVAL",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "DASHAMI_SHUKLA", maas: "ASHWIN" },
+    description:
+      "Overwinning van Heer Rama op Ravana en van Godin Durga op Mahishasura. Symboliseert de triomf van goed over kwaad. Ravana-effigie's worden verbrand.",
+    tags: ["durga", "overwinning", "rama", "ravana"],
+  },
+  {
+    key: "kartik_karwa_chauth",
+    name: "Karwa Chauth",
+    categories: ["durga"],
+    eventType: "VRAT",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "CHATURTHI_KRISHNA", maas: "KARTIK" },
+    description:
+      "Vastendag voor gehuwde vrouwen die vasten voor het lange leven van hun echtgenoten. Het vasten wordt gebroken na het zien van de maan door een zeef.",
+    tags: ["huwelijk", "maan", "vasten", "vrouwen"],
+  },
+  {
+    key: "kartik_tulsi_vivah",
+    name: "Tulsi Vivah",
+    categories: ["vishnu"],
+    eventType: "PUJA",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "DWADASHI_SHUKLA", maas: "KARTIK" },
+    description:
+      "Ceremonieel huwelijk van de Tulsi plant met Lord Vishnu (als Shaligram). Markeert het einde van Chaturmas en het begin van het huwelijksseizoen.",
+    tags: ["huwelijk", "shaligram", "tulsi", "vishnu"],
+  },
+
+  // ==========================================================================
+  // EXTRA JAYANTIS
+  // ==========================================================================
+  {
+    key: "vaishakha_narasimha_jayanti",
+    name: "Narasimha Jayanti",
+    categories: ["narasimha"],
+    eventType: "JAYANTI",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "CHATURDASHI_SHUKLA", maas: "VAISHAKHA" },
+    description:
+      "Geboortedag van Lord Narasimha, de half-mens half-leeuw avatar van Vishnu. Hij versloeg de demon Hiranyakashipu om zijn devotee Prahlada te beschermen.",
+    tags: ["avatar", "bescherming", "narasimha", "prahlada"],
+  },
+  {
+    key: "jyeshtha_shani_jayanti",
+    name: "Shani Jayanti",
+    categories: ["general"],
+    eventType: "JAYANTI",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "AMAVASYA", maas: "JYESHTHA" },
+    description:
+      "Geboortedag van Shani Dev (Saturnus). Devotees aanbidden Shani om negatieve effecten van Saturnus in hun horoscoop te verminderen. Til (sesam) olie wordt geofferd.",
+    tags: ["graha", "saturnus", "shani", "til"],
+  },
+  {
+    key: "ashadha_jagannath_rath_yatra",
+    name: "Jagannath Rath Yatra",
+    categories: ["vishnu"],
+    eventType: "FESTIVAL",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "DWITIYA_SHUKLA", maas: "ASHADHA" },
+    description:
+      "Jaarlijkse processie van Lord Jagannath, Balabhadra en Subhadra in Puri. De deities worden op enorme houten wagens (ratha's) door de straten getrokken.",
+    tags: ["jagannath", "processie", "puri", "ratha"],
+  },
+  {
+    key: "margashirsha_dattatreya_jayanti",
+    name: "Dattatreya Jayanti",
+    categories: ["dattatreya"],
+    eventType: "JAYANTI",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "PURNIMA", maas: "MARGASHIRSHA" },
+    description:
+      "Geboortedag van Lord Dattatreya, een samensmelting van Brahma, Vishnu en Shiva. Hij is de adi-guru (eerste leraar) en wordt vereerd door zowel Shaiva als Vaishnava tradities.",
+    tags: ["avadhuta", "dattatreya", "guru", "trimurti"],
+  },
+  {
+    key: "margashirsha_gita_jayanti",
+    name: "Gita Jayanti",
+    categories: ["krishna"],
+    eventType: "JAYANTI",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "EKADASHI_SHUKLA", maas: "MARGASHIRSHA" },
+    description:
+      "Viert de dag waarop Lord Krishna de Bhagavad Gita onderwees aan Arjuna op het slagveld van Kurukshetra. Er worden speciale lezingen en recitaties van de Gita gehouden.",
+    tags: ["arjuna", "filosofie", "gita", "krishna", "kurukshetra"],
+  },
+  {
+    key: "margashirsha_vaikunta_ekadashi",
+    name: "Vaikunta Ekadashi",
+    categories: ["vishnu"],
+    eventType: "VRAT",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "EKADASHI_SHUKLA", maas: "MARGASHIRSHA" },
+    description:
+      "De meest heilige Ekadashi, ook bekend als Mukkoti Ekadashi. Het wordt geloofd dat de poorten van Vaikunta (Vishnu's verblijf) op deze dag opengaan. Zeer belangrijk in Zuid-India.",
+    tags: ["ekadashi", "moksha", "poort", "vaikunta", "vishnu"],
+  },
+
+  // ==========================================================================
+  // SPECIFIEKE TITHI OBSERVATIES
+  // ==========================================================================
+  {
+    key: "pausha_amavasya",
+    name: "Pausha Amavasya",
+    categories: ["general"],
+    eventType: "TITHI",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "AMAVASYA", maas: "PAUSHA" },
+    description:
+      "Nieuwe maan dag van de maand Pausha. Traditioneel een dag voor pitru tarpan (voorouder verering) en introspectie. Gunstig voor meditatie en spirituele praktijken.",
+    tags: ["amavasya", "meditatie", "nieuwe maan", "voorouders"],
+  },
+
+  // ==========================================================================
+  // TAMIL / ZUID-INDIASE TRADITIES
+  // ==========================================================================
+  {
+    key: "makara_tamil_pongal",
+    name: "Thai Pongal",
+    categories: ["surya"],
+    aliases: ["Pongal"],
+    eventType: "FESTIVAL",
+    ruleType: "SOLAR",
+    ruleConfig: { sankranti: "MAKARA_SANKRANTI" },
+    description:
+      "Tamil oogstfestival dat de zonnewende viert. Pongal (zoete rijst) wordt gekookt tot het overkookt als teken van overvloed. Valt op Makar Sankranti. Festival duurt vier dagen: Bhogi, Thai Pongal, Mattu Pongal, Kaanum Pongal.",
+    tags: ["oogst", "overvloed", "pongal", "tamil", "zon"],
+  },
+  {
+    key: "kartik_karthigai_deepam",
+    name: "Karthigai Deepam",
+    categories: ["shiva"],
+    eventType: "FESTIVAL",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "PURNIMA", maas: "KARTIK" },
+    description:
+      "Tamil festival van lichten gevierd in de maand Karthigai. Huizen worden verlicht met olielampen (kuthuvilakku). In Tiruvannamalai wordt een enorm vuur ontstoken op de Arunachala berg.",
+    tags: ["arunachala", "deepam", "lichten", "tamil", "tiruvannamalai"],
+  },
+  {
+    key: "kartik_skanda_sashti",
+    name: "Skanda Sashti",
+    categories: ["skanda"],
+    eventType: "FESTIVAL",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "SHASHTHI_SHUKLA", maas: "KARTIK" },
+    description:
+      "Zes dagen durend festival ter ere van Heer Murugan/Skanda. Viert zijn overwinning op de demon Surapadman. Zeer populair in Tamil Nadu en andere Zuid-Indiase staten.",
+    tags: ["murugan", "skanda", "surapadman", "tamil", "vel"],
+  },
+  {
+    key: "magha_thaipusam",
+    name: "Thaipusam",
+    categories: ["skanda"],
+    eventType: "FESTIVAL",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "PURNIMA", maas: "MAGHA" },
+    description:
+      "Festival ter ere van Heer Murugan. Bhakta's dragen kavadi's (versierde structuren) en sommigen doorboren hun lichaam met speren als teken van devotie en boetedoening.",
+    tags: ["devotie", "kavadi", "maleisië", "murugan", "tamil"],
+  },
 ];

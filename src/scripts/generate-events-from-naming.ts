@@ -51,6 +51,8 @@ async function generateEventsFromNaming() {
       "YEARLY_LUNAR";
     if (naming.ruleType === "SOLAR") {
       recurrenceType = "YEARLY_SOLAR";
+    } else if (naming.ruleType === "WEEKDAY_TITHI") {
+      recurrenceType = "MONTHLY_LUNAR";
     } else if (naming.ruleType === "TITHI" && monthly === true) {
       recurrenceType = "MONTHLY_LUNAR";
     } else if (naming.ruleType === "TITHI") {
@@ -227,10 +229,9 @@ async function generateEventsFromNaming() {
   }
 
   console.log(`\n✅ Event auto-generation complete!`);
-  console.log(`\n⚠️  NEXT STEP: Regenerate occurrences via API`);
-  console.log(`   POST http://localhost:3000/api/events/generate-occurrences`);
+  console.log(`\n⚠️  NEXT STEP: Regenerate occurrences`);
   console.log(
-    `   Body: {"startDate":"2025-01-01", "endDate":"2027-12-31", "replace": true}\n`
+    `   npm run db:occurrences -- --start 2025-01-01 --end 2027-12-31 --replace\n`
   );
 }
 
