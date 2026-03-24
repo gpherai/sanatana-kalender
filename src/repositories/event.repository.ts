@@ -27,7 +27,9 @@ function buildEventWhere(params: EventQueryParams): Prisma.EventWhereInput {
   }
 
   if (params.categories && params.categories.length > 0) {
-    where.category = { name: { in: params.categories } };
+    where.categories = {
+      some: { category: { name: { in: params.categories } } },
+    };
   }
 
   if (params.types && params.types.length > 0) {
@@ -88,7 +90,10 @@ export async function findEventOccurrences(params: EventQueryParams) {
     include: {
       event: {
         include: {
-          category: true,
+          categories: {
+            include: { category: true },
+            orderBy: { sortOrder: "asc" as const },
+          },
           seriesParentEntries: {
             select: { parentEventId: true, dayNumber: true, sortOrder: true },
           },

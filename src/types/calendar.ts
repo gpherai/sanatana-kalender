@@ -44,8 +44,8 @@ export interface Category {
 export interface CalendarEventResource {
   description: string | null;
   eventType: EventType;
-  category: Category | null;
-  categoryId: string | null;
+  /** All categories ordered by sortOrder; [0] is the primary (color/icon on calendar) */
+  categories: Category[];
   tithi: Tithi | null;
   nakshatra: Nakshatra | null;
   maas: Maas | null;
@@ -71,8 +71,8 @@ export interface CalendarEventResource {
 export interface CalendarEventResourceResponse {
   description: string | null;
   eventType: string;
-  category: Category | null;
-  categoryId: string | null;
+  /** All categories ordered by sortOrder; [0] is the primary (color/icon on calendar) */
+  categories: Category[];
   tithi: string | null;
   nakshatra: string | null;
   maas: string | null;

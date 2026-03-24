@@ -374,7 +374,7 @@ function EventsContent() {
                       }
                       startTime={event.resource.startTime}
                       endTime={event.resource.endTime}
-                      category={event.resource.category}
+                      category={event.resource.categories[0] ?? null}
                       eventType={event.resource.eventType}
                       tithi={event.resource.tithi}
                       nakshatra={event.resource.nakshatra}

@@ -11,7 +11,7 @@ import type { CalendarEventResourceResponse } from "@/types/calendar";
 interface TodayEvent {
   id: string;
   name: string;
-  category: CalendarEventResourceResponse["category"];
+  category: CalendarEventResourceResponse["categories"][number] | null;
   eventType: string;
   date: string;
 }
@@ -74,7 +74,7 @@ export function TodayHero() {
             events.map((e) => ({
               id: e.eventId,
               name: e.title,
-              category: e.resource.category,
+              category: e.resource.categories[0] ?? null,
               eventType: e.resource.eventType,
               date: e.start,
             }))

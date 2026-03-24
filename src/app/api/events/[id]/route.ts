@@ -32,7 +32,10 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
     const eventRaw = await prisma.event.findUnique({
       where: { id },
       include: {
-        category: true,
+        categories: {
+          include: { category: true },
+          orderBy: { sortOrder: "asc" as const },
+        },
         occurrences: {
           orderBy: { date: "asc" },
         },
@@ -141,7 +144,6 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
           ...(data.name !== undefined && { name: data.name }),
           ...(data.description !== undefined && { description: data.description }),
           ...(data.eventType !== undefined && { eventType: data.eventType as EventType }),
-          ...(data.categoryId !== undefined && { categoryId: data.categoryId }),
           ...(data.recurrenceType !== undefined && {
             recurrenceType: data.recurrenceType as RecurrenceType,
           }),
@@ -153,9 +155,24 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
           ...(data.tags !== undefined && { tags: data.tags }),
         },
         include: {
-          category: true,
+          categories: {
+            include: { category: true },
+            orderBy: { sortOrder: "asc" as const },
+          },
         },
       });
+
+      // Update primary category (sortOrder=0) if provided
+      if (data.categoryId !== undefined) {
+        await tx.eventCategory.deleteMany({ where: { eventId: id, sortOrder: 0 } });
+        if (data.categoryId) {
+          await tx.eventCategory.upsert({
+            where: { eventId_categoryId: { eventId: id, categoryId: data.categoryId } },
+            create: { eventId: id, categoryId: data.categoryId, sortOrder: 0 },
+            update: { sortOrder: 0 },
+          });
+        }
+      }
 
       // Update first occurrence if date data provided
       const firstOccurrence = existingEvent.occurrences[0];
@@ -188,9 +205,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
             { field: "namingKey", message: "Naming key moet uniek zijn" },
           ]);
         case "P2003":
-          return errorResponse("Gerelateerde data niet gevonden", 400, [
-            { field: "categoryId", message: "Categorie bestaat niet" },
-          ]);
+          return errorResponse("Gerelateerde data niet gevonden", 400);
         case "P2025":
           return notFoundError("Event");
       }

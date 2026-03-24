@@ -150,7 +150,7 @@ export function EventDetailModal({
   if (!isOpen) return null;
 
   // Category is now a full object, not a string
-  const category = event.resource.category;
+  const category = event.resource.categories[0] ?? null;
   const eventType = getEventType(event.resource.eventType);
   const tithi = event.resource.tithi ? getTithi(event.resource.tithi) : null;
   const nakshatra = event.resource.nakshatra

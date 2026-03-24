@@ -315,7 +315,7 @@ export function DayDetailsPanel({
                     )}
                   >
                     <div className="flex items-center gap-2">
-                      <span>{event.resource.category?.icon || "📅"}</span>
+                      <span>{event.resource.categories[0]?.icon || "📅"}</span>
                       <span className="text-theme-fg font-medium">{event.title}</span>
                     </div>
 

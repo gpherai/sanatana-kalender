@@ -19,7 +19,10 @@ export type RuleType =
 export interface EventNaming {
   key: string;
   name: string;
-  category: string;
+  /** Category names ordered by priority. First = primary (color/icon on calendar). */
+  categories: string[];
+  /** Alternative names or names from other traditions for the same event */
+  aliases?: string[];
   eventType:
     | "FESTIVAL"
     | "PUJA"
@@ -41,7 +44,7 @@ export interface EventNaming {
    * - SUNSET: sunset - 30min to sunset + 1h (evening rituals)
    * Times are calculated per occurrence from DailyInfo sunrise/sunset data.
    */
-  timingType?: "NISHITA_KAAL" | "PRADOSH_KAAL" | "SUNRISE" | "SUNSET";
+  timingType?: "NISHITA_KAAL" | "PRADOSH_KAAL" | "SUNRISE" | "SUNSET" | "MADHYAHNA";
   /**
    * Static observation time (HH:MM, 24h). Only for events with a truly
    * fixed clock time independent of sunrise/sunset. Prefer timingType instead.
@@ -66,7 +69,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "pausha_putrada_ekadashi",
     name: "Putrada Ekadashi",
-    category: "vishnu",
+    categories: ["vishnu"],
     eventType: "VRAT",
     ruleType: "TITHI",
     ruleConfig: {
@@ -80,7 +83,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "pausha_saphala_ekadashi",
     name: "Saphala Ekadashi",
-    category: "vishnu",
+    categories: ["vishnu"],
     eventType: "VRAT",
     ruleType: "TITHI",
     ruleConfig: {
@@ -94,7 +97,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "magha_sattila_ekadashi",
     name: "Sat-tila Ekadashi",
-    category: "vishnu",
+    categories: ["vishnu"],
     eventType: "VRAT",
     ruleType: "TITHI",
     ruleConfig: {
@@ -107,7 +110,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "magha_jaya_ekadashi",
     name: "Jaya Ekadashi",
-    category: "vishnu",
+    categories: ["vishnu"],
     eventType: "VRAT",
     ruleType: "TITHI",
     ruleConfig: {
@@ -121,7 +124,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "phalguna_vijaya_ekadashi",
     name: "Vijaya Ekadashi",
-    category: "vishnu",
+    categories: ["vishnu"],
     eventType: "VRAT",
     ruleType: "TITHI",
     ruleConfig: {
@@ -135,7 +138,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "phalguna_amalaki_ekadashi",
     name: "Amalaki Ekadashi",
-    category: "vishnu",
+    categories: ["vishnu"],
     eventType: "VRAT",
     ruleType: "TITHI",
     ruleConfig: {
@@ -148,7 +151,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "chaitra_papmochani_ekadashi",
     name: "Papmochani Ekadashi",
-    category: "vishnu",
+    categories: ["vishnu"],
     eventType: "VRAT",
     ruleType: "TITHI",
     ruleConfig: {
@@ -162,7 +165,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "chaitra_kamada_ekadashi",
     name: "Kamada Ekadashi",
-    category: "vishnu",
+    categories: ["vishnu"],
     eventType: "VRAT",
     ruleType: "TITHI",
     ruleConfig: {
@@ -176,7 +179,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "vaishakha_varuthini_ekadashi",
     name: "Varuthini Ekadashi",
-    category: "vishnu",
+    categories: ["vishnu"],
     eventType: "VRAT",
     ruleType: "TITHI",
     ruleConfig: {
@@ -190,7 +193,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "vaishakha_mohini_ekadashi",
     name: "Mohini Ekadashi",
-    category: "vishnu",
+    categories: ["vishnu"],
     eventType: "VRAT",
     ruleType: "TITHI",
     ruleConfig: {
@@ -204,7 +207,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "jyeshtha_apara_ekadashi",
     name: "Apara Ekadashi",
-    category: "vishnu",
+    categories: ["vishnu"],
     eventType: "VRAT",
     ruleType: "TITHI",
     ruleConfig: {
@@ -218,7 +221,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "jyeshtha_nirjala_ekadashi",
     name: "Nirjala Ekadashi",
-    category: "vishnu",
+    categories: ["vishnu"],
     eventType: "VRAT",
     ruleType: "TITHI",
     ruleConfig: {
@@ -232,7 +235,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "ashadha_yogini_ekadashi",
     name: "Yogini Ekadashi",
-    category: "vishnu",
+    categories: ["vishnu"],
     eventType: "VRAT",
     ruleType: "TITHI",
     ruleConfig: {
@@ -246,7 +249,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "ashadha_devshayani_ekadashi",
     name: "Devshayani Ekadashi",
-    category: "vishnu",
+    categories: ["vishnu"],
     eventType: "VRAT",
     ruleType: "TITHI",
     ruleConfig: {
@@ -260,7 +263,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "shravana_kamika_ekadashi",
     name: "Kamika Ekadashi",
-    category: "vishnu",
+    categories: ["vishnu"],
     eventType: "VRAT",
     ruleType: "TITHI",
     ruleConfig: {
@@ -273,7 +276,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "shravana_putrada_ekadashi",
     name: "Putrada Ekadashi (Shravana)",
-    category: "vishnu",
+    categories: ["vishnu"],
     eventType: "VRAT",
     ruleType: "TITHI",
     ruleConfig: {
@@ -286,7 +289,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "bhadrapada_aja_ekadashi",
     name: "Aja Ekadashi",
-    category: "vishnu",
+    categories: ["vishnu"],
     eventType: "VRAT",
     ruleType: "TITHI",
     ruleConfig: {
@@ -299,7 +302,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "bhadrapada_parsva_ekadashi",
     name: "Parsva Ekadashi",
-    category: "vishnu",
+    categories: ["vishnu"],
     eventType: "VRAT",
     ruleType: "TITHI",
     ruleConfig: {
@@ -313,7 +316,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "ashwin_indira_ekadashi",
     name: "Indira Ekadashi",
-    category: "vishnu",
+    categories: ["vishnu"],
     eventType: "VRAT",
     ruleType: "TITHI",
     ruleConfig: {
@@ -326,7 +329,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "ashwin_papankusha_ekadashi",
     name: "Papankusha Ekadashi",
-    category: "vishnu",
+    categories: ["vishnu"],
     eventType: "VRAT",
     ruleType: "TITHI",
     ruleConfig: {
@@ -339,7 +342,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "kartik_rama_ekadashi",
     name: "Rama Ekadashi",
-    category: "vishnu",
+    categories: ["vishnu"],
     eventType: "VRAT",
     ruleType: "TITHI",
     ruleConfig: {
@@ -352,7 +355,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "kartik_prabodhini_ekadashi",
     name: "Prabodhini Ekadashi",
-    category: "vishnu",
+    categories: ["vishnu"],
     eventType: "VRAT",
     ruleType: "TITHI",
     ruleConfig: {
@@ -366,7 +369,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "margashirsha_utpanna_ekadashi",
     name: "Utpanna Ekadashi",
-    category: "vishnu",
+    categories: ["vishnu"],
     eventType: "VRAT",
     ruleType: "TITHI",
     ruleConfig: {
@@ -379,7 +382,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "margashirsha_mokshada_ekadashi",
     name: "Mokshada Ekadashi",
-    category: "vishnu",
+    categories: ["vishnu"],
     eventType: "VRAT",
     ruleType: "TITHI",
     ruleConfig: {
@@ -398,7 +401,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "makara_sankranti",
     name: "Makara Sankranti",
-    category: "surya",
+    categories: ["surya"],
     eventType: "SANKRANTI",
     ruleType: "SOLAR",
     ruleConfig: {
@@ -411,7 +414,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "kumbha_sankranti",
     name: "Kumbha Sankranti",
-    category: "surya",
+    categories: ["surya"],
     eventType: "SANKRANTI",
     ruleType: "SOLAR",
     ruleConfig: {
@@ -423,7 +426,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "meena_sankranti",
     name: "Meena Sankranti",
-    category: "surya",
+    categories: ["surya"],
     eventType: "SANKRANTI",
     ruleType: "SOLAR",
     ruleConfig: {
@@ -436,7 +439,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "mesha_sankranti",
     name: "Mesha Sankranti",
-    category: "surya",
+    categories: ["surya"],
     eventType: "SANKRANTI",
     ruleType: "SOLAR",
     ruleConfig: {
@@ -449,7 +452,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "vrishabha_sankranti",
     name: "Vrishabha Sankranti",
-    category: "surya",
+    categories: ["surya"],
     eventType: "SANKRANTI",
     ruleType: "SOLAR",
     ruleConfig: {
@@ -461,7 +464,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "mithuna_sankranti",
     name: "Mithuna Sankranti",
-    category: "surya",
+    categories: ["surya"],
     eventType: "SANKRANTI",
     ruleType: "SOLAR",
     ruleConfig: {
@@ -473,7 +476,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "karka_sankranti",
     name: "Karka Sankranti",
-    category: "surya",
+    categories: ["surya"],
     eventType: "SANKRANTI",
     ruleType: "SOLAR",
     ruleConfig: {
@@ -486,7 +489,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "simha_sankranti",
     name: "Simha Sankranti",
-    category: "surya",
+    categories: ["surya"],
     eventType: "SANKRANTI",
     ruleType: "SOLAR",
     ruleConfig: {
@@ -498,7 +501,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "kanya_sankranti",
     name: "Kanya Sankranti",
-    category: "surya",
+    categories: ["surya"],
     eventType: "SANKRANTI",
     ruleType: "SOLAR",
     ruleConfig: {
@@ -510,7 +513,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "tula_sankranti",
     name: "Tula Sankranti",
-    category: "surya",
+    categories: ["surya"],
     eventType: "SANKRANTI",
     ruleType: "SOLAR",
     ruleConfig: {
@@ -522,7 +525,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "vrishchika_sankranti",
     name: "Vrishchika Sankranti",
-    category: "surya",
+    categories: ["surya"],
     eventType: "SANKRANTI",
     ruleType: "SOLAR",
     ruleConfig: {
@@ -534,7 +537,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "dhanu_sankranti",
     name: "Dhanu Sankranti",
-    category: "surya",
+    categories: ["surya"],
     eventType: "SANKRANTI",
     ruleType: "SOLAR",
     ruleConfig: {
@@ -551,7 +554,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "ashadha_guru_purnima",
     name: "Guru Purnima",
-    category: "general",
+    categories: ["general"],
     eventType: "FESTIVAL",
     ruleType: "TITHI",
     ruleConfig: {
@@ -565,7 +568,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "kartik_kartik_purnima",
     name: "Kartik Purnima",
-    category: "general",
+    categories: ["general"],
     eventType: "FESTIVAL",
     ruleType: "TITHI",
     ruleConfig: {
@@ -579,7 +582,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "pausha_pausha_purnima",
     name: "Pausha Purnima",
-    category: "general",
+    categories: ["general"],
     eventType: "TITHI",
     ruleType: "TITHI",
     ruleConfig: {
@@ -593,7 +596,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "magha_magha_purnima",
     name: "Magha Purnima",
-    category: "general",
+    categories: ["general"],
     eventType: "TITHI",
     ruleType: "TITHI",
     ruleConfig: {
@@ -607,7 +610,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "phalguna_holi_purnima",
     name: "Holi Purnima",
-    category: "general",
+    categories: ["general"],
     eventType: "FESTIVAL",
     ruleType: "TITHI",
     ruleConfig: {
@@ -623,7 +626,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "chaitra_chaitra_purnima",
     name: "Chaitra Purnima",
-    category: "general",
+    categories: ["general"],
     eventType: "TITHI",
     ruleType: "TITHI",
     ruleConfig: {
@@ -637,7 +640,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "vaishakha_vaishakha_purnima",
     name: "Vaishakha Purnima",
-    category: "general",
+    categories: ["general"],
     eventType: "TITHI",
     ruleType: "TITHI",
     ruleConfig: {
@@ -650,7 +653,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "jyeshtha_jyeshtha_purnima",
     name: "Jyeshtha Purnima",
-    category: "general",
+    categories: ["general"],
     eventType: "TITHI",
     ruleType: "TITHI",
     ruleConfig: {
@@ -663,7 +666,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "ashadha_ashadha_purnima",
     name: "Ashadha Purnima",
-    category: "general",
+    categories: ["general"],
     eventType: "TITHI",
     ruleType: "TITHI",
     ruleConfig: {
@@ -676,7 +679,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "shravana_shravana_purnima",
     name: "Shravana Purnima",
-    category: "general",
+    categories: ["general"],
     eventType: "TITHI",
     ruleType: "TITHI",
     ruleConfig: {
@@ -689,7 +692,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "bhadrapada_bhadrapada_purnima",
     name: "Bhadrapada Purnima",
-    category: "general",
+    categories: ["general"],
     eventType: "TITHI",
     ruleType: "TITHI",
     ruleConfig: {
@@ -702,7 +705,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "ashwina_sharad_purnima",
     name: "Sharad Purnima",
-    category: "general",
+    categories: ["general"],
     eventType: "TITHI",
     ruleType: "TITHI",
     ruleConfig: {
@@ -715,7 +718,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "margashirsha_margashirsha_purnima",
     name: "Margashirsha Purnima",
-    category: "general",
+    categories: ["general"],
     eventType: "TITHI",
     ruleType: "TITHI",
     ruleConfig: {
@@ -730,7 +733,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "shravana_gauna_kamika_ekadashi",
     name: "Gauna Kamika Ekadashi",
-    category: "vishnu",
+    categories: ["vishnu"],
     eventType: "VRAT",
     ruleType: "TITHI",
     ruleConfig: {
@@ -745,7 +748,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "kalashtami_monthly",
     name: "Kalashtami",
-    category: "bhairava",
+    categories: ["bhairava"],
     eventType: "VRAT",
     ruleType: "TITHI",
     ruleConfig: { tithi: "ASHTAMI_KRISHNA", monthly: true },
@@ -758,7 +761,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "pradosh_vrat_krishna",
     name: "Pradosh Vrat (Krishna)",
-    category: "shiva",
+    categories: ["shiva"],
     eventType: "VRAT",
     ruleType: "TITHI",
     ruleConfig: { tithi: "TRAYODASHI_KRISHNA", monthly: true },
@@ -770,7 +773,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "pradosh_vrat_shukla",
     name: "Pradosh Vrat (Shukla)",
-    category: "shiva",
+    categories: ["shiva"],
     eventType: "VRAT",
     ruleType: "TITHI",
     ruleConfig: { tithi: "TRAYODASHI_SHUKLA", monthly: true },
@@ -784,7 +787,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "magha_saraswati_jayanti",
     name: "Saraswati Jayanti",
-    category: "saraswati",
+    categories: ["saraswati"],
     eventType: "JAYANTI",
     ruleType: "TITHI",
     ruleConfig: { tithi: "PANCHAMI_SHUKLA", maas: "MAGHA" },
@@ -795,7 +798,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "margashirsha_lakshmi_jayanti",
     name: "Lakshmi Jayanti",
-    category: "lakshmi",
+    categories: ["lakshmi"],
     eventType: "JAYANTI",
     ruleType: "TITHI",
     ruleConfig: { tithi: "PURNIMA", maas: "MARGASHIRSHA" },
@@ -806,7 +809,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "vaishakha_vaikasi_visakam",
     name: "Vaikasi Visakam",
-    category: "skanda",
+    categories: ["skanda"],
     eventType: "JAYANTI",
     ruleType: "NAKSHATRA",
     ruleConfig: { nakshatra: "VISHAKHA", maas: "VAISHAKHA" },
@@ -817,7 +820,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "vaishakha_sita_navami",
     name: "Sita Navami",
-    category: "rama",
+    categories: ["rama"],
     eventType: "JAYANTI",
     ruleType: "TITHI",
     ruleConfig: { tithi: "NAVAMI_SHUKLA", maas: "VAISHAKHA" },
@@ -828,7 +831,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "bhadrapada_radhashtami",
     name: "Radhashtami",
-    category: "krishna",
+    categories: ["krishna"],
     eventType: "JAYANTI",
     ruleType: "TITHI",
     ruleConfig: { tithi: "ASHTAMI_SHUKLA", maas: "BHADRAPADA" },
@@ -839,7 +842,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "chaitra_swaminarayan_jayanti",
     name: "Swaminarayan Jayanti",
-    category: "vishnu",
+    categories: ["vishnu"],
     eventType: "JAYANTI",
     ruleType: "TITHI",
     ruleConfig: {
@@ -852,7 +855,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "vaishakha_parashurama_jayanti",
     name: "Parashurama Jayanti",
-    category: "vishnu",
+    categories: ["vishnu"],
     eventType: "JAYANTI",
     ruleType: "TITHI",
     ruleConfig: {
@@ -865,7 +868,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "jyeshtha_narada_jayanti",
     name: "Narada Jayanti",
-    category: "general",
+    categories: ["general"],
     eventType: "JAYANTI",
     ruleType: "TITHI",
     ruleConfig: {
@@ -878,7 +881,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "shravana_gayatri_jayanti",
     name: "Gayatri Jayanti",
-    category: "general",
+    categories: ["general"],
     eventType: "JAYANTI",
     ruleType: "TITHI",
     ruleConfig: {
@@ -891,7 +894,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "bhadrapada_balarama_jayanti",
     name: "Balarama Jayanti",
-    category: "vishnu",
+    categories: ["vishnu"],
     eventType: "JAYANTI",
     ruleType: "TITHI",
     ruleConfig: {
@@ -906,7 +909,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "magha_ratha_saptami",
     name: "Ratha Saptami (Surya Jayanti)",
-    category: "surya",
+    categories: ["surya"],
     eventType: "JAYANTI",
     ruleType: "TITHI",
     ruleConfig: { tithi: "SAPTAMI_SHUKLA", maas: "MAGHA" },
@@ -918,7 +921,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "shravana_sawan_shivaratri",
     name: "Sawan Shivaratri",
-    category: "shiva",
+    categories: ["shiva"],
     eventType: "FESTIVAL",
     ruleType: "TITHI",
     ruleConfig: { tithi: "CHATURDASHI_KRISHNA", maas: "SHRAVANA" },
@@ -929,7 +932,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "ashwin_mahalaya_amavasya",
     name: "Mahalaya Amavasya",
-    category: "general",
+    categories: ["general"],
     eventType: "FESTIVAL",
     ruleType: "TITHI",
     ruleConfig: { tithi: "AMAVASYA", maas: "ASHWIN" },
@@ -940,7 +943,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "phalguna_holika_dahan",
     name: "Holika Dahan",
-    category: "general",
+    categories: ["general"],
     eventType: "FESTIVAL",
     ruleType: "TITHI",
     ruleConfig: {
@@ -954,7 +957,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "shravana_hariyali_teej",
     name: "Hariyali Teej",
-    category: "durga",
+    categories: ["durga"],
     eventType: "FESTIVAL",
     ruleType: "TITHI",
     ruleConfig: {
@@ -967,7 +970,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "bhadrapada_hartalika_teej",
     name: "Hartalika Teej",
-    category: "durga",
+    categories: ["durga"],
     eventType: "FESTIVAL",
     ruleType: "TITHI",
     ruleConfig: {
@@ -980,7 +983,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "kartik_chhath_puja",
     name: "Chhath Puja",
-    category: "surya",
+    categories: ["surya"],
     eventType: "FESTIVAL",
     ruleType: "TITHI",
     ruleConfig: {
@@ -993,7 +996,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "kartik_govardhan_puja",
     name: "Govardhan Puja",
-    category: "krishna",
+    categories: ["krishna"],
     eventType: "FESTIVAL",
     ruleType: "TITHI",
     ruleConfig: {
@@ -1006,19 +1009,31 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "kartik_kali_puja",
     name: "Kali Puja",
-    category: "kali",
+    categories: ["kali", "mahavidya"],
     eventType: "PUJA",
     ruleType: "TITHI",
     ruleConfig: { tithi: "AMAVASYA", maas: "KARTIK" },
     description:
       "Kali Puja (Shyama Puja) op de nacht van Diwali. In Oost-India (Bengalen) wordt op Kartika Amavasya niet Lakshmi maar Maa Kali vereerd met nacht-puja's, diyas en offers.",
-    tags: ["amavasya", "bengalen", "diwali", "kali", "kartik", "puja"],
+    tags: ["amavasya", "bengalen", "diwali", "kali", "kartik", "mahavidya", "puja"],
     timingType: "NISHITA_KAAL",
+  },
+  {
+    key: "kartik_diwali",
+    name: "Diwali",
+    categories: ["lakshmi"],
+    aliases: ["Deepawali", "Kamala Jayanti", "Lakshmi Puja"],
+    eventType: "FESTIVAL",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "AMAVASYA", maas: "KARTIK" },
+    description:
+      "Het Festival van Lichten op Kartika Amavasya. Maa Lakshmi (Kamala, de tiende Mahavidya) wordt vereerd als godin van welvaart en geluk. Huizen en tempels worden verlicht met diyas.",
+    tags: ["amavasya", "diwali", "festival", "kamala", "kartik", "lakshmi", "lichten"],
   },
   {
     key: "kartik_kali_chaudas",
     name: "Kali Chaudas",
-    category: "kali",
+    categories: ["kali"],
     eventType: "FESTIVAL",
     ruleType: "TITHI",
     ruleConfig: {
@@ -1032,7 +1047,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "margashirsha_kalabhairav_jayanti",
     name: "Kala Bhairava Ashtami",
-    category: "bhairava",
+    categories: ["bhairava"],
     eventType: "JAYANTI",
     ruleType: "TITHI",
     ruleConfig: {
@@ -1052,7 +1067,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "adhika_jyeshtha_padmini_ekadashi",
     name: "Padmini Ekadashi",
-    category: "vishnu",
+    categories: ["vishnu"],
     eventType: "VRAT",
     ruleType: "TITHI",
     ruleConfig: {
@@ -1067,7 +1082,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "adhika_jyeshtha_parama_ekadashi",
     name: "Parama Ekadashi",
-    category: "vishnu",
+    categories: ["vishnu"],
     eventType: "VRAT",
     ruleType: "TITHI",
     ruleConfig: {
@@ -1082,7 +1097,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "adhika_jyeshtha_purnima",
     name: "Adhika Jyeshtha Purnima",
-    category: "general",
+    categories: ["general"],
     eventType: "TITHI",
     ruleType: "TITHI",
     ruleConfig: {
@@ -1106,7 +1121,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "chaitra_navratri",
     name: "Chaitra Navratri",
-    category: "durga",
+    categories: ["durga"],
     eventType: "FESTIVAL",
     ruleType: "TITHI",
     ruleConfig: { tithi: "PRATIPADA_SHUKLA", maas: "CHAITRA", durationDays: 9 },
@@ -1119,7 +1134,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "sharad_navratri",
     name: "Sharad Navratri",
-    category: "durga",
+    categories: ["durga"],
     eventType: "FESTIVAL",
     ruleType: "TITHI",
     ruleConfig: { tithi: "PRATIPADA_SHUKLA", maas: "ASHWIN", durationDays: 9 },
@@ -1134,7 +1149,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "navadurga_dag1_shailputri",
     name: "Maa Shailputri",
-    category: "durga",
+    categories: ["durga"],
     eventType: "PUJA",
     ruleType: "TITHI",
     ruleConfig: { tithi: "PRATIPADA_SHUKLA", maas: ["CHAITRA", "ASHWIN"] },
@@ -1147,7 +1162,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "navadurga_dag2_brahmacharini",
     name: "Maa Brahmacharini",
-    category: "durga",
+    categories: ["durga"],
     eventType: "PUJA",
     ruleType: "TITHI",
     ruleConfig: { tithi: "DWITIYA_SHUKLA", maas: ["CHAITRA", "ASHWIN"] },
@@ -1160,7 +1175,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "navadurga_dag3_chandraghanta",
     name: "Maa Chandraghanta",
-    category: "durga",
+    categories: ["durga"],
     eventType: "PUJA",
     ruleType: "TITHI",
     ruleConfig: { tithi: "TRITIYA_SHUKLA", maas: ["CHAITRA", "ASHWIN"] },
@@ -1173,7 +1188,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "navadurga_dag4_kushmanda",
     name: "Maa Kushmanda",
-    category: "durga",
+    categories: ["durga"],
     eventType: "PUJA",
     ruleType: "TITHI",
     ruleConfig: { tithi: "CHATURTHI_SHUKLA", maas: ["CHAITRA", "ASHWIN"] },
@@ -1186,7 +1201,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "navadurga_dag5_skandamata",
     name: "Maa Skandamata",
-    category: "durga",
+    categories: ["durga"],
     eventType: "PUJA",
     ruleType: "TITHI",
     ruleConfig: { tithi: "PANCHAMI_SHUKLA", maas: ["CHAITRA", "ASHWIN"] },
@@ -1199,7 +1214,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "navadurga_dag6_katyayani",
     name: "Maa Katyayani",
-    category: "durga",
+    categories: ["durga"],
     eventType: "PUJA",
     ruleType: "TITHI",
     ruleConfig: { tithi: "SHASHTHI_SHUKLA", maas: ["CHAITRA", "ASHWIN"] },
@@ -1212,7 +1227,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "navadurga_dag7_kaalratri",
     name: "Maa Kaalratri",
-    category: "durga",
+    categories: ["durga"],
     eventType: "PUJA",
     ruleType: "TITHI",
     ruleConfig: { tithi: "SAPTAMI_SHUKLA", maas: ["CHAITRA", "ASHWIN"] },
@@ -1225,7 +1240,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "navadurga_dag8_mahagauri",
     name: "Maa Mahagauri",
-    category: "durga",
+    categories: ["durga"],
     eventType: "PUJA",
     ruleType: "TITHI",
     ruleConfig: { tithi: "ASHTAMI_SHUKLA", maas: ["CHAITRA", "ASHWIN"] },
@@ -1238,7 +1253,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "navadurga_dag9_siddhidatri",
     name: "Maa Siddhidatri",
-    category: "durga",
+    categories: ["durga"],
     eventType: "PUJA",
     ruleType: "TITHI",
     ruleConfig: {
@@ -1257,12 +1272,149 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "ma_tara_jayanti",
     name: "Ma Tara Jayanti",
-    category: "tara",
+    categories: ["tara", "mahavidya"],
     eventType: "JAYANTI",
     ruleType: "TITHI",
     ruleConfig: { tithi: "NAVAMI_SHUKLA", maas: "CHAITRA" },
     description:
       "Geboortedag van Ma Tara, de tweede van de Dasha Mahavidyas. Tara belichaamt bevrijdende kennis en bescherming bij het oversteken van het oceaan van samsara. Wordt voornamelijk in de tantrische tradities van Bengalen en Assam vereerd.",
-    tags: ["chaitra", "dasha mahavidyas", "jayanti", "mahavidya", "navami", "tara"],
+    tags: ["chaitra", "jayanti", "mahavidya", "navami", "tara"],
+  },
+  {
+    key: "magha_lalita_jayanti",
+    name: "Lalita Jayanti",
+    categories: ["lalita", "mahavidya"],
+    aliases: ["Tripura Sundari Jayanti"],
+    eventType: "JAYANTI",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "PURNIMA", maas: "MAGHA" },
+    description:
+      "Geboortedag van Maa Lalita Tripura Sundari, de derde van de Dasha Mahavidyas. Lalita belichaamt goddelijke schoonheid, zaligheid en de drie werelden (hemel, aarde, onderwereld). Geviert op Magha Purnima.",
+    tags: ["jayanti", "lalita", "magha", "mahavidya", "purnima", "tripura sundari"],
+  },
+  {
+    key: "vaishakha_matangi_jayanti",
+    name: "Matangi Jayanti",
+    categories: ["matangi", "mahavidya"],
+    eventType: "JAYANTI",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "TRITIYA_SHUKLA", maas: "VAISHAKHA", kshayaNextDay: true },
+    description:
+      "Geboortedag van Maa Matangi, de negende van de Dasha Mahavidyas. Matangi is de godin van innerlijke gedachte, heerschappij en de kunsten. Zij is de tantrische vorm van Saraswati.",
+    tags: ["jayanti", "mahavidya", "matangi", "tritiya", "vaishakha"],
+  },
+  {
+    key: "vaishakha_bagalamukhi_jayanti",
+    name: "Bagalamukhi Jayanti",
+    categories: ["bagalamukhi", "mahavidya"],
+    eventType: "JAYANTI",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "ASHTAMI_SHUKLA", maas: "VAISHAKHA" },
+    description:
+      "Geboortedag van Maa Bagalamukhi, de achtste van de Dasha Mahavidyas. Bagalamukhi verlamt vijanden, vernietigt twijfel en is de godin van de kracht van spraak. Haar kleur is geel.",
+    tags: ["ashtami", "bagalamukhi", "jayanti", "mahavidya", "vaishakha"],
+  },
+  {
+    key: "vaishakha_chhinnamasta_jayanti",
+    name: "Chhinnamasta Jayanti",
+    categories: ["chhinnamasta", "mahavidya"],
+    eventType: "JAYANTI",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "CHATURDASHI_SHUKLA", maas: "VAISHAKHA" },
+    description:
+      "Geboortedag van Maa Chhinnamasta, de zesde van de Dasha Mahavidyas. Chhinnamasta is de zelfonthoofde godin van zelfopoffering, kundalini-energie en het overstijgen van het ego.",
+    tags: ["chaturdashi", "chhinnamasta", "jayanti", "mahavidya", "vaishakha"],
+  },
+  {
+    key: "jyeshtha_dhumavati_jayanti",
+    name: "Dhumavati Jayanti",
+    categories: ["dhumavati", "mahavidya"],
+    eventType: "JAYANTI",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "ASHTAMI_SHUKLA", maas: "JYESHTHA" },
+    description:
+      "Geboortedag van Maa Dhumavati, de zevende van de Dasha Mahavidyas. Dhumavati is de rookgrijze weduwe-godin van de leegte, ongunstigheid en diepe wijsheid voorbij illusie.",
+    tags: ["ashtami", "dhumavati", "jayanti", "jyeshtha", "mahavidya"],
+  },
+  {
+    key: "bhadrapada_kali_jayanti",
+    name: "Kali Jayanti",
+    categories: ["kali", "mahavidya"],
+    eventType: "JAYANTI",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "ASHTAMI_KRISHNA", maas: "BHADRAPADA" },
+    description:
+      "Geboortedag van Maa Kali, de eerste en hoogste van de Dasha Mahavidyas. Kali is de godin van tijd, verandering en bevrijding. Zij vernietigt het kwaad en beschermt haar devotees.",
+    tags: ["ashtami", "bhadrapada", "jayanti", "kali", "krishna paksha", "mahavidya"],
+  },
+  {
+    key: "bhadrapada_bhuvaneshvari_jayanti",
+    name: "Bhuvaneshvari Jayanti",
+    categories: ["bhuvaneshvari", "mahavidya"],
+    eventType: "JAYANTI",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "DWADASHI_SHUKLA", maas: "BHADRAPADA" },
+    description:
+      "Geboortedag van Maa Bhuvaneshvari, de vierde van de Dasha Mahavidyas. Bhuvaneshvari is de koningin van het universum — de ruimte zelf als goddelijk vrouwelijk principe.",
+    tags: ["bhadrapada", "bhuvaneshvari", "dwadashi", "jayanti", "mahavidya"],
+  },
+  {
+    key: "margashirsha_bhairavi_jayanti",
+    name: "Bhairavi Jayanti",
+    categories: ["bhairavi", "mahavidya"],
+    eventType: "JAYANTI",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "PURNIMA", maas: "MARGASHIRSHA" },
+    description:
+      "Geboortedag van Maa Bhairavi, de vijfde van de Dasha Mahavidyas. Bhairavi is de felle godin van vuur, vernietiging en bevrijding. Zij is de kosmische energie die alles verteert.",
+    tags: ["bhairavi", "jayanti", "mahavidya", "margashirsha", "purnima"],
+  },
+
+  // ==========================================================================
+  // GANESH CHATURTHI & VINAYAKA CHATURTHI
+  // ==========================================================================
+  {
+    key: "bhadrapada_ganesh_chaturthi",
+    name: "Ganesh Chaturthi",
+    categories: ["ganesha"],
+    aliases: ["Ganeshotsav", "Vinayaka Chaturthi"],
+    eventType: "FESTIVAL",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "CHATURTHI_SHUKLA", maas: "BHADRAPADA" },
+    timingType: "MADHYAHNA",
+    description:
+      "Geboortedag van Heer Ganesha op Bhadrapada Shukla Chaturthi. De Madhyahna-puja (middagpuja) is het meest auspicieuze moment. Ganeshotsav duurt 10 dagen tot Ganesha Visarjan.",
+    tags: ["bhadrapada", "chaturthi", "festival", "ganesha", "ganeshotsav"],
+  },
+  {
+    key: "bhadrapada_ganesha_visarjan",
+    name: "Ganesha Visarjan",
+    categories: ["ganesha"],
+    aliases: ["Anant Chaturdashi"],
+    eventType: "FESTIVAL",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "CHATURDASHI_SHUKLA", maas: "BHADRAPADA" },
+    description:
+      "De afsluitende dag van Ganeshotsav. Het Ganesha-beeld wordt na een feestelijke processie ondergedompeld in water (visarjan). Valt op Anant Chaturdashi, 10 dagen na Ganesh Chaturthi.",
+    tags: [
+      "anant chaturdashi",
+      "bhadrapada",
+      "chaturdashi",
+      "festival",
+      "ganesha",
+      "visarjan",
+    ],
+  },
+  {
+    key: "monthly_vinayaka_chaturthi",
+    name: "Vinayaka Chaturthi",
+    categories: ["ganesha"],
+    eventType: "PUJA",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "CHATURTHI_SHUKLA", monthly: true },
+    timingType: "MADHYAHNA",
+    description:
+      "Maandelijkse viering van Heer Ganesha op de Shukla Chaturthi van elke maand. De Madhyahna-puja is het meest auspicieuze moment voor Ganesha-verering.",
+    tags: ["chaturthi", "ganesha", "maandelijks", "puja", "vinayaka"],
   },
 ];

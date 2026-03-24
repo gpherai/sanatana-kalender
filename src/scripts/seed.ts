@@ -985,7 +985,6 @@ async function main() {
           description: eventData.description,
           eventType: eventData.eventType,
           recurrenceType: eventData.recurrenceType,
-          categoryId,
           tithi: eventData.tithi,
           nakshatra: eventData.nakshatra,
           maas: eventData.maas,
@@ -1004,7 +1003,6 @@ async function main() {
           description: eventData.description,
           eventType: eventData.eventType,
           recurrenceType: eventData.recurrenceType,
-          categoryId,
           tithi: eventData.tithi,
           nakshatra: eventData.nakshatra,
           maas: eventData.maas,
@@ -1017,6 +1015,12 @@ async function main() {
         },
       });
     }
+    // Upsert primary EventCategory (sortOrder=0)
+    await prisma.eventCategory.upsert({
+      where: { eventId_categoryId: { eventId: event.id, categoryId } },
+      create: { eventId: event.id, categoryId, sortOrder: 0 },
+      update: { sortOrder: 0 },
+    });
     eventCount++;
     createdEvents.set(eventData.name, {
       id: event.id,

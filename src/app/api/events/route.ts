@@ -72,8 +72,7 @@ export async function GET(request: NextRequest) {
         resource: {
           description: occ.event.description,
           eventType: occ.event.eventType,
-          category: occ.event.category,
-          categoryId: occ.event.categoryId,
+          categories: occ.event.categories.map((ec) => ec.category),
           tithi: occ.event.tithi,
           nakshatra: occ.event.nakshatra,
           maas: occ.event.maas,
@@ -131,7 +130,6 @@ export async function POST(request: NextRequest) {
           name: data.name,
           description: data.description ?? null,
           eventType: data.eventType as EventType,
-          categoryId: data.categoryId ?? null,
           recurrenceType: data.recurrenceType as RecurrenceType,
           tithi: (data.tithi as Tithi) ?? null,
           nakshatra: (data.nakshatra as Nakshatra) ?? null,
@@ -139,6 +137,12 @@ export async function POST(request: NextRequest) {
           tags: data.tags ?? [],
         },
       });
+
+      if (data.categoryId) {
+        await tx.eventCategory.create({
+          data: { eventId: newEvent.id, categoryId: data.categoryId, sortOrder: 0 },
+        });
+      }
 
       await tx.eventOccurrence.create({
         data: {
@@ -167,10 +171,7 @@ export async function POST(request: NextRequest) {
             { field: "namingKey", message: "Naming key moet uniek zijn" },
           ]);
         case "P2003":
-          // Foreign key constraint failed
-          return errorResponse("Gerelateerde data niet gevonden", 400, [
-            { field: "categoryId", message: "Categorie bestaat niet" },
-          ]);
+          return errorResponse("Gerelateerde data niet gevonden", 400);
         case "P2025":
           // Record not found
           return errorResponse("Record niet gevonden", 404);

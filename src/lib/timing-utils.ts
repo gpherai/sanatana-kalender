@@ -137,6 +137,29 @@ export function calculateSunsetWindow(sunset: string): TimeWindow | null {
 }
 
 /**
+ * MADHYAHNA — Midday observation window
+ *
+ * The day is divided into 5 equal parts (muhurtas).
+ * Madhyahna = the 3rd muhurta = from 2/5 to 3/5 of the daytime arc.
+ * Used for Ganesh Chaturthi puja and other midday rituals.
+ *
+ * @param sunrise - Sunrise time "HH:MM" on the occurrence day
+ * @param sunset - Sunset time "HH:MM" on the occurrence day
+ * @returns Time window, or null if times are invalid
+ */
+export function calculateMadhyahna(sunrise: string, sunset: string): TimeWindow | null {
+  const sunriseMin = parseTimeToMinutes(sunrise);
+  const sunsetMin = parseTimeToMinutes(sunset);
+  if (sunriseMin === null || sunsetMin === null) return null;
+  const dayDuration = sunsetMin - sunriseMin;
+  if (dayDuration <= 0) return null;
+  const muhurta = dayDuration / 5;
+  const start = formatMinutesToTime(sunriseMin + muhurta * 2);
+  const end = formatMinutesToTime(sunriseMin + muhurta * 3);
+  return { startTime: start, endTime: end };
+}
+
+/**
  * Calculate a time window for a given TimingType.
  *
  * @param timingType - The type of timing calculation to perform
@@ -169,6 +192,10 @@ export function calculateTimingWindow(
     case "SUNSET":
       if (!sunset) return null;
       return calculateSunsetWindow(sunset);
+
+    case "MADHYAHNA":
+      if (!sunrise || !sunset) return null;
+      return calculateMadhyahna(sunrise, sunset);
 
     default:
       return null;

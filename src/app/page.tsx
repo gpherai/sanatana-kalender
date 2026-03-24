@@ -29,7 +29,10 @@ export default async function Home() {
     include: {
       event: {
         include: {
-          category: true,
+          categories: {
+            include: { category: true },
+            orderBy: { sortOrder: "asc" as const },
+          },
         },
       },
     },
@@ -80,7 +83,7 @@ export default async function Home() {
             ) : (
               <div className="space-y-2">
                 {upcomingEvents.slice(0, 7).map((occ) => {
-                  const category = occ.event.category;
+                  const category = occ.event.categories[0]?.category ?? null;
                   return (
                     <Link
                       key={occ.id}

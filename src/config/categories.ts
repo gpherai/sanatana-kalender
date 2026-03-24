@@ -188,11 +188,80 @@ export const CATEGORY_CATALOG: readonly CategoryDefinition[] = [
       "Second of the Dasha Mahavidyas, goddess of liberation and guidance across the ocean of samsara",
   },
   {
+    name: "mahavidya",
+    displayName: "Dasha Mahavidya",
+    icon: "🌸",
+    color: "oklch(0.50 0.20 305)",
+    sortOrder: 17,
+    description:
+      "The ten tantric goddesses (Dasha Mahavidyas) — aspects of the Divine Feminine",
+  },
+  {
+    name: "lalita",
+    displayName: "Lalita / Tripura Sundari",
+    icon: "🌹",
+    color: "oklch(0.72 0.18 355)",
+    sortOrder: 18,
+    description: "Third Mahavidya — goddess of beauty, bliss and the three worlds",
+  },
+  {
+    name: "matangi",
+    displayName: "Matangi",
+    icon: "🦜",
+    color: "oklch(0.55 0.18 145)",
+    sortOrder: 19,
+    description: "Ninth Mahavidya — goddess of inner thought, dominion and arts",
+  },
+  {
+    name: "bagalamukhi",
+    displayName: "Bagalamukhi",
+    icon: "🌻",
+    color: "oklch(0.82 0.20 95)",
+    sortOrder: 20,
+    description:
+      "Eighth Mahavidya — goddess of paralysing power, yellow-robed destroyer of speech",
+  },
+  {
+    name: "chhinnamasta",
+    displayName: "Chhinnamasta",
+    icon: "🌺",
+    color: "oklch(0.55 0.22 20)",
+    sortOrder: 21,
+    description:
+      "Sixth Mahavidya — self-decapitated goddess of self-sacrifice and kundalini",
+  },
+  {
+    name: "dhumavati",
+    displayName: "Dhumavati",
+    icon: "🌫️",
+    color: "oklch(0.60 0.05 240)",
+    sortOrder: 22,
+    description:
+      "Seventh Mahavidya — the smoky widow goddess of the void, inauspiciousness and wisdom",
+  },
+  {
+    name: "bhuvaneshvari",
+    displayName: "Bhuvaneshvari",
+    icon: "🌍",
+    color: "oklch(0.45 0.18 210)",
+    sortOrder: 23,
+    description:
+      "Fourth Mahavidya — queen of the universe, space itself as the divine feminine",
+  },
+  {
+    name: "bhairavi",
+    displayName: "Bhairavi",
+    icon: "🔥",
+    color: "oklch(0.55 0.22 35)",
+    sortOrder: 24,
+    description: "Fifth Mahavidya — fierce goddess of destruction, fire and liberation",
+  },
+  {
     name: "general",
     displayName: "General",
     icon: "📅",
     color: "oklch(0.70 0.10 180)",
-    sortOrder: 17,
+    sortOrder: 25,
     description: "General festivals and observances",
   },
 ] as const;

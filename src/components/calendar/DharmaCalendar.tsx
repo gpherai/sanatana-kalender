@@ -128,7 +128,7 @@ export function DharmaCalendar() {
   // Custom event styling based on category
   // Category is now a full object, not a string
   const eventStyleGetter = useCallback((event: CalendarEvent) => {
-    const categoryData = event.resource.category;
+    const categoryData = event.resource.categories[0] ?? null;
 
     // Base style
     const style: React.CSSProperties = {
@@ -168,7 +168,7 @@ export function DharmaCalendar() {
   // Event content with emoji
   // Category is now a full object, not a string
   const EventComponent = useCallback(({ event }: { event: CalendarEvent }) => {
-    const categoryData = event.resource.category;
+    const categoryData = event.resource.categories[0] ?? null;
     const eventTypeData = getEventType(event.resource.eventType);
 
     return (

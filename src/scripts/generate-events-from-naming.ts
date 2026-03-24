@@ -23,15 +23,21 @@ async function generateEventsFromNaming() {
   let skipped = 0;
 
   for (const naming of EVENT_NAMING_CATALOG) {
-    // Find category by name
-    const category = await prisma.category.findUnique({
-      where: { name: naming.category },
-    });
-
-    if (!category) {
-      console.log(
-        `⚠️  Category "${naming.category}" not found for event "${naming.name}", skipping`
-      );
+    // Resolve all category IDs (first = primary)
+    const resolvedCategories: { id: string; name: string }[] = [];
+    let categoryMissing = false;
+    for (const catName of naming.categories) {
+      const cat = await prisma.category.findUnique({ where: { name: catName } });
+      if (!cat) {
+        console.log(
+          `⚠️  Category "${catName}" not found for event "${naming.name}", skipping`
+        );
+        categoryMissing = true;
+        break;
+      }
+      resolvedCategories.push(cat);
+    }
+    if (categoryMissing || resolvedCategories.length === 0) {
       skipped++;
       continue;
     }
@@ -61,7 +67,6 @@ async function generateEventsFromNaming() {
       description: naming.description || null,
       eventType: naming.eventType,
       recurrenceType,
-      categoryId: category.id,
 
       // Matching criteria
       tithi: tithi || null,
@@ -82,6 +87,9 @@ async function generateEventsFromNaming() {
       timingType: naming.timingType ?? null,
       startTime: naming.startTime ?? null,
       endTime: naming.endTime ?? null,
+
+      // Alternative names
+      aliases: naming.aliases ?? [],
     };
 
     // Look up by namingKey first (stable identifier, survives renames).
@@ -111,6 +119,17 @@ async function generateEventsFromNaming() {
           where: { id: existing.id },
           data: eventData as never,
         });
+        // Sync categories: replace all existing entries
+        await prisma.eventCategory.deleteMany({ where: { eventId: existing.id } });
+        for (let i = 0; i < resolvedCategories.length; i++) {
+          await prisma.eventCategory.create({
+            data: {
+              eventId: existing.id,
+              categoryId: resolvedCategories[i]!.id,
+              sortOrder: i,
+            },
+          });
+        }
         updated++;
         const renamed =
           existing.name !== naming.name ? ` (hernoemd van "${existing.name}")` : "";
@@ -121,10 +140,19 @@ async function generateEventsFromNaming() {
         console.log(`⏭️  Skipped (manual): ${naming.name}`);
       }
     } else {
-      // Create new event
-      await prisma.event.create({
+      // Create new event and its categories
+      const newEvent = await prisma.event.create({
         data: eventData as never,
       });
+      for (let i = 0; i < resolvedCategories.length; i++) {
+        await prisma.eventCategory.create({
+          data: {
+            eventId: newEvent.id,
+            categoryId: resolvedCategories[i]!.id,
+            sortOrder: i,
+          },
+        });
+      }
       created++;
       console.log(`✅ Created: ${naming.name}`);
     }

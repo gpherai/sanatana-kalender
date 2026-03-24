@@ -16,7 +16,11 @@ export default async function EditEventPage({ params }: PageProps) {
   const event = await prisma.event.findUnique({
     where: { id },
     include: {
-      category: true,
+      categories: {
+        include: { category: true },
+        orderBy: { sortOrder: "asc" as const },
+        take: 1,
+      },
       occurrences: {
         orderBy: { date: "asc" },
         take: 1,
@@ -37,7 +41,7 @@ export default async function EditEventPage({ params }: PageProps) {
     name: event.name,
     description: event.description ?? "",
     eventType: event.eventType as string,
-    categoryId: event.categoryId ?? "",
+    categoryId: event.categories[0]?.categoryId ?? "",
     recurrenceType: event.recurrenceType as string,
     date: firstOccurrence ? formatDateForInput(firstOccurrence.date) : "",
     endDate: firstOccurrence?.endDate ? formatDateForInput(firstOccurrence.endDate) : "",
