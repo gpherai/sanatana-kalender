@@ -170,31 +170,33 @@ export const CATEGORY_CATALOG: readonly CategoryDefinition[] = [
     sortOrder: 14,
     description: "The lion-man avatar of Vishnu, protector of devotees",
   },
+  // ─── Dasha Mahavidyas (groep-header + traditionele volgorde 1–9) ─────────────
+  {
+    name: "mahavidya",
+    displayName: "Dasha Mahavidya",
+    icon: "🔮",
+    color: "oklch(0.50 0.20 305)",
+    sortOrder: 15,
+    description:
+      "The ten tantric goddesses (Dasha Mahavidyas) — aspects of the Divine Feminine",
+  },
   {
     name: "kali",
     displayName: "Kali",
     icon: "💀",
     color: "oklch(0.28 0.14 285)",
-    sortOrder: 15,
-    description: "Fierce goddess of time and liberation, destroyer of evil",
+    sortOrder: 16,
+    description:
+      "First Mahavidya — fierce goddess of time and liberation, destroyer of evil",
   },
   {
     name: "tara",
     displayName: "Ma Tara",
     icon: "⭐",
     color: "oklch(0.42 0.17 230)",
-    sortOrder: 16,
-    description:
-      "Second of the Dasha Mahavidyas, goddess of liberation and guidance across the ocean of samsara",
-  },
-  {
-    name: "mahavidya",
-    displayName: "Dasha Mahavidya",
-    icon: "🌸",
-    color: "oklch(0.50 0.20 305)",
     sortOrder: 17,
     description:
-      "The ten tantric goddesses (Dasha Mahavidyas) — aspects of the Divine Feminine",
+      "Second Mahavidya — goddess of liberation and guidance across the ocean of samsara",
   },
   {
     name: "lalita",
@@ -205,21 +207,21 @@ export const CATEGORY_CATALOG: readonly CategoryDefinition[] = [
     description: "Third Mahavidya — goddess of beauty, bliss and the three worlds",
   },
   {
-    name: "matangi",
-    displayName: "Matangi",
-    icon: "🦜",
-    color: "oklch(0.55 0.18 145)",
+    name: "bhuvaneshvari",
+    displayName: "Bhuvaneshvari",
+    icon: "🌍",
+    color: "oklch(0.45 0.18 210)",
     sortOrder: 19,
-    description: "Ninth Mahavidya — goddess of inner thought, dominion and arts",
+    description:
+      "Fourth Mahavidya — queen of the universe, space itself as the divine feminine",
   },
   {
-    name: "bagalamukhi",
-    displayName: "Bagalamukhi",
-    icon: "🌻",
-    color: "oklch(0.82 0.20 95)",
+    name: "bhairavi",
+    displayName: "Bhairavi",
+    icon: "🔥",
+    color: "oklch(0.55 0.22 35)",
     sortOrder: 20,
-    description:
-      "Eighth Mahavidya — goddess of paralysing power, yellow-robed destroyer of speech",
+    description: "Fifth Mahavidya — fierce goddess of destruction, fire and liberation",
   },
   {
     name: "chhinnamasta",
@@ -240,22 +242,23 @@ export const CATEGORY_CATALOG: readonly CategoryDefinition[] = [
       "Seventh Mahavidya — the smoky widow goddess of the void, inauspiciousness and wisdom",
   },
   {
-    name: "bhuvaneshvari",
-    displayName: "Bhuvaneshvari",
-    icon: "🌍",
-    color: "oklch(0.45 0.18 210)",
+    name: "bagalamukhi",
+    displayName: "Bagalamukhi",
+    icon: "🌻",
+    color: "oklch(0.82 0.20 95)",
     sortOrder: 23,
     description:
-      "Fourth Mahavidya — queen of the universe, space itself as the divine feminine",
+      "Eighth Mahavidya — goddess of paralysing power, yellow-robed destroyer of speech",
   },
   {
-    name: "bhairavi",
-    displayName: "Bhairavi",
-    icon: "🔥",
-    color: "oklch(0.55 0.22 35)",
+    name: "matangi",
+    displayName: "Matangi",
+    icon: "🦜",
+    color: "oklch(0.55 0.18 145)",
     sortOrder: 24,
-    description: "Fifth Mahavidya — fierce goddess of destruction, fire and liberation",
+    description: "Ninth Mahavidya — goddess of inner thought, dominion and arts",
   },
+  // ─── Overig ────────────────────────────────────────────────────────────────
   {
     name: "general",
     displayName: "General",
