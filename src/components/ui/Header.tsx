@@ -40,11 +40,12 @@ export function Header() {
       <div className="container mx-auto px-4">
         <div className="flex h-14 items-center justify-between">
           {/* Logo - uses theme color */}
-          <Link href="/" className="group flex items-center gap-2 transition-colors">
-            <span className="text-theme-primary text-xl transition-transform select-none group-hover:scale-110">
-              ॐ
-            </span>
-            <span className="text-theme-primary font-display hidden font-semibold tracking-wide sm:inline">
+          <Link
+            href="/"
+            className="group flex items-center gap-2 font-bold transition-colors"
+          >
+            <span className="text-xl transition-transform group-hover:scale-110">🙏</span>
+            <span className="text-theme-primary hidden font-bold sm:inline">
               Dharma Calendar
             </span>
           </Link>

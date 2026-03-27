@@ -690,8 +690,7 @@ function generateTailwindIntegration(): string {
   --color-primary: var(--theme-primary);
   --color-secondary: var(--theme-secondary);
   --color-accent: var(--theme-accent);
-  --font-sans: var(--font-montserrat);
-  --font-display: var(--font-playfair);
+  --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 `;
@@ -706,10 +705,6 @@ body {
   background: var(--background);
   color: var(--foreground);
   min-height: 100vh;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-display), Georgia, "Times New Roman", serif;
 }
 
 html {
