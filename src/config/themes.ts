@@ -727,6 +727,201 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
 `,
     },
   },
+  {
+    name: "narasimha-jwala",
+    displayName: "🦁 Narasimha Jwala",
+    description:
+      "Fierce divine fire of the lion-god emerging from the pillar at twilight",
+    isDefault: false,
+    category: "special" as const,
+    isSpecial: true,
+    colors: {
+      primary: "oklch(0.68 0.22 52)", // Golden amber-fire — the lion's mane
+      secondary: "oklch(0.42 0.18 228)", // Deep twilight sapphire — Vaishnava sky at dusk
+      accent: "oklch(0.74 0.24 38)", // Sacred flame — fierce orange-red
+    },
+    background: {
+      // Light mode: blazing golden fire radiates from above, twilight blue in the corner
+      light: `
+        radial-gradient(ellipse 80% 65% at 50% -8%, oklch(0.88 0.18 60 / 0.80) 0%, oklch(0.82 0.14 52 / 0.45) 40%, transparent 70%),
+        radial-gradient(ellipse 55% 45% at -5% 110%, oklch(0.75 0.20 42 / 0.38) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 40% at 105% 100%, oklch(0.48 0.18 228 / 0.18) 0%, transparent 50%),
+        linear-gradient(180deg, oklch(0.97 0.04 62) 0%, oklch(0.95 0.05 56) 40%, oklch(0.93 0.04 50) 100%)
+      `,
+      // Dark mode: sandhyakala (dusk) — fiery pillar breaks through twilight blue sky
+      dark: `
+        radial-gradient(ellipse 25% 75% at 50% 35%, oklch(0.65 0.22 52 / 0.28) 0%, transparent 58%),
+        radial-gradient(ellipse 100% 55% at 50% 108%, oklch(0.62 0.24 40 / 0.42) 0%, transparent 55%),
+        radial-gradient(ellipse 90% 60% at 0% 60%, oklch(0.32 0.16 228 / 0.36) 0%, transparent 55%),
+        radial-gradient(ellipse 80% 50% at 100% 40%, oklch(0.28 0.14 232 / 0.30) 0%, transparent 50%),
+        linear-gradient(180deg, oklch(0.11 0.03 42) 0%, oklch(0.09 0.04 48) 40%, oklch(0.08 0.03 228) 100%)
+      `,
+    },
+    specialStyles: {
+      customProperties: {
+        "--narasimha-fire": "oklch(0.68 0.22 52)",
+        "--narasimha-flame": "oklch(0.74 0.24 38)",
+        "--narasimha-dusk": "oklch(0.42 0.18 228)",
+      },
+      moon: {
+        surface: {
+          light: "oklch(0.990 0.022 72)", // Brilliant warm-gold cream
+          mid: "oklch(0.952 0.032 64)", // Rich champagne-gold
+          dark: "oklch(0.902 0.042 58)", // Deep warm honey
+        },
+        shadow: {
+          light: "oklch(0.195 0.032 228)", // Twilight blue-dark
+          deep: "oklch(0.108 0.022 222)", // Deep dusk indigo
+        },
+        glow: "oklch(0.860 0.18 58 / 0.70)",
+        rim: "oklch(0.95 0.14 65 / 0.18)",
+      },
+      header: {
+        light: `
+          background: linear-gradient(180deg, oklch(0.98 0.04 65 / 0.94) 0%, oklch(0.96 0.05 58 / 0.90) 100%) !important;
+          border-bottom: 2px solid oklch(0.68 0.22 52 / 0.32) !important;
+          box-shadow: 0 2px 20px oklch(0.68 0.22 52 / 0.16), 0 1px 0 oklch(0.74 0.24 38 / 0.18) inset;
+        `,
+        dark: `
+          background: linear-gradient(180deg, oklch(0.14 0.04 42 / 0.93) 0%, oklch(0.10 0.03 228 / 0.90) 100%) !important;
+          border-bottom: 2px solid oklch(0.68 0.22 52 / 0.32) !important;
+          box-shadow: 0 2px 24px oklch(0.68 0.22 52 / 0.18), 0 1px 0 oklch(0.74 0.24 38 / 0.10) inset;
+        `,
+      },
+      cards: {
+        light: `
+          background: linear-gradient(145deg, oklch(1 0 0 / 0.90) 0%, oklch(0.98 0.02 65 / 0.86) 100%) !important;
+          border: 1px solid oklch(0.68 0.22 52 / 0.20) !important;
+          box-shadow: 0 4px 20px oklch(0.68 0.22 52 / 0.12), 0 0 0 1px oklch(0.74 0.24 38 / 0.07), inset 0 1px 0 oklch(1 0 0 / 0.5) !important;
+        `,
+        dark: `
+          background: linear-gradient(145deg, oklch(0.18 0.04 45 / 0.90) 0%, oklch(0.13 0.03 40 / 0.86) 100%) !important;
+          border: 1px solid oklch(0.68 0.22 52 / 0.20) !important;
+          box-shadow: 0 4px 28px oklch(0 0 0 / 0.50), 0 0 20px oklch(0.68 0.22 52 / 0.10) !important;
+          backdrop-filter: blur(10px);
+        `,
+      },
+      buttons: {
+        light: `
+          background: linear-gradient(145deg, oklch(0.68 0.22 52) 0%, oklch(0.62 0.20 42) 100%) !important;
+          border: 1px solid oklch(0.74 0.24 38 / 0.40) !important;
+          box-shadow: 0 4px 18px oklch(0.68 0.22 52 / 0.35), 0 0 18px oklch(0.74 0.24 38 / 0.15) !important;
+        `,
+        dark: `
+          background: linear-gradient(145deg, oklch(0.65 0.22 52) 0%, oklch(0.58 0.20 42) 100%) !important;
+          border: 1px solid oklch(0.68 0.22 52 / 0.30) !important;
+          box-shadow: 0 4px 22px oklch(0 0 0 / 0.55), 0 0 22px oklch(0.68 0.22 52 / 0.22) !important;
+        `,
+      },
+      inputs: {
+        light: `
+          border: 1px solid oklch(0.68 0.22 52 / 0.28) !important;
+          background: linear-gradient(180deg, oklch(1 0 0 / 0.95) 0%, oklch(0.98 0.01 65 / 0.95) 100%) !important;
+        `,
+        dark: `
+          background: linear-gradient(180deg, oklch(0.18 0.03 42 / 0.95) 0%, oklch(0.14 0.02 40 / 0.95) 100%) !important;
+          border: 1px solid oklch(0.68 0.22 52 / 0.28) !important;
+        `,
+      },
+      headings: {
+        light: `
+          background: linear-gradient(135deg, oklch(0.48 0.22 32) 0%, oklch(0.60 0.24 45) 30%, oklch(0.72 0.20 62) 70%, oklch(0.60 0.24 45) 100%);
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+        `,
+        dark: `
+          background: linear-gradient(135deg, oklch(0.68 0.22 38) 0%, oklch(0.74 0.22 52) 40%, oklch(0.82 0.18 66) 75%, oklch(0.74 0.22 52) 100%);
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+        `,
+      },
+      animations: [
+        {
+          name: "jwala-flicker",
+          keyframes: `
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 6px oklch(0.68 0.22 52 / 0.65)); }
+            35% { transform: scale(1.04); filter: drop-shadow(0 0 14px oklch(0.74 0.24 38 / 0.85)); }
+            70% { transform: scale(0.98); filter: drop-shadow(0 0 10px oklch(0.68 0.22 52 / 0.75)); }
+          `,
+        },
+        {
+          name: "gold-fire",
+          keyframes: `
+            0%, 100% { filter: brightness(1) saturate(1); }
+            50% { filter: brightness(1.12) saturate(1.15); }
+          `,
+        },
+      ],
+      decorations: {
+        light: `
+          content: 'नृसिंह';
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          font-size: 70px;
+          font-weight: 300;
+          color: oklch(0.68 0.22 52 / 0.07);
+          pointer-events: none;
+          z-index: 0;
+          line-height: 1;
+          font-family: serif;
+        `,
+        dark: `
+          content: 'नृसिंह';
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          font-size: 70px;
+          font-weight: 300;
+          color: oklch(0.68 0.22 52 / 0.10);
+          pointer-events: none;
+          z-index: 0;
+          line-height: 1;
+          font-family: serif;
+        `,
+      },
+      additionalCss: `
+/* Fiery accent line under header */
+[data-theme="narasimha-jwala"] header::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 240px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent 0%, oklch(0.74 0.24 38) 15%, oklch(0.82 0.22 58) 50%, oklch(0.74 0.24 38) 85%, transparent 100%);
+  border-radius: 2px;
+}
+
+/* Flame flicker on logo icon */
+[data-theme="narasimha-jwala"] header a:first-child span:first-child {
+  animation: jwala-flicker 2.5s ease-in-out infinite;
+}
+
+/* Fierce golden glow on primary text */
+[data-theme="narasimha-jwala"] .text-theme-primary {
+  animation: gold-fire 3.5s ease-in-out infinite;
+}
+
+/* Fire glow on headings */
+[data-theme="narasimha-jwala"] h1,
+[data-theme="narasimha-jwala"] h2 {
+  text-shadow: 0 0 28px oklch(0.68 0.22 52 / 0.28);
+}
+
+/* Focus states */
+[data-theme="narasimha-jwala"] input:focus,
+[data-theme="narasimha-jwala"] select:focus,
+[data-theme="narasimha-jwala"] textarea:focus {
+  border-color: oklch(0.68 0.22 52) !important;
+  box-shadow: 0 0 0 3px oklch(0.68 0.22 52 / 0.22), 0 0 15px oklch(0.74 0.24 38 / 0.15) !important;
+}
+`,
+    },
+  },
 ] as const;
 
 // =============================================================================
