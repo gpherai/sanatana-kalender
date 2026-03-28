@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Calendar, Clock, Tag, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getEventType } from "@/lib/domain";
+import { formatShortDate } from "@/lib/date-utils";
 import {
   getCategoryBgClass,
   getCategoryDynamicStyle,
@@ -285,12 +286,7 @@ export function EventCardCompact({
             {name}
           </span>
         </div>
-        <div className="text-theme-fg-muted text-xs">
-          {new Date(date).toLocaleDateString("nl-NL", {
-            day: "numeric",
-            month: "short",
-          })}
-        </div>
+        <div className="text-theme-fg-muted text-xs">{formatShortDate(date)}</div>
       </div>
 
       <ChevronRight className="text-theme-fg-subtle h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />

@@ -16,9 +16,13 @@ import {
   ExternalLink,
   ChevronRight,
 } from "lucide-react";
-import { format, formatDistanceToNow, isPast, isToday, isTomorrow } from "date-fns";
-import { nl } from "date-fns/locale";
 import type { CalendarEvent } from "@/types/calendar";
+import {
+  isToday,
+  isTomorrow,
+  formatLongDate,
+  formatRelativeDate,
+} from "@/lib/date-utils";
 import { getEventType, getTithi, getNakshatra, getMaas } from "@/lib/domain";
 import { cn, logError } from "@/lib/utils";
 import { getApproxMoonIllumination } from "@/lib/moon-phases";
@@ -36,11 +40,7 @@ interface EventDetailModalProps {
 function getRelativeDateLabel(date: Date): string | null {
   if (isToday(date)) return "Vandaag";
   if (isTomorrow(date)) return "Morgen";
-  if (!isPast(date)) {
-    const distance = formatDistanceToNow(date, { locale: nl, addSuffix: false });
-    return `Over ${distance}`;
-  }
-  return null;
+  return formatRelativeDate(date);
 }
 
 export function EventDetailModal({
@@ -154,8 +154,8 @@ export function EventDetailModal({
 
   // Date calculations
   const displayEndDate = event.resource.originalEndDate ?? event.start;
-  const startDate = format(event.start, "EEEE d MMMM yyyy", { locale: nl });
-  const endDate = format(displayEndDate, "EEEE d MMMM yyyy", { locale: nl });
+  const startDate = formatLongDate(event.start);
+  const endDate = formatLongDate(displayEndDate);
   const isMultiDay =
     event.start.toDateString() !== new Date(displayEndDate).toDateString();
   const relativeLabel = getRelativeDateLabel(event.start);

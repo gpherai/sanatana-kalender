@@ -207,20 +207,26 @@ export function endOfDayUTC(date: Date): Date {
  */
 export function isSameDay(date1: Date, date2: Date): boolean {
   return (
-    date1.getUTCFullYear() === date2.getUTCFullYear() &&
-    date1.getUTCMonth() === date2.getUTCMonth() &&
-    date1.getUTCDate() === date2.getUTCDate()
+    date1.getFullYear() === date2.getFullYear() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date2.getDate()
   );
 }
 
 /**
- * Check if a date is today (in UTC)
- *
- * @param date - Date to check
- * @returns true if date is today
+ * Check if a date is today (local time)
  */
 export function isToday(date: Date): boolean {
   return isSameDay(date, new Date());
+}
+
+/**
+ * Check if a date is tomorrow (local time)
+ */
+export function isTomorrow(date: Date): boolean {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  return isSameDay(date, tomorrow);
 }
 
 /**
@@ -318,6 +324,52 @@ export function formatDateISO(date: Date): string {
  */
 export function formatDateNL(date: Date): string {
   return date.toLocaleDateString("nl-NL", { day: "numeric", month: "long" });
+}
+
+/**
+ * Format date with full weekday, day, month and year (Dutch locale).
+ * Accepts Date or YYYY-MM-DD string.
+ *
+ * @example
+ * ```ts
+ * formatLongDate(new Date('2026-03-28'))
+ * // => "zaterdag 28 maart 2026"
+ * ```
+ */
+export function formatLongDate(date: Date | string): string {
+  const d = typeof date === "string" ? new Date(date) : date;
+  if (!isValidDate(d)) return "Ongeldige datum";
+  return d.toLocaleDateString("nl-NL", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
+
+/**
+ * Format a future date as a relative string using Intl.RelativeTimeFormat (Dutch).
+ * Returns null for past dates or the current moment.
+ *
+ * @example
+ * ```ts
+ * formatRelativeDate(new Date('2026-06-28')) // => "over 3 maanden"
+ * formatRelativeDate(new Date('2025-01-01')) // => null (past)
+ * ```
+ */
+export function formatRelativeDate(date: Date): string | null {
+  const diffMs = date.getTime() - Date.now();
+  if (diffMs <= 0) return null;
+
+  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+  const rtf = new Intl.RelativeTimeFormat("nl-NL", { numeric: "always" });
+
+  if (diffDays < 7) return rtf.format(diffDays, "day");
+  const diffWeeks = Math.round(diffDays / 7);
+  if (diffWeeks < 5) return rtf.format(diffWeeks, "week");
+  const diffMonths = Math.round(diffDays / 30.44);
+  if (diffMonths < 12) return rtf.format(diffMonths, "month");
+  return rtf.format(Math.round(diffDays / 365.25), "year");
 }
 
 /**

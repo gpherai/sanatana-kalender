@@ -3,6 +3,7 @@ import {
   isValidDate,
   isSameDay,
   isToday,
+  isTomorrow,
   isWeekend,
   getMonthDays,
   getMonthStartPadding,
@@ -12,6 +13,8 @@ import {
   formatDateLocal,
   formatDateISO,
   formatDateNL,
+  formatLongDate,
+  formatRelativeDate,
   formatTimeAgo,
   parseCalendarDate,
   safeParseDate,
@@ -75,6 +78,31 @@ describe("Date Utilities", () => {
     it("should return false for a different date", () => {
       const yesterday = new Date(Date.UTC(2024, 2, 14, 12, 0, 0));
       expect(isToday(yesterday)).toBe(false);
+    });
+  });
+
+  describe("isTomorrow", () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date(Date.UTC(2024, 2, 15, 12, 0, 0)));
+    });
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it("should return true for tomorrow", () => {
+      const tomorrow = new Date(Date.UTC(2024, 2, 16, 9, 0, 0));
+      expect(isTomorrow(tomorrow)).toBe(true);
+    });
+
+    it("should return false for today", () => {
+      const today = new Date(Date.UTC(2024, 2, 15, 9, 0, 0));
+      expect(isTomorrow(today)).toBe(false);
+    });
+
+    it("should return false for day after tomorrow", () => {
+      const dayAfter = new Date(Date.UTC(2024, 2, 17, 9, 0, 0));
+      expect(isTomorrow(dayAfter)).toBe(false);
     });
   });
 
@@ -194,6 +222,53 @@ describe("Date Utilities", () => {
       expect(spy).toHaveBeenCalledWith("nl-NL", { day: "numeric", month: "long" });
       expect(result).toBe("1 januari");
       spy.mockRestore();
+    });
+  });
+
+  describe("formatLongDate", () => {
+    it("includes weekday, day, month and year", () => {
+      const date = new Date(2025, 0, 6); // Monday 6 January 2025
+      const result = formatLongDate(date);
+      expect(result).toMatch(/maandag/i);
+      expect(result).toMatch(/6/);
+      expect(result).toMatch(/januari/i);
+      expect(result).toMatch(/2025/);
+    });
+
+    it("accepts a date string", () => {
+      const result = formatLongDate("2025-01-06T00:00:00Z");
+      expect(result).toBeTruthy();
+      expect(result).not.toBe("Ongeldige datum");
+    });
+
+    it("returns 'Ongeldige datum' for invalid input", () => {
+      expect(formatLongDate("invalid")).toBe("Ongeldige datum");
+    });
+  });
+
+  describe("formatRelativeDate", () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date(Date.UTC(2024, 2, 15, 12, 0, 0)));
+    });
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it("returns null for a past date", () => {
+      expect(formatRelativeDate(new Date(Date.UTC(2024, 2, 14, 12, 0, 0)))).toBeNull();
+    });
+
+    it("returns null for the current moment", () => {
+      expect(formatRelativeDate(new Date(Date.UTC(2024, 2, 15, 12, 0, 0)))).toBeNull();
+    });
+
+    it("returns a non-empty string for a future date", () => {
+      const future = new Date(Date.UTC(2024, 5, 15, 12, 0, 0)); // ~3 months later
+      const result = formatRelativeDate(future);
+      expect(result).not.toBeNull();
+      expect(typeof result).toBe("string");
+      expect(result!.length).toBeGreaterThan(0);
     });
   });
 

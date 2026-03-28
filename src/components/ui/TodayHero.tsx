@@ -5,7 +5,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useFetch } from "@/hooks/useFetch";
 import { Sun, Sunrise, Sunset, Moon, MoonStar, Calendar, Sparkles } from "lucide-react";
 import { MoonPhase } from "./MoonPhase";
-import { formatDateLocal, formatTimeAgo } from "@/lib/date-utils";
+import { formatDateLocal, formatTimeAgo, formatDate } from "@/lib/date-utils";
 import { getApproximateHinduMonth } from "@/lib/panchanga-helpers";
 import type { DailyInfoResponse } from "@/types";
 import type {
@@ -128,11 +128,7 @@ export function TodayHero() {
             </div>
 
             <h1 className="mb-1 text-4xl font-bold text-white md:text-5xl">
-              {today.toLocaleDateString("nl-NL", {
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-              })}
+              {formatDate(today)}
             </h1>
 
             {/* Vedic Calendar Year Info */}

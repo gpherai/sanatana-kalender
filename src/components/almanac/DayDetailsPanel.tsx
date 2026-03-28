@@ -3,7 +3,7 @@
 import { Sun, Moon, Sparkles, Star } from "lucide-react";
 import { MoonPhase } from "@/components/ui/MoonPhase";
 import { cn } from "@/lib/utils";
-import { isToday, formatDateISO } from "@/lib/date-utils";
+import { isToday, formatDateISO, formatLongDate } from "@/lib/date-utils";
 import { getApproximateHinduMonth, type SpecialDay } from "@/lib/panchanga-helpers";
 import type { DailyInfoResponse } from "@/types";
 import type { CalendarEventResponse } from "@/types/calendar";
@@ -99,14 +99,7 @@ export function DayDetailsPanel({
             <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs">Vandaag</span>
           )}
         </div>
-        <h3 className="mt-1 text-xl font-bold">
-          {selectedDate.toLocaleDateString("nl-NL", {
-            weekday: "long",
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          })}
-        </h3>
+        <h3 className="mt-1 text-xl font-bold">{formatLongDate(selectedDate)}</h3>
         <div className="mt-1 flex flex-wrap gap-2 text-sm text-white/80">
           <span>{selectedHinduMonth} Maas</span>
           {selectedDayInfo?.tithi && (
