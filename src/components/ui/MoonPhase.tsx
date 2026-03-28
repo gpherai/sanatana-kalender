@@ -148,44 +148,17 @@ export function MoonPhase({
               }}
             />
           </radialGradient>
-
-          {/* Subtle texture (no heavy filters that cause white boxes) */}
-          <filter id={`moonTexture-${size}`} x="-20%" y="-20%" width="140%" height="140%">
-            <feTurbulence
-              type="fractalNoise"
-              baseFrequency="0.02"
-              numOctaves="2"
-              result="noise"
-            />
-            <feColorMatrix
-              in="noise"
-              type="matrix"
-              values="0 0 0 0 0
-                      0 0 0 0 0
-                      0 0 0 0 0
-                      0 0 0 0.05 0"
-              result="opacity"
-            />
-            <feBlend in="SourceGraphic" in2="opacity" mode="multiply" />
-          </filter>
         </defs>
 
         {/* Dark base circle (always visible, full moon disk) */}
-        <circle
-          cx={cx}
-          cy={cy}
-          r={r}
-          fill={`url(#moonDark-${size})`}
-          filter={`url(#moonTexture-${size})`}
-        />
+        <circle cx={cx} cy={cy} r={r} fill={`url(#moonDark-${size})`} />
 
         {/* Lit portion of the moon */}
         {moonPath && (
           <path
             d={moonPath}
             fill={`url(#moonSurface-${size})`}
-            filter={`url(#moonTexture-${size})`}
-            className="transition-all duration-1000"
+            className="[transition:d_1000ms_ease] motion-reduce:transition-none"
           />
         )}
 

@@ -42,22 +42,14 @@ export function CalendarToolbar({
         <div className="flex items-center">
           <button
             onClick={goToBack}
-            className={cn(
-              "rounded-lg p-1.5",
-              "hover:bg-theme-hover",
-              "transition-colors"
-            )}
+            className={cn("rounded-lg p-3", "hover:bg-theme-hover", "transition-colors")}
             aria-label="Vorige"
           >
             <ChevronLeft className="text-theme-fg-secondary h-5 w-5" />
           </button>
           <button
             onClick={goToNext}
-            className={cn(
-              "rounded-lg p-1.5",
-              "hover:bg-theme-hover",
-              "transition-colors"
-            )}
+            className={cn("rounded-lg p-3", "hover:bg-theme-hover", "transition-colors")}
             aria-label="Volgende"
           >
             <ChevronRight className="text-theme-fg-secondary h-5 w-5" />

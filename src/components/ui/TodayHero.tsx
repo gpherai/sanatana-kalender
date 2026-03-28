@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Sun, Sunrise, Sunset, Moon, MoonStar, Calendar, Sparkles } from "lucide-react";
 import { MoonPhase } from "./MoonPhase";
@@ -121,7 +122,7 @@ export function TodayHero() {
       >
         <div className="flex h-48 items-center justify-center">
           <div className="flex flex-col items-center gap-3">
-            <div className="h-12 w-12 animate-spin rounded-full border-4 border-[var(--theme-spinner-track)] border-t-[var(--theme-spinner-fill)]" />
+            <div className="h-12 w-12 animate-spin rounded-full border-4 border-[var(--theme-spinner-track)] border-t-[var(--theme-spinner-fill)] motion-reduce:animate-none" />
             <span className="text-sm text-white/80">Loading today&apos;s info...</span>
           </div>
         </div>
@@ -349,7 +350,7 @@ export function TodayHero() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <span className="text-xl">🌙</span>
+                  <MoonStar className="h-5 w-5 text-white/70" />
                   <span className="text-white/70">Opkomst</span>
                 </div>
                 <div className="text-right">
@@ -364,7 +365,7 @@ export function TodayHero() {
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <span className="text-xl">🌑</span>
+                  <Moon className="h-5 w-5 text-white/70" />
                   <span className="text-white/70">Ondergang</span>
                 </div>
                 <div className="text-right">
@@ -418,13 +419,14 @@ export function TodayHero() {
 
             <div className="flex flex-wrap gap-3">
               {todayEvents.map((event) => (
-                <div
+                <Link
                   key={event.id}
-                  className="flex items-center gap-2 rounded-full bg-[var(--theme-glass-bg)] px-4 py-2 text-white/90 backdrop-blur-sm"
+                  href={`/events/${event.id}`}
+                  className="flex items-center gap-2 rounded-full bg-[var(--theme-glass-bg)] px-4 py-2 text-white/90 backdrop-blur-sm transition-opacity hover:opacity-80"
                 >
                   {event.category?.icon && <span>{event.category.icon}</span>}
                   <span className="font-medium">{event.name}</span>
-                </div>
+                </Link>
               ))}
             </div>
           </div>

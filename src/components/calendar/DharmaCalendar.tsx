@@ -52,7 +52,7 @@ function DateHeader({ date }: DateHeaderProps) {
         {date.getDate()}
       </span>
       <span
-        className={`text-xs transition-transform hover:scale-125 ${specialDay === "full" ? "animate-pulse text-lg" : ""} ${specialDay === "new" ? "opacity-50" : ""} `}
+        className={`text-xs ${specialDay === "full" ? "text-lg" : ""} ${specialDay === "new" ? "opacity-50" : ""} `}
         title={`Maanfase: ${moonEmoji}`}
       >
         {moonEmoji}
@@ -156,7 +156,7 @@ export function DharmaCalendar() {
     const className = "";
 
     if (isWeekend) {
-      backgroundColor = "oklch(0.97 0.01 60)";
+      backgroundColor = "var(--theme-calendar-weekend-bg)";
     }
 
     return {
@@ -196,7 +196,7 @@ export function DharmaCalendar() {
       {(!mounted || loading) && (
         <div className="bg-theme-surface-overlay absolute inset-0 z-10 flex items-center justify-center rounded-xl">
           <div className="flex flex-col items-center gap-2">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-[var(--theme-spinner-track)] border-t-[var(--theme-spinner-fill)]" />
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-[var(--theme-spinner-track)] border-t-[var(--theme-spinner-fill)] motion-reduce:animate-none" />
             <div className="text-theme-fg-muted text-sm">Laden...</div>
           </div>
         </div>

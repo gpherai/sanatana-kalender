@@ -66,15 +66,41 @@ function windDir(deg: number): string {
   return dirs[r(deg / 22.5) % 16] ?? "N";
 }
 
-function moonEmoji(phase: number): string {
-  if (phase < 0.03 || phase > 0.97) return "🌑";
-  if (phase < 0.22) return "🌒";
-  if (phase < 0.28) return "🌓";
-  if (phase < 0.47) return "🌔";
-  if (phase < 0.53) return "🌕";
-  if (phase < 0.72) return "🌖";
-  if (phase < 0.78) return "🌗";
-  return "🌘";
+function MoonPhaseIcon({ phase, size = 20 }: { phase: number; size?: number }) {
+  const r = (size - 2) / 2;
+  const cx = size / 2;
+  const cy = size / 2;
+  const top = `${cx} ${cy - r}`;
+  const bot = `${cx} ${cy + r}`;
+
+  let litPath: string | null = null;
+
+  if (phase >= 0.03 && phase <= 0.97) {
+    if (Math.abs(phase - 0.5) <= 0.03) {
+      // Full moon — two semi-circle arcs
+      litPath = `M ${top} A ${r} ${r} 0 0 1 ${bot} A ${r} ${r} 0 0 1 ${top}`;
+    } else {
+      const waxing = phase < 0.5;
+      const isGibbous = waxing ? phase > 0.25 : phase < 0.75;
+      const termRx = Math.max(Math.abs(Math.cos(phase * 2 * Math.PI)) * r, 0.5);
+      const outerSweep = waxing ? 1 : 0;
+      const termSweep = isGibbous === waxing ? 1 : 0;
+      litPath = `M ${top} A ${r} ${r} 0 0 ${outerSweep} ${bot} A ${termRx} ${r} 0 0 ${termSweep} ${top}`;
+    }
+  }
+
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox={`0 0 ${size} ${size}`}
+      aria-hidden="true"
+      style={{ display: "inline-block", verticalAlign: "middle" }}
+    >
+      <circle cx={cx} cy={cy} r={r} fill="#1e293b" opacity="0.75" />
+      {litPath && <path d={litPath} fill="#fbbf24" opacity="0.9" />}
+    </svg>
+  );
 }
 
 function moonName(phase: number): string {
@@ -442,9 +468,14 @@ export default function WeerPage() {
           onClick={() => void fetchWeather(true)}
           disabled={refreshing}
           aria-label="Vernieuwen"
-          className="text-theme-fg-muted hover:text-theme-fg hover:bg-theme-hover cursor-pointer rounded-xl p-2 transition-colors disabled:opacity-40"
+          className="text-theme-fg-muted hover:text-theme-fg hover:bg-theme-hover cursor-pointer rounded-xl p-3 transition-colors disabled:opacity-40"
         >
-          <RefreshCw className={cn("h-4 w-4", refreshing && "animate-spin")} />
+          <RefreshCw
+            className={cn(
+              "h-4 w-4",
+              refreshing && "animate-spin motion-reduce:animate-none"
+            )}
+          />
         </button>
       </div>
 
@@ -525,9 +556,7 @@ export default function WeerPage() {
                   {(today?.moon_phase ?? 0) < 0.5 ? "Wassend" : "Afnemend"}
                 </p>
               </div>
-              <span className="text-2xl leading-none" aria-hidden="true">
-                {moonEmoji(today?.moon_phase ?? 0)}
-              </span>
+              <MoonPhaseIcon phase={today?.moon_phase ?? 0} size={32} />
             </div>
           </div>
 
@@ -926,6 +955,7 @@ function AirQualityCard({ aq }: { aq: AirQuality }) {
                   ? "text-yellow-600 dark:text-yellow-400"
                   : "text-theme-fg"
             }
+            hint={c.pm2_5 > 25 ? "Hoog" : c.pm2_5 > 15 ? "Verhoogd" : undefined}
           />
           <KpiBadge
             icon={<Chem>PM</Chem>}
@@ -938,6 +968,7 @@ function AirQualityCard({ aq }: { aq: AirQuality }) {
                   ? "text-yellow-600 dark:text-yellow-400"
                   : "text-theme-fg"
             }
+            hint={c.pm10 > 90 ? "Hoog" : c.pm10 > 45 ? "Verhoogd" : undefined}
           />
           <KpiBadge
             icon={<Chem>NO₂</Chem>}
@@ -950,6 +981,7 @@ function AirQualityCard({ aq }: { aq: AirQuality }) {
                   ? "text-orange-500 dark:text-orange-400"
                   : "text-theme-fg"
             }
+            hint={c.no2 > 200 ? "Hoog" : c.no2 > 40 ? "Verhoogd" : undefined}
           />
           <KpiBadge
             icon={<Chem>O₃</Chem>}
@@ -962,6 +994,7 @@ function AirQualityCard({ aq }: { aq: AirQuality }) {
                   ? "text-orange-500 dark:text-orange-400"
                   : "text-theme-fg"
             }
+            hint={c.o3 > 180 ? "Hoog" : c.o3 > 120 ? "Verhoogd" : undefined}
           />
           <KpiBadge
             icon={<Chem>SO₂</Chem>}
@@ -974,6 +1007,7 @@ function AirQualityCard({ aq }: { aq: AirQuality }) {
                   ? "text-orange-500 dark:text-orange-400"
                   : "text-theme-fg"
             }
+            hint={c.so2 > 350 ? "Hoog" : c.so2 > 40 ? "Verhoogd" : undefined}
           />
           <KpiBadge
             icon={<Chem>CO</Chem>}
@@ -986,6 +1020,7 @@ function AirQualityCard({ aq }: { aq: AirQuality }) {
                   ? "text-orange-500 dark:text-orange-400"
                   : "text-theme-fg"
             }
+            hint={c.co > 10000 ? "Hoog" : c.co > 4000 ? "Verhoogd" : undefined}
           />
         </div>
       </div>
@@ -1186,7 +1221,7 @@ function TempChart({
                 y={(yMax - 7).toFixed(1)}
                 textAnchor="middle"
                 fill="#f97316"
-                style={{ fontSize: 8.5, fontWeight: 600 }}
+                style={{ fontSize: 10, fontWeight: 600 }}
                 opacity="0.85"
               >
                 {tMax}°
@@ -1203,7 +1238,7 @@ function TempChart({
                 y={(yMin + 13).toFixed(1)}
                 textAnchor="middle"
                 fill="#60a5fa"
-                style={{ fontSize: 8.5, fontWeight: 600 }}
+                style={{ fontSize: 10, fontWeight: 600 }}
                 opacity="0.85"
               >
                 {tMin}°
@@ -1255,11 +1290,14 @@ function KpiBadge({
   label,
   value,
   valueClass,
+  hint,
 }: {
   icon: React.ReactNode;
   label: string;
   value: string;
   valueClass?: string;
+  /** Text indicator for elevated values — ensures non-color-only signalling */
+  hint?: string;
 }) {
   return (
     <div className="bg-theme-bg-subtle rounded-xl px-3 py-2.5">
@@ -1276,6 +1314,7 @@ function KpiBadge({
         )}
       >
         {value}
+        {hint && <span className="ml-1 text-[10px] font-semibold">{hint}</span>}
       </p>
     </div>
   );
@@ -1371,8 +1410,8 @@ function ForecastRow({
           <span className="text-orange-500">{r(day.temp.max)}°</span>
           <span className="text-theme-fg-muted"> / {r(day.temp.min)}°</span>
         </span>
-        <span aria-label={moonName(day.moon_phase)} className="shrink-0 text-base">
-          {moonEmoji(day.moon_phase)}
+        <span aria-label={moonName(day.moon_phase)} className="shrink-0">
+          <MoonPhaseIcon phase={day.moon_phase} size={18} />
         </span>
       </div>
       <div className="text-theme-fg-muted mt-1.5 flex flex-wrap gap-x-4 gap-y-0.5 text-xs lg:hidden">
@@ -1459,8 +1498,8 @@ function ForecastRow({
             <span className="text-theme-fg-muted">Droog</span>
           )}
         </div>
-        <div className="text-center text-base" aria-label={moonName(day.moon_phase)}>
-          {moonEmoji(day.moon_phase)}
+        <div className="flex justify-center" aria-label={moonName(day.moon_phase)}>
+          <MoonPhaseIcon phase={day.moon_phase} size={18} />
         </div>
       </div>
     </div>
