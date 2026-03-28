@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { updatePreferencesSchema } from "@/lib/validations";
 import { serverError, validationError } from "@/lib/api-response";
 import { DEFAULT_LOCATION } from "@/lib/domain";
+import { logError } from "@/lib/utils";
 import { Prisma } from "@prisma/client";
 import { EventType, CalendarView } from "@prisma/client";
 
@@ -48,7 +49,7 @@ export async function GET() {
 
     return NextResponse.json(preferences);
   } catch (error) {
-    console.error("Error fetching preferences:", error);
+    logError("Error fetching preferences:", error);
     return serverError("Kon voorkeuren niet ophalen");
   }
 }
@@ -119,7 +120,7 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json(preferences);
   } catch (error) {
-    console.error("Error updating preferences:", error);
+    logError("Error updating preferences:", error);
 
     // Handle specific Prisma errors
     if (error instanceof Prisma.PrismaClientKnownRequestError) {

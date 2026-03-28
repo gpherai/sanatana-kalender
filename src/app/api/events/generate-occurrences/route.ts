@@ -32,6 +32,7 @@ import { DEFAULT_LOCATION } from "@/lib/domain";
 import { parseCalendarDate } from "@/lib/date-utils";
 import { generateOccurrencesSchema } from "@/lib/validations";
 import { validationError, notFoundError, serverError } from "@/lib/api-response";
+import { logError } from "@/lib/utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -192,7 +193,7 @@ export async function POST(request: NextRequest) {
       deleted: totalDeleted,
     });
   } catch (error) {
-    console.error("[API] POST /api/events/generate-occurrences error:", error);
+    logError("[API] POST /api/events/generate-occurrences error:", error);
     return serverError("Kon occurrences niet genereren");
   }
 }

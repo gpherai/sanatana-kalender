@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { serverError } from "@/lib/api-response";
+import { logError } from "@/lib/utils";
 
 export async function GET() {
   try {
@@ -19,7 +20,7 @@ export async function GET() {
 
     return NextResponse.json(categories);
   } catch (error) {
-    console.error("Error fetching categories:", error);
+    logError("Error fetching categories:", error);
     return serverError("Kon categorieën niet ophalen");
   }
 }

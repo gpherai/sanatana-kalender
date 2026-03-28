@@ -7,6 +7,7 @@ import {
   serverError,
   validationError,
 } from "@/lib/api-response";
+import { logError } from "@/lib/utils";
 import { parseCalendarDate } from "@/lib/date-utils";
 import { Prisma } from "@prisma/client";
 import { EventType, RecurrenceType, Tithi, Nakshatra, Maas } from "@prisma/client";
@@ -80,7 +81,7 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json(event);
   } catch (error) {
-    console.error("[API] GET /api/events/[id] error:", error);
+    logError("[API] GET /api/events/[id] error:", error);
     return serverError("Kon event niet ophalen");
   }
 }
@@ -194,7 +195,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json(event);
   } catch (error) {
-    console.error("[API] PUT /api/events/[id] error:", error);
+    logError("[API] PUT /api/events/[id] error:", error);
 
     // Handle specific Prisma errors
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -245,7 +246,7 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
 
     return new NextResponse(null, { status: 204 });
   } catch (error) {
-    console.error("[API] DELETE /api/events/[id] error:", error);
+    logError("[API] DELETE /api/events/[id] error:", error);
 
     // Handle Prisma errors
     if (error instanceof Prisma.PrismaClientKnownRequestError) {

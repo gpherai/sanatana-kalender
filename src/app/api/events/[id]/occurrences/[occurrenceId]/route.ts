@@ -7,6 +7,7 @@ import {
   serverError,
   validationError,
 } from "@/lib/api-response";
+import { logError } from "@/lib/utils";
 import { parseCalendarDate } from "@/lib/date-utils";
 
 interface RouteParams {
@@ -86,7 +87,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json(updated);
   } catch (error) {
-    console.error("[API] PUT /api/events/[id]/occurrences/[occurrenceId] error:", error);
+    logError("[API] PUT /api/events/[id]/occurrences/[occurrenceId] error:", error);
     return serverError("Kon occurrence niet bijwerken");
   }
 }

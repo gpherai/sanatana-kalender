@@ -38,6 +38,7 @@ import {
   type ResolvedColorMode,
   type PersistedThemeState,
 } from "@/config/themes";
+import { logWarn } from "@/lib/utils";
 
 // =============================================================================
 // CONTEXT TYPE
@@ -193,7 +194,7 @@ export function ThemeProvider({
   // Theme setter with validation
   const setTheme = useCallback((newThemeName: string) => {
     if (!isValidThemeName(newThemeName)) {
-      console.warn(`[ThemeProvider] Invalid theme: "${newThemeName}"`);
+      logWarn(`[ThemeProvider] Invalid theme: "${newThemeName}"`);
       return;
     }
     setThemeNameState(newThemeName);

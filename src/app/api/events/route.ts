@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { createEventSchema, eventQuerySchema } from "@/lib/validations";
 import { errorResponse, serverError, validationError } from "@/lib/api-response";
+import { logError } from "@/lib/utils";
 import { parseCalendarDate, addDayForDisplay, formatDateLocal } from "@/lib/date-utils";
 import {
   Prisma,
@@ -90,7 +91,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(calendarEvents);
   } catch (error) {
-    console.error("[API] GET /api/events error:", error);
+    logError("[API] GET /api/events error:", error);
     return serverError("Kon events niet ophalen");
   }
 }
@@ -160,7 +161,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(event, { status: 201 });
   } catch (error) {
-    console.error("[API] POST /api/events error:", error);
+    logError("[API] POST /api/events error:", error);
 
     // Handle specific Prisma errors
     if (error instanceof Prisma.PrismaClientKnownRequestError) {

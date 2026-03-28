@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { errorResponse, serverError } from "@/lib/api-response";
+import { logError } from "@/lib/utils";
 import { panchangaService } from "@/services/panchanga.service";
 import { DEFAULT_LOCATION } from "@/lib/domain";
 import { getMoonPhaseType, getMoonPhaseEmoji, getMoonPhaseName } from "@/lib/moon-phases";
@@ -359,7 +360,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(response);
     }
   } catch (error) {
-    console.error("[API] GET /api/daily-info error:", error);
+    logError("[API] GET /api/daily-info error:", error);
     return serverError("Kon Panchanga niet berekenen");
   }
 }
