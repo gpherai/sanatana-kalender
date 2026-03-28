@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, useMemo } from "react";
 import { useFetch } from "@/hooks/useFetch";
@@ -11,6 +12,7 @@ import type {
   CalendarEventResponse,
   CalendarEventResourceResponse,
 } from "@/types/calendar";
+import type { WeatherApiResponse } from "@/types/weather";
 
 interface TodayEvent {
   id: string;
@@ -48,13 +50,15 @@ export function TodayHero() {
     };
   }, []);
 
-  // Fetch daily info and today's events
+  // Fetch daily info, today's events, and current weather
   const todayStr = formatDateLocal(currentTime);
   const { data: dailyInfo, loading: dailyLoading } =
     useFetch<DailyInfoResponse>("/api/daily-info");
   const { data: rawEvents, loading: eventsLoading } = useFetch<CalendarEventResponse[]>(
     `/api/events?start=${todayStr}T00:00:00.000Z&end=${todayStr}T23:59:59.999Z`
   );
+  const { data: weatherData } = useFetch<WeatherApiResponse>("/api/weer");
+  const currentWeather = weatherData?.current;
   const loading = dailyLoading || eventsLoading;
   const todayEvents = useMemo<TodayEvent[]>(
     () =>
@@ -195,7 +199,7 @@ export function TodayHero() {
             </div>
           </div>
 
-          {/* Current Time */}
+          {/* Current Time + Weather */}
           <div className="text-right">
             <div className="text-5xl font-light text-white tabular-nums md:text-6xl">
               {currentTime.toLocaleTimeString("nl-NL", {
@@ -206,6 +210,32 @@ export function TodayHero() {
             <div className="mt-1 text-sm text-white/60">
               {dailyInfo?.locationName || "Den Haag"}
             </div>
+
+            {/* Weather snippet — only shown when API data is available */}
+            {currentWeather?.weather[0] && (
+              <div className="mt-2 flex items-center justify-end gap-2">
+                <Image
+                  src={`https://openweathermap.org/img/wn/${currentWeather.weather[0].icon}@2x.png`}
+                  alt={currentWeather.weather[0].description}
+                  width={48}
+                  height={48}
+                  unoptimized
+                  className="-my-1"
+                />
+                <div>
+                  <div className="text-3xl leading-tight font-semibold text-white">
+                    {Math.round(currentWeather.temp)}°
+                  </div>
+                  <div className="text-xs text-white/60 capitalize">
+                    {currentWeather.weather[0].description}
+                  </div>
+                  <div className="text-xs text-white/50">
+                    ↑{Math.round(currentWeather.temp_max)}° ↓
+                    {Math.round(currentWeather.temp_min)}°
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
