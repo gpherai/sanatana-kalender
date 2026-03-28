@@ -38,7 +38,7 @@ export default async function Home() {
     orderBy: {
       date: "asc",
     },
-    take: 12, // Show more events within 7 days
+    // No take limit — show all events within the 7-day window
   });
 
   // Fetch categories for the legend
@@ -81,8 +81,10 @@ export default async function Home() {
               </div>
             ) : (
               <div className="space-y-2">
-                {upcomingEvents.slice(0, 7).map((occ) => {
+                {upcomingEvents.map((occ) => {
                   const category = occ.event.categories[0]?.category ?? null;
+                  const eventDate = new Date(occ.date);
+                  const crossesYear = eventDate.getFullYear() !== now.getFullYear();
                   return (
                     <Link
                       key={occ.id}
@@ -95,9 +97,10 @@ export default async function Home() {
                           {occ.event.name}
                         </div>
                         <div className="text-theme-fg-muted text-xs">
-                          {new Date(occ.date).toLocaleDateString("nl-NL", {
+                          {eventDate.toLocaleDateString("nl-NL", {
                             day: "numeric",
                             month: "short",
+                            ...(crossesYear ? { year: "numeric" } : {}),
                           })}
                         </div>
                       </div>
@@ -119,7 +122,7 @@ export default async function Home() {
               {categories.map((cat) => (
                 <div
                   key={cat.id}
-                  className="flex cursor-default items-center gap-2 rounded-r-lg border-l-[3px] px-2.5 py-1.5 transition-colors"
+                  className="flex cursor-default items-center gap-2 rounded-r-lg border-l-[3px] px-2.5 py-1.5"
                   style={{
                     borderLeftColor: cat.color,
                     background: `color-mix(in oklch, ${cat.color} 10%, transparent)`,
