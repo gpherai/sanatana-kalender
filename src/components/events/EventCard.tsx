@@ -8,6 +8,7 @@ import {
   getCategoryBgClass,
   getCategoryDynamicStyle,
   getCategoryTextClass,
+  FALLBACK_CATEGORY_COLOR,
 } from "@/lib/category-styles";
 import type { Category } from "@/types/calendar";
 
@@ -48,6 +49,13 @@ export function EventCard({
   // Category is now a full object, no need to look up
   const categoryData = category;
   const eventTypeData = getEventType(eventType);
+
+  const categoryColor = categoryData?.color ?? FALLBACK_CATEGORY_COLOR;
+  const categoryBgClass = categoryData ? getCategoryBgClass(categoryData.name, 15) : "";
+  const categoryBgStyle = !categoryData
+    ? getCategoryDynamicStyle(FALLBACK_CATEGORY_COLOR, 15)
+    : undefined;
+  const categoryTextClass = categoryData ? getCategoryTextClass(categoryData.name) : "";
 
   // Calculate duration for multi-day events
   const durationDays = endDate
@@ -92,9 +100,7 @@ export function EventCard({
       {/* Category Color Strip */}
       <div
         className="absolute top-0 left-0 h-full w-1.5 transition-all duration-300 group-hover:w-2"
-        style={{
-          backgroundColor: categoryData?.color ?? "oklch(0.6 0.15 250)",
-        }}
+        style={{ backgroundColor: categoryColor }}
       />
 
       <div className="p-5 pl-6">
@@ -106,13 +112,9 @@ export function EventCard({
               "h-12 w-12 flex-shrink-0 rounded-xl",
               "flex items-center justify-center text-2xl",
               "transition-transform duration-300 group-hover:scale-110",
-              categoryData?.name ? getCategoryBgClass(categoryData.name, 15) : ""
+              categoryBgClass
             )}
-            style={
-              !categoryData?.name
-                ? getCategoryDynamicStyle("oklch(0.6 0.15 250)", 15)
-                : undefined
-            }
+            style={categoryBgStyle}
           >
             {categoryData?.icon ?? eventTypeData?.icon ?? "📅"}
           </div>
@@ -126,17 +128,10 @@ export function EventCard({
               <span
                 className={cn(
                   "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
-                  categoryData?.name ? getCategoryBgClass(categoryData.name, 15) : "",
-                  categoryData?.name ? getCategoryTextClass(categoryData.name) : ""
+                  categoryBgClass,
+                  categoryTextClass
                 )}
-                style={
-                  !categoryData?.name
-                    ? {
-                        ...getCategoryDynamicStyle("oklch(0.6 0.15 250)", 15),
-                        color: "oklch(0.5 0.15 250)",
-                      }
-                    : undefined
-                }
+                style={categoryBgStyle}
               >
                 {categoryData?.displayName ?? "Algemeen"}
               </span>
@@ -221,7 +216,7 @@ export function EventCard({
       <div
         className="absolute right-0 bottom-0 left-0 h-1 opacity-0 transition-opacity group-hover:opacity-100"
         style={{
-          background: `linear-gradient(90deg, ${categoryData?.color ?? "oklch(0.6 0.15 250)"}, transparent)`,
+          background: `linear-gradient(90deg, ${categoryColor}, transparent)`,
         }}
       />
     </>
@@ -258,9 +253,12 @@ export function EventCardCompact({
   EventCardProps,
   "id" | "name" | "date" | "category" | "eventType" | "onClick" | "className"
 >) {
-  // Category is now a full object
   const categoryData = category;
   const eventTypeData = getEventType(eventType);
+  const categoryBgClass = categoryData ? getCategoryBgClass(categoryData.name, 15) : "";
+  const categoryBgStyle = !categoryData
+    ? getCategoryDynamicStyle(FALLBACK_CATEGORY_COLOR, 15)
+    : undefined;
 
   const compactClassName = cn(
     "group flex items-center gap-3 p-3 rounded-xl w-full text-left",
@@ -274,13 +272,9 @@ export function EventCardCompact({
       <div
         className={cn(
           "flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg text-lg transition-transform duration-200 group-hover:scale-110",
-          categoryData?.name ? getCategoryBgClass(categoryData.name, 15) : ""
+          categoryBgClass
         )}
-        style={
-          !categoryData?.name
-            ? getCategoryDynamicStyle("oklch(0.6 0.15 250)", 15)
-            : undefined
-        }
+        style={categoryBgStyle}
       >
         {categoryData?.icon ?? eventTypeData?.icon ?? "📅"}
       </div>

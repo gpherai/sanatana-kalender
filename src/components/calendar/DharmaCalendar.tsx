@@ -20,6 +20,7 @@ import {
 } from "@/types/calendar";
 import { getEventType } from "@/lib/domain";
 import { logError } from "@/lib/utils";
+import { FALLBACK_CATEGORY_COLOR } from "@/lib/category-styles";
 import { formatDateLocal } from "@/lib/date-utils";
 import { getApproxMoonPhaseEmoji } from "@/lib/moon-phases";
 import { EventDetailModal } from "./EventDetailModal";
@@ -116,7 +117,7 @@ export function DharmaCalendar() {
 
     // Base style
     const style: React.CSSProperties = {
-      backgroundColor: categoryData?.color ?? "oklch(0.6 0.15 250)",
+      backgroundColor: categoryData?.color ?? FALLBACK_CATEGORY_COLOR,
       borderRadius: "999px",
       opacity: 1,
       color: "white",

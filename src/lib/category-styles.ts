@@ -17,6 +17,12 @@ import type { CSSProperties } from "react";
 export type OpacityLevel = 10 | 15 | 20 | 30;
 
 /**
+ * Fallback color used when an event has no category assigned.
+ * Neutral blue-grey in oklch.
+ */
+export const FALLBACK_CATEGORY_COLOR = "oklch(0.6 0.15 250)";
+
+/**
  * Get category background className for pre-generated utilities.
  *
  * @param categoryName - Category slug (e.g., "ganesha", "shiva")
