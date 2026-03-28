@@ -158,7 +158,7 @@ export function TodayHero() {
               <span>{today.toLocaleDateString("nl-NL", { weekday: "long" })}</span>
               <span className="text-white/40">•</span>
               <span className="flex items-center gap-1">
-                {sanskritDay.icon} {sanskritDay.name}
+                {sanskritDay.icon} {dailyInfo?.vara?.name ?? sanskritDay.name}
               </span>
             </div>
 
@@ -295,18 +295,27 @@ export function TodayHero() {
                 </div>
               </div>
 
-              {/* Pravishte info - days since Sankranti */}
-              {dailyInfo?.pravishte && (
-                <div className="border-t border-white/10 pt-3 text-xs text-white/50">
-                  Dag {dailyInfo.pravishte.daysSinceSankranti} in{" "}
-                  {dailyInfo.pravishte.currentRashi}
+              {/* Zon positie info */}
+              {(dailyInfo?.pravishte || dailyInfo?.sunSign?.uptoLocal) && (
+                <div className="space-y-0.5 border-t border-white/10 pt-3 text-xs text-white/50">
+                  {dailyInfo?.pravishte && (
+                    <div>
+                      Dag {dailyInfo.pravishte.daysSinceSankranti} in{" "}
+                      {dailyInfo.pravishte.currentRashi}
+                    </div>
+                  )}
+                  {dailyInfo?.sunSign?.uptoLocal && (
+                    <div>
+                      Volgende teken om {dailyInfo.sunSign.uptoLocal.substring(0, 5)}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
           </div>
 
           {/* Moon Phase - Center piece */}
-          <div className="flex flex-col items-center justify-center rounded-2xl bg-[var(--theme-glass-bg)] p-5 backdrop-blur-sm">
+          <div className="flex flex-col items-center justify-center rounded-2xl bg-[var(--theme-glass-bg)] p-5 backdrop-blur-md">
             <div className="mb-4 flex items-center gap-2">
               <MoonStar className="text-theme-icon-moon h-5 w-5" />
               <h3 className="font-semibold text-white">Maan</h3>
@@ -385,6 +394,46 @@ export function TodayHero() {
             </div>
           </div>
         </div>
+
+        {/* Yoga / Karana / Rahu Kalam */}
+        {(dailyInfo?.yoga || dailyInfo?.karana || dailyInfo?.rahuKalam) && (
+          <div className="mt-6 grid grid-cols-3 gap-3">
+            {dailyInfo?.yoga && (
+              <div className="rounded-xl bg-[var(--theme-glass-bg)] p-3 backdrop-blur-md">
+                <div className="mb-1 text-xs text-white/50">Yoga</div>
+                <div className="text-sm font-medium text-white">
+                  {dailyInfo.yoga.name}
+                </div>
+                {dailyInfo.yoga.endTime && (
+                  <div className="mt-0.5 text-xs text-white/40">
+                    t/m {dailyInfo.yoga.endTime}
+                  </div>
+                )}
+              </div>
+            )}
+            {dailyInfo?.karana && (
+              <div className="rounded-xl bg-[var(--theme-glass-bg)] p-3 backdrop-blur-md">
+                <div className="mb-1 text-xs text-white/50">Karana</div>
+                <div className="text-sm font-medium text-white">
+                  {dailyInfo.karana.name}
+                </div>
+                {dailyInfo.karana.endTime && (
+                  <div className="mt-0.5 text-xs text-white/40">
+                    t/m {dailyInfo.karana.endTime}
+                  </div>
+                )}
+              </div>
+            )}
+            {dailyInfo?.rahuKalam && (
+              <div className="rounded-xl bg-[var(--theme-glass-bg)] p-3 backdrop-blur-md">
+                <div className="mb-1 text-xs text-white/50">Rahu Kalam</div>
+                <div className="text-sm font-medium text-white">
+                  {dailyInfo.rahuKalam.start} – {dailyInfo.rahuKalam.end}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Special Lunar Day Banner */}
         {specialDay && (
