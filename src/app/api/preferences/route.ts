@@ -16,7 +16,6 @@ const DEFAULT_PREFERENCES = {
   id: DEFAULT_PREFERENCES_ID,
   currentTheme: DEFAULT_THEME_NAME,
   defaultView: CalendarView.month,
-  weekStartsOn: 1,
   timezone: DEFAULT_LOCATION.timezone,
   locationName: DEFAULT_LOCATION.name,
   locationLat: DEFAULT_LOCATION.lat,
@@ -85,7 +84,6 @@ export async function PUT(request: NextRequest) {
         id: DEFAULT_PREFERENCES_ID,
         currentTheme: data.currentTheme ?? DEFAULT_PREFERENCES.currentTheme,
         defaultView: defaultView ?? DEFAULT_PREFERENCES.defaultView,
-        weekStartsOn: data.weekStartsOn ?? DEFAULT_PREFERENCES.weekStartsOn,
         timezone: data.timezone ?? DEFAULT_PREFERENCES.timezone,
         locationName: data.locationName ?? DEFAULT_PREFERENCES.locationName,
         locationLat: data.locationLat ?? DEFAULT_PREFERENCES.locationLat,
@@ -101,7 +99,6 @@ export async function PUT(request: NextRequest) {
       update: {
         ...(data.currentTheme !== undefined && { currentTheme: data.currentTheme }),
         ...(defaultView !== undefined && { defaultView }),
-        ...(data.weekStartsOn !== undefined && { weekStartsOn: data.weekStartsOn }),
         ...(data.timezone !== undefined && { timezone: data.timezone }),
         ...(data.locationName !== undefined && { locationName: data.locationName }),
         ...(data.locationLat !== undefined && { locationLat: data.locationLat }),

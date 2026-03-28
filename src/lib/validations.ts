@@ -218,7 +218,6 @@ export const updatePreferencesSchema = z.object({
 
   // Calendar
   defaultView: calendarViewEnum.optional(),
-  weekStartsOn: z.number().int().min(0).max(6).optional(),
 
   // Location
   timezone: z.string().min(1).max(50).optional(),

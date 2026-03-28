@@ -34,7 +34,6 @@ interface Preferences {
   id: string;
   currentTheme: string;
   defaultView: string;
-  weekStartsOn: number;
   timezone: string;
   locationName: string;
   locationLat: number;
@@ -147,12 +146,13 @@ export default function SettingsPage() {
       setFormData({
         currentTheme: prefs.currentTheme,
         defaultView: prefs.defaultView,
-        weekStartsOn: prefs.weekStartsOn,
         timezone: prefs.timezone,
         locationName: prefs.locationName,
         locationLat: prefs.locationLat,
         locationLon: prefs.locationLon,
       });
+      // Sync ThemeProvider with DB value (new browser/device won't have localStorage)
+      setTheme(prefs.currentTheme);
     },
     onError: (error) => {
       logError("Failed to load settings", error);
@@ -170,7 +170,6 @@ export default function SettingsPage() {
   const [formData, setFormData] = useState({
     currentTheme: themeName,
     defaultView: "month",
-    weekStartsOn: 1,
     timezone: DEFAULT_LOCATION.timezone,
     locationName: DEFAULT_LOCATION.name,
     locationLat: DEFAULT_LOCATION.lat,
@@ -182,7 +181,6 @@ export default function SettingsPage() {
 
   // Sync form theme with context theme
   useEffect(() => {
-     
     setFormData((prev) => ({ ...prev, currentTheme: themeName }));
   }, [themeName]);
 
@@ -331,7 +329,6 @@ export default function SettingsPage() {
         {/* Calendar Section */}
         <CalendarSection
           defaultView={formData.defaultView}
-          weekStartsOn={formData.weekStartsOn}
           timezone={formData.timezone}
           onFieldChange={handleCalendarFieldChange}
         />

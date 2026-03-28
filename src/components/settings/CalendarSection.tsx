@@ -9,7 +9,6 @@ import { Section } from "@/components/ui/Section";
 
 interface CalendarSectionProps {
   defaultView: string;
-  weekStartsOn: number;
   timezone: string;
   onFieldChange: (field: string, value: string | number) => void;
 }
@@ -19,12 +18,6 @@ const VIEW_OPTIONS = [
   { value: "week", label: "Week" },
   { value: "day", label: "Dag" },
   { value: "agenda", label: "Agenda" },
-] as const;
-
-const WEEK_START_OPTIONS = [
-  { value: 0, label: "Zondag" },
-  { value: 1, label: "Maandag" },
-  { value: 6, label: "Zaterdag" },
 ] as const;
 
 const TIMEZONE_OPTIONS = [
@@ -41,7 +34,6 @@ const TIMEZONE_OPTIONS = [
 
 export function CalendarSection({
   defaultView,
-  weekStartsOn,
   timezone,
   onFieldChange,
 }: CalendarSectionProps) {
@@ -75,30 +67,8 @@ export function CalendarSection({
           </select>
         </div>
 
-        {/* Week starts on */}
-        <div>
-          <label
-            htmlFor="weekStartsOn"
-            className="text-theme-fg-secondary mb-2 block text-sm font-medium"
-          >
-            Week begint op
-          </label>
-          <select
-            id="weekStartsOn"
-            value={weekStartsOn}
-            onChange={(e) => onFieldChange("weekStartsOn", parseInt(e.target.value))}
-            className="focus:ring-theme-primary-50 focus:border-theme-primary border-theme-border bg-theme-surface text-theme-fg w-8/12 rounded-lg border px-3 py-2 focus:ring-2"
-          >
-            {WEEK_START_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
         {/* Timezone */}
-        <div className="sm:col-span-2">
+        <div>
           <label
             htmlFor="timezone"
             className="text-theme-fg-secondary mb-2 block text-sm font-medium"

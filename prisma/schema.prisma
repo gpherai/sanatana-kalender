@@ -191,7 +191,6 @@ model UserPreference {
   id                     String       @id @default("default")
   currentTheme           String       @default("spiritual-minimal")
   defaultView            CalendarView @default(month)
-  weekStartsOn           Int          @default(1)
   timezone               String       @default("Europe/Amsterdam")
   locationName           String       @default("Den Haag")
   locationLat            Float        @default(52.0705)
