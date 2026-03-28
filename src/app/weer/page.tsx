@@ -18,6 +18,7 @@ import {
   Thermometer,
   MoonStar,
 } from "lucide-react";
+import { MoonPhase } from "@/components/ui/MoonPhase";
 import { cn } from "@/lib/utils";
 import type {
   WeatherApiResponse,
@@ -66,41 +67,12 @@ function windDir(deg: number): string {
   return dirs[r(deg / 22.5) % 16] ?? "N";
 }
 
-function MoonPhaseIcon({ phase, size = 20 }: { phase: number; size?: number }) {
-  const r = (size - 2) / 2;
-  const cx = size / 2;
-  const cy = size / 2;
-  const top = `${cx} ${cy - r}`;
-  const bot = `${cx} ${cy + r}`;
-
-  let litPath: string | null = null;
-
-  if (phase >= 0.03 && phase <= 0.97) {
-    if (Math.abs(phase - 0.5) <= 0.03) {
-      // Full moon — two semi-circle arcs
-      litPath = `M ${top} A ${r} ${r} 0 0 1 ${bot} A ${r} ${r} 0 0 1 ${top}`;
-    } else {
-      const waxing = phase < 0.5;
-      const isGibbous = waxing ? phase > 0.25 : phase < 0.75;
-      const termRx = Math.max(Math.abs(Math.cos(phase * 2 * Math.PI)) * r, 0.5);
-      const outerSweep = waxing ? 1 : 0;
-      const termSweep = isGibbous === waxing ? 1 : 0;
-      litPath = `M ${top} A ${r} ${r} 0 0 ${outerSweep} ${bot} A ${termRx} ${r} 0 0 ${termSweep} ${top}`;
-    }
-  }
-
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox={`0 0 ${size} ${size}`}
-      aria-hidden="true"
-      style={{ display: "inline-block", verticalAlign: "middle" }}
-    >
-      <circle cx={cx} cy={cy} r={r} fill="#1e293b" opacity="0.75" />
-      {litPath && <path d={litPath} fill="#fbbf24" opacity="0.9" />}
-    </svg>
-  );
+/** Convert OWM moon_phase (0–1) to MoonPhase component props */
+function owmPhase(phase: number) {
+  return {
+    percent: Math.round(((1 - Math.cos(phase * 2 * Math.PI)) / 2) * 100),
+    isWaxing: phase < 0.5,
+  };
 }
 
 function moonName(phase: number): string {
@@ -556,7 +528,7 @@ export default function WeerPage() {
                   {(today?.moon_phase ?? 0) < 0.5 ? "Wassend" : "Afnemend"}
                 </p>
               </div>
-              <MoonPhaseIcon phase={today?.moon_phase ?? 0} size={32} />
+              <MoonPhase {...owmPhase(today?.moon_phase ?? 0)} size={32} glow={false} />
             </div>
           </div>
 
@@ -1411,7 +1383,7 @@ function ForecastRow({
           <span className="text-theme-fg-muted"> / {r(day.temp.min)}°</span>
         </span>
         <span aria-label={moonName(day.moon_phase)} className="shrink-0">
-          <MoonPhaseIcon phase={day.moon_phase} size={18} />
+          <MoonPhase {...owmPhase(day.moon_phase)} size={20} glow={false} />
         </span>
       </div>
       <div className="text-theme-fg-muted mt-1.5 flex flex-wrap gap-x-4 gap-y-0.5 text-xs lg:hidden">
@@ -1499,7 +1471,7 @@ function ForecastRow({
           )}
         </div>
         <div className="flex justify-center" aria-label={moonName(day.moon_phase)}>
-          <MoonPhaseIcon phase={day.moon_phase} size={18} />
+          <MoonPhase {...owmPhase(day.moon_phase)} size={20} glow={false} />
         </div>
       </div>
     </div>

@@ -34,10 +34,18 @@ export function TodayHero() {
   const [loading, setLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  // Update time every minute
+  // Update time every minute, synced to the minute boundary
   useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 60000);
-    return () => clearInterval(timer);
+    const msUntilNextMinute = (60 - new Date().getSeconds()) * 1000;
+    let interval: ReturnType<typeof setInterval>;
+    const timeout = setTimeout(() => {
+      setCurrentTime(new Date());
+      interval = setInterval(() => setCurrentTime(new Date()), 60000);
+    }, msUntilNextMinute);
+    return () => {
+      clearTimeout(timeout);
+      clearInterval(interval);
+    };
   }, []);
 
   // Fetch daily info and today's events
@@ -46,8 +54,8 @@ export function TodayHero() {
 
     async function fetchData() {
       try {
-        const today = new Date();
-        const todayStr = formatDateLocal(today); // ← FIX: Use formatDateLocal to prevent UTC timezone shifts
+        const todayDate = new Date();
+        const todayStr = formatDateLocal(todayDate); // ← FIX: Use formatDateLocal to prevent UTC timezone shifts
 
         const [dailyRes, todayEventsRes] = await Promise.all([
           fetch("/api/daily-info", { signal: controller.signal }),
@@ -106,24 +114,22 @@ export function TodayHero() {
   // Use server-calculated special day (already in API response)
   const specialDay = dailyInfo?.specialDay;
 
+  const heroBackground = `linear-gradient(135deg,
+    color-mix(in oklch, var(--theme-primary) 95%, black),
+    color-mix(in oklch, var(--theme-secondary) 92%, black),
+    color-mix(in oklch, var(--theme-accent) 90%, black)
+  )`;
+
   if (loading) {
     return (
       <div
         className="relative overflow-hidden rounded-3xl p-8 shadow-2xl"
-        style={{
-          background: `
-            linear-gradient(135deg,
-              color-mix(in oklch, var(--theme-primary) 95%, black),
-              color-mix(in oklch, var(--theme-secondary) 92%, black),
-              color-mix(in oklch, var(--theme-accent) 90%, black)
-            )
-          `,
-        }}
+        style={{ background: heroBackground }}
       >
         <div className="flex h-48 items-center justify-center">
           <div className="flex flex-col items-center gap-3">
             <div className="h-12 w-12 animate-spin rounded-full border-4 border-[var(--theme-spinner-track)] border-t-[var(--theme-spinner-fill)] motion-reduce:animate-none" />
-            <span className="text-sm text-white/80">Loading today&apos;s info...</span>
+            <span className="text-sm text-white/80">Vandaag laden...</span>
           </div>
         </div>
       </div>
@@ -133,15 +139,7 @@ export function TodayHero() {
   return (
     <div
       className="relative overflow-hidden rounded-3xl shadow-2xl"
-      style={{
-        background: `
-          linear-gradient(135deg,
-            color-mix(in oklch, var(--theme-primary) 95%, black),
-            color-mix(in oklch, var(--theme-secondary) 92%, black),
-            color-mix(in oklch, var(--theme-accent) 90%, black)
-          )
-        `,
-      }}
+      style={{ background: heroBackground }}
     >
       {/* Decorative background elements */}
       <div className="absolute inset-0 overflow-hidden">
@@ -422,7 +420,7 @@ export function TodayHero() {
                 <Link
                   key={event.id}
                   href={`/events/${event.id}`}
-                  className="flex items-center gap-2 rounded-full bg-[var(--theme-glass-bg)] px-4 py-2 text-white/90 backdrop-blur-sm transition-opacity hover:opacity-80"
+                  className="flex items-center gap-2 rounded-full bg-[var(--theme-glass-bg)] px-4 py-3 text-white/90 backdrop-blur-sm transition-opacity hover:opacity-80"
                 >
                   {event.category?.icon && <span>{event.category.icon}</span>}
                   <span className="font-medium">{event.name}</span>
