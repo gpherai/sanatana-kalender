@@ -131,10 +131,7 @@
   opacity: 0.8;
 }
 
-/* Month view row */
-.dharma-calendar .rbc-month-row {
-  min-height: 100px;
-}
+/* Month view row - no min-height override; let the container distribute rows naturally */
 
 /* Borders */
 .dharma-calendar .rbc-month-view,
