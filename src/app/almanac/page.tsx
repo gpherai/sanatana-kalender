@@ -35,7 +35,7 @@ function getMoonPhaseEvents(monthData: DailyInfoResponse[]): MoonPhaseEvent[] {
   return monthData
     .filter((d) => d.moonPhaseEvent)
     .map((d) => ({
-      date: new Date(d.date + "T00:00:00Z"),
+      date: new Date(d.date + "T12:00:00"),
       type: d.moonPhaseEvent!.type,
       ...MOON_PHASE_META[d.moonPhaseEvent!.type],
     }))

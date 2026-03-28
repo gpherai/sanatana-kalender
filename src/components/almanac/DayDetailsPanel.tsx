@@ -79,7 +79,9 @@ export function DayDetailsPanel({
   showEvents,
   showSpecialDays,
 }: DayDetailsPanelProps) {
-  const selectedSanskritDay = SANSKRIT_DAYS[(selectedDate.getDay() + 6) % 7]!;
+  const selectedSanskritDay = selectedDayInfo?.vara?.name
+    ? SANSKRIT_DAYS.find((d) => d.name === selectedDayInfo.vara!.name)
+    : undefined;
   const selectedHinduMonth = selectedDayInfo?.maas?.name;
   const selectedDateStr = formatDateLocal(selectedDate);
 
@@ -93,8 +95,12 @@ export function DayDetailsPanel({
         }}
       >
         <div className="flex items-center gap-2 text-sm text-white/70">
-          <span>{selectedSanskritDay.icon}</span>
-          <span>{selectedSanskritDay.name}</span>
+          {selectedSanskritDay && (
+            <>
+              <span>{selectedSanskritDay.icon}</span>
+              <span>{selectedSanskritDay.name}</span>
+            </>
+          )}
           {isToday(selectedDate) && (
             <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs">Vandaag</span>
           )}

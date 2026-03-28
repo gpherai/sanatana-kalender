@@ -8,10 +8,6 @@ vi.mock("@/components/ui/MoonPhase", () => ({
   MoonPhase: () => <div data-testid="moon-phase">MoonPhase</div>,
 }));
 
-vi.mock("@/lib/panchanga-helpers", () => ({
-  getApproximateHinduMonth: () => "Margashirsha",
-}));
-
 const MOCK_DATE = new Date("2025-01-01");
 
 const MOCK_INFO = {

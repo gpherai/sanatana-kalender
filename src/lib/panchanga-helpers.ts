@@ -4,24 +4,6 @@
 // ============================================
 
 /**
- * Hindu month names in order starting from Pausha (aligns with Gregorian calendar offset)
- */
-const HINDU_MONTHS = [
-  "Pausha",
-  "Magha",
-  "Phalguna",
-  "Chaitra",
-  "Vaishakha",
-  "Jyeshtha",
-  "Ashadha",
-  "Shravana",
-  "Bhadrapada",
-  "Ashwin",
-  "Kartik",
-  "Margashirsha",
-] as const;
-
-/**
  * Interface for special lunar days detected from Panchanga data
  */
 export interface SpecialDay {
@@ -40,23 +22,6 @@ export interface TithiInfo {
   name: string;
   paksha: "Shukla" | "Krishna";
   endTime?: string | null;
-}
-
-/**
- * Get approximate Hindu month name for a given Gregorian date.
- * Uses a simple offset calculation - for exact results, use Panchanga calculation.
- *
- * @param date - Gregorian date to convert
- * @returns Hindu month name (e.g., "Chaitra", "Kartik")
- *
- * @example
- * getApproximateHinduMonth(new Date(2025, 0, 15)) // "Pausha"
- * getApproximateHinduMonth(new Date(2025, 3, 10)) // "Chaitra"
- */
-export function getApproximateHinduMonth(date: Date): string {
-  const month = date.getMonth();
-  const index = month % 12;
-  return HINDU_MONTHS[index] ?? "Unknown";
 }
 
 /**
@@ -163,34 +128,4 @@ export function detectSpecialDay(
   }
 
   return null;
-}
-
-/**
- * Extract all special lunar days from an array of daily Panchanga data.
- * Useful for calendar month views.
- *
- * @param monthData - Array of daily info responses containing tithi data
- * @returns Array of SpecialDay objects found in the month
- *
- * @example
- * const monthData = await fetch('/api/daily-info?start=2025-01-01&end=2025-01-31').then(r => r.json())
- * const specialDays = getSpecialLunarDays(monthData)
- * // Returns array of special days found in January
- */
-export function getSpecialLunarDays<T extends { date: string | Date; tithi?: TithiInfo }>(
-  monthData: T[]
-): SpecialDay[] {
-  const specialDays: SpecialDay[] = [];
-
-  for (const day of monthData) {
-    if (!day.tithi) continue;
-
-    const date = typeof day.date === "string" ? new Date(day.date) : day.date;
-    const specialDay = detectSpecialDay(day.tithi, date);
-    if (specialDay) {
-      specialDays.push(specialDay);
-    }
-  }
-
-  return specialDays;
 }

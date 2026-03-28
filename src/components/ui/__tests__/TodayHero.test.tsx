@@ -7,12 +7,6 @@ vi.mock("./MoonPhase", () => ({
   MoonPhase: () => <div data-testid="moon-phase">MoonPhase Mock</div>,
 }));
 
-// Mock helpers that are used
-vi.mock("@/lib/panchanga-helpers", () => ({
-  getApproximateHinduMonth: () => "Margashirsha",
-  detectSpecialDay: () => null,
-}));
-
 // Mock daily info response
 const MOCK_DAILY_INFO = {
   date: "2025-01-01",
