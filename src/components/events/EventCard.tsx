@@ -86,7 +86,7 @@ export function EventCard({
   };
 
   const cardClassName = cn(
-    "group relative block w-full text-left",
+    "group relative block w-full h-full text-left",
     "bg-theme-surface",
     "rounded-2xl overflow-hidden",
     "border border-theme-border",

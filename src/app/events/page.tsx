@@ -323,6 +323,7 @@ function EventsContent() {
                   <div
                     key={event.id}
                     className={cn(
+                      "h-full",
                       isChild &&
                         viewMode === "list" &&
                         "border-theme-border border-l-2 pl-4"
@@ -346,7 +347,6 @@ function EventsContent() {
                       nakshatra={event.resource.nakshatra}
                       tags={event.resource.tags}
                       onClick={() => handleEventClick(event)}
-                      className={viewMode === "list" ? "md:flex-row" : ""}
                     />
                   </div>
                 );
