@@ -285,7 +285,7 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
     category: "revamped" as const,
     colors: {
       primary: "oklch(0.55 0.18 30)",
-      secondary: "oklch(0.50 0.16 45)",
+      secondary: "oklch(0.62 0.15 75)",
       accent: "oklch(0.75 0.15 85)",
     },
     background: {
@@ -328,14 +328,26 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
     },
     background: {
       light: `
-        radial-gradient(820px 500px at 18% 12%, oklch(0.45 0.20 280 / 0.11) 0%, transparent 58%),
-        radial-gradient(680px 460px at 82% 88%, oklch(0.70 0.18 320 / 0.09) 0%, transparent 54%),
-        linear-gradient(180deg, oklch(0.98 0.02 280) 0%, oklch(0.96 0.03 300) 100%)
+        radial-gradient(circle at 20% 20%, oklch(0.45 0.20 280 / 0.18) 0%, transparent 55%),
+        radial-gradient(circle at 80% 80%, oklch(0.70 0.18 320 / 0.14) 0%, transparent 52%),
+        radial-gradient(ellipse at 50% 100%, oklch(0.55 0.15 300 / 0.10) 0%, transparent 60%),
+        linear-gradient(135deg,
+          oklch(0.97 0.03 270) 0%,
+          oklch(0.96 0.04 285) 25%,
+          oklch(0.95 0.04 300) 50%,
+          oklch(0.96 0.03 315) 75%,
+          oklch(0.97 0.02 330) 100%)
       `,
       dark: `
-        radial-gradient(880px 540px at 20% 15%, oklch(0.45 0.20 280 / 0.22) 0%, transparent 60%),
-        radial-gradient(720px 490px at 80% 85%, oklch(0.70 0.18 320 / 0.16) 0%, transparent 56%),
-        linear-gradient(180deg, oklch(0.11 0.03 280) 0%, oklch(0.09 0.02 300) 100%)
+        radial-gradient(circle at 20% 20%, oklch(0.45 0.20 280 / 0.30) 0%, transparent 52%),
+        radial-gradient(circle at 80% 80%, oklch(0.70 0.18 320 / 0.22) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 0%, oklch(0.55 0.15 300 / 0.18) 0%, transparent 55%),
+        linear-gradient(135deg,
+          oklch(0.13 0.04 270) 0%,
+          oklch(0.12 0.05 285) 25%,
+          oklch(0.11 0.04 300) 50%,
+          oklch(0.12 0.03 315) 75%,
+          oklch(0.13 0.02 330) 100%)
       `,
     },
   },
@@ -352,14 +364,26 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
     },
     background: {
       light: `
-        radial-gradient(870px 530px at 14% 10%, oklch(0.50 0.15 145 / 0.10) 0%, transparent 59%),
-        radial-gradient(710px 470px at 86% 90%, oklch(0.65 0.12 130 / 0.08) 0%, transparent 55%),
-        linear-gradient(180deg, oklch(0.99 0.01 145) 0%, oklch(0.97 0.02 160) 100%)
+        radial-gradient(circle at 14% 10%, oklch(0.50 0.15 145 / 0.15) 0%, transparent 55%),
+        radial-gradient(circle at 86% 90%, oklch(0.65 0.12 130 / 0.12) 0%, transparent 52%),
+        radial-gradient(ellipse at 50% 100%, oklch(0.55 0.10 155 / 0.10) 0%, transparent 60%),
+        linear-gradient(135deg,
+          oklch(0.97 0.03 140) 0%,
+          oklch(0.96 0.04 145) 25%,
+          oklch(0.95 0.04 155) 50%,
+          oklch(0.96 0.03 160) 75%,
+          oklch(0.97 0.02 165) 100%)
       `,
       dark: `
-        radial-gradient(920px 570px at 16% 12%, oklch(0.50 0.15 145 / 0.18) 0%, transparent 61%),
-        radial-gradient(750px 510px at 84% 88%, oklch(0.65 0.12 130 / 0.14) 0%, transparent 57%),
-        linear-gradient(180deg, oklch(0.12 0.02 145) 0%, oklch(0.10 0.01 160) 100%)
+        radial-gradient(circle at 14% 10%, oklch(0.50 0.15 145 / 0.25) 0%, transparent 52%),
+        radial-gradient(circle at 86% 90%, oklch(0.65 0.12 130 / 0.20) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 0%, oklch(0.55 0.10 155 / 0.15) 0%, transparent 55%),
+        linear-gradient(135deg,
+          oklch(0.14 0.03 140) 0%,
+          oklch(0.13 0.04 145) 25%,
+          oklch(0.12 0.04 155) 50%,
+          oklch(0.13 0.03 160) 75%,
+          oklch(0.14 0.02 165) 100%)
       `,
     },
   },
@@ -376,14 +400,26 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
     },
     background: {
       light: `
-        radial-gradient(840px 510px at 16% 8%, oklch(0.70 0.18 50 / 0.11) 0%, transparent 57%),
-        radial-gradient(690px 450px at 84% 92%, oklch(0.80 0.12 70 / 0.09) 0%, transparent 53%),
-        linear-gradient(180deg, oklch(0.99 0.02 50) 0%, oklch(0.97 0.03 70) 100%)
+        radial-gradient(circle at 16% 8%, oklch(0.70 0.18 50 / 0.16) 0%, transparent 55%),
+        radial-gradient(circle at 84% 92%, oklch(0.80 0.12 70 / 0.14) 0%, transparent 52%),
+        radial-gradient(ellipse at 50% 100%, oklch(0.75 0.14 60 / 0.10) 0%, transparent 60%),
+        linear-gradient(135deg,
+          oklch(0.97 0.03 45) 0%,
+          oklch(0.96 0.04 50) 25%,
+          oklch(0.95 0.04 60) 50%,
+          oklch(0.96 0.03 70) 75%,
+          oklch(0.97 0.02 80) 100%)
       `,
       dark: `
-        radial-gradient(890px 550px at 18% 10%, oklch(0.70 0.18 50 / 0.19) 0%, transparent 59%),
-        radial-gradient(730px 480px at 82% 90%, oklch(0.80 0.12 70 / 0.15) 0%, transparent 55%),
-        linear-gradient(180deg, oklch(0.13 0.03 50) 0%, oklch(0.11 0.02 70) 100%)
+        radial-gradient(circle at 16% 8%, oklch(0.70 0.18 50 / 0.26) 0%, transparent 52%),
+        radial-gradient(circle at 84% 92%, oklch(0.80 0.12 70 / 0.22) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 0%, oklch(0.75 0.14 60 / 0.16) 0%, transparent 55%),
+        linear-gradient(135deg,
+          oklch(0.15 0.04 45) 0%,
+          oklch(0.14 0.05 50) 25%,
+          oklch(0.13 0.04 60) 50%,
+          oklch(0.14 0.03 70) 75%,
+          oklch(0.15 0.02 80) 100%)
       `,
     },
   },

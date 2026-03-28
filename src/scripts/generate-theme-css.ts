@@ -452,6 +452,10 @@ function generateStandardThemes(): string {
 
       // Add background gradients for revamped themes
       if (isRevamped && theme.background) {
+        // Extract primary hue so dark-mode glass cards are tinted to match the theme
+        const hueMatch = theme.colors.primary.match(/oklch\([\d.]+ [\d.]+ ([\d.]+)/);
+        const primaryHue = hueMatch ? hueMatch[1] : "270";
+
         css += `
 
 /* Background (Light) */
@@ -494,17 +498,17 @@ function generateStandardThemes(): string {
   background: transparent !important;
 }
 
-/* Cards and surfaces - dark mode glassmorphism */
+/* Cards and surfaces - dark mode glassmorphism (tinted to theme hue) */
 .dark[data-theme="${theme.name}"] .bg-theme-surface,
 [data-theme="${theme.name}"].dark .bg-theme-surface {
-  background: oklch(0.18 0.01 270 / 0.75) !important;
+  background: oklch(0.18 0.015 ${primaryHue} / 0.75) !important;
   backdrop-filter: blur(12px);
   border-color: oklch(1 0 0 / 0.10) !important;
 }
 
 .dark[data-theme="${theme.name}"] .bg-theme-surface-raised,
 [data-theme="${theme.name}"].dark .bg-theme-surface-raised {
-  background: oklch(0.22 0.01 270 / 0.85) !important;
+  background: oklch(0.22 0.015 ${primaryHue} / 0.85) !important;
   backdrop-filter: blur(16px);
   border-color: oklch(1 0 0 / 0.15) !important;
 }`;
