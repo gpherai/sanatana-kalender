@@ -13,7 +13,8 @@
 import "dotenv/config";
 import { prisma } from "@/lib/db";
 import { CATEGORY_CATALOG } from "@/config/categories";
-import { DEFAULT_LOCATION } from "@/lib/domain";
+import { DEFAULT_LOCATION, DEFAULT_PREFERENCES_ID } from "@/lib/domain";
+import { DEFAULT_THEME_NAME } from "@/config/themes";
 import { panchangaService } from "@/services/panchanga.service";
 import { parseCalendarDate } from "@/lib/date-utils";
 import {
@@ -299,8 +300,8 @@ async function main() {
   if (!existingPref) {
     await prisma.userPreference.create({
       data: {
-        id: "default", // ← FIX: Use consistent "default" ID across app
-        currentTheme: "spiritual-minimal",
+        id: DEFAULT_PREFERENCES_ID,
+        currentTheme: DEFAULT_THEME_NAME,
         defaultView: "month",
         weekStartsOn: 1, // Monday
         timezone: "Europe/Amsterdam",

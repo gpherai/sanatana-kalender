@@ -1,14 +1,15 @@
 import { NextResponse } from "next/server";
 import { serverError, errorResponse } from "@/lib/api-response";
+import { DEFAULT_LOCATION } from "@/lib/domain";
 import type { WeatherCondition, AirQuality } from "@/types/weather";
 
 // =============================================================================
 // CONFIG
 // =============================================================================
 
-const LAT = process.env.DEFAULT_LOCATION_LAT ?? "52.0705";
-const LON = process.env.DEFAULT_LOCATION_LON ?? "4.3007";
-const LOCATION_NAME = process.env.DEFAULT_LOCATION_NAME ?? "Den Haag";
+const LAT = process.env.DEFAULT_LOCATION_LAT ?? String(DEFAULT_LOCATION.lat);
+const LON = process.env.DEFAULT_LOCATION_LON ?? String(DEFAULT_LOCATION.lon);
+const LOCATION_NAME = process.env.DEFAULT_LOCATION_NAME ?? DEFAULT_LOCATION.name;
 const BASE = "https://api.openweathermap.org/data/2.5";
 
 // =============================================================================

@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { updatePreferencesSchema } from "@/lib/validations";
 import { serverError, validationError } from "@/lib/api-response";
-import { DEFAULT_LOCATION } from "@/lib/domain";
+import { DEFAULT_LOCATION, DEFAULT_PREFERENCES_ID } from "@/lib/domain";
+import { DEFAULT_THEME_NAME } from "@/config/themes";
 import { logError } from "@/lib/utils";
 import { Prisma } from "@prisma/client";
 import { EventType, CalendarView } from "@prisma/client";
@@ -12,8 +13,8 @@ import { EventType, CalendarView } from "@prisma/client";
  * Uses DEFAULT_LOCATION from constants for consistency
  */
 const DEFAULT_PREFERENCES = {
-  id: "default",
-  currentTheme: "spiritual-minimal",
+  id: DEFAULT_PREFERENCES_ID,
+  currentTheme: DEFAULT_THEME_NAME,
   defaultView: CalendarView.month,
   weekStartsOn: 1,
   timezone: DEFAULT_LOCATION.timezone,
@@ -38,7 +39,7 @@ const DEFAULT_PREFERENCES = {
 export async function GET() {
   try {
     const preferences = await prisma.userPreference.findUnique({
-      where: { id: "default" },
+      where: { id: DEFAULT_PREFERENCES_ID },
     });
 
     if (!preferences) {
@@ -79,9 +80,9 @@ export async function PUT(request: NextRequest) {
 
     // Use upsert pattern for cleaner code
     const preferences = await prisma.userPreference.upsert({
-      where: { id: "default" }, // Fixed ID for single-user system
+      where: { id: DEFAULT_PREFERENCES_ID }, // Fixed ID for single-user system
       create: {
-        id: "default",
+        id: DEFAULT_PREFERENCES_ID,
         currentTheme: data.currentTheme ?? DEFAULT_PREFERENCES.currentTheme,
         defaultView: defaultView ?? DEFAULT_PREFERENCES.defaultView,
         weekStartsOn: data.weekStartsOn ?? DEFAULT_PREFERENCES.weekStartsOn,

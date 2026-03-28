@@ -236,6 +236,12 @@ export const DEFAULT_LOCATION: LocationWithTimezone = {
 } as const;
 
 /**
+ * Fixed ID for the single-user preferences record.
+ * This application uses a single-row UserPreference table.
+ */
+export const DEFAULT_PREFERENCES_ID = "default" as const;
+
+/**
  * Preset locations for quick selection in settings
  */
 export const PRESET_LOCATIONS: Location[] = [
