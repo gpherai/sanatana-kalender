@@ -743,6 +743,7 @@ function CurrentWeatherCard({
             alt={c.weather[0].description}
             width={80}
             height={80}
+            priority
             className="-mt-3 -ml-3 shrink-0 drop-shadow-sm"
           />
         )}

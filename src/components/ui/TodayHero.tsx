@@ -6,7 +6,6 @@ import { useFetch } from "@/hooks/useFetch";
 import { Sun, Sunrise, Sunset, Moon, MoonStar, Calendar, Sparkles } from "lucide-react";
 import { MoonPhase } from "./MoonPhase";
 import { formatDateLocal, formatTimeAgo, formatDate } from "@/lib/date-utils";
-import { getApproximateHinduMonth } from "@/lib/panchanga-helpers";
 import type { DailyInfoResponse } from "@/types";
 import type {
   CalendarEventResponse,
@@ -72,9 +71,6 @@ export function TodayHero() {
   const today = currentTime;
   const dayOfWeek = today.getDay();
   const sanskritDay = SANSKRIT_DAYS[dayOfWeek] ?? SANSKRIT_DAYS[0]!;
-
-  // Use exact Maas from Drik Panchang (instead of approximation)
-  const hinduMonth = dailyInfo?.maas?.name ?? getApproximateHinduMonth(today);
 
   // Use server-calculated special day (already in API response)
   const specialDay = dailyInfo?.specialDay;
@@ -156,14 +152,16 @@ export function TodayHero() {
             <div className="flex flex-col gap-1">
               {/* Main Panchanga line - more compact */}
               <div className="flex flex-wrap items-center gap-2 text-base text-white/90">
-                <span>
-                  {hinduMonth} Maas
-                  {dailyInfo?.maas?.lunarDay && (
-                    <span className="ml-1 text-sm text-white/60">
-                      (dag {dailyInfo.maas.lunarDay})
-                    </span>
-                  )}
-                </span>
+                {dailyInfo?.maas && (
+                  <span>
+                    {dailyInfo.maas.name} Maas
+                    {dailyInfo.maas.lunarDay && (
+                      <span className="ml-1 text-sm text-white/60">
+                        (dag {dailyInfo.maas.lunarDay})
+                      </span>
+                    )}
+                  </span>
+                )}
 
                 {/* Compact TITHI */}
                 {dailyInfo?.tithi && (

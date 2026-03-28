@@ -11,90 +11,35 @@ import {
   MonthGrid,
   DayDetailsPanel,
 } from "@/components/almanac";
-import { formatDateISO, getMonthDays, getMonthStartPadding } from "@/lib/date-utils";
+import type { MoonPhaseEvent } from "@/components/almanac";
+import { formatDateLocal, getMonthDays, getMonthStartPadding } from "@/lib/date-utils";
 import type { DailyInfoResponse } from "@/types";
 import type { CalendarEvent, CalendarEventResponse } from "@/types/calendar";
 import { parseCalendarEvent } from "@/types/calendar";
 
 // =============================================================================
-// TYPES
-// =============================================================================
-
-interface MoonPhaseEvent {
-  date: Date;
-  type: "new" | "first_quarter" | "full" | "last_quarter";
-  name: string;
-  emoji: string;
-}
-
-// =============================================================================
 // HELPERS
 // =============================================================================
 
+const MOON_PHASE_META: Record<
+  "new" | "first_quarter" | "full" | "last_quarter",
+  { name: string; emoji: string }
+> = {
+  new: { name: "Nieuwe Maan", emoji: "🌑" },
+  first_quarter: { name: "Eerste Kwartier", emoji: "🌓" },
+  full: { name: "Volle Maan", emoji: "🌕" },
+  last_quarter: { name: "Laatste Kwartier", emoji: "🌗" },
+};
+
 function getMoonPhaseEvents(monthData: DailyInfoResponse[]): MoonPhaseEvent[] {
-  const events: MoonPhaseEvent[] = [];
-
-  for (let i = 0; i < monthData.length; i++) {
-    const day = monthData[i]!;
-    const prev = monthData[i - 1];
-    const next = monthData[i + 1];
-    const date = new Date(day.date);
-
-    // New moon (local minimum, < 5%)
-    if (day.moonPhasePercent < 5) {
-      const isPrevHigher = !prev || prev.moonPhasePercent >= day.moonPhasePercent;
-      const isNextHigher = !next || next.moonPhasePercent >= day.moonPhasePercent;
-      if (isPrevHigher && isNextHigher) {
-        events.push({ date, type: "new", name: "Nieuwe Maan", emoji: "🌑" });
-      }
-    }
-    // Full moon (local maximum, > 95%)
-    else if (day.moonPhasePercent > 95) {
-      const isPrevLower = !prev || prev.moonPhasePercent <= day.moonPhasePercent;
-      const isNextLower = !next || next.moonPhasePercent <= day.moonPhasePercent;
-      if (isPrevLower && isNextLower) {
-        events.push({ date, type: "full", name: "Volle Maan", emoji: "🌕" });
-      }
-    }
-    // First quarter (closest to 50% during waxing phase)
-    else if (day.isWaxing && day.moonPhasePercent >= 45 && day.moonPhasePercent <= 55) {
-      const distanceTo50 = Math.abs(day.moonPhasePercent - 50);
-      const prevDistance = prev ? Math.abs(prev.moonPhasePercent - 50) : Infinity;
-      const nextDistance = next ? Math.abs(next.moonPhasePercent - 50) : Infinity;
-
-      if (distanceTo50 <= prevDistance && distanceTo50 <= nextDistance) {
-        const wasPrevWaxing = !prev || prev.isWaxing;
-        if (wasPrevWaxing) {
-          events.push({
-            date,
-            type: "first_quarter",
-            name: "Eerste Kwartier",
-            emoji: "🌓",
-          });
-        }
-      }
-    }
-    // Last quarter (closest to 50% during waning phase)
-    else if (!day.isWaxing && day.moonPhasePercent >= 45 && day.moonPhasePercent <= 55) {
-      const distanceTo50 = Math.abs(day.moonPhasePercent - 50);
-      const prevDistance = prev ? Math.abs(prev.moonPhasePercent - 50) : Infinity;
-      const nextDistance = next ? Math.abs(next.moonPhasePercent - 50) : Infinity;
-
-      if (distanceTo50 <= prevDistance && distanceTo50 <= nextDistance) {
-        const wasPrevWaning = !prev || !prev.isWaxing;
-        if (wasPrevWaning) {
-          events.push({
-            date,
-            type: "last_quarter",
-            name: "Laatste Kwartier",
-            emoji: "🌗",
-          });
-        }
-      }
-    }
-  }
-
-  return events.sort((a, b) => a.date.getTime() - b.date.getTime());
+  return monthData
+    .filter((d) => d.moonPhaseEvent)
+    .map((d) => ({
+      date: new Date(d.date + "T00:00:00Z"),
+      type: d.moonPhaseEvent!.type,
+      ...MOON_PHASE_META[d.moonPhaseEvent!.type],
+    }))
+    .sort((a, b) => a.date.getTime() - b.date.getTime());
 }
 
 // =============================================================================
@@ -102,10 +47,20 @@ function getMoonPhaseEvents(monthData: DailyInfoResponse[]): MoonPhaseEvent[] {
 // =============================================================================
 
 export default function AlmanacPage() {
-  const today = new Date();
+  const [today, setToday] = useState(() => new Date());
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
   const [selectedDate, setSelectedDate] = useState<Date>(today);
+
+  // Refresh "today" at midnight so isToday() checks stay accurate
+  useEffect(() => {
+    const now = new Date();
+    const msUntilMidnight =
+      new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime() -
+      now.getTime();
+    const timer = setTimeout(() => setToday(new Date()), msUntilMidnight);
+    return () => clearTimeout(timer);
+  }, [today]);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
 
   // Filters
@@ -120,8 +75,8 @@ export default function AlmanacPage() {
   // Fetch month data
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
-  const start = formatDateISO(firstDay);
-  const end = formatDateISO(lastDay);
+  const start = formatDateLocal(firstDay);
+  const end = formatDateLocal(lastDay);
 
   const { data: monthData, loading: dailyLoading } = useFetch<DailyInfoResponse[]>(
     `/api/daily-info?start=${start}&end=${end}`
@@ -194,7 +149,7 @@ export default function AlmanacPage() {
       let current = new Date(startKey + "T00:00:00Z");
       const end = new Date(endKey + "T00:00:00Z");
       while (current <= end) {
-        const key = current.toISOString().split("T")[0]!;
+        const key = formatDateLocal(current);
         const existing = map.get(key) ?? [];
         existing.push(e);
         map.set(key, existing);
@@ -207,7 +162,7 @@ export default function AlmanacPage() {
   const specialDaysMap = useMemo(() => {
     const map = new Map<string, (typeof specialDays)[0][]>();
     specialDays.forEach((s) => {
-      const key = formatDateISO(s.date);
+      const key = formatDateLocal(s.date);
       const existing = map.get(key) ?? [];
       existing.push(s);
       map.set(key, existing);
@@ -218,13 +173,13 @@ export default function AlmanacPage() {
   const moonPhasesMap = useMemo(() => {
     const map = new Map<string, MoonPhaseEvent>();
     moonPhases.forEach((p) => {
-      map.set(formatDateISO(p.date), p);
+      map.set(formatDateLocal(p.date), p);
     });
     return map;
   }, [moonPhases]);
 
   // Selected day data
-  const selectedDateStr = formatDateISO(selectedDate);
+  const selectedDateStr = formatDateLocal(selectedDate);
   const selectedDayInfo = dailyInfoMap.get(selectedDateStr);
   const selectedDayEvents = eventsMap.get(selectedDateStr) ?? [];
   const selectedDaySpecial = specialDaysMap.get(selectedDateStr) ?? [];
@@ -239,13 +194,13 @@ export default function AlmanacPage() {
     []
   );
 
-  const handleEventClick = (event: CalendarEventResponse) => {
+  const handleEventClick = useCallback((event: CalendarEventResponse) => {
     setSelectedEvent(parseCalendarEvent(event));
-  };
+  }, []);
 
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     setSelectedEvent(null);
-  };
+  }, []);
 
   return (
     <PageLayout>

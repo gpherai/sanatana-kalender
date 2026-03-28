@@ -20,7 +20,7 @@ interface SweRiseTransResult {
   transitTime?: number;
 }
 
-const swe_julday = (
+export const swe_julday = (
   year: number,
   month: number,
   day: number,

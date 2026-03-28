@@ -116,6 +116,19 @@ export interface DailyInfoResponse extends Omit<
   };
 
   /**
+   * Exact moon phase event occurring on this calendar day (if any).
+   * Calculated using Swiss Ephemeris binary search; null when no phase occurs.
+   */
+  moonPhaseEvent?: {
+    /** Phase type */
+    type: "new" | "first_quarter" | "full" | "last_quarter";
+    /** Local time when the exact phase occurs (HH:mm) */
+    timeLocal: string;
+    /** UTC ISO timestamp of the exact phase */
+    timeUtcIso: string;
+  } | null;
+
+  /**
    * Special day metadata (server-calculated)
    * Detects significant lunar days based on tithi and paksha
    * Replaces client-side detectSpecialDay() calls

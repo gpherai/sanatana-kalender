@@ -17,15 +17,16 @@ import {
   ChevronRight,
 } from "lucide-react";
 import type { CalendarEvent } from "@/types/calendar";
+import type { DailyInfoResponse } from "@/types";
 import {
   isToday,
   isTomorrow,
   formatLongDate,
   formatRelativeDate,
+  formatDateLocal,
 } from "@/lib/date-utils";
 import { getEventType, getTithi, getNakshatra, getMaas } from "@/lib/domain";
 import { cn, logError } from "@/lib/utils";
-import { getApproxMoonIllumination } from "@/lib/moon-phases";
 import { useToast } from "@/components/ui/Toast";
 import { MoonPhase } from "@/components/ui/MoonPhase";
 // Note: Inline color-mix styles used here for edge cases (gradients, mixing with white)
@@ -61,6 +62,9 @@ export function EventDetailModal({
   }
   const { data: eventRelationsData, loading: relationsLoading } =
     useFetch<EventRelations>(isOpen ? `/api/events/${event.eventId}` : null);
+  const { data: dayInfo } = useFetch<DailyInfoResponse>(
+    isOpen ? `/api/daily-info?date=${formatDateLocal(event.start)}` : null
+  );
   const eventRelations = relationsLoading
     ? null
     : eventRelationsData
@@ -159,7 +163,6 @@ export function EventDetailModal({
   const isMultiDay =
     event.start.toDateString() !== new Date(displayEndDate).toDateString();
   const relativeLabel = getRelativeDateLabel(event.start);
-  const moonInfo = getApproxMoonIllumination(event.start);
 
   // Calculate duration for multi-day events
   const durationDays = isMultiDay
@@ -281,14 +284,16 @@ export function EventDetailModal({
           <div className="max-h-[calc(90vh-280px)] space-y-5 overflow-y-auto p-6 pt-5">
             {/* Date + Moon Phase Row */}
             <div className="flex items-start gap-4">
-              <div className="flex-shrink-0">
-                <MoonPhase
-                  percent={moonInfo.percent}
-                  isWaxing={moonInfo.isWaxing}
-                  size={56}
-                  glow={false}
-                />
-              </div>
+              {dayInfo && (
+                <div className="flex-shrink-0">
+                  <MoonPhase
+                    percent={dayInfo.moonPhasePercent}
+                    isWaxing={dayInfo.isWaxing}
+                    size={56}
+                    glow={false}
+                  />
+                </div>
+              )}
               <div className="flex-1">
                 <div className="mb-1 flex items-center gap-2">
                   <Calendar className="text-theme-primary h-4 w-4" />
@@ -305,10 +310,12 @@ export function EventDetailModal({
                     </div>
                   </>
                 )}
-                <div className="text-theme-fg-subtle mt-1 text-xs">
-                  {moonInfo.percent}% maanverlicht •{" "}
-                  {moonInfo.isWaxing ? "Wassend" : "Afnemend"}
-                </div>
+                {dayInfo && (
+                  <div className="text-theme-fg-subtle mt-1 text-xs">
+                    {dayInfo.moonPhasePercent}% maanverlicht •{" "}
+                    {dayInfo.isWaxing ? "Wassend" : "Afnemend"}
+                  </div>
+                )}
               </div>
             </div>
 

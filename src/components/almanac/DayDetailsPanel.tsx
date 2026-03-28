@@ -3,8 +3,8 @@
 import { Sun, Moon, Sparkles, Star } from "lucide-react";
 import { MoonPhase } from "@/components/ui/MoonPhase";
 import { cn } from "@/lib/utils";
-import { isToday, formatDateISO, formatLongDate } from "@/lib/date-utils";
-import { getApproximateHinduMonth, type SpecialDay } from "@/lib/panchanga-helpers";
+import { isToday, formatDateLocal, formatLongDate } from "@/lib/date-utils";
+import type { SpecialDay } from "@/lib/panchanga-helpers";
 import type { DailyInfoResponse } from "@/types";
 import type { CalendarEventResponse } from "@/types/calendar";
 
@@ -80,8 +80,8 @@ export function DayDetailsPanel({
   showSpecialDays,
 }: DayDetailsPanelProps) {
   const selectedSanskritDay = SANSKRIT_DAYS[(selectedDate.getDay() + 6) % 7]!;
-  const selectedHinduMonth = getApproximateHinduMonth(selectedDate);
-  const selectedDateStr = formatDateISO(selectedDate);
+  const selectedHinduMonth = selectedDayInfo?.maas?.name;
+  const selectedDateStr = formatDateLocal(selectedDate);
 
   return (
     <div className="w-full space-y-4 lg:sticky lg:top-20 lg:w-72 lg:flex-shrink-0 lg:self-start">
@@ -101,7 +101,7 @@ export function DayDetailsPanel({
         </div>
         <h3 className="mt-1 text-xl font-bold">{formatLongDate(selectedDate)}</h3>
         <div className="mt-1 flex flex-wrap gap-2 text-sm text-white/80">
-          <span>{selectedHinduMonth} Maas</span>
+          {selectedHinduMonth && <span>{selectedHinduMonth} Maas</span>}
           {selectedDayInfo?.tithi && (
             <>
               <span className="text-white/40">•</span>

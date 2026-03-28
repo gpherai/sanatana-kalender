@@ -1,6 +1,13 @@
 "use client";
 
-import { useState, useCallback, useEffect, useMemo } from "react";
+import {
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
+  createContext,
+  useContext,
+} from "react";
 import { useFetch } from "@/hooks/useFetch";
 import { Calendar, dateFnsLocalizer, View, DateHeaderProps } from "react-big-calendar";
 import {
@@ -22,7 +29,7 @@ import { getEventType } from "@/lib/domain";
 import { logError } from "@/lib/utils";
 import { FALLBACK_CATEGORY_COLOR } from "@/lib/category-styles";
 import { formatDateLocal } from "@/lib/date-utils";
-import { getApproxMoonPhaseEmoji } from "@/lib/moon-phases";
+import type { DailyInfoResponse } from "@/types";
 import { EventDetailModal } from "./EventDetailModal";
 import { CalendarToolbar } from "./CalendarToolbar";
 
@@ -39,11 +46,18 @@ const localizer = dateFnsLocalizer({
   locales,
 });
 
+type MoonCellData = { emoji: string; isSpecial: "full" | "new" | null };
+const MoonDataContext = createContext<Map<string, MoonCellData>>(new Map());
+
 /**
- * Custom date header component showing moon phase
+ * Custom date header component showing moon phase (exact via Swiss Ephemeris API data)
  */
 function DateHeader({ date }: DateHeaderProps) {
-  const { emoji: moonEmoji, isSpecial: specialDay } = getApproxMoonPhaseEmoji(date);
+  const moonData = useContext(MoonDataContext);
+  const key = formatDateLocal(date);
+  const moon = moonData.get(key);
+  const moonEmoji = moon?.emoji ?? "🌑";
+  const specialDay = moon?.isSpecial ?? null;
   const isToday = new Date().toDateString() === date.toDateString();
 
   return (
@@ -81,6 +95,13 @@ export function DharmaCalendar() {
     return `/api/events?start=${formatDateLocal(start)}T00:00:00.000Z&end=${formatDateLocal(end)}T23:59:59.999Z`;
   })();
 
+  // Daily-info for current month (moon phase emoji per day)
+  const dailyInfoUrl = useMemo(() => {
+    const start = startOfMonth(currentDate);
+    const end = endOfMonth(currentDate);
+    return `/api/daily-info?start=${formatDateLocal(start)}&end=${formatDateLocal(end)}`;
+  }, [currentDate]);
+
   const {
     data: eventsData,
     loading,
@@ -89,6 +110,20 @@ export function DharmaCalendar() {
     onError: (err) => logError("Failed to fetch calendar events", err),
   });
   const events = useMemo(() => eventsData?.map(parseCalendarEvent) ?? [], [eventsData]);
+
+  const { data: monthDailyInfo } = useFetch<DailyInfoResponse[]>(dailyInfoUrl);
+  const moonDataMap = useMemo(() => {
+    const map = new Map<string, MoonCellData>();
+    (monthDailyInfo ?? []).forEach((d) => {
+      const key = d.date.split("T")[0]!;
+      const type = d.moonPhaseEvent?.type ?? null;
+      map.set(key, {
+        emoji: d.moonPhaseEmoji,
+        isSpecial: type === "full" ? "full" : type === "new" ? "new" : null,
+      });
+    });
+    return map;
+  }, [monthDailyInfo]);
 
   // Navigate to different month
   const handleNavigate = useCallback((newDate: Date) => {
@@ -188,33 +223,35 @@ export function DharmaCalendar() {
       )}
 
       {mounted && (
-        <Calendar<CalendarEvent>
-          localizer={localizer}
-          events={events}
-          startAccessor="start"
-          endAccessor="end"
-          date={currentDate}
-          view={view}
-          onNavigate={handleNavigate}
-          onView={handleViewChange}
-          onSelectEvent={handleSelectEvent}
-          eventPropGetter={eventStyleGetter}
-          dayPropGetter={dayPropGetter}
-          components={components}
-          messages={{
-            today: "Vandaag",
-            previous: "Vorige",
-            next: "Volgende",
-            month: "Maand",
-            week: "Week",
-            day: "Dag",
-            agenda: "Agenda",
-            noEventsInRange: "Geen evenementen in deze periode",
-          }}
-          popup
-          selectable={false}
-          className="dharma-calendar"
-        />
+        <MoonDataContext.Provider value={moonDataMap}>
+          <Calendar<CalendarEvent>
+            localizer={localizer}
+            events={events}
+            startAccessor="start"
+            endAccessor="end"
+            date={currentDate}
+            view={view}
+            onNavigate={handleNavigate}
+            onView={handleViewChange}
+            onSelectEvent={handleSelectEvent}
+            eventPropGetter={eventStyleGetter}
+            dayPropGetter={dayPropGetter}
+            components={components}
+            messages={{
+              today: "Vandaag",
+              previous: "Vorige",
+              next: "Volgende",
+              month: "Maand",
+              week: "Week",
+              day: "Dag",
+              agenda: "Agenda",
+              noEventsInRange: "Geen evenementen in deze periode",
+            }}
+            popup
+            selectable={false}
+            className="dharma-calendar"
+          />
+        </MoonDataContext.Provider>
       )}
 
       {/* Event Detail Modal */}

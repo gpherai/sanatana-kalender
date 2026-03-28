@@ -2,17 +2,11 @@
 
 import { Sunrise, Sunset, Moon, MoonStar } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { isSameDay, isToday, formatDateISO } from "@/lib/date-utils";
+import { isSameDay, isToday, formatDateLocal } from "@/lib/date-utils";
 import type { DailyInfoResponse } from "@/types";
 import type { CalendarEventResponse } from "@/types/calendar";
 import type { SpecialDay } from "@/lib/panchanga-helpers";
-
-interface MoonPhaseEvent {
-  date: Date;
-  type: "new" | "first_quarter" | "full" | "last_quarter";
-  name: string;
-  emoji: string;
-}
+import type { MoonPhaseEvent } from "@/components/almanac/MoonPhasesTimeline";
 
 interface MonthGridProps {
   year: number;
@@ -86,7 +80,7 @@ export function MonthGrid({
 
         {/* Day cells */}
         {days.map((date) => {
-          const dateStr = formatDateISO(date);
+          const dateStr = formatDateLocal(date);
           const info = dailyInfoMap.get(dateStr);
           const dayEvents = eventsMap.get(dateStr) || [];
           const daySpecial = specialDaysMap.get(dateStr) || [];

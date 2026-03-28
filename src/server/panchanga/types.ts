@@ -104,6 +104,14 @@ export interface DailyPanchangaFull {
     isAdhika: boolean; // Adhika (intercalary) month flag
   };
 
+  // Exact moon phase event for this calendar day (midnight-to-midnight)
+  // Calculated via Swiss Ephemeris binary search; null when no phase occurs
+  moonPhaseEvent?: {
+    type: "new" | "first_quarter" | "full" | "last_quarter";
+    timeLocal: string; // HH:mm
+    timeUtcIso: string; // ISO UTC string
+  } | null;
+
   // Solar transition (Sankranti) - occurs when Sun enters a new zodiac sign
   sankranti?: {
     name: string; // e.g., "MAKARA_SANKRANTI", "MESHA_SANKRANTI"

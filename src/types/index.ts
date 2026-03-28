@@ -10,3 +10,6 @@ export * from "./api";
 
 // Calendar types
 export * from "./calendar";
+
+// Weather types
+export * from "./weather";

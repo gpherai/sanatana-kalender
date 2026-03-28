@@ -2,9 +2,9 @@
 
 import { Moon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { isSameDay } from "@/lib/date-utils";
+import { isSameDay, MONTHS_SHORT, MONTHS_LONG } from "@/lib/date-utils";
 
-interface MoonPhaseEvent {
+export interface MoonPhaseEvent {
   date: Date;
   type: "new" | "first_quarter" | "full" | "last_quarter";
   name: string;
@@ -18,21 +18,6 @@ interface MoonPhasesTimelineProps {
   onSelectDate: (date: Date) => void;
 }
 
-const MONTHS_SHORT = [
-  "Jan",
-  "Feb",
-  "Mrt",
-  "Apr",
-  "Mei",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Okt",
-  "Nov",
-  "Dec",
-] as const;
-
 export function MoonPhasesTimeline({
   moonPhases,
   month,
@@ -45,7 +30,7 @@ export function MoonPhasesTimeline({
     <div className="rounded-2xl bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 p-4 shadow-lg dark:from-indigo-900/20 dark:via-purple-900/20 dark:to-pink-900/20">
       <h3 className="text-theme-fg mb-3 flex items-center gap-2 text-sm font-semibold">
         <Moon className="h-4 w-4" />
-        Maanfases in {MONTHS_SHORT[month]}
+        Maanfases in {MONTHS_LONG[month]}
       </h3>
       <div className="flex flex-wrap items-center justify-center gap-6">
         {moonPhases.map((phase, index) => (

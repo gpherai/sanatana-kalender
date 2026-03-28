@@ -2,6 +2,7 @@
 
 import { ChevronLeft, ChevronRight, Filter } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { MONTHS_SHORT } from "@/lib/date-utils";
 
 interface AlmanacFiltersProps {
   year: number;
@@ -13,21 +14,6 @@ interface AlmanacFiltersProps {
   onMonthChange: (month: number) => void;
   onToggleFilter: (filter: "moonPhases" | "specialDays" | "events") => void;
 }
-
-const MONTHS_SHORT = [
-  "Jan",
-  "Feb",
-  "Mrt",
-  "Apr",
-  "Mei",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Okt",
-  "Nov",
-  "Dec",
-] as const;
 
 export function AlmanacFilters({
   year,

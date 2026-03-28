@@ -237,6 +237,9 @@ function transformToApiResponse(panchanga: DailyPanchangaFull) {
         }
       : undefined,
 
+    // Exact moon phase event (Swiss Ephemeris binary search)
+    moonPhaseEvent: panchanga.moonPhaseEvent ?? null,
+
     // Metadata
     meta: {
       engine: panchanga.meta.engine,

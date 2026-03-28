@@ -8,6 +8,42 @@
  */
 
 // =============================================================================
+// DISPLAY CONSTANTS
+// =============================================================================
+
+/** Dutch abbreviated month names (index 0 = January) */
+export const MONTHS_SHORT = [
+  "Jan",
+  "Feb",
+  "Mrt",
+  "Apr",
+  "Mei",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Okt",
+  "Nov",
+  "Dec",
+] as const;
+
+/** Dutch full month names (index 0 = January) */
+export const MONTHS_LONG = [
+  "Januari",
+  "Februari",
+  "Maart",
+  "April",
+  "Mei",
+  "Juni",
+  "Juli",
+  "Augustus",
+  "September",
+  "Oktober",
+  "November",
+  "December",
+] as const;
+
+// =============================================================================
 // DATE VALIDATION
 // =============================================================================
 
