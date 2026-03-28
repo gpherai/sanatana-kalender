@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { format, formatDistanceToNow, isPast, isToday, isTomorrow } from "date-fns";
 import { nl } from "date-fns/locale";
-import { CalendarEvent } from "@/types/calendar";
+import type { CalendarEvent } from "@/types/calendar";
 import { getEventType, getTithi, getNakshatra, getMaas } from "@/lib/domain";
 import { cn, logError } from "@/lib/utils";
 import { getApproxMoonIllumination } from "@/lib/moon-phases";

@@ -46,14 +46,7 @@ export async function GET(request: NextRequest) {
     const paramsResult = parseQueryParams(request.nextUrl.searchParams);
 
     if (!paramsResult.success) {
-      return errorResponse(
-        "Ongeldige filter parameters",
-        400,
-        paramsResult.error.issues.map((i) => ({
-          field: i.path.join("."),
-          message: i.message,
-        }))
-      );
+      return validationError(paramsResult.error);
     }
 
     const occurrences = await findEventOccurrences(paramsResult.data);

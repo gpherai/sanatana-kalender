@@ -208,7 +208,7 @@ export default function AlmanacPage() {
     const map = new Map<string, (typeof specialDays)[0][]>();
     specialDays.forEach((s) => {
       const key = formatDateISO(s.date);
-      const existing = map.get(key) || [];
+      const existing = map.get(key) ?? [];
       existing.push(s);
       map.set(key, existing);
     });
@@ -226,8 +226,8 @@ export default function AlmanacPage() {
   // Selected day data
   const selectedDateStr = formatDateISO(selectedDate);
   const selectedDayInfo = dailyInfoMap.get(selectedDateStr);
-  const selectedDayEvents = eventsMap.get(selectedDateStr) || [];
-  const selectedDaySpecial = specialDaysMap.get(selectedDateStr) || [];
+  const selectedDayEvents = eventsMap.get(selectedDateStr) ?? [];
+  const selectedDaySpecial = specialDaysMap.get(selectedDateStr) ?? [];
 
   // Handlers
   const handleToggleFilter = useCallback(

@@ -4,7 +4,7 @@ import { ToolbarProps, View } from "react-big-calendar";
 import { format } from "date-fns";
 import { nl } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
-import { CalendarEvent } from "@/types/calendar";
+import type { CalendarEvent } from "@/types/calendar";
 import { cn } from "@/lib/utils";
 
 export function CalendarToolbar({
