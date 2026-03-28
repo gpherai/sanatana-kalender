@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { useFetch } from "@/hooks/useFetch";
 import { EventDetailModal } from "@/components/calendar/EventDetailModal";
 import { PageLayout } from "@/components/layout";
 import {
@@ -104,11 +105,7 @@ export default function AlmanacPage() {
   const today = new Date();
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
-  const [monthData, setMonthData] = useState<DailyInfoResponse[]>([]);
-  const [monthEvents, setMonthEvents] = useState<CalendarEventResponse[]>([]);
-  const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState<Date>(today);
-  const [location, setLocation] = useState<string>("Den Haag");
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
 
   // Filters
@@ -121,53 +118,19 @@ export default function AlmanacPage() {
   const isInitialMount = useRef(true);
 
   // Fetch month data
-  const fetchMonthData = useCallback(
-    async (y: number, m: number, signal: AbortSignal) => {
-      setLoading(true);
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const start = formatDateISO(firstDay);
+  const end = formatDateISO(lastDay);
 
-      try {
-        const firstDay = new Date(y, m, 1);
-        const lastDay = new Date(y, m + 1, 0);
-        const start = formatDateISO(firstDay);
-        const end = formatDateISO(lastDay);
-
-        const [dailyRes, eventsRes] = await Promise.all([
-          fetch(`/api/daily-info?start=${start}&end=${end}`, { signal }),
-          fetch(`/api/events?start=${start}T00:00:00.000Z&end=${end}T23:59:59.999Z`, {
-            signal,
-          }),
-        ]);
-
-        if (dailyRes.ok) {
-          const data: DailyInfoResponse[] = await dailyRes.json();
-          setMonthData(data);
-          if (data[0]) {
-            setLocation(data[0].locationName);
-          }
-        }
-
-        if (eventsRes.ok) {
-          const data: CalendarEventResponse[] = await eventsRes.json();
-          setMonthEvents(data);
-        }
-      } catch (error) {
-        if (error instanceof Error && error.name !== "AbortError") {
-          console.error("Error fetching month data:", error);
-        }
-      } finally {
-        if (!signal.aborted) {
-          setLoading(false);
-        }
-      }
-    },
-    []
+  const { data: monthData, loading: dailyLoading } = useFetch<DailyInfoResponse[]>(
+    `/api/daily-info?start=${start}&end=${end}`
   );
-
-  useEffect(() => {
-    const controller = new AbortController();
-    fetchMonthData(year, month, controller.signal);
-    return () => controller.abort();
-  }, [year, month, fetchMonthData]);
+  const { data: monthEvents, loading: eventsLoading } = useFetch<CalendarEventResponse[]>(
+    `/api/events?start=${start}T00:00:00.000Z&end=${end}T23:59:59.999Z`
+  );
+  const loading = dailyLoading || eventsLoading;
+  const location = monthData?.[0]?.locationName ?? "Den Haag";
 
   // Preserve scroll position when selecting different dates within same month
   useEffect(() => {
@@ -195,12 +158,12 @@ export default function AlmanacPage() {
   // Derived data
   const days = useMemo(() => getMonthDays(year, month), [year, month]);
   const startPadding = useMemo(() => getMonthStartPadding(year, month), [year, month]);
-  const moonPhases = useMemo(() => getMoonPhaseEvents(monthData), [monthData]);
+  const moonPhases = useMemo(() => getMoonPhaseEvents(monthData ?? []), [monthData]);
 
   // Extract special days from API response (server-calculated)
   const specialDays = useMemo(
     () =>
-      monthData
+      (monthData ?? [])
         .filter((d) => d.specialDay)
         .map((d) => ({
           date: new Date(d.date),
@@ -215,7 +178,7 @@ export default function AlmanacPage() {
   // Create maps for quick lookup
   const dailyInfoMap = useMemo(() => {
     const map = new Map<string, DailyInfoResponse>();
-    monthData.forEach((d) => {
+    (monthData ?? []).forEach((d) => {
       const key = d.date.split("T")[0]!;
       map.set(key, d);
     });
@@ -224,7 +187,7 @@ export default function AlmanacPage() {
 
   const eventsMap = useMemo(() => {
     const map = new Map<string, CalendarEventResponse[]>();
-    monthEvents.forEach((e) => {
+    (monthEvents ?? []).forEach((e) => {
       const startKey = e.start.split("T")[0]!;
       const endKey = e.resource.originalEndDate ?? startKey;
       // Add event to every calendar day it spans (handles tithi spanning + multi-day festivals)

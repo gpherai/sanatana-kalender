@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, Suspense, useMemo } from "react";
+import { useFetch } from "@/hooks/useFetch";
 import Link from "next/link";
 import { Plus, LayoutGrid, List, SlidersHorizontal } from "lucide-react";
 import { FilterSidebar } from "@/components/filters";
@@ -106,11 +107,7 @@ function groupChildrenUnderParents(
 }
 
 function EventsContent() {
-  const [events, setEvents] = useState<CalendarEventResponse[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [showFilters, setShowFilters] = useState(true);
 
@@ -123,45 +120,17 @@ function EventsContent() {
     buildQueryString,
   } = useFilters();
 
-  // Refetch function for retry button
-  const refetch = () => setRefreshTrigger((prev) => prev + 1);
-
-  // Fetch events with filters (with AbortController for cleanup)
-  useEffect(() => {
-    const controller = new AbortController();
-
-    async function fetchEvents() {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const queryString = buildQueryString();
-        const response = await fetch(`/api/events?${queryString}`, {
-          signal: controller.signal,
-        });
-
-        if (!response.ok) {
-          throw new Error("Kon events niet laden");
-        }
-
-        const data: CalendarEventResponse[] = await response.json();
-        setEvents(groupChildrenUnderParents(data));
-      } catch (err) {
-        if (err instanceof Error && err.name === "AbortError") {
-          return;
-        }
-        setError(err instanceof Error ? err.message : "Onbekende fout");
-      } finally {
-        if (!controller.signal.aborted) {
-          setLoading(false);
-        }
-      }
-    }
-
-    fetchEvents();
-
-    return () => controller.abort();
-  }, [buildQueryString, refreshTrigger]);
+  const eventsUrl = `/api/events?${buildQueryString()}`;
+  const {
+    data: rawEvents,
+    loading,
+    error: fetchError,
+    refetch,
+  } = useFetch<CalendarEventResponse[]>(eventsUrl, {
+    errorMessage: "Kon events niet laden",
+  });
+  const events = useMemo(() => groupChildrenUnderParents(rawEvents ?? []), [rawEvents]);
+  const error = fetchError?.message ?? null;
 
   // Handle card click - open modal
   const handleEventClick = (event: CalendarEventResponse) => {
@@ -173,10 +142,7 @@ function EventsContent() {
     setSelectedEvent(null);
   };
 
-  // Refresh after delete
-  const handleEventDeleted = () => {
-    setRefreshTrigger((prev) => prev + 1);
-  };
+  const handleEventDeleted = refetch;
 
   return (
     <PageLayout>

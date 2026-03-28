@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useCallback, useState } from "react";
+import { useFetch } from "@/hooks/useFetch";
 import { FocusTrap } from "focus-trap-react";
 import { useRouter } from "next/navigation";
 import {
@@ -54,10 +55,20 @@ export function EventDetailModal({
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const [eventRelations, setEventRelations] = useState<{
+  interface EventRelations {
     parentEvents: { id: string; name: string }[];
     childEvents: { id: string; name: string; dayNumber?: number | null }[];
-  } | null>(null);
+  }
+  const { data: eventRelationsData, loading: relationsLoading } =
+    useFetch<EventRelations>(isOpen ? `/api/events/${event.eventId}` : null);
+  const eventRelations = relationsLoading
+    ? null
+    : eventRelationsData
+      ? {
+          parentEvents: eventRelationsData.parentEvents ?? [],
+          childEvents: eventRelationsData.childEvents ?? [],
+        }
+      : null;
 
   // Animate in
   useEffect(() => {
@@ -67,23 +78,6 @@ export function EventDetailModal({
       setIsVisible(false);
     }
   }, [isOpen]);
-
-  // Fetch parent/child relations when modal opens
-  useEffect(() => {
-    if (!isOpen || !event) return;
-    setEventRelations(null);
-    fetch(`/api/events/${event.eventId}`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => {
-        if (data) {
-          setEventRelations({
-            parentEvents: data.parentEvents ?? [],
-            childEvents: data.childEvents ?? [],
-          });
-        }
-      })
-      .catch(() => {});
-  }, [isOpen, event]);
 
   // Close on ESC key
   const handleKeyDown = useCallback(

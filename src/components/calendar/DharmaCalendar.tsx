@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect, useMemo } from "react";
+import { useFetch } from "@/hooks/useFetch";
 import { Calendar, dateFnsLocalizer, View, DateHeaderProps } from "react-big-calendar";
 import {
   format,
@@ -62,48 +63,31 @@ function DateHeader({ date }: DateHeaderProps) {
 }
 
 export function DharmaCalendar() {
-  const [events, setEvents] = useState<CalendarEvent[]>([]);
-  const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<View>("month");
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: SSR hydration guard
     setMounted(true);
   }, []);
 
-  // Fetch events for the current month range
-  const fetchEvents = useCallback(async (date: Date) => {
-    setLoading(true);
-    try {
-      // Get range with buffer for multi-day events
-      const start = startOfMonth(addMonths(date, -1));
-      const end = endOfMonth(addMonths(date, 1));
+  // Build URL for current month range (with ±1 month buffer for multi-day events)
+  const eventsUrl = (() => {
+    const start = startOfMonth(addMonths(currentDate, -1));
+    const end = endOfMonth(addMonths(currentDate, 1));
+    return `/api/events?start=${formatDateLocal(start)}T00:00:00.000Z&end=${formatDateLocal(end)}T23:59:59.999Z`;
+  })();
 
-      // ← FIX: Use formatDateLocal to prevent UTC timezone shifts
-      const startStr = formatDateLocal(start);
-      const endStr = formatDateLocal(end);
-
-      const response = await fetch(
-        `/api/events?start=${startStr}T00:00:00.000Z&end=${endStr}T23:59:59.999Z`
-      );
-
-      if (!response.ok) throw new Error("Failed to fetch events");
-
-      const data: CalendarEventResponse[] = await response.json();
-      setEvents(data.map(parseCalendarEvent));
-    } catch (error) {
-      logError("Failed to fetch calendar events", error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // Fetch events on mount and when date changes
-  useEffect(() => {
-    fetchEvents(currentDate);
-  }, [currentDate, fetchEvents]);
+  const {
+    data: eventsData,
+    loading,
+    refetch,
+  } = useFetch<CalendarEventResponse[]>(eventsUrl, {
+    onError: (err) => logError("Failed to fetch calendar events", err),
+  });
+  const events = useMemo(() => eventsData?.map(parseCalendarEvent) ?? [], [eventsData]);
 
   // Navigate to different month
   const handleNavigate = useCallback((newDate: Date) => {
@@ -238,7 +222,7 @@ export function DharmaCalendar() {
           event={selectedEvent}
           isOpen={!!selectedEvent}
           onClose={handleCloseModal}
-          onDeleted={() => fetchEvents(currentDate)}
+          onDeleted={refetch}
         />
       )}
     </div>

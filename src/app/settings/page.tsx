@@ -16,6 +16,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useFetch } from "@/hooks/useFetch";
 import { useRouter } from "next/navigation";
 import { Loader2, Check, CloudOff, Cloud } from "lucide-react";
 import { logError } from "@/lib/utils";
@@ -139,9 +140,31 @@ export default function SettingsPage() {
   const { themeName, colorMode, setTheme, setColorMode, themes, resolvedColorMode } =
     useTheme();
 
-  // State
-  const [loading, setLoading] = useState(true);
-  const [dailyInfo, setDailyInfo] = useState<DailyInfo | null>(null);
+  // Fetch initial data
+  const { loading: prefsLoading } = useFetch<Preferences>("/api/preferences", {
+    onSuccess: (data) => {
+      const prefs = data as Preferences;
+      setFormData({
+        currentTheme: prefs.currentTheme,
+        defaultView: prefs.defaultView,
+        weekStartsOn: prefs.weekStartsOn,
+        timezone: prefs.timezone,
+        locationName: prefs.locationName,
+        locationLat: prefs.locationLat,
+        locationLon: prefs.locationLon,
+      });
+    },
+    onError: (error) => {
+      logError("Failed to load settings", error);
+      showToast("Kon instellingen niet laden", "error");
+    },
+  });
+  const {
+    data: dailyInfo,
+    loading: dailyLoading,
+    refetch: refreshDailyInfo,
+  } = useFetch<DailyInfo>("/api/daily-info");
+  const loading = prefsLoading || dailyLoading;
 
   // Form state - initialized with defaults
   const [formData, setFormData] = useState({
@@ -159,6 +182,7 @@ export default function SettingsPage() {
 
   // Sync form theme with context theme
   useEffect(() => {
+     
     setFormData((prev) => ({ ...prev, currentTheme: themeName }));
   }, [themeName]);
 
@@ -191,74 +215,13 @@ export default function SettingsPage() {
     }
   }, [saveStatus, showToast]);
 
-  // ---------------------------------------------------------------------------
-  // Refresh Daily Info when location changes
-  // ---------------------------------------------------------------------------
+  // Refresh daily info after a location change is saved
   useEffect(() => {
     if (!locationChanged || saveStatus !== "saved") return;
-
-    async function refreshDailyInfo() {
-      try {
-        const dailyRes = await fetch("/api/daily-info");
-        if (dailyRes.ok) {
-          const dailyData: DailyInfo = await dailyRes.json();
-          setDailyInfo(dailyData);
-        }
-      } catch (error) {
-        logError("Failed to refresh daily info", error);
-      }
-      setLocationChanged(false);
-    }
-
     refreshDailyInfo();
-  }, [locationChanged, saveStatus]);
-
-  // ---------------------------------------------------------------------------
-  // Load Initial Data
-  // ---------------------------------------------------------------------------
-  useEffect(() => {
-    const controller = new AbortController();
-
-    async function loadData() {
-      try {
-        const [prefsRes, dailyRes] = await Promise.all([
-          fetch("/api/preferences", { signal: controller.signal }),
-          fetch("/api/daily-info", { signal: controller.signal }),
-        ]);
-
-        if (prefsRes.ok) {
-          const prefsData: Preferences = await prefsRes.json();
-          setFormData({
-            currentTheme: prefsData.currentTheme,
-            defaultView: prefsData.defaultView,
-            weekStartsOn: prefsData.weekStartsOn,
-            timezone: prefsData.timezone,
-            locationName: prefsData.locationName,
-            locationLat: prefsData.locationLat,
-            locationLon: prefsData.locationLon,
-          });
-        }
-
-        if (dailyRes.ok) {
-          const dailyData: DailyInfo = await dailyRes.json();
-          setDailyInfo(dailyData);
-        }
-      } catch (error) {
-        if (error instanceof Error && error.name === "AbortError") {
-          return;
-        }
-        logError("Failed to load settings", error);
-        showToast("Kon instellingen niet laden", "error");
-      } finally {
-        if (!controller.signal.aborted) {
-          setLoading(false);
-        }
-      }
-    }
-
-    loadData();
-    return () => controller.abort();
-  }, [showToast]);
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: clear flag after triggering refresh
+    setLocationChanged(false);
+  }, [locationChanged, saveStatus, refreshDailyInfo]);
 
   // ---------------------------------------------------------------------------
   // Handlers
@@ -269,7 +232,7 @@ export default function SettingsPage() {
       setFormData((prev) => ({ ...prev, currentTheme: newThemeName }));
       setTheme(newThemeName); // Instant visual update via ThemeProvider
     },
-    [setTheme]
+    [setTheme, setFormData]
   );
 
   const handleLocationPreset = useCallback(
@@ -282,7 +245,7 @@ export default function SettingsPage() {
       }));
       setLocationChanged(true);
     },
-    []
+    [setFormData, setLocationChanged]
   );
 
   const handleLocationChange = useCallback(
@@ -292,14 +255,14 @@ export default function SettingsPage() {
         setLocationChanged(true);
       }
     },
-    []
+    [setFormData, setLocationChanged]
   );
 
   const handleCalendarFieldChange = useCallback(
     (field: string, value: string | number) => {
       setFormData((prev) => ({ ...prev, [field]: value }));
     },
-    []
+    [setFormData]
   );
 
   // ---------------------------------------------------------------------------

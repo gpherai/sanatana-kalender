@@ -1,13 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
+import { useFetch } from "@/hooks/useFetch";
 import { Sun, Sunrise, Sunset, Moon, MoonStar, Calendar, Sparkles } from "lucide-react";
 import { MoonPhase } from "./MoonPhase";
 import { formatDateLocal, formatTimeAgo } from "@/lib/date-utils";
 import { getApproximateHinduMonth } from "@/lib/panchanga-helpers";
 import type { DailyInfoResponse } from "@/types";
-import type { CalendarEventResourceResponse } from "@/types/calendar";
+import type {
+  CalendarEventResponse,
+  CalendarEventResourceResponse,
+} from "@/types/calendar";
 
 interface TodayEvent {
   id: string;
@@ -29,9 +33,6 @@ const SANSKRIT_DAYS = [
 ] as const;
 
 export function TodayHero() {
-  const [dailyInfo, setDailyInfo] = useState<DailyInfoResponse | null>(null);
-  const [todayEvents, setTodayEvents] = useState<TodayEvent[]>([]);
-  const [loading, setLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
 
   // Update time every minute, synced to the minute boundary
@@ -49,60 +50,24 @@ export function TodayHero() {
   }, []);
 
   // Fetch daily info and today's events
-  useEffect(() => {
-    const controller = new AbortController();
-
-    async function fetchData() {
-      try {
-        const todayDate = new Date();
-        const todayStr = formatDateLocal(todayDate); // ← FIX: Use formatDateLocal to prevent UTC timezone shifts
-
-        const [dailyRes, todayEventsRes] = await Promise.all([
-          fetch("/api/daily-info", { signal: controller.signal }),
-          fetch(
-            `/api/events?start=${todayStr}T00:00:00.000Z&end=${todayStr}T23:59:59.999Z`,
-            {
-              signal: controller.signal,
-            }
-          ),
-        ]);
-
-        if (dailyRes.ok) {
-          const data: DailyInfoResponse = await dailyRes.json();
-          setDailyInfo(data);
-        }
-
-        if (todayEventsRes.ok) {
-          const events: Array<{
-            eventId: string;
-            title: string;
-            start: string;
-            resource: CalendarEventResourceResponse;
-          }> = await todayEventsRes.json();
-          setTodayEvents(
-            events.map((e) => ({
-              id: e.eventId,
-              name: e.title,
-              category: e.resource.categories[0] ?? null,
-              eventType: e.resource.eventType,
-              date: e.start,
-            }))
-          );
-        }
-      } catch (error) {
-        if (error instanceof Error && error.name !== "AbortError") {
-          console.error("Error fetching today data:", error);
-        }
-      } finally {
-        if (!controller.signal.aborted) {
-          setLoading(false);
-        }
-      }
-    }
-
-    fetchData();
-    return () => controller.abort();
-  }, []);
+  const todayStr = formatDateLocal(currentTime);
+  const { data: dailyInfo, loading: dailyLoading } =
+    useFetch<DailyInfoResponse>("/api/daily-info");
+  const { data: rawEvents, loading: eventsLoading } = useFetch<CalendarEventResponse[]>(
+    `/api/events?start=${todayStr}T00:00:00.000Z&end=${todayStr}T23:59:59.999Z`
+  );
+  const loading = dailyLoading || eventsLoading;
+  const todayEvents = useMemo<TodayEvent[]>(
+    () =>
+      rawEvents?.map((e) => ({
+        id: e.eventId,
+        name: e.title,
+        category: e.resource.categories[0] ?? null,
+        eventType: e.resource.eventType,
+        date: e.start,
+      })) ?? [],
+    [rawEvents]
+  );
 
   const today = currentTime;
   const dayOfWeek = today.getDay();
