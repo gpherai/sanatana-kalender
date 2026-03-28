@@ -46,7 +46,7 @@ const securityHeaders = [
       "default-src 'self'",
       `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
       "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: blob:",
+      "img-src 'self' data: blob: https://openweathermap.org",
       "font-src 'self' data:",
       "connect-src 'self'",
       "frame-ancestors 'self'",
@@ -61,8 +61,18 @@ const securityHeaders = [
 // =============================================================================
 
 const nextConfig: NextConfig = {
-  // Disable React Compiler as it can cause prerendering hook errors in Next.js canary
-  reactCompiler: false,
+  // OWM weather icons
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "openweathermap.org",
+        pathname: "/img/wn/**",
+      },
+    ],
+  },
+
+  reactCompiler: true,
 
   // Standalone output for Docker deployment
   // This creates a self-contained build in .next/standalone

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useId } from "react";
+import Image from "next/image";
 import { PageLayout } from "@/components/layout";
 import {
   Cloud,
@@ -218,6 +219,124 @@ function buildHourlyItems(hourly: HourlyWeather[], tz: number): HourlyItem[] {
 }
 
 // =============================================================================
+// SKELETON
+// =============================================================================
+
+function Pulse({ className }: { className: string }) {
+  return <div className={cn("bg-theme-bg-subtle animate-pulse rounded", className)} />;
+}
+
+function WeerSkeleton() {
+  return (
+    <PageLayout spacing>
+      {/* Topbalk */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Pulse className="h-4 w-4 rounded-full" />
+          <Pulse className="h-5 w-32" />
+          <Pulse className="h-4 w-10" />
+        </div>
+        <Pulse className="h-8 w-8 rounded-xl" />
+      </div>
+
+      {/* Hero grid */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_272px]">
+        <div className="bg-theme-surface border-theme-border rounded-2xl border p-5 shadow-sm md:p-6">
+          <div className="mb-4 flex justify-between">
+            <Pulse className="h-3 w-20" />
+            <Pulse className="h-6 w-28 rounded-full" />
+          </div>
+          <div className="mb-5 flex items-start gap-2">
+            <Pulse className="h-20 w-20 shrink-0 rounded-xl" />
+            <div className="flex-1 space-y-2 pt-1">
+              <Pulse className="h-14 w-32" />
+              <Pulse className="h-4 w-56" />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <Pulse key={i} className="h-16 rounded-xl" />
+            ))}
+          </div>
+          <div className="mt-3 flex gap-2">
+            <Pulse className="h-7 w-36 rounded-full" />
+            <Pulse className="h-7 w-28 rounded-full" />
+          </div>
+        </div>
+        <div className="grid grid-cols-3 gap-3 lg:flex lg:flex-col lg:gap-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div
+              key={i}
+              className="bg-theme-surface border-theme-border rounded-2xl border p-4 shadow-sm"
+            >
+              <div className="mb-3 flex items-center gap-2">
+                <Pulse className="h-7 w-7 rounded-lg" />
+                <Pulse className="h-4 w-16" />
+              </div>
+              <div className="space-y-2.5">
+                {Array.from({ length: 3 }).map((_, j) => (
+                  <Pulse key={j} className="h-3.5" />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Luchtkwaliteit */}
+      <div>
+        <Pulse className="mb-3 h-3 w-28" />
+        <div className="bg-theme-surface border-theme-border rounded-2xl border p-5 shadow-sm">
+          <div className="mb-4 flex items-center gap-3">
+            <Pulse className="h-3 w-3 rounded-full" />
+            <Pulse className="h-7 w-20 rounded-full" />
+            <Pulse className="h-4 w-80" />
+          </div>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Pulse key={i} className="h-16 rounded-xl" />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Vandaag per uur */}
+      <div>
+        <Pulse className="mb-3 h-3 w-32" />
+        <div className="bg-theme-surface border-theme-border h-40 rounded-2xl border shadow-sm" />
+      </div>
+
+      {/* Grafiek */}
+      <div>
+        <Pulse className="mb-3 h-3 w-48" />
+        <div className="bg-theme-surface border-theme-border h-52 rounded-2xl border shadow-sm" />
+      </div>
+
+      {/* 5-daagse */}
+      <div>
+        <Pulse className="mb-3 h-3 w-36" />
+        <div className="bg-theme-surface border-theme-border overflow-hidden rounded-2xl border shadow-sm">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div
+              key={i}
+              className={cn(
+                "flex items-center gap-4 px-5 py-4",
+                i > 0 && "border-theme-border border-t"
+              )}
+            >
+              <Pulse className="h-4 w-20" />
+              <Pulse className="h-8 w-8 rounded-lg" />
+              <Pulse className="h-4 flex-1" />
+              <Pulse className="h-4 w-16" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </PageLayout>
+  );
+}
+
+// =============================================================================
 // PAGE
 // =============================================================================
 
@@ -255,7 +374,7 @@ export default function WeerPage() {
     void fetchWeather();
   }, [fetchWeather]);
 
-  if (loading) return <PageLayout loading loadingMessage="Weerdata laden..." />;
+  if (loading) return <WeerSkeleton />;
 
   if (error) {
     return (
@@ -303,6 +422,7 @@ export default function WeerPage() {
   return (
     <PageLayout spacing>
       {/* ── TOPBALK ──────────────────────────────────────────────────────── */}
+      <h1 className="sr-only">Weer — {weather.location}</h1>
       <div className="flex items-center justify-between">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
           <MapPin className="text-theme-primary h-4 w-4 shrink-0" />
@@ -592,8 +712,7 @@ function CurrentWeatherCard({
     <div className="bg-theme-surface border-theme-border relative overflow-hidden rounded-2xl border p-5 shadow-sm md:p-6">
       {/* Decoratief ghost-icoon */}
       {c.weather[0] && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+        <Image
           src={owmIcon(c.weather[0].icon, 4)}
           alt=""
           aria-hidden="true"
@@ -618,8 +737,7 @@ function CurrentWeatherCard({
       {/* TEMPERATUUR — hero metric */}
       <div className="mb-5 flex items-start gap-1">
         {c.weather[0] && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={owmIcon(c.weather[0].icon, 4)}
             alt={c.weather[0].description}
             width={80}
@@ -753,6 +871,17 @@ function CurrentWeatherCard({
   );
 }
 
+// Kleine helper voor chemische symbolen als icon-slot (consistent met h-4 w-4 Lucide sizing)
+function Chem({ children }: { children: string }) {
+  return (
+    <div className="flex h-4 w-4 shrink-0 items-center justify-center">
+      <span className="text-theme-fg-muted text-[9px] leading-none font-bold tabular-nums">
+        {children}
+      </span>
+    </div>
+  );
+}
+
 // =============================================================================
 // LUCHTKWALITEIT CARD
 // =============================================================================
@@ -787,7 +916,7 @@ function AirQualityCard({ aq }: { aq: AirQuality }) {
         {/* Pollutant grid */}
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
           <KpiBadge
-            icon={<span className="text-xs font-bold text-slate-400">PM</span>}
+            icon={<Chem>PM</Chem>}
             label="PM2.5"
             value={`${c.pm2_5.toFixed(1)} µg/m³`}
             valueClass={
@@ -799,7 +928,7 @@ function AirQualityCard({ aq }: { aq: AirQuality }) {
             }
           />
           <KpiBadge
-            icon={<span className="text-xs font-bold text-slate-400">PM</span>}
+            icon={<Chem>PM</Chem>}
             label="PM10"
             value={`${c.pm10.toFixed(1)} µg/m³`}
             valueClass={
@@ -811,7 +940,7 @@ function AirQualityCard({ aq }: { aq: AirQuality }) {
             }
           />
           <KpiBadge
-            icon={<span className="text-xs font-bold text-blue-400">NO₂</span>}
+            icon={<Chem>NO₂</Chem>}
             label="Stikstofdioxide"
             value={`${c.no2.toFixed(1)} µg/m³`}
             valueClass={
@@ -823,7 +952,7 @@ function AirQualityCard({ aq }: { aq: AirQuality }) {
             }
           />
           <KpiBadge
-            icon={<span className="text-xs font-bold text-blue-400">O₃</span>}
+            icon={<Chem>O₃</Chem>}
             label="Ozon"
             value={`${c.o3.toFixed(1)} µg/m³`}
             valueClass={
@@ -835,7 +964,7 @@ function AirQualityCard({ aq }: { aq: AirQuality }) {
             }
           />
           <KpiBadge
-            icon={<span className="text-xs font-bold text-slate-400">SO₂</span>}
+            icon={<Chem>SO₂</Chem>}
             label="Zwaveldioxide"
             value={`${c.so2.toFixed(1)} µg/m³`}
             valueClass={
@@ -847,7 +976,7 @@ function AirQualityCard({ aq }: { aq: AirQuality }) {
             }
           />
           <KpiBadge
-            icon={<span className="text-xs font-bold text-slate-400">CO</span>}
+            icon={<Chem>CO</Chem>}
             label="Koolmonoxide"
             value={`${(c.co / 1000).toFixed(1)} mg/m³`}
             valueClass={
@@ -877,6 +1006,7 @@ function TempChart({
   daily: DailyWeather[];
   tz: number;
 }) {
+  const gradId = `weerTempGrad${useId().replace(/:/g, "")}`;
   const W = 800,
     H = 188;
   const PAD = { l: 36, r: 14, t: 22, b: 32 };
@@ -960,7 +1090,7 @@ function TempChart({
           role="img"
         >
           <defs>
-            <linearGradient id="weerTempGrad" x1="0" y1="0" x2="0" y2="1">
+            <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#f97316" stopOpacity="0.22" />
               <stop offset="100%" stopColor="#f97316" stopOpacity="0.02" />
             </linearGradient>
@@ -1018,7 +1148,7 @@ function TempChart({
           ))}
 
           {/* Area fill */}
-          <path d={areaD} fill="url(#weerTempGrad)" />
+          <path d={areaD} fill={`url(#${gradId})`} />
 
           {/* Feels-like line (dashed) */}
           <polyline
@@ -1226,8 +1356,7 @@ function ForecastRow({
           {fmtDayLabel(day.dt, tz)}
         </span>
         {day.weather[0] && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={owmIcon(day.weather[0].icon)}
             alt=""
             width={32}
@@ -1273,8 +1402,7 @@ function ForecastRow({
           {fmtDayLabel(day.dt, tz)}
         </span>
         {day.weather[0] ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={owmIcon(day.weather[0].icon)} alt="" width={32} height={32} />
+          <Image src={owmIcon(day.weather[0].icon)} alt="" width={32} height={32} />
         ) : (
           <span />
         )}
@@ -1358,8 +1486,7 @@ function HourlyCard({ h, tz }: { h: HourlyWeather; tz: number }) {
         {fmtHour(h.dt, tz)}
       </span>
       {h.weather[0] && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+        <Image
           src={owmIcon(h.weather[0].icon)}
           alt={h.weather[0].description}
           width={36}
@@ -1416,8 +1543,7 @@ function HourlySlot({ h, tz }: { h: HourlyWeather; tz: number }) {
     >
       <span className="text-theme-fg-muted tabular-nums">{fmtHour(h.dt, tz)}</span>
       {h.weather[0] && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+        <Image
           src={owmIcon(h.weather[0].icon)}
           alt={h.weather[0].description}
           width={28}
