@@ -213,26 +213,25 @@ export function TodayHero() {
 
             {/* Weather snippet — only shown when API data is available */}
             {currentWeather?.weather[0] && (
-              <div className="mt-2 flex items-center justify-end gap-2">
-                <Image
-                  src={`https://openweathermap.org/img/wn/${currentWeather.weather[0].icon}@2x.png`}
-                  alt={currentWeather.weather[0].description}
-                  width={48}
-                  height={48}
-                  unoptimized
-                  className="-my-1"
-                />
-                <div>
-                  <div className="text-3xl leading-tight font-semibold text-white">
+              <div className="mt-2 text-right">
+                <div className="flex items-center justify-end gap-1">
+                  <Image
+                    src={`https://openweathermap.org/img/wn/${currentWeather.weather[0].icon}@2x.png`}
+                    alt={currentWeather.weather[0].description}
+                    width={40}
+                    height={40}
+                    unoptimized
+                  />
+                  <span className="text-3xl leading-none font-semibold text-white">
                     {Math.round(currentWeather.temp)}°
-                  </div>
-                  <div className="text-xs text-white/50 capitalize">
-                    {currentWeather.weather[0].description}
-                  </div>
-                  <div className="text-xs text-white/50">
-                    ↑{Math.round(currentWeather.temp_max)}° ↓
-                    {Math.round(currentWeather.temp_min)}°
-                  </div>
+                  </span>
+                </div>
+                <div className="text-xs text-white/50 capitalize">
+                  {currentWeather.weather[0].description}
+                </div>
+                <div className="text-xs text-white/50">
+                  ↑{Math.round(currentWeather.temp_max)}° ↓
+                  {Math.round(currentWeather.temp_min)}°
                 </div>
               </div>
             )}
