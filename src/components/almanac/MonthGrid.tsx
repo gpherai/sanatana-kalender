@@ -96,7 +96,7 @@ export function MonthGrid({
               className={cn(
                 "group focus:ring-theme-primary relative flex flex-col rounded-lg p-1.5 text-left transition-all focus:ring-2 focus:ring-offset-1 focus:outline-none",
                 isSelected
-                  ? "bg-theme-primary ring-theme-primary ring-offset-theme-surface text-white shadow-lg ring-2 ring-offset-2"
+                  ? "bg-theme-primary ring-theme-primary text-white shadow-lg ring-2 ring-offset-2 ring-offset-[var(--theme-surface)]"
                   : isTodayDate
                     ? "bg-theme-primary-15 ring-theme-primary ring-1"
                     : hasEvents && showEvents

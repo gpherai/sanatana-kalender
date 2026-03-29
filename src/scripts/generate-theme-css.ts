@@ -21,6 +21,7 @@ import {
   getDefaultTheme,
   getStandardThemes,
   getSpecialThemes,
+  SPECIAL_THEME_COMPONENT_MAP,
   type ThemeDefinition,
 } from "../config/themes";
 import { CATEGORY_CATALOG } from "../config/categories";
@@ -456,6 +457,15 @@ function generateStandardThemes(): string {
         const hueMatch = theme.colors.primary.match(/oklch\([\d.]+ [\d.]+ ([\d.]+)/);
         const primaryHue = hueMatch ? hueMatch[1] : "270";
 
+        // Glassmorphism config — read from theme, fall back to defaults
+        const g = theme.glass ?? {};
+        const lightOp = g.lightOpacity ?? 0.7;
+        const lightRaisedOp = g.lightRaisedOpacity ?? 0.8;
+        const darkOp = g.darkOpacity ?? 0.75;
+        const darkRaisedOp = g.darkRaisedOpacity ?? 0.85;
+        const blur = g.blur ?? 12;
+        const blurRaised = blur + 4;
+
         css += `
 
 /* Background (Light) */
@@ -472,14 +482,14 @@ function generateStandardThemes(): string {
 
 /* Cards and surfaces - glassmorphism effect for better contrast */
 [data-theme="${theme.name}"] .bg-theme-surface {
-  background: oklch(1 0 0 / 0.70) !important;
-  backdrop-filter: blur(12px);
+  background: oklch(1 0 0 / ${lightOp}) !important;
+  backdrop-filter: blur(${blur}px);
   border-color: oklch(1 0 0 / 0.30) !important;
 }
 
 [data-theme="${theme.name}"] .bg-theme-surface-raised {
-  background: oklch(1 0 0 / 0.80) !important;
-  backdrop-filter: blur(16px);
+  background: oklch(1 0 0 / ${lightRaisedOp}) !important;
+  backdrop-filter: blur(${blurRaised}px);
   border-color: oklch(1 0 0 / 0.40) !important;
 }
 
@@ -501,15 +511,15 @@ function generateStandardThemes(): string {
 /* Cards and surfaces - dark mode glassmorphism (tinted to theme hue) */
 .dark[data-theme="${theme.name}"] .bg-theme-surface,
 [data-theme="${theme.name}"].dark .bg-theme-surface {
-  background: oklch(0.18 0.015 ${primaryHue} / 0.75) !important;
-  backdrop-filter: blur(12px);
+  background: oklch(0.18 0.015 ${primaryHue} / ${darkOp}) !important;
+  backdrop-filter: blur(${blur}px);
   border-color: oklch(1 0 0 / 0.10) !important;
 }
 
 .dark[data-theme="${theme.name}"] .bg-theme-surface-raised,
 [data-theme="${theme.name}"].dark .bg-theme-surface-raised {
-  background: oklch(0.22 0.015 ${primaryHue} / 0.85) !important;
-  backdrop-filter: blur(16px);
+  background: oklch(0.22 0.015 ${primaryHue} / ${darkRaisedOp}) !important;
+  backdrop-filter: blur(${blurRaised}px);
   border-color: oklch(1 0 0 / 0.15) !important;
 }`;
       }
@@ -577,40 +587,19 @@ ${customProps}
   }
 
   // Component styles
-  type ComponentMapEntry =
-    | { key: string; selector: string; selectors?: undefined; name: string }
-    | { key: string; selector?: undefined; selectors: readonly string[]; name: string };
-
-  const componentMap: readonly ComponentMapEntry[] = [
-    { key: "header", selector: "header", name: "Header" },
-    { key: "cards", selectors: [".bg-white", ".rounded-2xl.shadow-lg"], name: "Cards" },
-    { key: "buttons", selector: ".bg-theme-primary", name: "Primary Buttons" },
-    { key: "inputs", selectors: ["input", "select", "textarea"], name: "Inputs" },
-    { key: "headings", selector: "h1", name: "Headings" },
-  ];
-
-  for (const entry of componentMap) {
-    const { key, name } = entry;
+  // Use the shared component map from themes.ts — single source of truth for
+  // which elements special themes can style and their CSS selectors.
+  for (const entry of SPECIAL_THEME_COMPONENT_MAP) {
+    const { key, name, selector } = entry;
     const styles = theme.specialStyles?.[key as keyof typeof theme.specialStyles];
     if (!styles || typeof styles !== "object" || !("light" in styles)) continue;
 
-    let sel: string;
-    let darkSel: string;
-
-    if ("selectors" in entry && entry.selectors) {
-      sel = entry.selectors.map((s: string) => `[data-theme="${n}"] ${s}`).join(",\n");
-      darkSel = entry.selectors
-        .flatMap((s: string) => [
-          `.dark[data-theme="${n}"] ${s}`,
-          `[data-theme="${n}"].dark ${s}`,
-        ])
-        .join(",\n");
-    } else if ("selector" in entry && entry.selector) {
-      sel = `[data-theme="${n}"] ${entry.selector}`;
-      darkSel = `.dark[data-theme="${n}"] ${entry.selector},\n[data-theme="${n}"].dark ${entry.selector}`;
-    } else {
-      continue;
-    }
+    // Split comma-separated selector string, prefix each part with theme scope
+    const selectorParts = selector.split(",").map((s) => s.trim());
+    const sel = selectorParts.map((s) => `[data-theme="${n}"] ${s}`).join(",\n");
+    const darkSel = selectorParts
+      .flatMap((s) => [`.dark[data-theme="${n}"] ${s}`, `[data-theme="${n}"].dark ${s}`])
+      .join(",\n");
 
     parts.push(`
 /* ${name} (Light) */
@@ -660,11 +649,14 @@ ${formatCssBlock(theme.specialStyles.decorations.dark)}
 }`);
   }
 
-  // Additional CSS
+  // Additional CSS — replace [[t]] placeholder with the scoped theme selector
   if (theme.specialStyles?.additionalCss) {
+    const scoped = theme.specialStyles.additionalCss
+      .split("[[t]]")
+      .join(`[data-theme="${n}"]`);
     parts.push(`
 /* Additional Styles */
-${theme.specialStyles.additionalCss}`);
+${scoped}`);
   }
 
   return parts.join("\n");

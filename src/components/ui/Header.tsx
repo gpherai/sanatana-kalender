@@ -14,7 +14,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, ListTodo, Settings, Plus, BookOpen, BookMarked } from "lucide-react";
+import {
+  Home,
+  ListTodo,
+  Settings,
+  Plus,
+  BookOpen,
+  BookMarked,
+  CloudSun,
+} from "lucide-react";
 import { ColorModeToggle } from "@/components/theme/ColorModeToggle";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +30,7 @@ const navItems = [
   { href: "/", label: "Home", icon: Home },
   { href: "/almanac", label: "Almanac", icon: BookOpen },
   { href: "/events", label: "Events", icon: ListTodo },
+  { href: "/weer", label: "Weer", icon: CloudSun },
   { href: "/woordenboek", label: "Woordenboek", icon: BookMarked },
   { href: "/settings", label: "Instellingen", icon: Settings },
 ] as const;

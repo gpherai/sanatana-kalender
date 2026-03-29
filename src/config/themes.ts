@@ -62,6 +62,23 @@ export interface ThemeBackground {
 }
 
 /**
+ * Glassmorphism configuration for revamped/special themes with backgrounds.
+ * All fields are optional; defaults are applied by the CSS generator.
+ */
+export interface GlassConfig {
+  /** Surface opacity in light mode (0–1). Default: 0.70 */
+  readonly lightOpacity?: number;
+  /** Raised surface opacity in light mode (0–1). Default: 0.80 */
+  readonly lightRaisedOpacity?: number;
+  /** Surface opacity in dark mode (0–1). Default: 0.75 */
+  readonly darkOpacity?: number;
+  /** Raised surface opacity in dark mode (0–1). Default: 0.85 */
+  readonly darkRaisedOpacity?: number;
+  /** Backdrop blur in px. Default: 12. Raised surfaces use blur + 4. */
+  readonly blur?: number;
+}
+
+/**
  * Moon visualization colors for theme customization.
  * Allows themes to have custom moon appearances.
  */
@@ -93,12 +110,16 @@ export interface ThemeSpecialStyles {
   readonly moon?: MoonColors;
   /** Header styling override */
   readonly header?: ThemeBackground;
-  /** Card styling override */
-  readonly cards?: ThemeBackground;
+  /** Surface-level cards and panels (.bg-theme-surface) */
+  readonly surface?: ThemeBackground;
+  /** Elevated surfaces — modals, dropdowns (.bg-theme-surface-raised) */
+  readonly surfaceRaised?: ThemeBackground;
   /** Button styling override */
   readonly buttons?: ThemeBackground;
-  /** Input styling override */
+  /** Input base state */
   readonly inputs?: ThemeBackground;
+  /** Input focus state (input:focus, select:focus, textarea:focus) */
+  readonly inputFocus?: ThemeBackground;
   /** Heading styling override */
   readonly headings?: ThemeBackground;
   /** Custom keyframe animations */
@@ -108,7 +129,7 @@ export interface ThemeSpecialStyles {
   }>;
   /** Decorative elements (::after on body) */
   readonly decorations?: ThemeBackground;
-  /** Raw additional CSS */
+  /** Raw additional CSS. Use [[t]] as placeholder for [data-theme="themename"] */
   readonly additionalCss?: string;
 }
 
@@ -133,6 +154,8 @@ export interface ThemeDefinition {
   readonly isSpecial?: boolean;
   /** Special background styling */
   readonly background?: ThemeBackground;
+  /** Glassmorphism config (revamped/special themes with backgrounds) */
+  readonly glass?: GlassConfig;
   /** Special CSS customizations */
   readonly specialStyles?: ThemeSpecialStyles;
 }
@@ -168,6 +191,28 @@ export const THEME_STORAGE_KEY = "dharma-theme-state" as const;
 
 /** Default color mode when no preference is saved */
 export const DEFAULT_COLOR_MODE: ColorMode = "system";
+
+/**
+ * Maps ThemeSpecialStyles keys to CSS selectors and display names.
+ *
+ * This is the contract between theme definitions and the CSS generator:
+ * - Generator reads this map to know which elements to target.
+ * - Themes provide light/dark CSS values for each key in ThemeSpecialStyles.
+ * - Selectors use semantic theme classes, not fragile Tailwind utilities.
+ */
+export const SPECIAL_THEME_COMPONENT_MAP = [
+  { key: "header", selector: "header", name: "Header" },
+  { key: "surface", selector: ".bg-theme-surface", name: "Surface" },
+  { key: "surfaceRaised", selector: ".bg-theme-surface-raised", name: "Surface Raised" },
+  { key: "buttons", selector: ".bg-theme-primary", name: "Buttons" },
+  { key: "inputs", selector: "input, select, textarea", name: "Inputs" },
+  {
+    key: "inputFocus",
+    selector: "input:focus, select:focus, textarea:focus",
+    name: "Input Focus",
+  },
+  { key: "headings", selector: "h1, h2", name: "Headings" },
+] as const;
 
 // =============================================================================
 // THEME CATALOG - THE SOURCE OF TRUTH
@@ -485,7 +530,7 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
           box-shadow: 0 2px 24px oklch(0.62 0.22 275 / 0.18), 0 1px 0 oklch(0.74 0.18 45 / 0.08) inset;
         `,
       },
-      cards: {
+      surface: {
         light: `
           background: linear-gradient(180deg, oklch(0.995 0.01 90 / 0.86) 0%, oklch(0.98 0.02 88 / 0.80) 100%) !important;
           border: 1px solid oklch(0.62 0.22 275 / 0.16) !important;
@@ -496,6 +541,19 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
           border: 1px solid oklch(0.62 0.22 275 / 0.18) !important;
           box-shadow: 0 14px 40px oklch(0 0 0 / 0.45), 0 0 28px oklch(0.62 0.22 275 / 0.10) !important;
           backdrop-filter: blur(10px);
+        `,
+      },
+      surfaceRaised: {
+        light: `
+          background: linear-gradient(180deg, oklch(0.995 0.01 90 / 0.92) 0%, oklch(0.98 0.02 88 / 0.86) 100%) !important;
+          border: 1px solid oklch(0.62 0.22 275 / 0.16) !important;
+          box-shadow: 0 16px 40px oklch(0 0 0 / 0.08), 0 0 0 1px oklch(0.74 0.18 45 / 0.08) inset !important;
+        `,
+        dark: `
+          background: linear-gradient(180deg, oklch(0.15 0.03 275 / 0.86) 0%, oklch(0.12 0.03 270 / 0.80) 100%) !important;
+          border: 1px solid oklch(0.62 0.22 275 / 0.22) !important;
+          box-shadow: 0 20px 50px oklch(0 0 0 / 0.55), 0 0 32px oklch(0.62 0.22 275 / 0.14) !important;
+          backdrop-filter: blur(14px);
         `,
       },
       buttons: {
@@ -591,7 +649,7 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
           box-shadow: 0 2px 25px oklch(0.50 0.12 85 / 0.15), 0 1px 0 oklch(0.50 0.12 85 / 0.2) inset;
         `,
       },
-      cards: {
+      surface: {
         light: `
           background: linear-gradient(145deg, oklch(1 0 0 / 0.92) 0%, oklch(0.98 0.02 80 / 0.88) 100%) !important;
           border: 1px solid oklch(0.78 0.14 85 / 0.3) !important;
@@ -601,6 +659,19 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
           background: linear-gradient(145deg, oklch(0.18 0.03 30 / 0.92) 0%, oklch(0.14 0.02 25 / 0.88) 100%) !important;
           border: 1px solid oklch(0.50 0.12 85 / 0.25) !important;
           box-shadow: 0 4px 25px oklch(0 0 0 / 0.4), 0 0 0 1px oklch(0.50 0.12 85 / 0.1), inset 0 1px 0 oklch(0.25 0.04 85 / 0.2) !important;
+        `,
+      },
+      surfaceRaised: {
+        light: `
+          background: linear-gradient(145deg, oklch(1 0 0 / 0.96) 0%, oklch(0.98 0.02 80 / 0.92) 100%) !important;
+          border: 1px solid oklch(0.78 0.14 85 / 0.3) !important;
+          box-shadow: 0 8px 30px oklch(0.78 0.14 85 / 0.18), 0 0 0 1px oklch(0.78 0.14 85 / 0.12), inset 0 1px 0 oklch(1 0 0 / 0.6) !important;
+        `,
+        dark: `
+          background: linear-gradient(145deg, oklch(0.18 0.03 30 / 0.96) 0%, oklch(0.14 0.02 25 / 0.92) 100%) !important;
+          border: 1px solid oklch(0.50 0.12 85 / 0.30) !important;
+          box-shadow: 0 8px 35px oklch(0 0 0 / 0.5), 0 0 0 1px oklch(0.50 0.12 85 / 0.14), inset 0 1px 0 oklch(0.25 0.04 85 / 0.2) !important;
+          backdrop-filter: blur(12px);
         `,
       },
       buttons: {
@@ -682,9 +753,19 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
           font-family: serif;
         `,
       },
+      inputFocus: {
+        light: `
+          border-color: oklch(0.78 0.14 85) !important;
+          box-shadow: 0 0 0 3px oklch(0.78 0.14 85 / 0.20), 0 0 15px oklch(0.78 0.14 85 / 0.15) !important;
+        `,
+        dark: `
+          border-color: oklch(0.78 0.14 85) !important;
+          box-shadow: 0 0 0 3px oklch(0.78 0.14 85 / 0.20), 0 0 15px oklch(0.78 0.14 85 / 0.15) !important;
+        `,
+      },
       additionalCss: `
 /* Golden decorative line under header */
-[data-theme="shri-ganesha"] header::after {
+[[t]] header::after {
   content: '';
   position: absolute;
   bottom: -2px;
@@ -697,31 +778,23 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
 }
 
 /* Divine pulsing glow on logo */
-[data-theme="shri-ganesha"] header a:first-child span:first-child {
+[[t]] header a:first-child span:first-child {
   animation: divine-pulse 3s ease-in-out infinite;
 }
 
 /* Subtle shimmer on gold text */
-[data-theme="shri-ganesha"] .text-theme-primary {
+[[t]] .text-theme-primary {
   animation: gold-shimmer 4s ease-in-out infinite;
 }
 
 /* Title text shadows */
-[data-theme="shri-ganesha"] h1,
-[data-theme="shri-ganesha"] h2 {
+[[t]] h1,
+[[t]] h2 {
   text-shadow: 0 0 30px oklch(0.78 0.14 85 / 0.3);
 }
 
-/* Focus states for special theme */
-[data-theme="shri-ganesha"] input:focus,
-[data-theme="shri-ganesha"] select:focus,
-[data-theme="shri-ganesha"] textarea:focus {
-  border-color: oklch(0.78 0.14 85) !important;
-  box-shadow: 0 0 0 3px oklch(0.78 0.14 85 / 0.2), 0 0 15px oklch(0.78 0.14 85 / 0.15) !important;
-}
-
 /* Special badge glow */
-[data-theme="shri-ganesha"] .bg-gradient-to-r.from-amber-500 {
+[[t]] .bg-gradient-to-r.from-amber-500 {
   animation: divine-pulse 2s ease-in-out infinite;
 }
 `,
@@ -737,7 +810,7 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
     isSpecial: true,
     colors: {
       primary: "oklch(0.68 0.22 52)", // Golden amber-fire — the lion's mane
-      secondary: "oklch(0.42 0.18 228)", // Deep twilight sapphire — Vaishnava sky at dusk
+      secondary: "oklch(0.45 0.20 32)", // Deep ember-crimson — fire shadow at the base of the pillar
       accent: "oklch(0.74 0.24 38)", // Sacred flame — fierce orange-red
     },
     background: {
@@ -761,7 +834,6 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
       customProperties: {
         "--narasimha-fire": "oklch(0.68 0.22 52)",
         "--narasimha-flame": "oklch(0.74 0.24 38)",
-        "--narasimha-dusk": "oklch(0.42 0.18 228)",
       },
       moon: {
         surface: {
@@ -788,7 +860,7 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
           box-shadow: 0 2px 24px oklch(0.68 0.22 52 / 0.18), 0 1px 0 oklch(0.74 0.24 38 / 0.10) inset;
         `,
       },
-      cards: {
+      surface: {
         light: `
           background: linear-gradient(145deg, oklch(1 0 0 / 0.90) 0%, oklch(0.98 0.02 65 / 0.86) 100%) !important;
           border: 1px solid oklch(0.68 0.22 52 / 0.20) !important;
@@ -799,6 +871,19 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
           border: 1px solid oklch(0.68 0.22 52 / 0.20) !important;
           box-shadow: 0 4px 28px oklch(0 0 0 / 0.50), 0 0 20px oklch(0.68 0.22 52 / 0.10) !important;
           backdrop-filter: blur(10px);
+        `,
+      },
+      surfaceRaised: {
+        light: `
+          background: linear-gradient(145deg, oklch(1 0 0 / 0.94) 0%, oklch(0.98 0.02 65 / 0.90) 100%) !important;
+          border: 1px solid oklch(0.68 0.22 52 / 0.20) !important;
+          box-shadow: 0 8px 32px oklch(0.68 0.22 52 / 0.16), 0 0 0 1px oklch(0.74 0.24 38 / 0.10), inset 0 1px 0 oklch(1 0 0 / 0.6) !important;
+        `,
+        dark: `
+          background: linear-gradient(145deg, oklch(0.18 0.04 45 / 0.94) 0%, oklch(0.13 0.03 40 / 0.90) 100%) !important;
+          border: 1px solid oklch(0.68 0.22 52 / 0.24) !important;
+          box-shadow: 0 8px 36px oklch(0 0 0 / 0.60), 0 0 24px oklch(0.68 0.22 52 / 0.14) !important;
+          backdrop-filter: blur(14px);
         `,
       },
       buttons: {
@@ -884,9 +969,19 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
           font-family: serif;
         `,
       },
+      inputFocus: {
+        light: `
+          border-color: oklch(0.68 0.22 52) !important;
+          box-shadow: 0 0 0 3px oklch(0.68 0.22 52 / 0.22), 0 0 15px oklch(0.74 0.24 38 / 0.15) !important;
+        `,
+        dark: `
+          border-color: oklch(0.68 0.22 52) !important;
+          box-shadow: 0 0 0 3px oklch(0.68 0.22 52 / 0.22), 0 0 15px oklch(0.74 0.24 38 / 0.15) !important;
+        `,
+      },
       additionalCss: `
 /* Fiery accent line under header */
-[data-theme="narasimha-jwala"] header::after {
+[[t]] header::after {
   content: '';
   position: absolute;
   bottom: -2px;
@@ -899,27 +994,19 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
 }
 
 /* Flame flicker on logo icon */
-[data-theme="narasimha-jwala"] header a:first-child span:first-child {
+[[t]] header a:first-child span:first-child {
   animation: jwala-flicker 2.5s ease-in-out infinite;
 }
 
 /* Fierce golden glow on primary text */
-[data-theme="narasimha-jwala"] .text-theme-primary {
+[[t]] .text-theme-primary {
   animation: gold-fire 3.5s ease-in-out infinite;
 }
 
 /* Fire glow on headings */
-[data-theme="narasimha-jwala"] h1,
-[data-theme="narasimha-jwala"] h2 {
+[[t]] h1,
+[[t]] h2 {
   text-shadow: 0 0 28px oklch(0.68 0.22 52 / 0.28);
-}
-
-/* Focus states */
-[data-theme="narasimha-jwala"] input:focus,
-[data-theme="narasimha-jwala"] select:focus,
-[data-theme="narasimha-jwala"] textarea:focus {
-  border-color: oklch(0.68 0.22 52) !important;
-  box-shadow: 0 0 0 3px oklch(0.68 0.22 52 / 0.22), 0 0 15px oklch(0.74 0.24 38 / 0.15) !important;
 }
 `,
     },
