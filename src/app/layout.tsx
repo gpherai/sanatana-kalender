@@ -32,7 +32,10 @@ const geistMono = Geist_Mono({
 // =============================================================================
 
 export const metadata: Metadata = {
-  title: "Dharma Calendar",
+  title: {
+    default: "Dharma Calendar",
+    template: "%s | Dharma Calendar",
+  },
   description:
     "Hindu Festival & Spiritual Events Calendar - Track festivals, puja, vrat, and more",
   keywords: "hindu, calendar, festival, puja, vrad, tithi, nakshatra",

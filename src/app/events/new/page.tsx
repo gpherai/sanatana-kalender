@@ -1,7 +1,10 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { EventForm } from "@/components/events/EventForm";
 import { PageLayout } from "@/components/layout";
+
+export const metadata: Metadata = { title: "Nieuw event" };
 
 export default function NewEventPage() {
   return (

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
@@ -8,6 +9,12 @@ import { formatDateForInput } from "@/lib/date-utils";
 
 interface PageProps {
   params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { id } = await params;
+  const event = await prisma.event.findUnique({ where: { id }, select: { name: true } });
+  return { title: event?.name ?? "Event bewerken" };
 }
 
 export default async function EditEventPage({ params }: PageProps) {

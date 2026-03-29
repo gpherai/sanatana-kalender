@@ -4,7 +4,7 @@ import { Section } from "@/components/ui/Section";
 import { DICTIONARY_TERMS } from "@/lib/dictionary";
 
 export const metadata = {
-  title: "Woordenboek - Dharma Calendar",
+  title: "Woordenboek",
   description: "Definities van Sanskriet termen gebruikt in de Dharma Calendar.",
 };
 
