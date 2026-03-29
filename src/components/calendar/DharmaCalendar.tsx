@@ -17,6 +17,7 @@ import {
   getDay,
   startOfMonth,
   endOfMonth,
+  endOfWeek,
   addMonths,
 } from "date-fns";
 import { nl } from "date-fns/locale";
@@ -95,10 +96,10 @@ export function DharmaCalendar() {
     return `/api/events?start=${formatDateLocal(start)}T00:00:00.000Z&end=${formatDateLocal(end)}T23:59:59.999Z`;
   })();
 
-  // Daily-info for current month (moon phase emoji per day)
+  // Daily-info for the full calendar grid (including overflow days from adjacent months)
   const dailyInfoUrl = useMemo(() => {
-    const start = startOfMonth(currentDate);
-    const end = endOfMonth(currentDate);
+    const start = startOfWeek(startOfMonth(currentDate), { weekStartsOn: 1 });
+    const end = endOfWeek(endOfMonth(currentDate), { weekStartsOn: 1 });
     return `/api/daily-info?start=${formatDateLocal(start)}&end=${formatDateLocal(end)}`;
   }, [currentDate]);
 
