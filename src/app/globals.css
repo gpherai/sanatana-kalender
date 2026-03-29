@@ -2113,16 +2113,16 @@ html {
   background-color: color-mix(in oklch, oklch(0.72 0.18 42) 30%, transparent);
 }
 .bg-category-shiva-10 {
-  background-color: color-mix(in oklch, oklch(0.75 0.06 215) 10%, transparent);
+  background-color: color-mix(in oklch, oklch(0.65 0.1 215) 10%, transparent);
 }
 .bg-category-shiva-15 {
-  background-color: color-mix(in oklch, oklch(0.75 0.06 215) 15%, transparent);
+  background-color: color-mix(in oklch, oklch(0.65 0.1 215) 15%, transparent);
 }
 .bg-category-shiva-20 {
-  background-color: color-mix(in oklch, oklch(0.75 0.06 215) 20%, transparent);
+  background-color: color-mix(in oklch, oklch(0.65 0.1 215) 20%, transparent);
 }
 .bg-category-shiva-30 {
-  background-color: color-mix(in oklch, oklch(0.75 0.06 215) 30%, transparent);
+  background-color: color-mix(in oklch, oklch(0.65 0.1 215) 30%, transparent);
 }
 .bg-category-vishnu-10 {
   background-color: color-mix(in oklch, oklch(0.5 0.22 240) 10%, transparent);
@@ -2161,16 +2161,16 @@ html {
   background-color: color-mix(in oklch, oklch(0.82 0.17 72) 30%, transparent);
 }
 .bg-category-saraswati-10 {
-  background-color: color-mix(in oklch, oklch(0.96 0.02 230) 10%, transparent);
+  background-color: color-mix(in oklch, oklch(0.72 0.13 230) 10%, transparent);
 }
 .bg-category-saraswati-15 {
-  background-color: color-mix(in oklch, oklch(0.96 0.02 230) 15%, transparent);
+  background-color: color-mix(in oklch, oklch(0.72 0.13 230) 15%, transparent);
 }
 .bg-category-saraswati-20 {
-  background-color: color-mix(in oklch, oklch(0.96 0.02 230) 20%, transparent);
+  background-color: color-mix(in oklch, oklch(0.72 0.13 230) 20%, transparent);
 }
 .bg-category-saraswati-30 {
-  background-color: color-mix(in oklch, oklch(0.96 0.02 230) 30%, transparent);
+  background-color: color-mix(in oklch, oklch(0.72 0.13 230) 30%, transparent);
 }
 .bg-category-hanuman-10 {
   background-color: color-mix(in oklch, oklch(0.62 0.26 32) 10%, transparent);
@@ -2247,14 +2247,26 @@ html {
 .bg-category-bhairava-10 {
   background-color: color-mix(in oklch, oklch(0.22 0.08 280) 10%, transparent);
 }
+.dark .bg-category-bhairava-10 {
+  background-color: color-mix(in oklch, oklch(0.6 0.14 280) 10%, transparent);
+}
 .bg-category-bhairava-15 {
   background-color: color-mix(in oklch, oklch(0.22 0.08 280) 15%, transparent);
+}
+.dark .bg-category-bhairava-15 {
+  background-color: color-mix(in oklch, oklch(0.6 0.14 280) 15%, transparent);
 }
 .bg-category-bhairava-20 {
   background-color: color-mix(in oklch, oklch(0.22 0.08 280) 20%, transparent);
 }
+.dark .bg-category-bhairava-20 {
+  background-color: color-mix(in oklch, oklch(0.6 0.14 280) 20%, transparent);
+}
 .bg-category-bhairava-30 {
   background-color: color-mix(in oklch, oklch(0.22 0.08 280) 30%, transparent);
+}
+.dark .bg-category-bhairava-30 {
+  background-color: color-mix(in oklch, oklch(0.6 0.14 280) 30%, transparent);
 }
 .bg-category-narasimha-10 {
   background-color: color-mix(in oklch, oklch(0.65 0.24 45) 10%, transparent);
@@ -2283,14 +2295,26 @@ html {
 .bg-category-kali-10 {
   background-color: color-mix(in oklch, oklch(0.25 0.12 258) 10%, transparent);
 }
+.dark .bg-category-kali-10 {
+  background-color: color-mix(in oklch, oklch(0.6 0.18 258) 10%, transparent);
+}
 .bg-category-kali-15 {
   background-color: color-mix(in oklch, oklch(0.25 0.12 258) 15%, transparent);
+}
+.dark .bg-category-kali-15 {
+  background-color: color-mix(in oklch, oklch(0.6 0.18 258) 15%, transparent);
 }
 .bg-category-kali-20 {
   background-color: color-mix(in oklch, oklch(0.25 0.12 258) 20%, transparent);
 }
+.dark .bg-category-kali-20 {
+  background-color: color-mix(in oklch, oklch(0.6 0.18 258) 20%, transparent);
+}
 .bg-category-kali-30 {
   background-color: color-mix(in oklch, oklch(0.25 0.12 258) 30%, transparent);
+}
+.dark .bg-category-kali-30 {
+  background-color: color-mix(in oklch, oklch(0.6 0.18 258) 30%, transparent);
 }
 .bg-category-tara-10 {
   background-color: color-mix(in oklch, oklch(0.4 0.2 232) 10%, transparent);
@@ -2353,16 +2377,28 @@ html {
   background-color: color-mix(in oklch, oklch(0.62 0.24 8) 30%, transparent);
 }
 .bg-category-dhumavati-10 {
-  background-color: color-mix(in oklch, oklch(0.38 0.04 225) 10%, transparent);
+  background-color: color-mix(in oklch, oklch(0.42 0.08 225) 10%, transparent);
+}
+.dark .bg-category-dhumavati-10 {
+  background-color: color-mix(in oklch, oklch(0.65 0.1 225) 10%, transparent);
 }
 .bg-category-dhumavati-15 {
-  background-color: color-mix(in oklch, oklch(0.38 0.04 225) 15%, transparent);
+  background-color: color-mix(in oklch, oklch(0.42 0.08 225) 15%, transparent);
+}
+.dark .bg-category-dhumavati-15 {
+  background-color: color-mix(in oklch, oklch(0.65 0.1 225) 15%, transparent);
 }
 .bg-category-dhumavati-20 {
-  background-color: color-mix(in oklch, oklch(0.38 0.04 225) 20%, transparent);
+  background-color: color-mix(in oklch, oklch(0.42 0.08 225) 20%, transparent);
+}
+.dark .bg-category-dhumavati-20 {
+  background-color: color-mix(in oklch, oklch(0.65 0.1 225) 20%, transparent);
 }
 .bg-category-dhumavati-30 {
-  background-color: color-mix(in oklch, oklch(0.38 0.04 225) 30%, transparent);
+  background-color: color-mix(in oklch, oklch(0.42 0.08 225) 30%, transparent);
+}
+.dark .bg-category-dhumavati-30 {
+  background-color: color-mix(in oklch, oklch(0.65 0.1 225) 30%, transparent);
 }
 .bg-category-bagalamukhi-10 {
   background-color: color-mix(in oklch, oklch(0.85 0.22 88) 10%, transparent);
@@ -2415,16 +2451,16 @@ html {
   border-color: color-mix(in oklch, oklch(0.72 0.18 42) 30%, transparent);
 }
 .border-category-shiva-10 {
-  border-color: color-mix(in oklch, oklch(0.75 0.06 215) 10%, transparent);
+  border-color: color-mix(in oklch, oklch(0.65 0.1 215) 10%, transparent);
 }
 .border-category-shiva-15 {
-  border-color: color-mix(in oklch, oklch(0.75 0.06 215) 15%, transparent);
+  border-color: color-mix(in oklch, oklch(0.65 0.1 215) 15%, transparent);
 }
 .border-category-shiva-20 {
-  border-color: color-mix(in oklch, oklch(0.75 0.06 215) 20%, transparent);
+  border-color: color-mix(in oklch, oklch(0.65 0.1 215) 20%, transparent);
 }
 .border-category-shiva-30 {
-  border-color: color-mix(in oklch, oklch(0.75 0.06 215) 30%, transparent);
+  border-color: color-mix(in oklch, oklch(0.65 0.1 215) 30%, transparent);
 }
 .border-category-vishnu-10 {
   border-color: color-mix(in oklch, oklch(0.5 0.22 240) 10%, transparent);
@@ -2463,16 +2499,16 @@ html {
   border-color: color-mix(in oklch, oklch(0.82 0.17 72) 30%, transparent);
 }
 .border-category-saraswati-10 {
-  border-color: color-mix(in oklch, oklch(0.96 0.02 230) 10%, transparent);
+  border-color: color-mix(in oklch, oklch(0.72 0.13 230) 10%, transparent);
 }
 .border-category-saraswati-15 {
-  border-color: color-mix(in oklch, oklch(0.96 0.02 230) 15%, transparent);
+  border-color: color-mix(in oklch, oklch(0.72 0.13 230) 15%, transparent);
 }
 .border-category-saraswati-20 {
-  border-color: color-mix(in oklch, oklch(0.96 0.02 230) 20%, transparent);
+  border-color: color-mix(in oklch, oklch(0.72 0.13 230) 20%, transparent);
 }
 .border-category-saraswati-30 {
-  border-color: color-mix(in oklch, oklch(0.96 0.02 230) 30%, transparent);
+  border-color: color-mix(in oklch, oklch(0.72 0.13 230) 30%, transparent);
 }
 .border-category-hanuman-10 {
   border-color: color-mix(in oklch, oklch(0.62 0.26 32) 10%, transparent);
@@ -2549,14 +2585,26 @@ html {
 .border-category-bhairava-10 {
   border-color: color-mix(in oklch, oklch(0.22 0.08 280) 10%, transparent);
 }
+.dark .border-category-bhairava-10 {
+  border-color: color-mix(in oklch, oklch(0.6 0.14 280) 10%, transparent);
+}
 .border-category-bhairava-15 {
   border-color: color-mix(in oklch, oklch(0.22 0.08 280) 15%, transparent);
+}
+.dark .border-category-bhairava-15 {
+  border-color: color-mix(in oklch, oklch(0.6 0.14 280) 15%, transparent);
 }
 .border-category-bhairava-20 {
   border-color: color-mix(in oklch, oklch(0.22 0.08 280) 20%, transparent);
 }
+.dark .border-category-bhairava-20 {
+  border-color: color-mix(in oklch, oklch(0.6 0.14 280) 20%, transparent);
+}
 .border-category-bhairava-30 {
   border-color: color-mix(in oklch, oklch(0.22 0.08 280) 30%, transparent);
+}
+.dark .border-category-bhairava-30 {
+  border-color: color-mix(in oklch, oklch(0.6 0.14 280) 30%, transparent);
 }
 .border-category-narasimha-10 {
   border-color: color-mix(in oklch, oklch(0.65 0.24 45) 10%, transparent);
@@ -2585,14 +2633,26 @@ html {
 .border-category-kali-10 {
   border-color: color-mix(in oklch, oklch(0.25 0.12 258) 10%, transparent);
 }
+.dark .border-category-kali-10 {
+  border-color: color-mix(in oklch, oklch(0.6 0.18 258) 10%, transparent);
+}
 .border-category-kali-15 {
   border-color: color-mix(in oklch, oklch(0.25 0.12 258) 15%, transparent);
+}
+.dark .border-category-kali-15 {
+  border-color: color-mix(in oklch, oklch(0.6 0.18 258) 15%, transparent);
 }
 .border-category-kali-20 {
   border-color: color-mix(in oklch, oklch(0.25 0.12 258) 20%, transparent);
 }
+.dark .border-category-kali-20 {
+  border-color: color-mix(in oklch, oklch(0.6 0.18 258) 20%, transparent);
+}
 .border-category-kali-30 {
   border-color: color-mix(in oklch, oklch(0.25 0.12 258) 30%, transparent);
+}
+.dark .border-category-kali-30 {
+  border-color: color-mix(in oklch, oklch(0.6 0.18 258) 30%, transparent);
 }
 .border-category-tara-10 {
   border-color: color-mix(in oklch, oklch(0.4 0.2 232) 10%, transparent);
@@ -2655,16 +2715,28 @@ html {
   border-color: color-mix(in oklch, oklch(0.62 0.24 8) 30%, transparent);
 }
 .border-category-dhumavati-10 {
-  border-color: color-mix(in oklch, oklch(0.38 0.04 225) 10%, transparent);
+  border-color: color-mix(in oklch, oklch(0.42 0.08 225) 10%, transparent);
+}
+.dark .border-category-dhumavati-10 {
+  border-color: color-mix(in oklch, oklch(0.65 0.1 225) 10%, transparent);
 }
 .border-category-dhumavati-15 {
-  border-color: color-mix(in oklch, oklch(0.38 0.04 225) 15%, transparent);
+  border-color: color-mix(in oklch, oklch(0.42 0.08 225) 15%, transparent);
+}
+.dark .border-category-dhumavati-15 {
+  border-color: color-mix(in oklch, oklch(0.65 0.1 225) 15%, transparent);
 }
 .border-category-dhumavati-20 {
-  border-color: color-mix(in oklch, oklch(0.38 0.04 225) 20%, transparent);
+  border-color: color-mix(in oklch, oklch(0.42 0.08 225) 20%, transparent);
+}
+.dark .border-category-dhumavati-20 {
+  border-color: color-mix(in oklch, oklch(0.65 0.1 225) 20%, transparent);
 }
 .border-category-dhumavati-30 {
-  border-color: color-mix(in oklch, oklch(0.38 0.04 225) 30%, transparent);
+  border-color: color-mix(in oklch, oklch(0.42 0.08 225) 30%, transparent);
+}
+.dark .border-category-dhumavati-30 {
+  border-color: color-mix(in oklch, oklch(0.65 0.1 225) 30%, transparent);
 }
 .border-category-bagalamukhi-10 {
   border-color: color-mix(in oklch, oklch(0.85 0.22 88) 10%, transparent);
@@ -2711,10 +2783,10 @@ html {
   color: oklch(0.72 0.18 42);
 }
 .text-category-shiva {
-  color: oklch(0.55 0.06 215);
+  color: oklch(0.55 0.1 215);
 }
 .dark .text-category-shiva {
-  color: oklch(0.75 0.06 215);
+  color: oklch(0.68 0.1 215);
 }
 .text-category-vishnu {
   color: oklch(0.5 0.22 240);
@@ -2735,10 +2807,10 @@ html {
   color: oklch(0.82 0.17 72);
 }
 .text-category-saraswati {
-  color: oklch(0.55 0.02 230);
+  color: oklch(0.55 0.13 230);
 }
 .dark .text-category-saraswati {
-  color: oklch(0.82 0.02 230);
+  color: oklch(0.72 0.13 230);
 }
 .text-category-hanuman {
   color: oklch(0.55 0.26 32);
@@ -2780,7 +2852,7 @@ html {
   color: oklch(0.35 0.08 280);
 }
 .dark .text-category-bhairava {
-  color: oklch(0.68 0.08 280);
+  color: oklch(0.68 0.14 280);
 }
 .text-category-narasimha {
   color: oklch(0.55 0.24 45);
@@ -2798,7 +2870,7 @@ html {
   color: oklch(0.35 0.12 258);
 }
 .dark .text-category-kali {
-  color: oklch(0.68 0.12 258);
+  color: oklch(0.68 0.18 258);
 }
 .text-category-tara {
   color: oklch(0.4 0.2 232);
@@ -2831,10 +2903,10 @@ html {
   color: oklch(0.68 0.24 8);
 }
 .text-category-dhumavati {
-  color: oklch(0.38 0.04 225);
+  color: oklch(0.42 0.08 225);
 }
 .dark .text-category-dhumavati {
-  color: oklch(0.68 0.04 225);
+  color: oklch(0.68 0.1 225);
 }
 .text-category-bagalamukhi {
   color: oklch(0.55 0.22 88);

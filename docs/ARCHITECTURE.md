@@ -1,7 +1,7 @@
 # 🗏️ Dharma Calendar - Architecture Document
 
-> **Versie:** 4.1
-> **Laatst bijgewerkt:** 24 maart 2026 - Pure Rule Engine + Type-safe RuleConfig + DB Cleanup
+> **Versie:** 4.2
+> **Laatst bijgewerkt:** 29 maart 2026 - Thema-systeem uitbreiding, weer-integratie & UI verbeteringen
 
 ---
 
@@ -213,7 +213,8 @@ dharma-calendar/
 │       ├── index.ts           # Barrel export
 │       ├── api.ts             # API types
 │       ├── calendar.ts        # Calendar/Event types
-│       └── theme.ts           # Theme types
+│       ├── theme.ts           # Theme types
+│       └── weather.ts         # WeatherApiResponse + WeatherCondition + AirQuality
 ├── .env.example               # Environment template
 ├── package.json
 ├── tsconfig.json
@@ -923,6 +924,7 @@ Zorg ervoor dat glassmorphism elementen voldoende contrast hebben met de achterg
 | `/api/daily-info` | GET | Zon/maan/dag informatie voor datumbereik (via Swiss Ephemeris) |
 | `/api/preferences` | GET, PUT | Gebruikersvoorkeuren ophalen en bijwerken |
 | `/api/themes` | GET | Beschikbare thema's ophalen |
+| `/api/weer` | GET | Actuele weerdata (current, hourly, daily, luchtkwaliteit) via OpenWeatherMap — gecached 10 min |
 | `/api/health` | GET | Health check voor monitoring (database connectivity) |
 
 ### 4.3 Service Layer
@@ -934,6 +936,7 @@ De service layer wordt alleen gebruikt voor complexe business logica. Alle servi
 | `PanchangaSwissService` | `/server/panchanga/` | Swiss Ephemeris integratie voor Vedische astronomie (Tithi, Nakshatra, Yoga, Karana met exacte eindtijden) + astronomische berekeningen (sunrise/sunset, moonrise/moonset) |
 | `panchangaService` | `/services/panchanga.service.ts` | Wrapper voor PanchangaSwissService, exposeert high-level API voor daily info calculations, LRU caching (365 dagen, 24h TTL) |
 | `recurrenceService` | `/services/recurrence.service.ts` | Event recurrence generation via strategy registry (YEARLY_LUNAR, YEARLY_SOLAR, MONTHLY_LUNAR, MONTHLY_SOLAR, ruleTypes SOLAR/TITHI). Nieuw recurrence-type toevoegen = één regel in `RECURRENCE_STRATEGIES` map. |
+| `/api/weer` route | `/app/api/weer/route.ts` | Stateless route: haalt current + hourly + daily weerdata + luchtkwaliteit op via OpenWeatherMap API v2.5 (geen service laag nodig — geen caching state). Next.js `revalidate: 600` voor server-side caching. |
 
 **Architectuur Principes:**
 
@@ -1177,7 +1180,7 @@ RootLayout
 └── PageLayout (standaard wrapper voor alle pages)
     │
     ├── HomePage (spacing enabled)
-    │   ├── TodayHero (zon/maan info, real-time klok)
+    │   ├── TodayHero (zon/maan info, real-time klok, weer-snippet via /api/weer)
     │   ├── DharmaCalendar (kalender grid met maanfase per dag)
     │   │   └── EventDetailModal (event details → knop naar bewerken)
     │   └── Sidebar (upcoming events, categorieën)
@@ -1204,7 +1207,7 @@ RootLayout
     └── SettingsPage (medium width, met loading state)
         ├── ThemeSelector (grid met preview)
         ├── ColorModeSelector (light/dark/system)
-        ├── CalendarPreferences (default view, week start)
+        ├── CalendarPreferences (default view)
         └── LocationSettings (preset + handmatig + zon/maan preview)
 ```
 
@@ -1616,30 +1619,86 @@ export interface ThemeDefinition {
   displayName: string;       // Human-readable name
   description: string;       // Short description
   isDefault: boolean;        // Default theme?
+  category: "classic" | "revamped" | "special";
   colors: {
     primary: string;         // oklch format
     secondary: string;
     accent: string;
   };
-  isSpecial?: boolean;       // Premium theme flag
-  background?: ThemeBackground;
-  specialStyles?: ThemeSpecialStyles;
+  isSpecial?: boolean;       // Premium theme flag (special category)
+  background?: ThemeBackground;  // Body gradient (revamped + special themes)
+  glass?: GlassConfig;       // Glassmorphism config (revamped + special themes)
+  specialStyles?: ThemeSpecialStyles;  // Component-level CSS overrides (special themes)
+}
+```
+
+**ThemeSpecialStyles** — component-level overrides voor special themes:
+
+```typescript
+export interface ThemeSpecialStyles {
+  customProperties?: Record<string, string>; // Extra CSS custom properties
+  moon?: MoonColors;            // Moon visualization colors
+  header?: ThemeBackground;     // Header styling
+  surface?: ThemeBackground;    // .bg-theme-surface (cards, panels)
+  surfaceRaised?: ThemeBackground; // .bg-theme-surface-raised (modals, dropdowns)
+  buttons?: ThemeBackground;    // .bg-theme-primary (knoppen)
+  inputs?: ThemeBackground;     // input, select, textarea
+  inputFocus?: ThemeBackground; // input:focus, select:focus, textarea:focus
+  headings?: ThemeBackground;   // h1, h2
+  animations?: Array<{ name: string; keyframes: string }>;
+  decorations?: ThemeBackground; // body::after decoratie
+  /** Raw extra CSS. Gebruik [[t]] als placeholder voor [data-theme="themename"] */
+  additionalCss?: string;
+}
+```
+
+**GlassConfig** — instelbare glassmorphism waarden per theme:
+
+```typescript
+export interface GlassConfig {
+  lightOpacity?: number;       // Surface opacity light mode (default: 0.70)
+  lightRaisedOpacity?: number; // Raised surface opacity light mode (default: 0.80)
+  darkOpacity?: number;        // Surface opacity dark mode (default: 0.75)
+  darkRaisedOpacity?: number;  // Raised surface opacity dark mode (default: 0.85)
+  blur?: number;               // Backdrop blur px (default: 12; raised = blur + 4)
 }
 ```
 
 ### 6.3 Beschikbare Thema's
 
-| Thema | Type | Beschrijving |
-|-------|------|--------------|
-| `spiritual-minimal` | Standard | Clean, peaceful design (default) |
-| `traditional-rich` | Standard | Warm temple colors |
-| `cosmic-purple` | Standard | Deep cosmic tones |
-| `forest-green` | Standard | Natural, earthy vibes |
-| `sunrise-orange` | Standard | Energetic morning vibes |
-| `bhairava-nocturne` | ✨ Special | Midnight temple glow with indigo aurora |
-| `shri-ganesha` | ✨ Special | Divine blessings with animations |
+**Classic** — vaste kleuren, geen achtergrond-gradient:
 
-**Totaal: 7 thema's (5 standard + 2 special)**
+| Thema | Beschrijving |
+|-------|--------------|
+| `spiritual-minimal` | Clean, peaceful design (default) |
+| `traditional-rich` | Warm temple colors |
+| `cosmic-purple` | Deep cosmic tones |
+| `forest-green` | Natural, earthy vibes |
+| `sunrise-orange` | Energetic morning vibes |
+
+**Revamped** — dezelfde kleuren als classic, met glassmorphism body-gradient:
+
+| Thema | Beschrijving |
+|-------|--------------|
+| `spiritual-minimal-revamped` | Spiritual Minimal met gradient achtergrond |
+| `traditional-rich-revamped` | Traditional Rich met gradient achtergrond |
+| `cosmic-purple-revamped` | Cosmic Purple met gradient achtergrond |
+| `forest-green-revamped` | Forest Green met gradient achtergrond |
+| `sunrise-orange-revamped` | Sunrise Orange met gradient achtergrond |
+
+**Special** — premium themes met volledig aangepaste component-styling:
+
+| Thema | Beschrijving |
+|-------|--------------|
+| `bhairava-nocturne` | ✨ Midnight temple glow with indigo aurora |
+| `shri-ganesha` | ✨ Divine blessings with golden animations |
+| `narasimha-jwala` | ✨ Fierce golden fire with flame animations |
+
+**Totaal: 13 thema's (5 classic + 5 revamped + 3 special)**
+
+**Verschil revamped vs special:**
+- **Revamped:** body-gradient + glassmorphism cards via gedeelde `GlassConfig` defaults — geen `specialStyles`
+- **Special:** alles handmatig via `specialStyles` (header, surface, buttons, animations, etc.) — max controle
 
 ### 6.4 Color Mode
 
@@ -1664,6 +1723,69 @@ Color mode werkt onafhankelijk van theme via:
 /* Gradients */
 .bg-theme-gradient-subtle
 ```
+
+### 6.6 SPECIAL_THEME_COMPONENT_MAP
+
+De `SPECIAL_THEME_COMPONENT_MAP` is het **contract** tussen theme-definities en de CSS-generator. Hij staat in `config/themes.ts` en wordt door de generator geïmporteerd:
+
+```typescript
+export const SPECIAL_THEME_COMPONENT_MAP = [
+  { key: "header",      selector: "header",                           name: "Header"         },
+  { key: "surface",     selector: ".bg-theme-surface",                name: "Surface"        },
+  { key: "surfaceRaised", selector: ".bg-theme-surface-raised",       name: "Surface Raised" },
+  { key: "buttons",     selector: ".bg-theme-primary",                name: "Buttons"        },
+  { key: "inputs",      selector: "input, select, textarea",          name: "Inputs"         },
+  { key: "inputFocus",  selector: "input:focus, select:focus, textarea:focus", name: "Input Focus" },
+  { key: "headings",    selector: "h1, h2",                           name: "Headings"       },
+] as const;
+```
+
+**Hoe het werkt:**
+- Elke `key` correspondeert met een optioneel veld in `ThemeSpecialStyles`
+- De generator itereert over de map en genereert `[data-theme="x"] <selector>` CSS blokken
+- `surface` en `surfaceRaised` zijn aparte keys zodat elk oppervlak-niveau onafhankelijk instelbaar is
+- Een nieuw element toevoegen aan de map = automatisch beschikbaar in alle special themes
+
+### 6.7 Glassmorphism Code Paths
+
+Er zijn twee code paths voor glassmorphism, afhankelijk van het categorie-type:
+
+**Revamped themes** (`generateStandardThemes()` in de generator):
+- Automatisch glassmorphism op `.bg-theme-surface` en `.bg-theme-surface-raised`
+- Waarden worden gelezen uit `theme.glass` (met defaults als niet ingesteld)
+- Dark mode: tinted glassmorphism op basis van primary hue (extractie via regex uit oklch kleur)
+
+**Special themes** (`specialStyles.surface` + `specialStyles.surfaceRaised`):
+- Volledig handmatige CSS in de theme-definitie
+- `GlassConfig` optioneel beschikbaar maar niet automatisch toegepast
+- Geeft maximale controle over het uiterlijk
+
+**`[[t]]` placeholder in `additionalCss`:**
+```typescript
+// In theme definitie:
+additionalCss: `
+  [[t]] .some-element { color: red; }
+  [[t]] .other-element:hover { ... }
+`
+// Generator vervangt [[t]] met [data-theme="themename"]
+// Zodat je de theme-naam niet steeds hoeft te herhalen
+```
+
+### 6.8 Theme Toevoegen
+
+**Classic/Revamped theme:**
+1. Voeg entry toe aan `THEME_CATALOG` in `config/themes.ts`
+2. Kies `category: "classic"` of `"revamped"`
+3. Voor revamped: voeg `background: { light: "...", dark: "..." }` toe (body gradient)
+4. Optioneel: `glass: { ... }` voor custom glassmorphism waarden
+5. Draai `npm run generate:css`
+
+**Special theme:**
+1. Voeg entry toe met `isSpecial: true, category: "special"`
+2. Voeg `background`, `glass` en `specialStyles` toe
+3. Gebruik `SPECIAL_THEME_COMPONENT_MAP` als referentie voor beschikbare keys
+4. Gebruik `[[t]]` als placeholder in `additionalCss`
+5. Draai `npm run generate:css`
 
 ---
 

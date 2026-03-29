@@ -30,8 +30,10 @@ export interface CategoryDefinition {
   readonly displayName: string;
   /** Emoji icon */
   readonly icon: string;
-  /** oklch color string for visual distinction */
+  /** oklch color string for visual distinction (light mode) */
   readonly color: string;
+  /** Optional oklch color for dark mode — use when base color has poor contrast in dark themes */
+  readonly colorDark?: string;
   /** Sort order for consistent display */
   readonly sortOrder: number;
   /** Optional description */
@@ -70,7 +72,7 @@ export const CATEGORY_CATALOG: readonly CategoryDefinition[] = [
     name: "shiva",
     displayName: "Shiva",
     icon: "🔱",
-    color: "oklch(0.75 0.06 215)",
+    color: "oklch(0.65 0.10 215)",
     sortOrder: 2,
     description: "The transformer and destroyer",
   },
@@ -102,7 +104,7 @@ export const CATEGORY_CATALOG: readonly CategoryDefinition[] = [
     name: "saraswati",
     displayName: "Saraswati",
     icon: "🎵",
-    color: "oklch(0.96 0.02 230)",
+    color: "oklch(0.72 0.13 230)",
     sortOrder: 6,
     description: "Goddess of knowledge and arts",
   },
@@ -159,6 +161,7 @@ export const CATEGORY_CATALOG: readonly CategoryDefinition[] = [
     displayName: "Bhairava",
     icon: "🐕",
     color: "oklch(0.22 0.08 280)",
+    colorDark: "oklch(0.60 0.14 280)",
     sortOrder: 13,
     description: "Fierce manifestation of Shiva, lord of time and protector",
   },
@@ -185,6 +188,7 @@ export const CATEGORY_CATALOG: readonly CategoryDefinition[] = [
     displayName: "Kali",
     icon: "💀",
     color: "oklch(0.25 0.12 258)",
+    colorDark: "oklch(0.60 0.18 258)",
     sortOrder: 16,
     description:
       "First Mahavidya — fierce goddess of time and liberation, destroyer of evil",
@@ -236,7 +240,8 @@ export const CATEGORY_CATALOG: readonly CategoryDefinition[] = [
     name: "dhumavati",
     displayName: "Dhumavati",
     icon: "🪶",
-    color: "oklch(0.38 0.04 225)",
+    color: "oklch(0.42 0.08 225)",
+    colorDark: "oklch(0.65 0.10 225)",
     sortOrder: 22,
     description:
       "Seventh Mahavidya — the smoky widow goddess of the void, inauspiciousness and wisdom",

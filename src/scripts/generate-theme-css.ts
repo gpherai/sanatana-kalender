@@ -988,9 +988,13 @@ function generateCategoryColorUtilities(): string {
 `;
 
   // Background classes per category
+  // If colorDark is set, a .dark override uses that color for better pill visibility in dark themes.
   for (const category of CATEGORY_CATALOG) {
     for (const opacity of opacityLevels) {
       css += `.bg-category-${category.name}-${opacity} { background-color: color-mix(in oklch, ${category.color} ${opacity}%, transparent); }\n`;
+      if (category.colorDark) {
+        css += `.dark .bg-category-${category.name}-${opacity} { background-color: color-mix(in oklch, ${category.colorDark} ${opacity}%, transparent); }\n`;
+      }
     }
   }
 
@@ -1002,6 +1006,9 @@ function generateCategoryColorUtilities(): string {
   for (const category of CATEGORY_CATALOG) {
     for (const opacity of opacityLevels) {
       css += `.border-category-${category.name}-${opacity} { border-color: color-mix(in oklch, ${category.color} ${opacity}%, transparent); }\n`;
+      if (category.colorDark) {
+        css += `.dark .border-category-${category.name}-${opacity} { border-color: color-mix(in oklch, ${category.colorDark} ${opacity}%, transparent); }\n`;
+      }
     }
   }
 
@@ -1012,6 +1019,7 @@ function generateCategoryColorUtilities(): string {
   // Text color classes per category — lightness adjusted for readability in both modes.
   // Light mode: clamp L to [0.35, 0.55] (readable on white backgrounds)
   // Dark mode: clamp L to [0.68, 0.82] (readable on dark backgrounds)
+  // If colorDark is set, it is used for the dark mode variant (its L is also clamped).
   for (const category of CATEGORY_CATALOG) {
     const match = category.color.match(/oklch\(([0-9.]+)\s+([0-9.]+)\s+([0-9.]+)\)/);
     if (match) {
@@ -1019,9 +1027,20 @@ function generateCategoryColorUtilities(): string {
       const c = match[2];
       const h = match[3];
       const lightL = Math.min(Math.max(l, 0.35), 0.55).toFixed(2);
-      const darkL = Math.min(Math.max(l, 0.68), 0.82).toFixed(2);
       css += `.text-category-${category.name} { color: oklch(${lightL} ${c} ${h}); }\n`;
-      css += `.dark .text-category-${category.name} { color: oklch(${darkL} ${c} ${h}); }\n`;
+
+      if (category.colorDark) {
+        const darkMatch = category.colorDark.match(
+          /oklch\(([0-9.]+)\s+([0-9.]+)\s+([0-9.]+)\)/
+        );
+        if (darkMatch) {
+          const dL = Math.min(Math.max(parseFloat(darkMatch[1]!), 0.68), 0.82).toFixed(2);
+          css += `.dark .text-category-${category.name} { color: oklch(${dL} ${darkMatch[2]} ${darkMatch[3]}); }\n`;
+        }
+      } else {
+        const darkL = Math.min(Math.max(l, 0.68), 0.82).toFixed(2);
+        css += `.dark .text-category-${category.name} { color: oklch(${darkL} ${c} ${h}); }\n`;
+      }
     }
   }
 

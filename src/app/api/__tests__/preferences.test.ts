@@ -24,7 +24,7 @@ describe("API Preferences", () => {
   it("rejects invalid preference updates", async () => {
     const request = new NextRequest("http://localhost/api/preferences", {
       method: "PUT",
-      body: JSON.stringify({ weekStartsOn: 9 }),
+      body: JSON.stringify({ defaultView: "invalid_view" }),
       headers: { "Content-Type": "application/json" },
     });
 
@@ -45,7 +45,6 @@ describe("API Preferences", () => {
       locationLat: 52,
       locationLon: 4,
       defaultView: "month" as never,
-      weekStartsOn: 1,
       timezone: "Europe/Amsterdam",
       visibleEventTypes: [],
       visibleCategories: [],

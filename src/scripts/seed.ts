@@ -303,7 +303,6 @@ async function main() {
         id: DEFAULT_PREFERENCES_ID,
         currentTheme: DEFAULT_THEME_NAME,
         defaultView: "month",
-        weekStartsOn: 1, // Monday
         timezone: "Europe/Amsterdam",
         locationName: "Den Haag",
         locationLat: 52.0705,
