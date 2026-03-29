@@ -94,7 +94,7 @@ export function TodayHero() {
         <div className="flex h-48 items-center justify-center">
           <div className="flex flex-col items-center gap-3">
             <div className="h-12 w-12 animate-spin rounded-full border-4 border-[var(--theme-spinner-track)] border-t-[var(--theme-spinner-fill)] motion-reduce:animate-none" />
-            <span className="text-sm text-white/80">Vandaag laden...</span>
+            <span className="text-sm text-white/70">Vandaag laden...</span>
           </div>
         </div>
       </div>
@@ -121,7 +121,7 @@ export function TodayHero() {
             <div className="mb-1 flex items-center gap-2 text-sm text-white/70">
               <Calendar className="h-4 w-4" />
               <span>{today.toLocaleDateString("nl-NL", { weekday: "long" })}</span>
-              <span className="text-white/40">•</span>
+              <span className="text-white/25">•</span>
               <span className="flex items-center gap-1">
                 {sanskritDay.icon} {dailyInfo?.vara?.name ?? sanskritDay.name}
               </span>
@@ -137,14 +137,14 @@ export function TodayHero() {
                 <span>Vikrama Samvat {dailyInfo.vikramaSamvat.year}</span>
                 {dailyInfo.samvatsara && (
                   <>
-                    <span className="text-white/30">•</span>
+                    <span className="text-white/25">•</span>
                     <span>{dailyInfo.samvatsara.name}</span>
                   </>
                 )}
                 {/* Shaka Samvat */}
                 {dailyInfo.shakaSamvat && (
                   <>
-                    <span className="text-white/30">•</span>
+                    <span className="text-white/25">•</span>
                     <span>
                       Shaka {dailyInfo.shakaSamvat.year} ({dailyInfo.shakaSamvat.name})
                     </span>
@@ -155,12 +155,12 @@ export function TodayHero() {
 
             <div className="flex flex-col gap-1">
               {/* Main Panchanga line - more compact */}
-              <div className="flex flex-wrap items-center gap-2 text-base text-white/90">
+              <div className="flex flex-wrap items-center gap-2 text-base text-white/70">
                 {dailyInfo?.maas && (
                   <span>
                     {dailyInfo.maas.name} Maas
                     {dailyInfo.maas.lunarDay && (
-                      <span className="ml-1 text-sm text-white/60">
+                      <span className="ml-1 text-sm text-white/50">
                         (dag {dailyInfo.maas.lunarDay})
                       </span>
                     )}
@@ -170,7 +170,7 @@ export function TodayHero() {
                 {/* Compact TITHI */}
                 {dailyInfo?.tithi && (
                   <>
-                    <span className="text-white/40">•</span>
+                    <span className="text-white/25">•</span>
                     <span>
                       {dailyInfo.tithi.name} ({dailyInfo.tithi.paksha})
                     </span>
@@ -180,19 +180,19 @@ export function TodayHero() {
                 {/* NAKSHATRA (no pada in main line) */}
                 {dailyInfo?.nakshatra && (
                   <>
-                    <span className="text-white/40">•</span>
+                    <span className="text-white/25">•</span>
                     <span>{dailyInfo.nakshatra.name}</span>
                   </>
                 )}
               </div>
 
               {/* Secondary details line - smaller */}
-              <div className="flex flex-wrap items-center gap-2 text-sm text-white/60">
+              <div className="flex flex-wrap items-center gap-2 text-sm text-white/50">
                 {dailyInfo?.tithi?.endTime && (
                   <span>Tithi eindigt {dailyInfo.tithi.endTime}</span>
                 )}
                 {dailyInfo?.nakshatra && dailyInfo?.tithi?.endTime && (
-                  <span className="text-white/30">•</span>
+                  <span className="text-white/25">•</span>
                 )}
                 {dailyInfo?.nakshatra && <span>Pada {dailyInfo.nakshatra.pada}</span>}
               </div>
@@ -207,7 +207,7 @@ export function TodayHero() {
                 minute: "2-digit",
               })}
             </div>
-            <div className="mt-1 text-sm text-white/60">
+            <div className="mt-1 text-sm text-white/50">
               {dailyInfo?.locationName || "Den Haag"}
             </div>
 
@@ -226,7 +226,7 @@ export function TodayHero() {
                   <div className="text-3xl leading-tight font-semibold text-white">
                     {Math.round(currentWeather.temp)}°
                   </div>
-                  <div className="text-xs text-white/60 capitalize">
+                  <div className="text-xs text-white/50 capitalize">
                     {currentWeather.weather[0].description}
                   </div>
                   <div className="text-xs text-white/50">
@@ -247,7 +247,7 @@ export function TodayHero() {
               <Sun className="text-theme-icon-sun h-5 w-5" />
               <h3 className="font-semibold text-white">Zon</h3>
               {dailyInfo?.sunSign && (
-                <span className="ml-auto text-xs text-white/60">
+                <span className="ml-auto text-xs text-white/50">
                   {dailyInfo.sunSign.name}
                 </span>
               )}
@@ -322,7 +322,7 @@ export function TodayHero() {
                   <div className="text-lg font-medium text-white">
                     {dailyInfo.moonPhaseName}
                   </div>
-                  <div className="text-sm text-white/60">
+                  <div className="text-sm text-white/50">
                     {dailyInfo.moonPhasePercent}% verlicht
                     {dailyInfo.isWaxing ? " • Wassend" : " • Afnemend"}
                   </div>
@@ -337,7 +337,7 @@ export function TodayHero() {
               <Moon className="text-theme-icon-moon h-5 w-5" />
               <h3 className="font-semibold text-white">Maantijden</h3>
               {dailyInfo?.moonSign && (
-                <span className="ml-auto text-xs text-white/60">
+                <span className="ml-auto text-xs text-white/50">
                   {dailyInfo.moonSign.name}
                 </span>
               )}
@@ -394,7 +394,7 @@ export function TodayHero() {
                   {dailyInfo.yoga.name}
                 </div>
                 {dailyInfo.yoga.endTime && (
-                  <div className="mt-0.5 text-xs text-white/40">
+                  <div className="mt-0.5 text-xs text-white/50">
                     t/m {dailyInfo.yoga.endTime}
                   </div>
                 )}
@@ -407,7 +407,7 @@ export function TodayHero() {
                   {dailyInfo.karana.name}
                 </div>
                 {dailyInfo.karana.endTime && (
-                  <div className="mt-0.5 text-xs text-white/40">
+                  <div className="mt-0.5 text-xs text-white/50">
                     t/m {dailyInfo.karana.endTime}
                   </div>
                 )}
@@ -439,7 +439,7 @@ export function TodayHero() {
               <span className="text-3xl">{specialDay.emoji}</span>
               <div>
                 <div className="font-semibold text-white">{specialDay.name}</div>
-                <div className="text-sm text-white/80">{specialDay.description}</div>
+                <div className="text-sm text-white/70">{specialDay.description}</div>
               </div>
             </div>
           </div>
@@ -458,7 +458,7 @@ export function TodayHero() {
                 <Link
                   key={event.id}
                   href={`/events/${event.id}`}
-                  className="flex items-center gap-2 rounded-full bg-[var(--theme-glass-bg)] px-4 py-3 text-white/90 backdrop-blur-sm transition-opacity hover:opacity-80"
+                  className="flex items-center gap-2 rounded-full bg-[var(--theme-glass-bg)] px-4 py-3 text-white/70 backdrop-blur-sm transition-opacity hover:opacity-80"
                 >
                   {event.category?.icon && <span>{event.category.icon}</span>}
                   <span className="font-medium">{event.name}</span>
