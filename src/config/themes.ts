@@ -806,11 +806,13 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
           background: linear-gradient(145deg, oklch(0.68 0.22 52) 0%, oklch(0.62 0.20 42) 100%) !important;
           border: 1px solid oklch(0.74 0.24 38 / 0.40) !important;
           box-shadow: 0 4px 18px oklch(0.68 0.22 52 / 0.35), 0 0 18px oklch(0.74 0.24 38 / 0.15) !important;
+          color: oklch(0.12 0.04 42) !important;
         `,
         dark: `
           background: linear-gradient(145deg, oklch(0.65 0.22 52) 0%, oklch(0.58 0.20 42) 100%) !important;
           border: 1px solid oklch(0.68 0.22 52 / 0.30) !important;
           box-shadow: 0 4px 22px oklch(0 0 0 / 0.55), 0 0 22px oklch(0.68 0.22 52 / 0.22) !important;
+          color: oklch(0.12 0.04 42) !important;
         `,
       },
       inputs: {
