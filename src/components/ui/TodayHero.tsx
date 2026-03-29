@@ -201,7 +201,7 @@ export function TodayHero() {
 
           {/* Current Time + Weather */}
           <div className="text-right">
-            <div className="text-5xl font-light text-white tabular-nums md:text-6xl">
+            <div className="text-3xl font-light text-white tabular-nums md:text-4xl">
               {currentTime.toLocaleTimeString("nl-NL", {
                 hour: "2-digit",
                 minute: "2-digit",
@@ -222,7 +222,7 @@ export function TodayHero() {
                     height={40}
                     unoptimized
                   />
-                  <span className="text-3xl leading-none font-semibold text-white">
+                  <span className="text-xl leading-none font-semibold text-white">
                     {Math.round(currentWeather.temp)}°
                   </span>
                 </div>
