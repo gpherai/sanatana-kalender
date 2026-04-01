@@ -510,16 +510,72 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
         // Glass tints — indigo-tinted instead of plain white-transparent
         "--theme-glass-bg": "oklch(0.62 0.22 275 / 0.13)",
         "--theme-glass-border": "oklch(0.62 0.22 275 / 0.22)",
-        // Light-mode hero: mix with white instead of black to avoid pitch-dark banner on pale page
+        // Light-mode hero: shmashana at dusk — indigo aura (top-left), ember fire (top-right),
+        // Bhairavi crimson undertone (bottom), over deep indigo void base
         "--theme-hero-bg":
-          "linear-gradient(135deg, color-mix(in oklch, var(--theme-primary) 72%, white), color-mix(in oklch, var(--theme-secondary) 68%, white), color-mix(in oklch, var(--theme-accent) 65%, white))",
+          "radial-gradient(ellipse 65% 50% at 12% 12%, oklch(0.52 0.20 285 / 0.85) 0%, transparent 55%), radial-gradient(ellipse 48% 42% at 90% 16%, oklch(0.50 0.18 45 / 0.60) 0%, transparent 50%), radial-gradient(ellipse 45% 55% at 50% 105%, oklch(0.30 0.16 15 / 0.55) 0%, transparent 55%), linear-gradient(145deg, oklch(0.16 0.10 280) 0%, oklch(0.30 0.18 275) 40%, oklch(0.40 0.20 270) 70%, oklch(0.32 0.16 285) 100%)",
         // Central hero blob — subtle indigo radial glow instead of white
         "--theme-hero-blob-color": "oklch(0.62 0.22 275 / 0.08)",
-        // Lunar day banner + almanac cells — indigo palette instead of purple + amber
+        // Lunar day banner
         "--theme-almanac-special-bg": "oklch(0.72 0.16 280)",
         "--theme-almanac-special-fg": "oklch(0.22 0.14 280)",
         "--theme-almanac-event-bg": "oklch(0.68 0.14 295)",
         "--theme-almanac-event-fg": "oklch(0.22 0.12 295)",
+        // Moon vars — indigo/lavender palette
+        "--theme-almanac-moon-cell-bg": "oklch(0.90 0.07 280)",
+        "--theme-almanac-moon-cell-bg-hover": "oklch(0.87 0.10 278)",
+        "--theme-almanac-moon-card-from": "oklch(0.92 0.08 285)",
+        "--theme-almanac-moon-card-to": "oklch(0.90 0.06 270)",
+        "--theme-almanac-moon-icon": "oklch(0.54 0.20 278)",
+        "--theme-almanac-moon-rise-icon": "oklch(0.56 0.18 280)",
+        "--theme-almanac-moon-set-icon": "oklch(0.48 0.16 290)",
+        "--theme-almanac-moon-badge-bg": "oklch(0.90 0.09 280)",
+        "--theme-almanac-moon-badge-fg": "oklch(0.28 0.16 275)",
+        // Special day vars — violet-indigo palette
+        "--theme-almanac-special-cell-bg": "oklch(0.91 0.06 292)",
+        "--theme-almanac-special-cell-bg-hover": "oklch(0.88 0.09 290)",
+        "--theme-almanac-special-card-bg": "oklch(0.92 0.05 288)",
+        "--theme-almanac-special-heading": "oklch(0.32 0.18 278)",
+        "--theme-almanac-special-badge-bg": "oklch(0.88 0.10 288)",
+        "--theme-almanac-special-badge-fg": "oklch(0.26 0.16 280)",
+        // Event vars — indigo instead of amber fallback
+        "--theme-almanac-event-cell-bg": "oklch(0.91 0.07 278)",
+        "--theme-almanac-event-cell-bg-hover": "oklch(0.88 0.10 276)",
+        "--theme-almanac-event-icon": "oklch(0.52 0.22 275)",
+        // Sun vars — ember/fire accent (shmashana pyre, thematically Bhairava's fire)
+        "--theme-almanac-sun-card-from": "oklch(0.95 0.05 50)",
+        "--theme-almanac-sun-card-to": "oklch(0.92 0.04 280)",
+        "--theme-almanac-sun-icon": "oklch(0.60 0.18 45)",
+        "--theme-almanac-sun-rise-icon": "oklch(0.62 0.18 45)",
+        "--theme-almanac-sun-set-icon": "oklch(0.50 0.16 25)",
+        // Warning (Rahu Kalam) — deep crimson, aligned with Bhairava's fierce aspect
+        "--theme-almanac-warning-border": "oklch(0.48 0.22 20)",
+        "--theme-almanac-warning-bg": "oklch(0.94 0.04 18)",
+        "--theme-almanac-warning-heading": "oklch(0.44 0.20 18)",
+        "--theme-almanac-warning-text": "oklch(0.35 0.18 15)",
+        // Almanac filter pills (AlmanacFilters active state)
+        "--theme-almanac-moon-bg": "oklch(0.88 0.12 280)",
+        "--theme-almanac-moon-fg": "oklch(0.25 0.16 278)",
+        "--theme-almanac-moon-focus": "oklch(0.54 0.20 278)",
+        "--theme-almanac-special-focus": "oklch(0.52 0.22 278)",
+        "--theme-almanac-event-focus": "oklch(0.52 0.22 278)",
+        // Icon colors (TodayHero) — ember sun, indigo moon
+        "--theme-icon-sun": "oklch(0.78 0.18 55)",
+        "--theme-icon-sunrise": "oklch(0.72 0.18 45)",
+        "--theme-icon-sunset": "oklch(0.62 0.22 20)",
+        "--theme-icon-moon": "oklch(0.68 0.20 280)",
+        "--theme-icon-event-special": "oklch(0.68 0.20 280)",
+        // DharmaCalendar — full moon: indigo-silver glow; new moon: void-deep indigo
+        "--theme-calendar-full-moon-bg-start": "oklch(0.94 0.06 285)",
+        "--theme-calendar-full-moon-bg-end": "oklch(0.92 0.08 275)",
+        "--theme-calendar-full-moon-glow": "oklch(0.72 0.18 280 / 0.35)",
+        "--theme-calendar-new-moon-bg-start": "oklch(0.93 0.04 280)",
+        "--theme-calendar-new-moon-bg-end": "oklch(0.91 0.06 275)",
+        "--theme-calendar-header-text": "oklch(0.42 0.16 278)",
+        "--theme-calendar-date-text": "oklch(0.38 0.10 275)",
+        "--theme-calendar-border": "oklch(0.88 0.06 280)",
+        "--theme-calendar-border-subtle": "oklch(0.91 0.04 280)",
+        "--theme-calendar-weekend-bg": "oklch(0.96 0.010 280)",
       },
       moon: {
         surface: {
@@ -693,14 +749,68 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
   text-shadow: 0 0 28px oklch(0.62 0.22 275 / 0.25);
 }
 
-/* Dark mode: deeper glass tint + restore dark hero + light almanac text */
+/* Dark mode: deeper glass tint + midnight hero + full dark almanac vars */
 .dark[[t]],
 [[t]].dark {
   --theme-glass-bg: oklch(0.62 0.22 275 / 0.18);
   --theme-glass-border: oklch(0.62 0.22 275 / 0.30);
-  --theme-hero-bg: linear-gradient(135deg, color-mix(in oklch, var(--theme-primary) 95%, black), color-mix(in oklch, var(--theme-secondary) 92%, black), color-mix(in oklch, var(--theme-accent) 90%, black));
+  /* Shmashana at midnight — ember pyre (top-right), Bhairavi crimson (bottom-left),
+     indigo aura (center), over near-black void base */
+  --theme-hero-bg: radial-gradient(ellipse 60% 50% at 80% 12%, oklch(0.48 0.18 45 / 0.50) 0%, transparent 50%), radial-gradient(ellipse 70% 55% at 12% 88%, oklch(0.25 0.18 15 / 0.65) 0%, transparent 55%), radial-gradient(ellipse 50% 45% at 50% 42%, oklch(0.35 0.22 275 / 0.40) 0%, transparent 50%), radial-gradient(circle at 50% 48%, oklch(0.12 0.06 275 / 0.35) 0%, transparent 55%), linear-gradient(155deg, oklch(0.06 0.018 278) 0%, oklch(0.12 0.12 280) 30%, oklch(0.18 0.16 275) 60%, oklch(0.10 0.08 272) 100%);
   --theme-almanac-special-fg: oklch(0.86 0.12 280);
   --theme-almanac-event-fg: oklch(0.84 0.10 295);
+  /* Moon — deep indigo dark mode */
+  --theme-almanac-moon-cell-bg: oklch(0.32 0.18 280 / 0.22);
+  --theme-almanac-moon-cell-bg-hover: oklch(0.38 0.20 278 / 0.32);
+  --theme-almanac-moon-card-from: oklch(0.30 0.16 285 / 0.22);
+  --theme-almanac-moon-card-to: oklch(0.28 0.14 275 / 0.22);
+  --theme-almanac-moon-icon: oklch(0.72 0.18 280);
+  --theme-almanac-moon-rise-icon: oklch(0.68 0.18 282);
+  --theme-almanac-moon-set-icon: oklch(0.60 0.14 290);
+  --theme-almanac-moon-badge-bg: oklch(0.32 0.18 280 / 0.28);
+  --theme-almanac-moon-badge-fg: oklch(0.80 0.14 278);
+  /* Special days — violet-indigo dark mode */
+  --theme-almanac-special-cell-bg: oklch(0.28 0.16 290 / 0.22);
+  --theme-almanac-special-cell-bg-hover: oklch(0.34 0.18 288 / 0.32);
+  --theme-almanac-special-card-bg: oklch(0.24 0.14 285 / 0.25);
+  --theme-almanac-special-heading: oklch(0.78 0.16 280);
+  --theme-almanac-special-badge-bg: oklch(0.30 0.18 286 / 0.28);
+  --theme-almanac-special-badge-fg: oklch(0.82 0.14 282);
+  /* Events — indigo dark mode */
+  --theme-almanac-event-cell-bg: oklch(0.30 0.16 278 / 0.22);
+  --theme-almanac-event-cell-bg-hover: oklch(0.36 0.18 276 / 0.32);
+  --theme-almanac-event-icon: oklch(0.74 0.20 275);
+  /* Sun — ember dark mode */
+  --theme-almanac-sun-card-from: oklch(0.38 0.14 50 / 0.22);
+  --theme-almanac-sun-card-to: oklch(0.28 0.10 275 / 0.22);
+  --theme-almanac-sun-icon: oklch(0.70 0.18 45);
+  --theme-almanac-sun-rise-icon: oklch(0.70 0.18 45);
+  --theme-almanac-sun-set-icon: oklch(0.60 0.16 25);
+  /* Warning (Rahu Kalam) — crimson dark mode */
+  --theme-almanac-warning-bg: oklch(0.25 0.16 18 / 0.25);
+  --theme-almanac-warning-heading: oklch(0.72 0.18 20);
+  --theme-almanac-warning-text: oklch(0.80 0.14 18);
+  /* Filter pills dark mode */
+  --theme-almanac-moon-bg: oklch(0.30 0.16 280 / 0.30);
+  --theme-almanac-moon-fg: oklch(0.78 0.16 278);
+  /* Icon colors dark mode — vivid indigo moon, bright ember sun */
+  --theme-icon-sun: oklch(0.75 0.16 55);
+  --theme-icon-sunrise: oklch(0.70 0.18 45);
+  --theme-icon-sunset: oklch(0.65 0.20 20);
+  --theme-icon-moon: oklch(0.72 0.22 280);
+  --theme-icon-event-special: oklch(0.72 0.20 280);
+  /* Calendar dark mode — indigo-void new moon, silver-indigo full moon */
+  --theme-calendar-full-moon-bg-start: oklch(0.22 0.10 285);
+  --theme-calendar-full-moon-bg-end: oklch(0.19 0.12 278);
+  --theme-calendar-full-moon-glow: oklch(0.42 0.16 280 / 0.35);
+  --theme-calendar-new-moon-bg-start: oklch(0.12 0.06 280);
+  --theme-calendar-new-moon-bg-end: oklch(0.09 0.04 275);
+  --theme-calendar-header-text: oklch(0.65 0.16 278);
+  --theme-calendar-date-text: oklch(0.75 0.12 278);
+  --theme-calendar-border: oklch(0.28 0.08 278);
+  --theme-calendar-border-subtle: oklch(0.22 0.06 280);
+  --theme-calendar-weekend-bg: oklch(0.15 0.04 280);
+  --theme-calendar-popup-bg: oklch(0.16 0.06 278);
 }
 
 /* Respect reduced motion preference */
