@@ -553,6 +553,29 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
         "--theme-almanac-warning-bg": "oklch(0.94 0.04 18)",
         "--theme-almanac-warning-heading": "oklch(0.44 0.20 18)",
         "--theme-almanac-warning-text": "oklch(0.35 0.18 15)",
+        // Almanac filter pills (AlmanacFilters active state)
+        "--theme-almanac-moon-bg": "oklch(0.88 0.12 280)",
+        "--theme-almanac-moon-fg": "oklch(0.25 0.16 278)",
+        "--theme-almanac-moon-focus": "oklch(0.54 0.20 278)",
+        "--theme-almanac-special-focus": "oklch(0.52 0.22 278)",
+        "--theme-almanac-event-focus": "oklch(0.52 0.22 278)",
+        // Icon colors (TodayHero) — ember sun, indigo moon
+        "--theme-icon-sun": "oklch(0.78 0.18 55)",
+        "--theme-icon-sunrise": "oklch(0.72 0.18 45)",
+        "--theme-icon-sunset": "oklch(0.62 0.22 20)",
+        "--theme-icon-moon": "oklch(0.68 0.20 280)",
+        "--theme-icon-event-special": "oklch(0.68 0.20 280)",
+        // DharmaCalendar — full moon: indigo-silver glow; new moon: void-deep indigo
+        "--theme-calendar-full-moon-bg-start": "oklch(0.94 0.06 285)",
+        "--theme-calendar-full-moon-bg-end": "oklch(0.92 0.08 275)",
+        "--theme-calendar-full-moon-glow": "oklch(0.72 0.18 280 / 0.35)",
+        "--theme-calendar-new-moon-bg-start": "oklch(0.93 0.04 280)",
+        "--theme-calendar-new-moon-bg-end": "oklch(0.91 0.06 275)",
+        "--theme-calendar-header-text": "oklch(0.42 0.16 278)",
+        "--theme-calendar-date-text": "oklch(0.38 0.10 275)",
+        "--theme-calendar-border": "oklch(0.88 0.06 280)",
+        "--theme-calendar-border-subtle": "oklch(0.91 0.04 280)",
+        "--theme-calendar-weekend-bg": "oklch(0.96 0.010 280)",
       },
       moon: {
         surface: {
@@ -767,6 +790,27 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
   --theme-almanac-warning-bg: oklch(0.25 0.16 18 / 0.25);
   --theme-almanac-warning-heading: oklch(0.72 0.18 20);
   --theme-almanac-warning-text: oklch(0.80 0.14 18);
+  /* Filter pills dark mode */
+  --theme-almanac-moon-bg: oklch(0.30 0.16 280 / 0.30);
+  --theme-almanac-moon-fg: oklch(0.78 0.16 278);
+  /* Icon colors dark mode — vivid indigo moon, bright ember sun */
+  --theme-icon-sun: oklch(0.75 0.16 55);
+  --theme-icon-sunrise: oklch(0.70 0.18 45);
+  --theme-icon-sunset: oklch(0.65 0.20 20);
+  --theme-icon-moon: oklch(0.72 0.22 280);
+  --theme-icon-event-special: oklch(0.72 0.20 280);
+  /* Calendar dark mode — indigo-void new moon, silver-indigo full moon */
+  --theme-calendar-full-moon-bg-start: oklch(0.22 0.10 285);
+  --theme-calendar-full-moon-bg-end: oklch(0.19 0.12 278);
+  --theme-calendar-full-moon-glow: oklch(0.42 0.16 280 / 0.35);
+  --theme-calendar-new-moon-bg-start: oklch(0.12 0.06 280);
+  --theme-calendar-new-moon-bg-end: oklch(0.09 0.04 275);
+  --theme-calendar-header-text: oklch(0.65 0.16 278);
+  --theme-calendar-date-text: oklch(0.75 0.12 278);
+  --theme-calendar-border: oklch(0.28 0.08 278);
+  --theme-calendar-border-subtle: oklch(0.22 0.06 280);
+  --theme-calendar-weekend-bg: oklch(0.15 0.04 280);
+  --theme-calendar-popup-bg: oklch(0.16 0.06 278);
 }
 
 /* Respect reduced motion preference */
