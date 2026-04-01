@@ -1,7 +1,7 @@
 # 🗏️ Dharma Calendar - Architecture Document
 
-> **Versie:** 4.2
-> **Laatst bijgewerkt:** 29 maart 2026 - Thema-systeem uitbreiding, weer-integratie & UI verbeteringen
+> **Versie:** 4.3
+> **Laatst bijgewerkt:** 1 april 2026 - Pagina-metadata, TodayHero glassmorphism, speciale thema-upgrades, weer-pagina
 
 ---
 
@@ -112,29 +112,43 @@ dharma-calendar/
 │   └── docker-entrypoint.sh   # Docker container startup script
 ├── src/
 │   ├── app/                   # Next.js App Router
-│   │   ├── layout.tsx         # Root layout + ThemeProvider
+│   │   ├── layout.tsx         # Root layout + ThemeProvider + metadata template
 │   │   ├── page.tsx           # Homepage (kalender + sidebar)
 │   │   ├── globals.css        # Globale styles + theme CSS
 │   │   ├── api/               # API endpoints
 │   │   │   ├── events/
-│   │   │   │   ├── route.ts                    # GET (lijst), POST (aanmaken)
-│   │   │   │   ├── [id]/route.ts               # GET, PUT, DELETE (specifiek event)
-│   │   │   │   └── generate-occurrences/       # POST (genereer recurring occurrences)
-│   │   │   │       └── route.ts
+│   │   │   │   ├── route.ts                                   # GET (lijst), POST (aanmaken)
+│   │   │   │   ├── [id]/route.ts                              # GET, PUT, DELETE (specifiek event)
+│   │   │   │   ├── [id]/occurrences/[occurrenceId]/route.ts   # PUT (individuele occurrence bewerken)
+│   │   │   │   └── generate-occurrences/route.ts              # POST (genereer recurring occurrences)
 │   │   │   ├── categories/route.ts             # GET categorieën
 │   │   │   ├── daily-info/route.ts             # GET zon/maan/dag info
 │   │   │   ├── preferences/route.ts            # GET, PUT voorkeuren
 │   │   │   ├── themes/route.ts                 # GET thema's
+│   │   │   ├── weer/route.ts                   # GET weerdata (OpenWeatherMap, revalidate 600s)
 │   │   │   └── health/route.ts                 # GET health check
 │   │   ├── almanac/
+│   │   │   ├── layout.tsx     # Metadata: title "Almanak"
 │   │   │   └── page.tsx       # Panchang Almanac (split-view)
 │   │   ├── events/
+│   │   │   ├── layout.tsx     # Metadata: title "Events"
 │   │   │   ├── page.tsx       # Events overzicht
 │   │   │   ├── new/page.tsx   # Nieuw event
-│   │   │   └── [id]/page.tsx  # Event bewerken
-│   │   └── settings/
-│   │       └── page.tsx       # Instellingen (auto-save)
+│   │   │   └── [id]/page.tsx  # Event bewerken (generateMetadata met eventnaam)
+│   │   ├── settings/
+│   │   │   ├── layout.tsx     # Metadata: title "Instellingen"
+│   │   │   └── page.tsx       # Instellingen (auto-save)
+│   │   └── weer/
+│   │       ├── layout.tsx     # Metadata: title "Weer"
+│   │       └── page.tsx       # Weerdetails (OpenWeatherMap, uurlijks/dagelijks/luchtkwaliteit)
 │   ├── components/            # React componenten
+│   │   ├── almanac/
+│   │   │   ├── index.ts               # Barrel export
+│   │   │   ├── AlmanacHeader.tsx      # Almanac paginakop + locatie badge
+│   │   │   ├── AlmanacFilters.tsx     # Jaar/maand navigatie + filter toggles
+│   │   │   ├── MoonPhasesTimeline.tsx # Maanfasen tijdlijn (4 per maand)
+│   │   │   ├── MonthGrid.tsx          # Maandgrid (7×6, zon/maan tijden per cel)
+│   │   │   └── DayDetailsPanel.tsx    # Dagdetail panel rechts (sticky)
 │   │   ├── calendar/
 │   │   │   ├── index.ts               # Barrel export
 │   │   │   ├── DharmaCalendar.tsx     # Hoofd kalender component
@@ -151,6 +165,11 @@ dharma-calendar/
 │   │   ├── layout/
 │   │   │   ├── index.ts               # Barrel export
 │   │   │   └── PageLayout.tsx         # Standaard page wrapper component
+│   │   ├── settings/
+│   │   │   ├── index.ts               # Barrel export
+│   │   │   ├── ThemeSection.tsx       # Thema-kiezer (grid met preview)
+│   │   │   ├── CalendarSection.tsx    # Kalendervoorkeuren (standaard weergave)
+│   │   │   └── LocationSection.tsx    # Locatie-instellingen (preset + handmatig + preview)
 │   │   ├── theme/
 │   │   │   ├── index.ts               # Barrel export + type re-exports
 │   │   │   ├── ThemeProvider.tsx      # Theme context + hook
@@ -158,9 +177,10 @@ dharma-calendar/
 │   │   └── ui/
 │   │       ├── index.ts               # Barrel export
 │   │       ├── Header.tsx             # Navigatie header
+│   │       ├── Section.tsx            # Herbruikbare sectie-wrapper met icoon + titel
 │   │       ├── Toast.tsx              # ToastProvider + useToast
 │   │       ├── MoonPhase.tsx          # SVG moon visualization
-│   │       └── TodayHero.tsx          # Vandaag sectie homepage
+│   │       └── TodayHero.tsx          # Vandaag sectie homepage (zon/maan, klok, weer)
 │   ├── config/                # Configuratie (Single Source of Truth)
 │   │   ├── index.ts           # Barrel export
 │   │   ├── themes.ts          # Theme definities + helpers
@@ -919,12 +939,13 @@ Zorg ervoor dat glassmorphism elementen voldoende contrast hebben met de achterg
 |----------|---------|--------------|
 | `/api/events` | GET, POST | Events ophalen (met filters) en aanmaken |
 | `/api/events/[id]` | GET, PUT, DELETE | Specifiek event ophalen, bewerken, verwijderen |
+| `/api/events/[id]/occurrences/[occurrenceId]` | PUT | Individuele occurrence bewerken (datum, tijd, notities) |
 | `/api/events/generate-occurrences` | POST | Genereer recurring event occurrences op basis van recurrence type |
 | `/api/categories` | GET | Alle categorieën ophalen |
 | `/api/daily-info` | GET | Zon/maan/dag informatie voor datumbereik (via Swiss Ephemeris) |
 | `/api/preferences` | GET, PUT | Gebruikersvoorkeuren ophalen en bijwerken |
 | `/api/themes` | GET | Beschikbare thema's ophalen |
-| `/api/weer` | GET | Actuele weerdata (current, hourly, daily, luchtkwaliteit) via OpenWeatherMap — gecached 10 min |
+| `/api/weer` | GET | Actuele weerdata (current, hourly, daily, luchtkwaliteit) via OpenWeatherMap — gecached 10 min (`revalidate: 600`) |
 | `/api/health` | GET | Health check voor monitoring (database connectivity) |
 
 ### 4.3 Service Layer
@@ -1168,7 +1189,37 @@ export async function calculateMoonriseMoonset(
 /events/new             → Nieuw event aanmaken
 /events/[id]            → Event bewerken + verwijderen
 /settings               → Instellingen (theme, locatie, voorkeuren)
+/weer                   → Weerdetails (OpenWeatherMap — current, uurlijks, dagelijks, luchtkwaliteit)
+/woordenboek            → Sanskrit woordenboek
 ```
+
+### 5.1.1 Pagina Metadata
+
+Elke route heeft een eigen `layout.tsx` die de browsertab-titel instelt. De root layout definieert een **title template**:
+
+```typescript
+// src/app/layout.tsx
+export const metadata: Metadata = {
+  title: {
+    default: "Dharma Calendar",
+    template: "%s | Dharma Calendar",
+  },
+};
+```
+
+Per route:
+
+| Route | layout.tsx | Browsertab |
+|-------|-----------|------------|
+| `/` | root layout (default) | `Dharma Calendar` |
+| `/almanac` | `title: "Almanak"` | `Almanak \| Dharma Calendar` |
+| `/events` | `title: "Events"` | `Events \| Dharma Calendar` |
+| `/events/new` | — (via events layout) | `Events \| Dharma Calendar` |
+| `/events/[id]` | `generateMetadata` → eventnaam | `<naam> \| Dharma Calendar` |
+| `/settings` | `title: "Instellingen"` | `Instellingen \| Dharma Calendar` |
+| `/weer` | `title: "Weer"` | `Weer \| Dharma Calendar` |
+
+`/events/[id]/page.tsx` gebruikt `generateMetadata` om de eventnaam dynamisch uit de database op te halen.
 
 ### 5.2 Component Hierarchy
 
@@ -1181,16 +1232,22 @@ RootLayout
     │
     ├── HomePage (spacing enabled)
     │   ├── TodayHero (zon/maan info, real-time klok, weer-snippet via /api/weer)
+    │   │   ├── Datum + Vedische kalenderinfo (Tithi, Nakshatra, Vara)
+    │   │   ├── Klok + locatie + weersnippet (temperatuur, conditie, min/max)
+    │   │   ├── Glass cards: Zon (opkomst/ondergang), Maan (fase + visueel), Maantijden
+    │   │   ├── Yoga / Karana / Rahu Kalam grid
+    │   │   ├── Speciale lunaire dag banner (indien van toepassing)
+    │   │   └── Vandaag-events (pills met link naar event)
     │   ├── DharmaCalendar (kalender grid met maanfase per dag)
     │   │   └── EventDetailModal (event details → knop naar bewerken)
     │   └── Sidebar (upcoming events, categorieën)
     │
     ├── AlmanacPage (full width, split-view layout)
-    │   ├── Year/Month Navigation (jaar selector, 12-maand strip)
-    │   ├── Filter Toggles (maanfases, speciale dagen, events)
-    │   ├── Moon Phases Timeline (4 fasen: nieuw, 1e kwartier, vol, laatste kwartier)
-    │   ├── Month Grid (7x6, met zon/maan tijden per cel)
-    │   └── Day Details Panel (sticky rechts)
+    │   ├── AlmanacHeader (paginatitel + locatie badge)
+    │   ├── AlmanacFilters (jaar/maand navigatie + filter toggles)
+    │   ├── MoonPhasesTimeline (4 fasen: nieuw, 1e kwartier, vol, laatste kwartier)
+    │   ├── MonthGrid (7×6, met zon/maan tijden per cel)
+    │   └── DayDetailsPanel (sticky rechts)
     │       ├── Sanskrit Day Header
     │       ├── Sun/Moon Times Cards
     │       ├── Moon Phase Visual
@@ -1204,11 +1261,17 @@ RootLayout
     ├── EventFormPage (narrow width)
     │   └── EventForm (formulier met lunar dropdowns)
     │
-    └── SettingsPage (medium width, met loading state)
-        ├── ThemeSelector (grid met preview)
-        ├── ColorModeSelector (light/dark/system)
-        ├── CalendarPreferences (default view)
-        └── LocationSettings (preset + handmatig + zon/maan preview)
+    ├── SettingsPage (medium width, met loading state)
+    │   ├── ThemeSection (thema-kiezer grid met preview)
+    │   ├── ColorModeToggle (light/dark/system)
+    │   ├── CalendarSection (standaard kalenderweergave)
+    │   └── LocationSection (preset + handmatig + zon/maan preview)
+    │
+    └── WeerPage (full width)
+        ├── Current weather (temperatuur, windsnelheid, vochtigheid, UV-index, etc.)
+        ├── Uurlijkse verwachting (24 uur)
+        ├── Dagelijkse verwachting (7 dagen)
+        └── Luchtkwaliteitsindex (AQI + componenten)
 ```
 
 #### 5.2.1 PageLayout Component
@@ -1690,9 +1753,9 @@ export interface GlassConfig {
 
 | Thema | Beschrijving |
 |-------|--------------|
-| `bhairava-nocturne` | ✨ Midnight temple glow with indigo aurora |
-| `shri-ganesha` | ✨ Divine blessings with golden animations |
-| `narasimha-jwala` | ✨ Fierce golden fire with flame animations |
+| `bhairava-nocturne` | ✨ Midnight temple glow — indigo aurora, decoratieve SVG-animaties, gradient headings |
+| `shri-ganesha` | ✨ Divine blessings — golden animations, divine-pulse keyframes |
+| `narasimha-jwala` | ✨ Fierce lion-god fire — multi-radial hero gradient (sindoor→ember→amber), volledige almanac- en glass-overrides |
 
 **Totaal: 13 thema's (5 classic + 5 revamped + 3 special)**
 
@@ -1723,6 +1786,62 @@ Color mode werkt onafhankelijk van theme via:
 /* Gradients */
 .bg-theme-gradient-subtle
 ```
+
+### 6.5.1 TodayHero Glassmorphism Vars
+
+TodayHero gebruikt speciale CSS custom properties voor zijn glassmorphism achtergrond. Special themes kunnen deze overschrijven via `customProperties`:
+
+| Var | Doel | Fallback |
+|-----|------|---------|
+| `--theme-hero-bg` | Hero kaart achtergrond (gradient of solid) | `linear-gradient(135deg, color-mix(primary 95%, black), ...)` |
+| `--theme-glass-bg` | Achtergrondkleur van glass cards én decoratieve corner orbs | Transparant wit/zwart |
+| `--theme-glass-border` | Randkleur van alle glass cards | Transparant wit |
+| `--theme-hero-blob-color` | Centrale radiale blob (subtiele gloed) | `oklch(1 0 0 / 0.05)` |
+
+**Gebruik in TodayHero.tsx:**
+```tsx
+// Hero wrapper
+style={{ background: "var(--theme-hero-bg, <fallback>)" }}
+
+// Glass cards (Zon, Maan, Maantijden, Yoga/Karana)
+className="border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] backdrop-blur-md"
+
+// Decoratieve corner orbs (absolute positioned, blur-3xl)
+className="bg-[var(--theme-glass-bg)] blur-3xl"
+
+// Centrale blob
+style={{ background: "radial-gradient(circle, var(--theme-hero-blob-color, ...) 0%, transparent 70%)" }}
+```
+
+**Let op:** `--theme-glass-bg` wordt zowel voor interactieve cards als decoratieve orbs gebruikt. Gebruik lage chroma (C ≤ 0.07) om te voorkomen dat de orbs een vivid kleurvlek geven over de hero.
+
+### 6.5.2 Almanac Category Vars
+
+De almanac pagina gebruikt een uitgebreide set CSS vars voor maanfase, speciale dagen en events, inzetbaar per theme:
+
+```css
+/* Moon phase cells/cards/badges */
+--theme-almanac-moon-bg, --theme-almanac-moon-fg
+--theme-almanac-moon-cell-bg, --theme-almanac-moon-cell-bg-hover
+--theme-almanac-moon-card-from, --theme-almanac-moon-card-to
+--theme-almanac-moon-icon
+--theme-almanac-moon-badge-bg, --theme-almanac-moon-badge-fg
+
+/* Special days */
+--theme-almanac-special-bg, --theme-almanac-special-fg
+--theme-almanac-special-cell-bg, --theme-almanac-special-cell-bg-hover
+--theme-almanac-special-card-bg, --theme-almanac-special-heading
+--theme-almanac-special-badge-bg, --theme-almanac-special-badge-fg
+
+/* Events */
+--theme-almanac-event-bg, --theme-almanac-event-fg
+--theme-almanac-event-cell-bg, --theme-almanac-event-cell-bg-hover
+--theme-almanac-event-icon
+--theme-almanac-event-major-bg, --theme-almanac-event-major-bg-hover
+--theme-almanac-event-major-star
+```
+
+Defaults worden gedefinieerd in de `:root` en `.dark` blokken van `globals.css`. Special themes overschrijven deze via `customProperties` (light) en `additionalCss` `.dark[[t]]` blok (dark).
 
 ### 6.6 SPECIAL_THEME_COMPONENT_MAP
 
@@ -2006,7 +2125,7 @@ npm run db:reset           # Reset + seed (convenience script)
 | Beperking | Reden | Workaround |
 |-----------|-------|------------|
 | Single user | Scope beperking | Uitbreidbaar met auth later |
-| Handmatige lunar data | Geen Panchang API | Handmatig invoeren + berekening |
-| Tithi berekening approximatief | Echte Panchang is complex | Acceptabel voor indicatie |
-| Geen automated tests | Development focus | Test handmatig, CI/CD later |
+| Handmatige event invoer | Geen externe Panchang API-integratie | Handmatig invoeren via EventForm |
+| Locatie vast (Den Haag default) | Configureerbaar maar niet multi-locatie | Instelbaar via Settings → Locatie |
+| Weerdata externe afhankelijkheid | OpenWeatherMap API key vereist | Degradeert graceful zonder weerdata |
 

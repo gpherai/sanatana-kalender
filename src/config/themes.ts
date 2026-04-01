@@ -964,6 +964,41 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
       customProperties: {
         "--narasimha-fire": "oklch(0.68 0.22 52)",
         "--narasimha-flame": "oklch(0.74 0.24 38)",
+        // Reduced chroma so hero corner orbs stay subtle (not vivid amber blobs)
+        "--theme-glass-bg": "oklch(0.88 0.05 52 / 0.12)",
+        "--theme-glass-border": "oklch(0.74 0.24 38 / 0.28)",
+        "--theme-hero-blob-color": "oklch(0.74 0.16 52 / 0.07)",
+        // Hero card: golden fire peak top-right + deep sindoor bottom-left + amber base
+        "--theme-hero-bg":
+          "radial-gradient(ellipse 65% 45% at 75% 15%, oklch(0.76 0.20 58 / 0.55) 0%, transparent 58%), radial-gradient(ellipse 55% 60% at 8% 90%, oklch(0.24 0.16 25 / 0.80) 0%, transparent 52%), linear-gradient(145deg, oklch(0.22 0.18 28) 0%, oklch(0.42 0.22 38) 30%, oklch(0.62 0.22 50) 65%, oklch(0.70 0.18 60) 100%)",
+        // Special days — fire amber
+        "--theme-almanac-special-bg": "oklch(0.74 0.22 38)",
+        "--theme-almanac-special-fg": "oklch(0.18 0.06 42)",
+        "--theme-almanac-special-cell-bg": "oklch(0.94 0.05 48)",
+        "--theme-almanac-special-cell-bg-hover": "oklch(0.91 0.07 45)",
+        "--theme-almanac-special-card-bg": "oklch(0.95 0.04 50)",
+        "--theme-almanac-special-heading": "oklch(0.35 0.18 36)",
+        "--theme-almanac-special-badge-bg": "oklch(0.90 0.08 42)",
+        "--theme-almanac-special-badge-fg": "oklch(0.22 0.10 36)",
+        // Events — golden amber
+        "--theme-almanac-event-bg": "oklch(0.76 0.20 52)",
+        "--theme-almanac-event-fg": "oklch(0.18 0.06 42)",
+        "--theme-almanac-event-cell-bg": "oklch(0.94 0.05 55)",
+        "--theme-almanac-event-cell-bg-hover": "oklch(0.91 0.07 52)",
+        "--theme-almanac-event-icon": "oklch(0.55 0.20 48)",
+        "--theme-almanac-event-major-bg": "oklch(0.94 0.05 55)",
+        "--theme-almanac-event-major-bg-hover": "oklch(0.91 0.07 52)",
+        "--theme-almanac-event-major-star": "oklch(0.55 0.20 48)",
+        // Moon phase cells/badges — warm amber-gold (fire palette)
+        "--theme-almanac-moon-bg": "oklch(0.91 0.08 55)",
+        "--theme-almanac-moon-fg": "oklch(0.38 0.16 42)",
+        "--theme-almanac-moon-cell-bg": "oklch(0.93 0.05 58)",
+        "--theme-almanac-moon-cell-bg-hover": "oklch(0.90 0.07 55)",
+        "--theme-almanac-moon-card-from": "oklch(0.93 0.06 58)",
+        "--theme-almanac-moon-card-to": "oklch(0.91 0.08 48)",
+        "--theme-almanac-moon-icon": "oklch(0.52 0.18 45)",
+        "--theme-almanac-moon-badge-bg": "oklch(0.91 0.08 55)",
+        "--theme-almanac-moon-badge-fg": "oklch(0.38 0.16 42)",
       },
       moon: {
         surface: {
@@ -1137,6 +1172,58 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
 [[t]] h1,
 [[t]] h2 {
   text-shadow: 0 0 28px oklch(0.68 0.22 52 / 0.28);
+}
+
+/* Keep hero date/time text white — prevent heading gradient override */
+[[t]] .overflow-hidden.rounded-3xl h1 {
+  background: none !important;
+  -webkit-text-fill-color: white !important;
+  text-shadow: none !important;
+}
+
+/* Maanfases tijdlijn — vuurpalet (licht) */
+[[t]] .from-indigo-50.via-purple-50.to-pink-50 {
+  background: linear-gradient(to right, oklch(0.95 0.05 60), oklch(0.93 0.07 46), oklch(0.94 0.05 36)) !important;
+}
+
+/* Dark mode overrides */
+.dark[[t]], [[t]].dark {
+  --theme-glass-bg: oklch(0.68 0.16 52 / 0.16);
+  --theme-glass-border: oklch(0.74 0.24 38 / 0.38);
+  /* Dark hero: fire glow top-right + twilight blue bottom-left + fire base */
+  --theme-hero-bg: radial-gradient(ellipse 55% 45% at 75% 15%, oklch(0.62 0.22 52 / 0.52) 0%, transparent 55%), radial-gradient(ellipse 50% 55% at 5% 85%, oklch(0.12 0.06 228 / 0.88) 0%, transparent 50%), radial-gradient(ellipse 45% 55% at 45% 58%, oklch(0.42 0.22 42 / 0.40) 0%, transparent 50%), linear-gradient(150deg, oklch(0.08 0.03 228) 0%, oklch(0.18 0.14 35) 25%, oklch(0.38 0.22 44) 55%, oklch(0.52 0.22 52) 80%, oklch(0.44 0.18 48) 100%);
+  /* Almanac special days dark */
+  --theme-almanac-special-fg: oklch(0.88 0.20 55);
+  --theme-almanac-special-cell-bg: oklch(0.38 0.14 40 / 0.22);
+  --theme-almanac-special-cell-bg-hover: oklch(0.42 0.16 40 / 0.30);
+  --theme-almanac-special-card-bg: oklch(0.32 0.12 40 / 0.25);
+  --theme-almanac-special-heading: oklch(0.78 0.18 48);
+  --theme-almanac-special-badge-bg: oklch(0.40 0.14 38 / 0.28);
+  --theme-almanac-special-badge-fg: oklch(0.82 0.16 52);
+  /* Almanac events dark */
+  --theme-almanac-event-fg: oklch(0.86 0.18 52);
+  --theme-almanac-event-cell-bg: oklch(0.38 0.12 52 / 0.20);
+  --theme-almanac-event-cell-bg-hover: oklch(0.40 0.14 52 / 0.28);
+  --theme-almanac-event-icon: oklch(0.70 0.20 50);
+  --theme-almanac-event-major-bg: oklch(0.38 0.12 52 / 0.20);
+  --theme-almanac-event-major-bg-hover: oklch(0.40 0.14 52 / 0.28);
+  --theme-almanac-event-major-star: oklch(0.70 0.20 50);
+  /* Almanac moon phase dark */
+  --theme-almanac-moon-bg: oklch(0.40 0.14 55 / 0.25);
+  --theme-almanac-moon-fg: oklch(0.82 0.14 55);
+  --theme-almanac-moon-cell-bg: oklch(0.38 0.12 52 / 0.20);
+  --theme-almanac-moon-cell-bg-hover: oklch(0.40 0.14 52 / 0.30);
+  --theme-almanac-moon-card-from: oklch(0.38 0.12 55 / 0.22);
+  --theme-almanac-moon-card-to: oklch(0.35 0.12 48 / 0.22);
+  --theme-almanac-moon-icon: oklch(0.68 0.18 50);
+  --theme-almanac-moon-badge-bg: oklch(0.40 0.14 55 / 0.25);
+  --theme-almanac-moon-badge-fg: oklch(0.82 0.14 55);
+}
+
+/* Maanfases tijdlijn dark — vuurpalet */
+.dark[[t]] .from-indigo-50.via-purple-50.to-pink-50,
+[[t]].dark .from-indigo-50.via-purple-50.to-pink-50 {
+  background: linear-gradient(to right, oklch(0.22 0.10 58 / 0.5), oklch(0.18 0.12 45 / 0.5), oklch(0.16 0.10 36 / 0.5)) !important;
 }
 
 /* Respect reduced motion preference */
