@@ -475,28 +475,31 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
   {
     name: "bhairava-nocturne",
     displayName: "🗡️ Bhairava Nocturne",
-    description: "Midnight temple glow with indigo aurora and ember accents",
+    description:
+      "Shmashana at midnight — the indigo aura of the Lord of Terror and Liberation",
     isDefault: false,
     category: "special" as const,
     isSpecial: true,
     colors: {
-      primary: "oklch(0.62 0.22 275)", // Neon indigo
+      primary: "oklch(0.62 0.22 275)", // Indigo aura of Bhairava
       secondary: "oklch(0.72 0.10 210)", // Cold moonlight cyan
-      accent: "oklch(0.74 0.18 45)", // Ritual ember
+      accent: "oklch(0.74 0.18 45)", // Ritual ember — shmashana fire
     },
     background: {
+      // Light: cool lavender-white base with indigo aurora from the upper-left, ember glow upper-right
       light: `
-        radial-gradient(900px 520px at 18% 12%, oklch(0.80 0.10 275 / 0.22) 0%, transparent 62%),
-        radial-gradient(760px 520px at 82% 18%, oklch(0.74 0.18 45 / 0.14) 0%, transparent 60%),
-        radial-gradient(900px 560px at 50% 110%, oklch(0.72 0.10 210 / 0.10) 0%, transparent 62%),
-        linear-gradient(180deg, oklch(0.985 0.02 90) 0%, oklch(0.955 0.03 85) 100%)
+        radial-gradient(ellipse 88% 58% at 14% 10%, oklch(0.82 0.14 275 / 0.28) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 44% at 88% 14%, oklch(0.78 0.18 45 / 0.18) 0%, transparent 54%),
+        radial-gradient(ellipse 80% 55% at 50% 118%, oklch(0.74 0.12 210 / 0.14) 0%, transparent 60%),
+        linear-gradient(180deg, oklch(0.985 0.014 285) 0%, oklch(0.962 0.018 280) 100%)
       `,
+      // Dark: deep midnight indigo with violet aureole, faint ember at base, near-black purple floor
       dark: `
-        radial-gradient(1000px 600px at 16% 18%, oklch(0.40 0.18 275 / 0.35) 0%, transparent 62%),
-        radial-gradient(760px 520px at 86% 22%, oklch(0.60 0.22 320 / 0.14) 0%, transparent 58%),
-        radial-gradient(900px 580px at 50% 115%, oklch(0.74 0.18 45 / 0.12) 0%, transparent 62%),
-        radial-gradient(circle at 50% 45%, oklch(0.18 0.04 275 / 0.30) 0%, transparent 55%),
-        linear-gradient(180deg, oklch(0.09 0.02 275) 0%, oklch(0.07 0.02 270) 100%)
+        radial-gradient(ellipse 82% 62% at 14% 20%, oklch(0.42 0.20 275 / 0.40) 0%, transparent 60%),
+        radial-gradient(ellipse 58% 48% at 88% 26%, oklch(0.55 0.20 310 / 0.20) 0%, transparent 54%),
+        radial-gradient(ellipse 88% 58% at 50% 120%, oklch(0.68 0.18 45 / 0.14) 0%, transparent 60%),
+        radial-gradient(circle at 50% 48%, oklch(0.22 0.06 275 / 0.28) 0%, transparent 52%),
+        linear-gradient(180deg, oklch(0.09 0.025 278) 0%, oklch(0.07 0.020 272) 100%)
       `,
     },
     specialStyles: {
@@ -504,6 +507,19 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
         "--bhairava-indigo": "oklch(0.62 0.22 275)",
         "--bhairava-ember": "oklch(0.74 0.18 45)",
         "--bhairava-ash": "oklch(0.82 0.01 280 / 0.12)",
+        // Glass tints — indigo-tinted instead of plain white-transparent
+        "--theme-glass-bg": "oklch(0.62 0.22 275 / 0.13)",
+        "--theme-glass-border": "oklch(0.62 0.22 275 / 0.22)",
+        // Light-mode hero: mix with white instead of black to avoid pitch-dark banner on pale page
+        "--theme-hero-bg":
+          "linear-gradient(135deg, color-mix(in oklch, var(--theme-primary) 72%, white), color-mix(in oklch, var(--theme-secondary) 68%, white), color-mix(in oklch, var(--theme-accent) 65%, white))",
+        // Central hero blob — subtle indigo radial glow instead of white
+        "--theme-hero-blob-color": "oklch(0.62 0.22 275 / 0.08)",
+        // Lunar day banner + almanac cells — indigo palette instead of purple + amber
+        "--theme-almanac-special-bg": "oklch(0.72 0.16 280)",
+        "--theme-almanac-special-fg": "oklch(0.22 0.14 280)",
+        "--theme-almanac-event-bg": "oklch(0.68 0.14 295)",
+        "--theme-almanac-event-fg": "oklch(0.22 0.12 295)",
       },
       moon: {
         surface: {
@@ -520,74 +536,188 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
       },
       header: {
         light: `
-          background: linear-gradient(180deg, oklch(0.99 0.02 90 / 0.94) 0%, oklch(0.97 0.03 85 / 0.90) 100%) !important;
-          border-bottom: 1px solid oklch(0.62 0.22 275 / 0.25) !important;
-          box-shadow: 0 2px 20px oklch(0.62 0.22 275 / 0.10), 0 1px 0 oklch(0.74 0.18 45 / 0.10) inset;
+          background: linear-gradient(180deg, oklch(0.99 0.016 285 / 0.94) 0%, oklch(0.976 0.020 280 / 0.90) 100%) !important;
+          border-bottom: 2px solid oklch(0.62 0.22 275 / 0.22) !important;
+          box-shadow: 0 2px 20px oklch(0.62 0.22 275 / 0.12), 0 1px 0 oklch(0.74 0.18 45 / 0.10) inset;
         `,
         dark: `
-          background: linear-gradient(180deg, oklch(0.14 0.03 275 / 0.92) 0%, oklch(0.10 0.02 270 / 0.88) 100%) !important;
-          border-bottom: 1px solid oklch(0.62 0.22 275 / 0.28) !important;
-          box-shadow: 0 2px 24px oklch(0.62 0.22 275 / 0.18), 0 1px 0 oklch(0.74 0.18 45 / 0.08) inset;
+          background: linear-gradient(180deg, oklch(0.14 0.034 278 / 0.93) 0%, oklch(0.10 0.025 272 / 0.90) 100%) !important;
+          border-bottom: 2px solid oklch(0.62 0.22 275 / 0.30) !important;
+          box-shadow: 0 2px 24px oklch(0.62 0.22 275 / 0.20), 0 1px 0 oklch(0.74 0.18 45 / 0.08) inset;
         `,
       },
       surface: {
         light: `
-          background: linear-gradient(180deg, oklch(0.995 0.01 90 / 0.86) 0%, oklch(0.98 0.02 88 / 0.80) 100%) !important;
-          border: 1px solid oklch(0.62 0.22 275 / 0.16) !important;
-          box-shadow: 0 10px 30px oklch(0 0 0 / 0.06), 0 0 0 1px oklch(0.74 0.18 45 / 0.06) inset !important;
+          background: linear-gradient(145deg, oklch(1 0 0 / 0.90) 0%, oklch(0.98 0.016 280 / 0.86) 100%) !important;
+          border: 1px solid oklch(0.62 0.22 275 / 0.18) !important;
+          box-shadow: 0 4px 20px oklch(0.62 0.22 275 / 0.10), 0 0 0 1px oklch(0.74 0.18 45 / 0.06), inset 0 1px 0 oklch(1 0 0 / 0.5) !important;
         `,
         dark: `
-          background: linear-gradient(180deg, oklch(0.15 0.03 275 / 0.78) 0%, oklch(0.12 0.03 270 / 0.72) 100%) !important;
-          border: 1px solid oklch(0.62 0.22 275 / 0.18) !important;
-          box-shadow: 0 14px 40px oklch(0 0 0 / 0.45), 0 0 28px oklch(0.62 0.22 275 / 0.10) !important;
+          background: linear-gradient(145deg, oklch(0.16 0.034 278 / 0.90) 0%, oklch(0.12 0.028 272 / 0.86) 100%) !important;
+          border: 1px solid oklch(0.62 0.22 275 / 0.20) !important;
+          box-shadow: 0 4px 28px oklch(0 0 0 / 0.52), 0 0 20px oklch(0.62 0.22 275 / 0.12) !important;
           backdrop-filter: blur(10px);
         `,
       },
       surfaceRaised: {
         light: `
-          background: linear-gradient(180deg, oklch(0.995 0.01 90 / 0.92) 0%, oklch(0.98 0.02 88 / 0.86) 100%) !important;
-          border: 1px solid oklch(0.62 0.22 275 / 0.16) !important;
-          box-shadow: 0 16px 40px oklch(0 0 0 / 0.08), 0 0 0 1px oklch(0.74 0.18 45 / 0.08) inset !important;
+          background: linear-gradient(145deg, oklch(1 0 0 / 0.94) 0%, oklch(0.98 0.016 280 / 0.90) 100%) !important;
+          border: 1px solid oklch(0.62 0.22 275 / 0.18) !important;
+          box-shadow: 0 8px 32px oklch(0.62 0.22 275 / 0.14), 0 0 0 1px oklch(0.74 0.18 45 / 0.08), inset 0 1px 0 oklch(1 0 0 / 0.6) !important;
         `,
         dark: `
-          background: linear-gradient(180deg, oklch(0.15 0.03 275 / 0.86) 0%, oklch(0.12 0.03 270 / 0.80) 100%) !important;
-          border: 1px solid oklch(0.62 0.22 275 / 0.22) !important;
-          box-shadow: 0 20px 50px oklch(0 0 0 / 0.55), 0 0 32px oklch(0.62 0.22 275 / 0.14) !important;
+          background: linear-gradient(145deg, oklch(0.16 0.034 278 / 0.94) 0%, oklch(0.12 0.028 272 / 0.90) 100%) !important;
+          border: 1px solid oklch(0.62 0.22 275 / 0.24) !important;
+          box-shadow: 0 8px 36px oklch(0 0 0 / 0.62), 0 0 24px oklch(0.62 0.22 275 / 0.16) !important;
           backdrop-filter: blur(14px);
         `,
       },
       buttons: {
         light: `
-          background: linear-gradient(145deg, oklch(0.62 0.22 275) 0%, oklch(0.55 0.20 290) 100%) !important;
-          border: 1px solid oklch(0.62 0.22 275 / 0.30) !important;
-          box-shadow: 0 10px 28px oklch(0.62 0.22 275 / 0.18), 0 0 22px oklch(0.74 0.18 45 / 0.10) !important;
+          background: linear-gradient(145deg, oklch(0.62 0.22 275) 0%, oklch(0.54 0.20 288) 100%) !important;
+          border: 1px solid oklch(0.62 0.22 275 / 0.35) !important;
+          box-shadow: 0 4px 18px oklch(0.62 0.22 275 / 0.32), 0 0 18px oklch(0.74 0.18 45 / 0.12) !important;
         `,
         dark: `
-          background: linear-gradient(145deg, oklch(0.54 0.22 275) 0%, oklch(0.45 0.20 290) 100%) !important;
+          background: linear-gradient(145deg, oklch(0.56 0.22 275) 0%, oklch(0.48 0.20 288) 100%) !important;
           border: 1px solid oklch(0.62 0.22 275 / 0.28) !important;
-          box-shadow: 0 12px 34px oklch(0 0 0 / 0.55), 0 0 26px oklch(0.62 0.22 275 / 0.22) !important;
+          box-shadow: 0 4px 22px oklch(0 0 0 / 0.55), 0 0 22px oklch(0.62 0.22 275 / 0.24) !important;
         `,
       },
       inputs: {
         light: `
-          background: linear-gradient(180deg, oklch(0.995 0.01 90 / 0.92) 0%, oklch(0.98 0.02 88 / 0.86) 100%) !important;
-          border: 1px solid oklch(0.62 0.22 275 / 0.16) !important;
+          border: 1px solid oklch(0.62 0.22 275 / 0.20) !important;
+          background: linear-gradient(180deg, oklch(1 0 0 / 0.95) 0%, oklch(0.98 0.010 280 / 0.95) 100%) !important;
         `,
         dark: `
-          background: linear-gradient(180deg, oklch(0.13 0.02 275 / 0.92) 0%, oklch(0.11 0.02 270 / 0.88) 100%) !important;
-          border: 1px solid oklch(0.62 0.22 275 / 0.20) !important;
+          background: linear-gradient(180deg, oklch(0.16 0.026 278 / 0.95) 0%, oklch(0.13 0.020 272 / 0.95) 100%) !important;
+          border: 1px solid oklch(0.62 0.22 275 / 0.22) !important;
         `,
       },
       headings: {
         light: `
-          color: oklch(0.24 0.06 275) !important;
-          text-shadow: 0 0 24px oklch(0.62 0.22 275 / 0.14);
+          background: linear-gradient(135deg, oklch(0.28 0.18 275) 0%, oklch(0.46 0.22 275) 35%, oklch(0.62 0.22 295) 70%, oklch(0.74 0.18 45) 100%);
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
         `,
         dark: `
-          color: oklch(0.93 0.03 275) !important;
-          text-shadow: 0 0 32px oklch(0.62 0.22 275 / 0.22);
+          background: linear-gradient(135deg, oklch(0.74 0.18 45) 0%, oklch(0.80 0.16 280) 35%, oklch(0.88 0.12 285) 70%, oklch(0.82 0.10 210) 100%);
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
         `,
       },
+      animations: [
+        {
+          name: "bhairava-pulse",
+          keyframes: `
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 6px oklch(0.62 0.22 275 / 0.60)); }
+            40% { transform: scale(1.04); filter: drop-shadow(0 0 14px oklch(0.62 0.22 275 / 0.85)); }
+            70% { transform: scale(0.98); filter: drop-shadow(0 0 10px oklch(0.74 0.18 45 / 0.55)); }
+          `,
+        },
+        {
+          name: "nocturne-shimmer",
+          keyframes: `
+            0%, 100% { filter: brightness(1) saturate(1); }
+            50% { filter: brightness(1.10) saturate(1.12); }
+          `,
+        },
+      ],
+      decorations: {
+        light: `
+          content: 'भैरव';
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          font-size: 76px;
+          font-weight: 300;
+          color: oklch(0.62 0.22 275 / 0.07);
+          pointer-events: none;
+          z-index: 0;
+          line-height: 1;
+          font-family: serif;
+        `,
+        dark: `
+          content: 'भैरव';
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          font-size: 76px;
+          font-weight: 300;
+          color: oklch(0.62 0.22 275 / 0.11);
+          pointer-events: none;
+          z-index: 0;
+          line-height: 1;
+          font-family: serif;
+        `,
+      },
+      inputFocus: {
+        light: `
+          border-color: oklch(0.62 0.22 275) !important;
+          box-shadow: 0 0 0 3px oklch(0.62 0.22 275 / 0.20), 0 0 15px oklch(0.62 0.22 275 / 0.12) !important;
+        `,
+        dark: `
+          border-color: oklch(0.62 0.22 275) !important;
+          box-shadow: 0 0 0 3px oklch(0.62 0.22 275 / 0.22), 0 0 18px oklch(0.62 0.22 275 / 0.18) !important;
+        `,
+      },
+      additionalCss: `
+/* Indigo-to-ember gradient line under header */
+[[t]] header::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 220px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent 0%, oklch(0.74 0.18 45) 15%, oklch(0.62 0.22 275) 50%, oklch(0.74 0.18 45) 85%, transparent 100%);
+  border-radius: 2px;
+}
+
+/* Bhairava pulse on logo icon */
+[[t]] header a:first-child span:first-child {
+  animation: bhairava-pulse 3s ease-in-out infinite;
+}
+
+/* Subtle nocturne shimmer on primary text */
+[[t]] .text-theme-primary {
+  animation: nocturne-shimmer 4s ease-in-out infinite;
+}
+
+/* Indigo glow on headings */
+[[t]] h1,
+[[t]] h2 {
+  text-shadow: 0 0 28px oklch(0.62 0.22 275 / 0.25);
+}
+
+/* Dark mode: deeper glass tint + restore dark hero + light almanac text */
+.dark[[t]],
+[[t]].dark {
+  --theme-glass-bg: oklch(0.62 0.22 275 / 0.18);
+  --theme-glass-border: oklch(0.62 0.22 275 / 0.30);
+  --theme-hero-bg: linear-gradient(135deg, color-mix(in oklch, var(--theme-primary) 95%, black), color-mix(in oklch, var(--theme-secondary) 92%, black), color-mix(in oklch, var(--theme-accent) 90%, black));
+  --theme-almanac-special-fg: oklch(0.86 0.12 280);
+  --theme-almanac-event-fg: oklch(0.84 0.10 295);
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  [[t]] header a:first-child span:first-child,
+  [[t]] .text-theme-primary {
+    animation: none;
+  }
+}
+
+/* Hero: restore white text on date — heading gradient applies wrong context here */
+[[t]] .overflow-hidden.rounded-3xl h1 {
+  background: none !important;
+  -webkit-text-fill-color: white !important;
+  text-shadow: none !important;
+}
+`,
     },
   },
   {
@@ -1007,6 +1137,14 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
 [[t]] h1,
 [[t]] h2 {
   text-shadow: 0 0 28px oklch(0.68 0.22 52 / 0.28);
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  [[t]] header a:first-child span:first-child,
+  [[t]] .text-theme-primary {
+    animation: none;
+  }
 }
 `,
     },

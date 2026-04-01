@@ -79,11 +79,9 @@ export function TodayHero() {
   // Use server-calculated special day (already in API response)
   const specialDay = dailyInfo?.specialDay;
 
-  const heroBackground = `linear-gradient(135deg,
-    color-mix(in oklch, var(--theme-primary) 95%, black),
-    color-mix(in oklch, var(--theme-secondary) 92%, black),
-    color-mix(in oklch, var(--theme-accent) 90%, black)
-  )`;
+  // Themes can override via --theme-hero-bg; fallback darkens the primary palette
+  const heroBackground =
+    "var(--theme-hero-bg, linear-gradient(135deg, color-mix(in oklch, var(--theme-primary) 95%, black), color-mix(in oklch, var(--theme-secondary) 92%, black), color-mix(in oklch, var(--theme-accent) 90%, black)))";
 
   if (loading) {
     return (
@@ -110,7 +108,13 @@ export function TodayHero() {
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-24 -right-24 h-96 w-96 rounded-full bg-[var(--theme-glass-bg)] blur-3xl" />
         <div className="absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-[var(--theme-glass-bg)] blur-3xl" />
-        <div className="bg-gradient-radial absolute top-1/2 left-1/2 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full from-white/5 to-transparent" />
+        <div
+          className="absolute top-1/2 left-1/2 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full"
+          style={{
+            background:
+              "radial-gradient(circle, var(--theme-hero-blob-color, oklch(1 0 0 / 0.05)) 0%, transparent 70%)",
+          }}
+        />
       </div>
 
       <div className="relative z-10 p-6 md:p-8">
@@ -241,7 +245,7 @@ export function TodayHero() {
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {/* Sun Times */}
-          <div className="rounded-2xl bg-[var(--theme-glass-bg)] p-5 backdrop-blur-md">
+          <div className="rounded-2xl border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] p-5 backdrop-blur-md">
             <div className="mb-4 flex items-center gap-2">
               <Sun className="text-theme-icon-sun h-5 w-5" />
               <h3 className="font-semibold text-white">Zon</h3>
@@ -303,7 +307,7 @@ export function TodayHero() {
           </div>
 
           {/* Moon Phase - Center piece */}
-          <div className="flex flex-col items-center justify-center rounded-2xl bg-[var(--theme-glass-bg)] p-5 backdrop-blur-md">
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] p-5 backdrop-blur-md">
             <div className="mb-4 flex items-center gap-2">
               <MoonStar className="text-theme-icon-moon h-5 w-5" />
               <h3 className="font-semibold text-white">Maan</h3>
@@ -331,7 +335,7 @@ export function TodayHero() {
           </div>
 
           {/* Moon Times */}
-          <div className="rounded-2xl bg-[var(--theme-glass-bg)] p-5 backdrop-blur-md">
+          <div className="rounded-2xl border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] p-5 backdrop-blur-md">
             <div className="mb-4 flex items-center gap-2">
               <Moon className="text-theme-icon-moon h-5 w-5" />
               <h3 className="font-semibold text-white">Maantijden</h3>
@@ -387,7 +391,7 @@ export function TodayHero() {
         {(dailyInfo?.yoga || dailyInfo?.karana || dailyInfo?.rahuKalam) && (
           <div className="mt-6 grid grid-cols-3 gap-3">
             {dailyInfo?.yoga && (
-              <div className="rounded-xl bg-[var(--theme-glass-bg)] p-3 backdrop-blur-md">
+              <div className="rounded-xl border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] p-3 backdrop-blur-md">
                 <div className="mb-1 text-xs text-white/50">Yoga</div>
                 <div className="text-sm font-medium text-white">
                   {dailyInfo.yoga.name}
@@ -400,7 +404,7 @@ export function TodayHero() {
               </div>
             )}
             {dailyInfo?.karana && (
-              <div className="rounded-xl bg-[var(--theme-glass-bg)] p-3 backdrop-blur-md">
+              <div className="rounded-xl border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] p-3 backdrop-blur-md">
                 <div className="mb-1 text-xs text-white/50">Karana</div>
                 <div className="text-sm font-medium text-white">
                   {dailyInfo.karana.name}
@@ -413,7 +417,7 @@ export function TodayHero() {
               </div>
             )}
             {dailyInfo?.rahuKalam && (
-              <div className="rounded-xl bg-[var(--theme-glass-bg)] p-3 backdrop-blur-md">
+              <div className="rounded-xl border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] p-3 backdrop-blur-md">
                 <div className="mb-1 text-xs text-white/50">Rahu Kalam</div>
                 <div className="text-sm font-medium text-white">
                   {dailyInfo.rahuKalam.start} – {dailyInfo.rahuKalam.end}
@@ -457,7 +461,7 @@ export function TodayHero() {
                 <Link
                   key={event.id}
                   href={`/events/${event.id}`}
-                  className="flex items-center gap-2 rounded-full bg-[var(--theme-glass-bg)] px-4 py-3 text-white/70 backdrop-blur-sm transition-opacity hover:opacity-80"
+                  className="flex items-center gap-2 rounded-full border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] px-4 py-3 text-white/70 backdrop-blur-sm transition-opacity hover:opacity-80"
                 >
                   {event.category?.icon && <span>{event.category.icon}</span>}
                   <span className="font-medium">{event.name}</span>
