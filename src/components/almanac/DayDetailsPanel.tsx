@@ -1,6 +1,7 @@
 "use client";
 
-import { Sun, Moon, Sparkles, Star } from "lucide-react";
+import { Sun, Moon, Sparkles, Star, ChevronRight } from "lucide-react";
+import { FALLBACK_CATEGORY_COLOR } from "@/lib/category-styles";
 import { MoonPhase } from "@/components/ui/MoonPhase";
 import { cn } from "@/lib/utils";
 import { isToday, formatDateLocal, formatLongDate } from "@/lib/date-utils";
@@ -247,8 +248,10 @@ export function DayDetailsPanel({
             </h4>
             <div className="space-y-3">
               {selectedDayInfo.yoga && (
-                <div className="bg-theme-surface-hover rounded-lg p-3">
-                  <h5 className="text-theme-fg-muted mb-1 text-xs font-medium">Yoga</h5>
+                <div className="panchanga-yoga-card bg-theme-surface-hover rounded-lg p-3">
+                  <h5 className="panchanga-yoga-label text-theme-fg-muted mb-1 text-xs font-medium">
+                    Yoga
+                  </h5>
                   <p className="text-theme-fg text-sm font-medium">
                     {selectedDayInfo.yoga.name}
                   </p>
@@ -261,8 +264,10 @@ export function DayDetailsPanel({
               )}
 
               {selectedDayInfo.karana && (
-                <div className="bg-theme-surface-hover rounded-lg p-3">
-                  <h5 className="text-theme-fg-muted mb-1 text-xs font-medium">Karana</h5>
+                <div className="panchanga-karana-card bg-theme-surface-hover rounded-lg p-3">
+                  <h5 className="panchanga-karana-label text-theme-fg-muted mb-1 text-xs font-medium">
+                    Karana
+                  </h5>
                   <p className="text-theme-fg text-sm font-medium">
                     {selectedDayInfo.karana.name} ({selectedDayInfo.karana.type})
                   </p>
@@ -304,55 +309,76 @@ export function DayDetailsPanel({
                   event.resource.originalEndDate !== null &&
                   event.resource.originalEndDate !== eventStartKey;
 
+                const categoryColor =
+                  event.resource.categories[0]?.color ?? FALLBACK_CATEGORY_COLOR;
+
                 return (
                   <button
                     key={event.id}
                     onClick={() => onEventClick(event)}
-                    className={cn(
-                      "w-full rounded-lg p-3 text-left transition-all hover:shadow-md",
-                      "bg-theme-surface-hover hover:bg-theme-surface"
-                    )}
+                    className="group border-theme-border bg-theme-surface relative w-full overflow-hidden rounded-xl border text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
                   >
-                    <div className="flex items-center gap-2">
-                      <span>{event.resource.categories[0]?.icon || "📅"}</span>
-                      <span className="text-theme-fg font-medium">{event.title}</span>
+                    {/* Category color strip */}
+                    <div
+                      className="absolute top-0 left-0 h-full w-1.5 transition-all duration-300 group-hover:w-2"
+                      style={{ backgroundColor: categoryColor }}
+                    />
+
+                    <div className="py-3 pr-3 pl-5">
+                      <div className="flex items-center gap-2">
+                        <span className="flex-shrink-0 text-base">
+                          {event.resource.categories[0]?.icon ?? "📅"}
+                        </span>
+                        <span className="text-theme-fg group-hover:text-theme-primary flex-1 truncate text-sm font-medium transition-colors">
+                          {event.title}
+                        </span>
+                        <ChevronRight className="text-theme-primary h-3.5 w-3.5 flex-shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
+                      </div>
+
+                      {/* Time badges + spanning indicator */}
+                      {(event.resource.startTime ||
+                        event.resource.endTime ||
+                        isSpanning ||
+                        event.resource.notes) && (
+                        <div className="mt-1.5 flex flex-wrap items-center gap-1 text-xs">
+                          {event.resource.startTime && (
+                            <span className="rounded bg-[var(--theme-almanac-moon-badge-bg)] px-2 py-0.5 text-[var(--theme-almanac-moon-badge-fg)]">
+                              {isStartDay ? "Begint " : ""}
+                              {event.resource.startTime}
+                            </span>
+                          )}
+                          {event.resource.endTime && (
+                            <span className="rounded bg-[var(--theme-almanac-special-badge-bg)] px-2 py-0.5 text-[var(--theme-almanac-special-badge-fg)]">
+                              Eindigt {event.resource.endTime}
+                            </span>
+                          )}
+                          {isSpanning && isStartDay && !event.resource.endTime && (
+                            <span className="rounded bg-[var(--theme-almanac-special-badge-bg)] px-2 py-0.5 text-[var(--theme-almanac-special-badge-fg)]">
+                              Loopt door
+                            </span>
+                          )}
+                          {event.resource.notes && (
+                            <span className="text-theme-fg-muted">
+                              {event.resource.notes}
+                            </span>
+                          )}
+                        </div>
+                      )}
+
+                      {event.resource.description && (
+                        <p className="text-theme-fg-muted mt-1 line-clamp-1 text-xs">
+                          {event.resource.description}
+                        </p>
+                      )}
                     </div>
 
-                    {/* Time badges + spanning indicator */}
-                    {(event.resource.startTime ||
-                      event.resource.endTime ||
-                      isSpanning ||
-                      event.resource.notes) && (
-                      <div className="mt-1 flex flex-wrap items-center gap-1 text-xs">
-                        {event.resource.startTime && (
-                          <span className="rounded bg-[var(--theme-almanac-moon-badge-bg)] px-2 py-0.5 text-[var(--theme-almanac-moon-badge-fg)]">
-                            {isStartDay ? "Begint " : ""}
-                            {event.resource.startTime}
-                          </span>
-                        )}
-                        {event.resource.endTime && (
-                          <span className="rounded bg-[var(--theme-almanac-special-badge-bg)] px-2 py-0.5 text-[var(--theme-almanac-special-badge-fg)]">
-                            Eindigt {event.resource.endTime}
-                          </span>
-                        )}
-                        {isSpanning && isStartDay && !event.resource.endTime && (
-                          <span className="rounded bg-[var(--theme-almanac-special-badge-bg)] px-2 py-0.5 text-[var(--theme-almanac-special-badge-fg)]">
-                            Loopt door
-                          </span>
-                        )}
-                        {event.resource.notes && (
-                          <span className="text-theme-fg-muted">
-                            {event.resource.notes}
-                          </span>
-                        )}
-                      </div>
-                    )}
-
-                    {event.resource.description && (
-                      <p className="text-theme-fg-muted mt-1 line-clamp-2 text-xs">
-                        {event.resource.description}
-                      </p>
-                    )}
+                    {/* Bottom gradient on hover */}
+                    <div
+                      className="absolute right-0 bottom-0 left-0 h-0.5 opacity-0 transition-opacity group-hover:opacity-100"
+                      style={{
+                        background: `linear-gradient(90deg, ${categoryColor}, transparent)`,
+                      }}
+                    />
                   </button>
                 );
               })}

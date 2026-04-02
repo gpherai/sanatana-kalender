@@ -548,11 +548,16 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
         "--theme-almanac-sun-icon": "oklch(0.60 0.18 45)",
         "--theme-almanac-sun-rise-icon": "oklch(0.62 0.18 45)",
         "--theme-almanac-sun-set-icon": "oklch(0.50 0.16 25)",
-        // Warning (Rahu Kalam) — deep crimson, aligned with Bhairava's fierce aspect
-        "--theme-almanac-warning-border": "oklch(0.48 0.22 20)",
-        "--theme-almanac-warning-bg": "oklch(0.94 0.04 18)",
-        "--theme-almanac-warning-heading": "oklch(0.44 0.20 18)",
-        "--theme-almanac-warning-text": "oklch(0.35 0.18 15)",
+        // Warning (Rahu Kalam) — Rahu as eclipse/shadow/ash: smoky indigo instead of generic red
+        "--theme-almanac-warning-border": "oklch(0.45 0.18 275)",
+        "--theme-almanac-warning-bg": "oklch(0.93 0.04 278)",
+        "--theme-almanac-warning-heading": "oklch(0.38 0.16 275)",
+        "--theme-almanac-warning-text": "oklch(0.30 0.14 275)",
+        // Panchanga detail cards — yoga: indigo aura; karana: ember fire
+        "--theme-panchanga-yoga-bg": "oklch(0.91 0.07 280)",
+        "--theme-panchanga-yoga-label": "oklch(0.38 0.16 278)",
+        "--theme-panchanga-karana-bg": "oklch(0.94 0.07 50)",
+        "--theme-panchanga-karana-label": "oklch(0.46 0.16 45)",
         // Almanac filter pills (AlmanacFilters active state)
         "--theme-almanac-moon-bg": "oklch(0.88 0.12 280)",
         "--theme-almanac-moon-fg": "oklch(0.25 0.16 278)",
@@ -749,6 +754,22 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
   text-shadow: 0 0 28px oklch(0.62 0.22 275 / 0.25);
 }
 
+/* Panchanga yoga card — indigo aura (Bhairava's cosmic alignment) */
+[[t]] .panchanga-yoga-card {
+  background: var(--theme-panchanga-yoga-bg) !important;
+}
+[[t]] .panchanga-yoga-label {
+  color: var(--theme-panchanga-yoga-label) !important;
+}
+
+/* Panchanga karana card — ember fire (active half-day energy) */
+[[t]] .panchanga-karana-card {
+  background: var(--theme-panchanga-karana-bg) !important;
+}
+[[t]] .panchanga-karana-label {
+  color: var(--theme-panchanga-karana-label) !important;
+}
+
 /* Dark mode: deeper glass tint + midnight hero + full dark almanac vars */
 .dark[[t]],
 [[t]].dark {
@@ -786,10 +807,16 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
   --theme-almanac-sun-icon: oklch(0.70 0.18 45);
   --theme-almanac-sun-rise-icon: oklch(0.70 0.18 45);
   --theme-almanac-sun-set-icon: oklch(0.60 0.16 25);
-  /* Warning (Rahu Kalam) — crimson dark mode */
-  --theme-almanac-warning-bg: oklch(0.25 0.16 18 / 0.25);
-  --theme-almanac-warning-heading: oklch(0.72 0.18 20);
-  --theme-almanac-warning-text: oklch(0.80 0.14 18);
+  /* Warning (Rahu Kalam) — Rahu/eclipse dark: smoky indigo, visible on void background */
+  --theme-almanac-warning-bg: oklch(0.18 0.12 275 / 0.55);
+  --theme-almanac-warning-border: oklch(0.58 0.20 275);
+  --theme-almanac-warning-heading: oklch(0.72 0.18 275);
+  --theme-almanac-warning-text: oklch(0.82 0.14 275);
+  /* Panchanga cards dark mode */
+  --theme-panchanga-yoga-bg: oklch(0.22 0.12 280 / 0.50);
+  --theme-panchanga-yoga-label: oklch(0.72 0.16 278);
+  --theme-panchanga-karana-bg: oklch(0.28 0.12 50 / 0.50);
+  --theme-panchanga-karana-label: oklch(0.72 0.16 45);
   /* Filter pills dark mode */
   --theme-almanac-moon-bg: oklch(0.30 0.16 280 / 0.30);
   --theme-almanac-moon-fg: oklch(0.78 0.16 278);
