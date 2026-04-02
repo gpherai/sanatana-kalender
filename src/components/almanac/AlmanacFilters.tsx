@@ -96,7 +96,7 @@ export function AlmanacFilters({
             className={cn(
               "rounded-full px-3 py-1 text-xs font-medium transition-all focus:ring-2 focus:ring-[var(--theme-almanac-special-focus)] focus:ring-offset-1 focus:outline-none",
               showSpecialDays
-                ? "bg-[var(--theme-almanac-special-bg)] text-[var(--theme-almanac-special-fg)]"
+                ? "bg-[var(--theme-almanac-special-pill-bg,var(--theme-almanac-special-bg))] text-[var(--theme-almanac-special-fg)]"
                 : "bg-theme-surface-hover text-theme-fg-muted"
             )}
           >
@@ -107,7 +107,7 @@ export function AlmanacFilters({
             className={cn(
               "rounded-full px-3 py-1 text-xs font-medium transition-all focus:ring-2 focus:ring-[var(--theme-almanac-event-focus)] focus:ring-offset-1 focus:outline-none",
               showEvents
-                ? "bg-[var(--theme-almanac-event-bg)] text-[var(--theme-almanac-event-fg)]"
+                ? "bg-[var(--theme-almanac-event-pill-bg,var(--theme-almanac-event-bg))] text-[var(--theme-almanac-event-fg)]"
                 : "bg-theme-surface-hover text-theme-fg-muted"
             )}
           >
