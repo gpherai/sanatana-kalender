@@ -559,6 +559,9 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
         "--theme-almanac-moon-focus": "oklch(0.54 0.20 278)",
         "--theme-almanac-special-focus": "oklch(0.52 0.22 278)",
         "--theme-almanac-event-focus": "oklch(0.52 0.22 278)",
+        // Dedicated filter pill backgrounds — lighter than banner vars for uniform pill weight
+        "--theme-almanac-special-pill-bg": "oklch(0.90 0.08 288)",
+        "--theme-almanac-event-pill-bg": "oklch(0.90 0.07 278)",
         // Icon colors (TodayHero) — ember sun, indigo moon
         "--theme-icon-sun": "oklch(0.78 0.18 55)",
         "--theme-icon-sunrise": "oklch(0.72 0.18 45)",
@@ -793,6 +796,8 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
   /* Filter pills dark mode */
   --theme-almanac-moon-bg: oklch(0.30 0.16 280 / 0.30);
   --theme-almanac-moon-fg: oklch(0.78 0.16 278);
+  --theme-almanac-special-pill-bg: oklch(0.30 0.16 288 / 0.25);
+  --theme-almanac-event-pill-bg: oklch(0.30 0.16 278 / 0.25);
   /* Icon colors dark mode — vivid indigo moon, bright ember sun */
   --theme-icon-sun: oklch(0.75 0.16 55);
   --theme-icon-sunrise: oklch(0.70 0.18 45);
@@ -819,6 +824,12 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
   [[t]] .text-theme-primary {
     animation: none;
   }
+}
+
+/* MoonPhasesTimeline dark mode — visible on void background */
+.dark[[t]] .almanac-moon-timeline,
+[[t]].dark .almanac-moon-timeline {
+  background: linear-gradient(to right, oklch(0.20 0.14 275), oklch(0.18 0.10 285), oklch(0.22 0.06 300)) !important;
 }
 
 /* Hero: restore white text on date — heading gradient applies wrong context here */
