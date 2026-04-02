@@ -171,8 +171,19 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       maas: "CHAITRA",
     },
     description:
-      "Ekadashi die alle wensen (kama) vervult. Een Gandharva werd bevrijd van een vloek door deze vrat.",
-    tags: ["ekadashi", "vasten", "verlossing", "wensen"],
+      "Kamada Ekadashi is de eerste Ekadashi na het hindoeïstische nieuwjaar en staat bekend als de vervuller van alle oprechte wensen ('Kama'). Volgens de Puranas werd een Gandharva genaamd Lalit door deze heilige vastendag bevrijd van een vloek die hem in een monster had veranderd. Het naleven van dit vasten zuivert de geest, verwijdert zonden en helpt bij het overwinnen van lust en woede. Toegewijden vereren Heer Vishnu (als Krishna), reciteren de Vishnu Sahasranama en lezen de specifieke Vrat Katha. Het is een krachtige dag voor spirituele groei en het transformeren van negatieve eigenschappen in positieve kwaliteiten.",
+    tags: [
+      "chaitra",
+      "ekadashi",
+      "gandharva",
+      "kama",
+      "lalit",
+      "shukla paksha",
+      "vasten",
+      "verlossing",
+      "vishnu",
+      "wensen",
+    ],
   },
   {
     key: "vaishakha_varuthini_ekadashi",
@@ -1300,8 +1311,21 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleType: "TITHI",
     ruleConfig: { tithi: "PRATIPADA_SHUKLA", maas: "CHAITRA", durationDays: 9 },
     description:
-      "Negen heilige nachten gewijd aan de negen vormen van Godin Durga in het voorjaar (Vasant Navratri). Begint op Chaitra Shukla Pratipada en eindigt op Ram Navami.",
-    tags: ["durga", "festival", "navratri", "negen nachten", "vasant", "vastijd"],
+      "Chaitra Navratri, ook wel Vasant Navratri genoemd, is een negen nachten durend festival in de lente gewijd aan de negen vormen van Godin Durga (Navdurga). Het festival begint op de eerste dag van de hindoe-maand Chaitra en markeert tevens het begin van het hindoeïstische nieuwjaar (Gudi Padwa/Ugadi). Gedurende deze negen dagen vereren toegewijden de Shakti-energie voor spirituele kracht, overwinning op het innerlijke kwaad en zuivering. Belangrijke rituelen zijn Ghatasthapana (het plaatsen van een heilige pot), het zaaien van gerst, het reciteren van de Durga Saptashati en strikt vasten. De viering culmineert op de negende dag met Ram Navami, de verschijningsdag van Heer Rama.",
+    tags: [
+      "chaitra",
+      "durga",
+      "durga saptashati",
+      "festival",
+      "ghatasthapana",
+      "gudi padwa",
+      "navdurga",
+      "navratri",
+      "shakti",
+      "ugadi",
+      "vasant",
+      "vasten",
+    ],
   },
 
   // --- Sharad (Maha) Navratri — begint Ashwin Shukla Pratipada ---
@@ -1330,8 +1354,20 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     parentKeys: ["chaitra_navratri", "sharad_navratri"],
     dayNumber: 1,
     description:
-      "Dag 1 van Navratri. Verering van Maa Shailputri – dochter van de berg, incarnatie van Godin Parvati. Symbool van kracht en toewijding.",
-    tags: ["durga", "navadurga", "navratri", "parvati", "shailputri"],
+      "Maa Shailputri ('Dochter van de Bergen') is de eerste vorm van Godin Durga die wordt vereerd tijdens Navratri. Ze is de reïncarnatie van Sati en de dochter van de koning der bergen, Himavat. Ze berijdt een stier (Nandi) en houdt een drietand (Trishula) en een lotusbloem vast. Shailputri symboliseert de wortelchakra (Muladhara) en herinnert toegewijden aan de kracht van vastberadenheid en spirituele ontwaking. Op deze eerste dag vindt het Ghatasthapana-ritueel plaats, waarbij de goddelijke energie wordt uitgenodigd in huis.",
+    tags: [
+      "chaturdashi",
+      "durga",
+      "ghatasthapana",
+      "himavat",
+      "muladhara",
+      "nandi",
+      "navadurga",
+      "navratri",
+      "parvati",
+      "shailputri",
+      "trishula",
+    ],
   },
   {
     key: "navadurga_dag2_brahmacharini",
@@ -1343,8 +1379,18 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     parentKeys: ["chaitra_navratri", "sharad_navratri"],
     dayNumber: 2,
     description:
-      "Dag 2 van Navratri. Verering van Maa Brahmacharini – de ascetische godin, symbool van zelfbeheersing en boete.",
-    tags: ["brahmacharini", "durga", "navadurga", "navratri"],
+      "Op de tweede dag van Navratri wordt Maa Brahmacharini vereerd, de godin die onwankelbare boete (Tapasya) en ascese uitvoerde om Heer Shiva als echtgenoot te verkrijgen. Ze wordt afgebeeld met een rozenkrans (Japa Mala) in haar rechterhand en een waterpot (Kamandalu) in haar linkerhand. Brahmacharini symboliseert toewijding, zelfbeheersing en de kracht van kennis. Ze regeert over de Swadhisthana-chakra. Toegewijden bidden tot haar voor spirituele vooruitgang, discipline en innerlijke vrede.",
+    tags: [
+      "ascese",
+      "brahmacharini",
+      "durga",
+      "japa mala",
+      "kamandalu",
+      "navadurga",
+      "navratri",
+      "swadhisthana",
+      "tapasya",
+    ],
   },
   {
     key: "navadurga_dag3_chandraghanta",
@@ -1356,8 +1402,17 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     parentKeys: ["chaitra_navratri", "sharad_navratri"],
     dayNumber: 3,
     description:
-      "Dag 3 van Navratri. Verering van Maa Chandraghanta – dapperheid en bescherming, met een halve maan op haar voorhoofd.",
-    tags: ["chandraghanta", "durga", "navadurga", "navratri"],
+      "Maa Chandraghanta, de derde vorm van Durga, wordt vereerd voor vrede en welvaart. Ze draagt een halve maan in de vorm van een bel (Ghanta) op haar voorhoofd, waarvan het geluid de boze geesten en demonen verdrijft. Ze is de belichaming van dapperheid, rechtvaardigheid en spirituele kracht. Chandraghanta berijdt een tijger en is uitgerust met vele wapens, klaar voor de strijd maar tegelijkertijd vol mededogen voor haar devotees. Ze regeert over de Manipura-chakra en schenkt toegewijden moed en de kracht om hun angsten te overwinnen.",
+    tags: [
+      "bravery",
+      "chandraghanta",
+      "durga",
+      "ghanta",
+      "manipura",
+      "navadurga",
+      "navratri",
+      "tijger",
+    ],
   },
   {
     key: "navadurga_dag4_kushmanda",
@@ -1369,8 +1424,17 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     parentKeys: ["chaitra_navratri", "sharad_navratri"],
     dayNumber: 4,
     description:
-      "Dag 4 van Navratri. Verering van Maa Kushmanda – zij die het universum schiep met haar goddelijke glimlach.",
-    tags: ["durga", "kushmanda", "navadurga", "navratri"],
+      "Maa Kushmanda wordt vereerd op de vierde dag van Navratri. Ze wordt beschouwd als de schepper van het hele universum, die zij tot leven bracht met haar zachte glimlach toen er slechts duisternis was. 'Ku' betekent klein, 'Ushma' betekent warmte of energie, en 'Anda' betekent ei; samen staat het voor het kosmische ei van schepping. Ze verblijft in de kern van de zon en regeert over de Anahata-chakra. Haar acht armen (Ashtabhuja) dragen wapens, een rozenkrans en een honingpot. Ze schenkt haar devotees gezondheid, rijkdom en kracht.",
+    tags: [
+      "anahata",
+      "ashtabhuja",
+      "creatie",
+      "durga",
+      "kushmanda",
+      "navadurga",
+      "navratri",
+      "schepping",
+    ],
   },
   {
     key: "navadurga_dag5_skandamata",
@@ -1382,8 +1446,17 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     parentKeys: ["chaitra_navratri", "sharad_navratri"],
     dayNumber: 5,
     description:
-      "Dag 5 van Navratri. Verering van Maa Skandamata – moeder van Lord Kartikeya, symbool van moederliefde en bescherming.",
-    tags: ["durga", "navadurga", "navratri", "skandamata"],
+      "De vijfde dag van Navratri is gewijd aan Maa Skandamata, de moeder van Lord Skanda (ook bekend als Kartikeya of Murugan), de opperbevelhebber van het goddelijke leger. Ze wordt afgebeeld zittend op een leeuw, met de jonge Skanda op haar schoot. Skandamata symboliseert de zuivere vorm van moederliefde, mededogen en bescherming. Ze regeert over de Vishuddha-chakra. Door haar te vereren, verkrijgen toegewijden niet alleen haar zegeningen, maar ook de zegeningen van haar zoon Skanda, wat leidt tot innerlijke zuivering en spirituele vreugde.",
+    tags: [
+      "durga",
+      "kartikeya",
+      "moederliefde",
+      "navadurga",
+      "navratri",
+      "skanda",
+      "skandamata",
+      "vishuddha",
+    ],
   },
   {
     key: "navadurga_dag6_katyayani",
@@ -1395,8 +1468,17 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     parentKeys: ["chaitra_navratri", "sharad_navratri"],
     dayNumber: 6,
     description:
-      "Dag 6 van Navratri. Verering van Maa Katyayani – de strijdersgodin, een felle verschijning van Durga.",
-    tags: ["durga", "katyayani", "navadurga", "navratri"],
+      "Maa Katyayani, de zesde vorm van Durga, is de felle krijgersgodin die werd geboren uit de gecombineerde woede en energie van de goden om de demon Mahishasura te vernietigen. Ze is vernoemd naar de wijze Katyan, die haar als eerste mocht vereren. Ze berijdt een majestueuze leeuw en draagt vier armen met een zwaard en een lotus. Katyayani regeert over de Ajna-chakra (het derde oog) en staat symbool voor moed, vastberadenheid en spirituele overwinning. Ze wordt vaak door jonge ongehuwde vrouwen vereerd om een goede levenspartner te vinden.",
+    tags: [
+      "ajna",
+      "durga",
+      "katyayani",
+      "mahishasura",
+      "navadurga",
+      "navratri",
+      "overwinning",
+      "warrior",
+    ],
   },
   {
     key: "navadurga_dag7_kaalratri",
@@ -1408,8 +1490,17 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     parentKeys: ["chaitra_navratri", "sharad_navratri"],
     dayNumber: 7,
     description:
-      "Dag 7 van Navratri. Verering van Maa Kaalratri – vernietiger van duisternis en onwetendheid.",
-    tags: ["durga", "kaalratri", "navadurga", "navratri"],
+      "Maa Kaalratri, de zevende en meest angstaanjagende vorm van Durga, wordt vereerd op de zevende dag. Haar naam betekent de 'Nacht van de Tijd' of de 'Vernietiger van Duisternis'. Ze heeft een donkere huid, warrig haar en drie ogen die vuur spuwen. Ondanks haar felle verschijning is ze 'Shubhankari' (schenker van goeds) en verzekert ze haar devotees van bescherming tegen angst en onheil. Ze vernietigt onwetendheid en negativiteit. Kaalratri regeert over de Sahasrara-chakra en schenkt spirituele krachten (Siddhis). Ze berijdt een ezel en houdt een zwaard en een ijzeren haak vast.",
+    tags: [
+      "bescherming",
+      "durga",
+      "kaalratri",
+      "navadurga",
+      "navratri",
+      "sahasrara",
+      "siddhis",
+      "shubhankari",
+    ],
   },
   {
     key: "navadurga_dag8_mahagauri",
@@ -1421,8 +1512,17 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     parentKeys: ["chaitra_navratri", "sharad_navratri"],
     dayNumber: 8,
     description:
-      "Dag 8 van Navratri (Durga Ashtami). Verering van Maa Mahagauri – godin van zuiverheid en vrede.",
-    tags: ["ashtami", "durga", "mahagauri", "navadurga", "navratri"],
+      "Op de achtste dag (Durga Ashtami) wordt Maa Mahagauri vereerd. Haar naam betekent 'extreem wit' of 'stralend', wat verwijst naar haar zuiverheid en vrede nadat zij door Shiva werd gewassen in het water van de Ganges. Ze symboliseert sereniteit, mededogen en de reiniging van karma. Mahagauri berijdt een stier en draagt witte kleding. Ze wordt vaak vereerd tijdens het Kanya Puja-ritueel, waarbij jonge meisjes als levende incarnaties van de godin worden aanbeden. Ze regeert over de Soma-chakra en schenkt haar devotees innerlijke rust en bevrijding van lijden.",
+    tags: [
+      "ashtami",
+      "durga",
+      "durga ashtami",
+      "kanya puja",
+      "mahagauri",
+      "navadurga",
+      "navratri",
+      "soma",
+    ],
   },
   {
     key: "navadurga_dag9_siddhidatri",
@@ -1438,8 +1538,18 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     parentKeys: ["chaitra_navratri", "sharad_navratri"],
     dayNumber: 9,
     description:
-      "Dag 9 van Navratri (Navami). Verering van Maa Siddhidatri – schenker van volmaaktheid en alle siddhis.",
-    tags: ["durga", "navadurga", "navami", "navratri", "siddhidatri"],
+      "De negende dag (Maha Navami) is gewijd aan Maa Siddhidatri, de schenker van alle bovennatuurlijke volmaaktheden (Siddhis). Ze wordt afgebeeld zittend op een lotusbloem of leeuw, met vier armen die de discus, de knots, de schelp en de lotus vasthouden. Volgens de Puranas verkreeg Heer Shiva al zijn krachten door haar te vereren, wat leidde tot de vorm van Ardhanarishwara. Ze regeert over de Nirvana-chakra en staat symbool voor ultieme vervulling en spiritueel succes. Op deze dag voltooien toegewijden hun vasten en voeren ze vaak de Kanya Puja uit om de negen vormen van Shakti te eren.",
+    tags: [
+      "durga",
+      "kanya puja",
+      "navadurga",
+      "navami",
+      "navratri",
+      "nirvana",
+      "shakti",
+      "siddhidatri",
+      "siddhis",
+    ],
   },
 
   // --- Dasha Mahavidyas ---

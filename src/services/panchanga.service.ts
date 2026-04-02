@@ -130,11 +130,18 @@ class PanchangaService {
       throw new Error(`Invalid date: ${date}`);
     }
 
-    // Check cache first
-    const cached = this.cache.get(dateStr, location, timezone);
-    if (cached) {
-      logDebug(`[PanchangaService] Cache hit for ${dateStr}`);
-      return cached;
+    // Today's data contains time-sensitive moonrise/moonset (upcomingFromNow logic),
+    // so we skip the cache for it — historical dates are safe to cache indefinitely.
+    const todayStr = DateTime.now().setZone(timezone).toISODate();
+    const isToday = dateStr === todayStr;
+
+    // Check cache first (only for non-today dates)
+    if (!isToday) {
+      const cached = this.cache.get(dateStr, location, timezone);
+      if (cached) {
+        logDebug(`[PanchangaService] Cache hit for ${dateStr}`);
+        return cached;
+      }
     }
 
     // Convert to LocationConfig for Swiss Ephemeris
@@ -150,8 +157,10 @@ class PanchangaService {
 
     const result = await this.swissService.computeDaily(dateStr, locConfig);
 
-    // Cache the result
-    this.cache.set(dateStr, location, timezone, result);
+    // Cache the result (only for non-today dates)
+    if (!isToday) {
+      this.cache.set(dateStr, location, timezone, result);
+    }
 
     return result;
   }

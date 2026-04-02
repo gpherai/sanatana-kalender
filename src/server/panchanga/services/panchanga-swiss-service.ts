@@ -70,7 +70,14 @@ export class PanchangaSwissService {
     // ==========================================================================
     // STEP 1.5: Calculate Moonrise & Moonset
     // ==========================================================================
-    const moonAstro = await calculateMoonriseMoonset(dateStr, location);
+    // Pass upcomingFromNow=true for today so that if the moonset already passed,
+    // the next upcoming rise/set is returned instead of the stale earlier one.
+    const todayStr = DateTime.now().setZone(location.tz).toISODate();
+    const moonAstro = await calculateMoonriseMoonset(
+      dateStr,
+      location,
+      dateStr === todayStr
+    );
 
     // ==========================================================================
     // STEP 2: Calculate Positions at Sunrise

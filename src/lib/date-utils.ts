@@ -424,6 +424,32 @@ export function formatRelativeDate(date: Date): string | null {
  * formatTimeAgo("08:30", now) // => "1u 30m geleden"
  * ```
  */
+/**
+ * Format a full ISO datetime string as a relative time string.
+ * Unlike formatTimeAgo, this preserves the date so cross-day events
+ * (e.g. moonset tomorrow at 07:13) are correctly shown as "over 12u 53m"
+ * instead of "11u 6m geleden".
+ */
+export function formatIsoTimeAgo(isoStr: string | null, now: Date = new Date()): string {
+  if (!isoStr) return "—";
+
+  const eventTime = new Date(isoStr);
+  if (isNaN(eventTime.getTime())) return "—";
+
+  const diff = eventTime.getTime() - now.getTime();
+  const absDiff = Math.abs(diff);
+  const hoursDiff = Math.floor(absDiff / (1000 * 60 * 60));
+  const minsDiff = Math.floor((absDiff % (1000 * 60 * 60)) / (1000 * 60));
+
+  if (diff > 0) {
+    if (hoursDiff > 0) return `over ${hoursDiff}u ${minsDiff}m`;
+    return `over ${minsDiff}m`;
+  } else {
+    if (hoursDiff > 0) return `${hoursDiff}u ${minsDiff}m geleden`;
+    return `${minsDiff}m geleden`;
+  }
+}
+
 export function formatTimeAgo(timeStr: string | null, now: Date = new Date()): string {
   if (!timeStr) return "—";
 
