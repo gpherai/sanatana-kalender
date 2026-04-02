@@ -883,14 +883,14 @@
   --theme-almanac-sun-icon: oklch(0.6 0.18 45);
   --theme-almanac-sun-rise-icon: oklch(0.62 0.18 45);
   --theme-almanac-sun-set-icon: oklch(0.5 0.16 25);
-  --theme-almanac-warning-border: oklch(0.45 0.18 275);
-  --theme-almanac-warning-bg: oklch(0.93 0.04 278);
-  --theme-almanac-warning-heading: oklch(0.38 0.16 275);
-  --theme-almanac-warning-text: oklch(0.3 0.14 275);
+  --theme-almanac-warning-border: oklch(0.48 0.22 18);
+  --theme-almanac-warning-bg: oklch(0.94 0.04 18);
+  --theme-almanac-warning-heading: oklch(0.44 0.2 18);
+  --theme-almanac-warning-text: oklch(0.35 0.18 15);
   --theme-panchanga-yoga-bg: oklch(0.91 0.07 280);
   --theme-panchanga-yoga-label: oklch(0.38 0.16 278);
-  --theme-panchanga-karana-bg: oklch(0.94 0.07 50);
-  --theme-panchanga-karana-label: oklch(0.46 0.16 45);
+  --theme-panchanga-karana-bg: oklch(0.92 0.05 295);
+  --theme-panchanga-karana-label: oklch(0.42 0.14 290);
   --theme-almanac-moon-bg: oklch(0.88 0.12 280);
   --theme-almanac-moon-fg: oklch(0.25 0.16 278);
   --theme-almanac-moon-focus: oklch(0.54 0.2 278);
@@ -1263,7 +1263,7 @@
   color: var(--theme-panchanga-yoga-label) !important;
 }
 
-/* Panchanga karana card — ember fire (active half-day energy) */
+/* Panchanga karana card — amethyst (half-dag verdeling, neutraal) */
 [data-theme="bhairava-nocturne"] .panchanga-karana-card {
   background: var(--theme-panchanga-karana-bg) !important;
 }
@@ -1331,16 +1331,16 @@
   --theme-almanac-sun-icon: oklch(0.7 0.18 45);
   --theme-almanac-sun-rise-icon: oklch(0.7 0.18 45);
   --theme-almanac-sun-set-icon: oklch(0.6 0.16 25);
-  /* Warning (Rahu Kalam) — Rahu/eclipse dark: smoky indigo, visible on void background */
-  --theme-almanac-warning-bg: oklch(0.18 0.12 275 / 0.55);
-  --theme-almanac-warning-border: oklch(0.58 0.2 275);
-  --theme-almanac-warning-heading: oklch(0.72 0.18 275);
-  --theme-almanac-warning-text: oklch(0.82 0.14 275);
+  /* Warning (Rahu Kalam) — Bhairavi crimson dark mode */
+  --theme-almanac-warning-bg: oklch(0.25 0.16 18 / 0.4);
+  --theme-almanac-warning-border: oklch(0.6 0.22 18);
+  --theme-almanac-warning-heading: oklch(0.72 0.18 18);
+  --theme-almanac-warning-text: oklch(0.8 0.14 18);
   /* Panchanga cards dark mode */
   --theme-panchanga-yoga-bg: oklch(0.22 0.12 280 / 0.5);
   --theme-panchanga-yoga-label: oklch(0.72 0.16 278);
-  --theme-panchanga-karana-bg: oklch(0.28 0.12 50 / 0.5);
-  --theme-panchanga-karana-label: oklch(0.72 0.16 45);
+  --theme-panchanga-karana-bg: oklch(0.24 0.1 292 / 0.5);
+  --theme-panchanga-karana-label: oklch(0.72 0.12 288);
   /* Filter pills dark mode */
   --theme-almanac-moon-bg: oklch(0.3 0.16 280 / 0.3);
   --theme-almanac-moon-fg: oklch(0.78 0.16 278);
