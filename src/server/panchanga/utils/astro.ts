@@ -308,7 +308,8 @@ export type MoonRiseSetResult = {
  */
 export async function calculateMoonriseMoonset(
   dateStr: string,
-  loc: LocationConfig
+  loc: LocationConfig,
+  upcomingFromNow = false
 ): Promise<MoonRiseSetResult> {
   // Parse date string in the location's timezone (NOT UTC!)
   const localStart = DateTime.fromISO(`${dateStr}T00:00:00`, { zone: loc.tz });
@@ -324,7 +325,7 @@ export async function calculateMoonriseMoonset(
 
   const EPHE_FLAG = swisseph.SEFLG_SWIEPH;
 
-  const riseTimeJD = await swe_rise_trans(
+  let riseTimeJD = await swe_rise_trans(
     jdStart,
     swisseph.SE_MOON, // Moon instead of Sun
     "",
@@ -335,8 +336,10 @@ export async function calculateMoonriseMoonset(
     0
   );
 
-  const setTimeJD = await swe_rise_trans(
-    jdStart,
+  // Calculate moonset starting from moonrise, so the set always follows the rise.
+  // Without this, moonset could be earlier in the day (from the previous night's rise).
+  let setTimeJD = await swe_rise_trans(
+    riseTimeJD,
     swisseph.SE_MOON, // Moon instead of Sun
     "",
     EPHE_FLAG,
@@ -345,6 +348,43 @@ export async function calculateMoonriseMoonset(
     loc.lat,
     0
   );
+
+  // When upcomingFromNow is true (today's view), check if the computed moonset is
+  // already in the past. If so, recalculate from the current moment so the user
+  // always sees the next upcoming rise and set, not one from earlier today.
+  if (upcomingFromNow) {
+    const nowUTC = DateTime.utc();
+    const jdNow = await swe_julday(
+      nowUTC.year,
+      nowUTC.month,
+      nowUTC.day,
+      nowUTC.hour + nowUTC.minute / 60 + nowUTC.second / 3600,
+      swisseph.SE_GREG_CAL as 0 | 1
+    );
+
+    if (setTimeJD < jdNow) {
+      riseTimeJD = await swe_rise_trans(
+        jdNow,
+        swisseph.SE_MOON,
+        "",
+        EPHE_FLAG,
+        swisseph.SE_CALC_RISE | swisseph.SE_BIT_DISC_CENTER,
+        loc.lon,
+        loc.lat,
+        0
+      );
+      setTimeJD = await swe_rise_trans(
+        riseTimeJD,
+        swisseph.SE_MOON,
+        "",
+        EPHE_FLAG,
+        swisseph.SE_CALC_SET | swisseph.SE_BIT_DISC_CENTER,
+        loc.lon,
+        loc.lat,
+        0
+      );
+    }
+  }
 
   const jdToDateTime = (jd: number): DateTime => {
     const dateUTC = swe_revjul(jd, swisseph.SE_GREG_CAL as 0 | 1);

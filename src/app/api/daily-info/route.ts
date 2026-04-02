@@ -35,6 +35,8 @@ function transformToApiResponse(panchanga: DailyPanchangaFull) {
     // Moon rise/set (calculated using Swiss Ephemeris swe_rise_trans)
     moonrise: panchanga.moonriseLocal,
     moonset: panchanga.moonsetLocal,
+    moonriseUtcIso: panchanga.moonriseUtcIso,
+    moonsetUtcIso: panchanga.moonsetUtcIso,
 
     // Moon phase (EXISTING FIELDS - compatible with old API)
     moonPhasePercent: illuminationPct,

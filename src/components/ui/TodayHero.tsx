@@ -6,7 +6,12 @@ import { useEffect, useState, useMemo } from "react";
 import { useFetch } from "@/hooks/useFetch";
 import { Sun, Sunrise, Sunset, Moon, MoonStar, Calendar, Sparkles } from "lucide-react";
 import { MoonPhase } from "./MoonPhase";
-import { formatDateLocal, formatTimeAgo, formatDate } from "@/lib/date-utils";
+import {
+  formatDateLocal,
+  formatTimeAgo,
+  formatIsoTimeAgo,
+  formatDate,
+} from "@/lib/date-utils";
 import type { DailyInfoResponse } from "@/types";
 import type {
   CalendarEventResponse,
@@ -357,7 +362,7 @@ export function TodayHero() {
                     {dailyInfo?.moonrise || "—"}
                   </div>
                   <div className="text-xs text-white/50">
-                    {formatTimeAgo(dailyInfo?.moonrise || null, currentTime)}
+                    {formatIsoTimeAgo(dailyInfo?.moonriseUtcIso || null, currentTime)}
                   </div>
                 </div>
               </div>
@@ -372,7 +377,7 @@ export function TodayHero() {
                     {dailyInfo?.moonset || "—"}
                   </div>
                   <div className="text-xs text-white/50">
-                    {formatTimeAgo(dailyInfo?.moonset || null, currentTime)}
+                    {formatIsoTimeAgo(dailyInfo?.moonsetUtcIso || null, currentTime)}
                   </div>
                 </div>
               </div>

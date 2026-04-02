@@ -51,6 +51,8 @@ export interface DailyInfoData {
   sunset: string | null;
   moonrise: string | null;
   moonset: string | null;
+  moonriseUtcIso: string | null;
+  moonsetUtcIso: string | null;
   moonPhasePercent: number;
   moonPhaseType: string | null;
   isWaxing: boolean;
