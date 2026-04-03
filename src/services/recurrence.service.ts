@@ -757,9 +757,16 @@ async function generateWeekdayTithiOccurrences(
     select: { date: true, tithiEndTime: true },
   });
 
-  const matchingDays = dailyData.filter((day) => day.date.getUTCDay() === weekday);
-  const prevDayMap = await fetchPreviousDayData(matchingDays.map((d) => d.date));
-  return matchingDays.map((day) => computeTithiOccurrence(day, day, prevDayMap));
+  // Fetch prevDay data for ALL tithi days before filtering by weekday.
+  // computeTithiOccurrence may shift the effective date back one day when the
+  // tithi started after sunrise (spanning-tithi case). We must apply that shift
+  // first, then check the weekday on the resulting occurrence date — otherwise
+  // a Tuesday Chaturthi that only starts at 13:40 would be missed because the
+  // udaya tithi falls on Wednesday.
+  const prevDayMap = await fetchPreviousDayData(dailyData.map((d) => d.date));
+  return dailyData
+    .map((day) => computeTithiOccurrence(day, day, prevDayMap))
+    .filter((occ) => occ.date.getUTCDay() === weekday);
 }
 
 // =============================================================================

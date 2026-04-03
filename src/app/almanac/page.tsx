@@ -181,7 +181,22 @@ export default function AlmanacPage() {
   // Selected day data
   const selectedDateStr = formatDateLocal(selectedDate);
   const selectedDayInfo = dailyInfoMap.get(selectedDateStr);
-  const selectedDayEvents = eventsMap.get(selectedDateStr) ?? [];
+  const rawSelectedDayEvents = eventsMap.get(selectedDateStr) ?? [];
+  // Angarki suppression: when Angarki Chaturthi is present, hide generic named
+  // Sankashti events (those tagged "sankashti" but not "angaraka" or "sakat").
+  // Sakat Chauth and other named festivals survive — only the monthly Sankashti
+  // variants are redundant on an Angarki day.
+  const hasAngarki = rawSelectedDayEvents.some((e) =>
+    e.resource.tags.includes("angaraka")
+  );
+  const selectedDayEvents = hasAngarki
+    ? rawSelectedDayEvents.filter(
+        (e) =>
+          !e.resource.tags.includes("sankashti") ||
+          e.resource.tags.includes("angaraka") ||
+          e.resource.tags.includes("sakat")
+      )
+    : rawSelectedDayEvents;
   const selectedDaySpecial = specialDaysMap.get(selectedDateStr) ?? [];
 
   // Handlers
