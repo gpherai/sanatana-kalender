@@ -3,7 +3,6 @@
 import { Sun, Moon, Sparkles, Star, ChevronRight } from "lucide-react";
 import { FALLBACK_CATEGORY_COLOR } from "@/lib/category-styles";
 import { MoonPhase } from "@/components/ui/MoonPhase";
-import { cn } from "@/lib/utils";
 import { isToday, formatDateLocal, formatLongDate } from "@/lib/date-utils";
 import type { SpecialDay } from "@/lib/panchanga-helpers";
 import type { DailyInfoResponse } from "@/types";
@@ -92,7 +91,7 @@ export function DayDetailsPanel({
       <div
         className="rounded-2xl p-4 text-white shadow-lg"
         style={{
-          background: `linear-gradient(135deg, color-mix(in oklch, var(--theme-primary) 65%, black), var(--theme-secondary))`,
+          background: `var(--theme-almanac-day-header-bg)`,
         }}
       >
         <div className="flex items-center gap-2 text-sm text-white/70">
@@ -342,18 +341,18 @@ export function DayDetailsPanel({
                         event.resource.notes) && (
                         <div className="mt-1.5 flex flex-wrap items-center gap-1 text-xs">
                           {event.resource.startTime && (
-                            <span className="rounded bg-[var(--theme-almanac-moon-badge-bg)] px-2 py-0.5 text-[var(--theme-almanac-moon-badge-fg)]">
+                            <span className="rounded bg-[var(--theme-almanac-event-time-start-bg)] px-2 py-0.5 text-[var(--theme-almanac-event-time-start-fg)]">
                               {isStartDay ? "Begint " : ""}
                               {event.resource.startTime}
                             </span>
                           )}
                           {event.resource.endTime && (
-                            <span className="rounded bg-[var(--theme-almanac-special-badge-bg)] px-2 py-0.5 text-[var(--theme-almanac-special-badge-fg)]">
+                            <span className="rounded bg-[var(--theme-almanac-event-time-end-bg)] px-2 py-0.5 text-[var(--theme-almanac-event-time-end-fg)]">
                               Eindigt {event.resource.endTime}
                             </span>
                           )}
                           {isSpanning && isStartDay && !event.resource.endTime && (
-                            <span className="rounded bg-[var(--theme-almanac-special-badge-bg)] px-2 py-0.5 text-[var(--theme-almanac-special-badge-fg)]">
+                            <span className="rounded bg-[var(--theme-almanac-event-time-end-bg)] px-2 py-0.5 text-[var(--theme-almanac-event-time-end-fg)]">
                               Loopt door
                             </span>
                           )}

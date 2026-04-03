@@ -398,6 +398,89 @@ async function generateSolarRuleOccurrences(
 // =============================================================================
 
 /**
+ * Tithis for which the tithi-rule date (sunrise-based) can diverge from the
+ * astronomical phase event by one calendar day.
+ *
+ * PURNIMA: sunrise-rule day may have 99% illumination while the 180° crossing
+ * (moonPhasePercent = 100) falls on the following calendar day.
+ * AMAVASYA: same phenomenon at the 0° / new moon crossing.
+ *
+ * The correction queries the DB for the day with the highest moonPhasePercent
+ * (with matching moonPhaseType) in the [candidate, candidate+1] window.
+ */
+const PHASE_CORRECTION_TITHI: Partial<Record<Tithi, "FULL_MOON" | "NEW_MOON">> = {
+  PURNIMA: "FULL_MOON",
+  AMAVASYA: "NEW_MOON",
+};
+
+/**
+ * Corrects tithi-rule dates to the astronomical phase peak day.
+ *
+ * Both the tithi day (e.g., 99% illumination) and the following day (100%)
+ * may exceed the moonPhaseType threshold, so we prefer the day with the
+ * highest moonPhasePercent — that is the true astronomical full/new moon.
+ *
+ * A ±1 day window is sufficient: the moon moves ~12°/day, so the 180°
+ * crossing is always within one calendar day of the sunrise-rule PURNIMA day.
+ */
+async function correctToAstronomicalPhaseDay(
+  candidates: Array<{
+    date: Date;
+    tithiEndTime: string | null;
+    maas: string | null;
+    isAdhika: boolean;
+  }>,
+  targetPhase: "FULL_MOON" | "NEW_MOON"
+): Promise<
+  Array<{
+    date: Date;
+    tithiEndTime: string | null;
+    maas: string | null;
+    isAdhika: boolean;
+  }>
+> {
+  if (candidates.length === 0) return candidates;
+
+  // For each candidate, build the [candidate, candidate+1] pair to check.
+  const neighborDates = candidates.map(
+    (c) => new Date(c.date.getTime() + 24 * 60 * 60 * 1000)
+  );
+  const allDates = [...candidates.map((c) => c.date), ...neighborDates];
+
+  const phaseRows = await prisma.dailyInfo.findMany({
+    where: {
+      date: { in: allDates },
+      moonPhaseType: targetPhase,
+    },
+    orderBy: { moonPhasePercent: "desc" }, // highest = peak phase day
+    select: { date: true, moonPhasePercent: true },
+  });
+
+  // Build a map: ISO date string → moonPhasePercent for O(1) lookup.
+  const phaseMap = new Map<string, number>(
+    phaseRows.map((r) => [r.date.toISOString(), r.moonPhasePercent ?? 0])
+  );
+
+  return candidates.map((candidate) => {
+    const candidateIso = candidate.date.toISOString();
+    const nextDay = new Date(candidate.date.getTime() + 24 * 60 * 60 * 1000);
+    const nextDayIso = nextDay.toISOString();
+
+    const candidatePct = phaseMap.get(candidateIso) ?? -1;
+    const nextDayPct = phaseMap.get(nextDayIso) ?? -1;
+
+    // If neither day has the phase type, keep original (seeder gap / edge case).
+    if (candidatePct < 0 && nextDayPct < 0) return candidate;
+
+    // Prefer the day with the higher moonPhasePercent (true peak).
+    if (nextDayPct > candidatePct) {
+      return { ...candidate, date: nextDay };
+    }
+    return candidate;
+  });
+}
+
+/**
  * Generate yearly lunar occurrences (e.g., every Krishna Chaturdashi).
  * Searches for matching tithi in each lunar year within the window.
  * Handles spanning tithis (tithi that spans multiple days).
@@ -540,9 +623,17 @@ async function generateYearlyLunarOccurrences(
       ? ((event.ruleConfig as Record<string, unknown>).durationDays as number)
       : 1;
 
-  const selectedDays = [...selectedByYear, ...kshayaExtras].sort(
+  const rawSelectedDays = [...selectedByYear, ...kshayaExtras].sort(
     (a, b) => a.date.getTime() - b.date.getTime()
   );
+
+  // Astronomical phase correction: for PURNIMA and AMAVASYA the sunrise-rule
+  // tithi day can precede the true astronomical full/new moon by one calendar day.
+  // Shift each occurrence to the peak-illumination day within the ±1 window.
+  const targetPhase = PHASE_CORRECTION_TITHI[event.tithi];
+  const selectedDays = targetPhase
+    ? await correctToAstronomicalPhaseDay(rawSelectedDays, targetPhase)
+    : rawSelectedDays;
 
   // Multi-day festivals use a fixed duration — no tithi-spanning detection needed
   if (durationDays > 1) {

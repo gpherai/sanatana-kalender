@@ -111,26 +111,42 @@ function transformToApiResponse(panchanga: DailyPanchangaFull) {
     },
 
     // Special day detection (server-calculated for consistency and caching)
-    specialDay: panchanga.tithi
-      ? (() => {
-          const specialDay = detectSpecialDay(
-            {
-              number: panchanga.tithi.number,
-              name: panchanga.tithi.name,
-              paksha: panchanga.tithi.paksha,
-            },
-            new Date(panchanga.date)
-          );
-          return specialDay
-            ? {
-                type: specialDay.type,
-                name: specialDay.name,
-                description: specialDay.description,
-                emoji: specialDay.emoji,
-              }
-            : null;
-        })()
-      : null,
+    // Purnima/Amavasya: use the astronomical moonPhaseEvent (not the sunrise-rule tithi)
+    // to ensure the correct calendar day is marked (e.g., April 2 not April 1).
+    // All other tithis (Ekadashi, Chaturthi, Pradosham, Ashtami): use tithi-based detection.
+    specialDay: (() => {
+      const date = new Date(panchanga.date);
+      if (panchanga.moonPhaseEvent?.type === "full") {
+        return {
+          type: "purnima",
+          name: "Purnima",
+          description: "Volle Maan - Heilige dag",
+          emoji: "🌕",
+        };
+      }
+      if (panchanga.moonPhaseEvent?.type === "new") {
+        return {
+          type: "amavasya",
+          name: "Amavasya",
+          description: "Nieuwe Maan - Voorouderdag",
+          emoji: "🌑",
+        };
+      }
+      if (!panchanga.tithi) return null;
+      const sd = detectSpecialDay(
+        {
+          number: panchanga.tithi.number,
+          name: panchanga.tithi.name,
+          paksha: panchanga.tithi.paksha,
+        },
+        date
+      );
+      // Exclude Purnima/Amavasya from tithi-based path — handled by moonPhaseEvent above
+      if (sd?.type === "purnima" || sd?.type === "amavasya") return null;
+      return sd
+        ? { type: sd.type, name: sd.name, description: sd.description, emoji: sd.emoji }
+        : null;
+    })(),
 
     // =========================================================================
     // DRIK PANCHANG EXTENDED FIELDS

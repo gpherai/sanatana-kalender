@@ -27,7 +27,7 @@ export function MoonPhasesTimeline({
   if (moonPhases.length === 0) return null;
 
   return (
-    <div className="almanac-moon-timeline rounded-2xl bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 p-4 shadow-lg dark:from-indigo-900/20 dark:via-purple-900/20 dark:to-pink-900/20">
+    <div className="almanac-moon-timeline rounded-2xl p-4 shadow-lg">
       <h3 className="text-theme-fg mb-3 flex items-center gap-2 text-sm font-semibold">
         <Moon className="h-4 w-4" />
         Maanfases in {MONTHS_LONG[month]}

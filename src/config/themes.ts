@@ -853,10 +853,10 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
   }
 }
 
-/* MoonPhasesTimeline dark mode — visible on void background */
-.dark[[t]] .almanac-moon-timeline,
-[[t]].dark .almanac-moon-timeline {
-  background: linear-gradient(to right, oklch(0.20 0.14 275), oklch(0.18 0.10 285), oklch(0.22 0.06 300)) !important;
+/* MoonPhasesTimeline dark mode — override var for void background */
+.dark[[t]],
+[[t]].dark {
+  --theme-almanac-moon-timeline-bg: linear-gradient(to right, oklch(0.20 0.14 275), oklch(0.18 0.10 285), oklch(0.22 0.06 300));
 }
 
 /* Hero: restore white text on date — heading gradient applies wrong context here */

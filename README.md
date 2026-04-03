@@ -4,13 +4,15 @@
 
 ## Beschrijving
 
-Een Next.js applicatie voor het beheren van Hindu festivals, puja's, ekadashi's en andere spirituele gebeurtenissen. De app biedt:
+Een Next.js applicatie voor het bijhouden van Hindu festivals, puja's, ekadashi's en andere spirituele gebeurtenissen. De app biedt:
 
 - Kalenderweergave (maand/week/dag/agenda)
-- Maanfase tracking en zon/maan tijden
+- Almanac maandoverzicht met maanfases, speciale dagen en events
+- Volledig Vedisch panchanga (tithi, nakshatra, yoga, karana, vara) via Swiss Ephemeris
+- Eerstvolgende maanopkomst en -ondergang op basis van huidige tijd
 - Categorisatie per godheid (Ganesha, Shiva, Krishna, etc.)
 - Geavanceerd filteren en zoeken
-- Meerdere thema's met dark mode support
+- Meerdere thema's met dark mode — waaronder Bhairava Nocturne
 - Locatie-gebaseerde astronomische berekeningen (Swiss Ephemeris)
 - Parent-child event series (bijv. Navratri → 9 Navadurga dagen)
 
@@ -78,6 +80,7 @@ npm run build        # Production build
 npm run start        # Start production server
 npm run test         # Run unit tests
 npm run validate     # Format check + lint + type check
+npm run generate:css # Regenereer globals.css na thema-wijzigingen
 ```
 
 ### Database
@@ -138,7 +141,17 @@ De service delegeert core logica aan `src/engine/` — pure functies zonder DB-t
 
 ### Panchanga
 
-`src/services/panchanga.service.ts` berekent dagelijkse lunaire data (tithi, nakshatra, maas, paksha) via Swiss Ephemeris. De `DailyInfo` tabel slaat dit op als cache.
+`src/services/panchanga.service.ts` berekent dagelijkse Vedische data (tithi, nakshatra, yoga, karana, vara, maas, ayanamsa) via Swiss Ephemeris. Resultaten worden gecached in een in-memory LRU-cache — historische datums 24 uur, vandaag altijd vers berekend (maantijden zijn tijdgevoelig).
+
+### Thema-systeem
+
+`src/config/themes.ts` is de enige bron voor thema-definities. Na elke wijziging wordt `globals.css` geregenereerd via:
+
+```bash
+npm run generate:css
+```
+
+Nooit `globals.css` direct aanpassen.
 
 ## Project Structuur
 
@@ -151,15 +164,22 @@ sanatana-kalender/
 ├── src/
 │   ├── app/                 # Next.js App Router
 │   │   ├── api/             # API endpoints
+│   │   ├── almanac/         # Almanac maandoverzicht
 │   │   ├── events/          # Events overzichtspagina
-│   │   └── settings/        # Instellingen
-│   ├── components/          # React components
+│   │   ├── settings/        # Instellingen
+│   │   └── weer/            # Weerpagina
+│   ├── components/
+│   │   ├── almanac/         # MonthGrid, DayDetailsPanel, AlmanacFilters, MoonPhasesTimeline
+│   │   ├── calendar/        # DharmaCalendar, EventDetailModal, EventCard
+│   │   ├── events/          # EventCard, EventCardCompact
+│   │   └── ui/              # TodayHero, MoonPhase, gedeelde componenten
 │   ├── config/              # Configuratie (events, categorieën, thema's)
 │   ├── hooks/               # Custom hooks
 │   ├── lib/                 # Utilities
 │   ├── repositories/        # Data access layer (complexe query-constructie)
 │   ├── scripts/             # TypeScript scripts (seed, generate, check)
-│   ├── services/            # Business logic (recurrence, panchanga)
+│   ├── server/panchanga/    # Swiss Ephemeris engine + services
+│   ├── services/            # Business logic (recurrence, panchanga service)
 │   └── types/               # TypeScript types
 ├── docker-compose.yml
 ├── docker-compose.prod.yml
@@ -207,4 +227,4 @@ Private project — Alle rechten voorbehouden.
 
 ---
 
-**Versie:** 0.10.0 | **Laatst bijgewerkt:** 24 maart 2026
+**Versie:** 0.10.0 | **Laatst bijgewerkt:** 2 april 2026

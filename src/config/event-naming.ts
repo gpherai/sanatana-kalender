@@ -433,8 +433,8 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       maas: "MARGASHIRSHA",
     },
     description:
-      "Schenkt moksha (bevrijding). In Zuid-India ook wel Vaikuntha Ekadashi genoemd.",
-    tags: ["ekadashi", "moksha", "vaikuntha", "vasten"],
+      "De Ekadashi van Margashirsha Shukla Paksha, in Noord-India gevierd als Mokshada Ekadashi. Volgens de traditie is dit de dag waarop Krishna de Bhagavad Gita sprak tot Arjuna op het slagveld van Kurukshetra — vandaar ook wel Gita Jayanti. In Zuid-India wordt dezelfde dag gevierd als Vaikunta Ekadashi (zie aparte entry).",
+    tags: ["ekadashi", "moksha", "gita-jayanti", "krishna", "vasten"],
   },
 
   // ==========================================================================
@@ -748,19 +748,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     },
     description: "Volle maan (Purnima) van de maand Jyeshtha. Vat Purnima Vrat.",
     tags: ["purnima", "vrat"],
-  },
-  {
-    key: "ashadha_ashadha_purnima",
-    name: "Ashadha Purnima",
-    categories: ["general"],
-    eventType: "TITHI",
-    ruleType: "TITHI",
-    ruleConfig: {
-      tithi: "PURNIMA",
-      maas: "ASHADHA",
-    },
-    description: "Guru Purnima. Eerbetoon aan spirituele leraren.",
-    tags: ["guru", "purnima"],
   },
   {
     key: "shravana_shravana_purnima",
@@ -1127,7 +1114,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "TRITIYA_SHUKLA",
       maas: "SHRAVANA",
     },
-    description: "Groene Teej. Geleefd door vrouwen voor huwelijksgeluk.",
+    description: "Groene Teej. Gevierd door vrouwen voor huwelijksgeluk.",
     tags: ["festival", "teej", "vrouwen"],
   },
   {
