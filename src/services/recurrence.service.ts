@@ -219,10 +219,6 @@ export async function generateOccurrences(
     event.recurrenceType === "MONTHLY_SOLAR"
   ) {
     const strategy = RECURRENCE_STRATEGIES[event.recurrenceType];
-    if (!strategy) {
-      logWarn(`Unknown recurrence type: ${event.recurrenceType}`);
-      return [];
-    }
     occurrences = await strategy(event, startDate, endDate, location, timezone);
   } else if (event.ruleType) {
     // Rule-based generation (takes precedence over recurrenceType for yearly events)
