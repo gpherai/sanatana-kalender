@@ -215,9 +215,9 @@ describe("PanchangaSwissService", () => {
     expect(result.yamagandam).toEqual({ startLocal: "10:30", endLocal: "12:00" });
     expect(result.ayanamsa.degrees).toBe(24.1);
 
-    expect(sweCalcUt).toHaveBeenCalledWith(100, 0, expect.unknown(Number)); // Sun at sunrise
-    expect(sweCalcUt).toHaveBeenCalledWith(100, 1, expect.unknown(Number)); // Moon at sunrise
-    expect(swePhenoUt).toHaveBeenCalledWith(100, 1, expect.unknown(Number));
+    expect(sweCalcUt).toHaveBeenCalledWith(100, 0, expect.any(Number)); // Sun at sunrise
+    expect(sweCalcUt).toHaveBeenCalledWith(100, 1, expect.any(Number)); // Moon at sunrise
+    expect(swePhenoUt).toHaveBeenCalledWith(100, 1, expect.any(Number));
     expect(getAyanamsa).toHaveBeenCalledWith(100);
     expect(sweSetSidMode).toHaveBeenCalled();
   });
