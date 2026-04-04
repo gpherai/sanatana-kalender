@@ -20,7 +20,7 @@ import { prisma } from "@/lib/db";
 import { DEFAULT_LOCATION } from "@/lib/domain";
 import { logDebug, logWarn } from "@/lib/utils";
 import { formatDateNL } from "@/lib/date-utils";
-import { calculateTimingWindow } from "@/lib/timing-utils";
+import { calculateTimingWindow, parseTimeToMinutes } from "@/lib/timing-utils";
 import {
   computeTithiOccurrence,
   groupConsecutiveDays,
@@ -132,6 +132,7 @@ const RULE_STRATEGIES: Record<string, RecurrenceStrategy> = {
   NAKSHATRA: generateNakshatraRuleOccurrences,
   TITHI_NAKSHATRA: generateNakshatraRuleOccurrences,
   WEEKDAY_TITHI: generateWeekdayTithiOccurrences,
+  PRADOSH: generatePradoshOccurrences,
 };
 
 /**
@@ -193,10 +194,18 @@ export async function generateOccurrences(
 
   let occurrences: GeneratedOccurrence[] = [];
 
-  // WEEKDAY_TITHI takes full precedence — handles its own frequency internally
-  // (queries all matching tithis, then filters by weekday).
+  // WEEKDAY_TITHI and PRADOSH take full precedence — both handle their own
+  // frequency internally and must bypass the MONTHLY_LUNAR branch below.
   if (event.ruleType === "WEEKDAY_TITHI") {
     occurrences = await generateWeekdayTithiOccurrences(
+      event,
+      startDate,
+      endDate,
+      location,
+      timezone
+    );
+  } else if (event.ruleType === "PRADOSH") {
+    occurrences = await generatePradoshOccurrences(
       event,
       startDate,
       endDate,
@@ -767,6 +776,152 @@ async function generateWeekdayTithiOccurrences(
   return dailyData
     .map((day) => computeTithiOccurrence(day, day, prevDayMap))
     .filter((occ) => occ.date.getUTCDay() === weekday);
+}
+
+// =============================================================================
+// PRADOSH RULE-BASED GENERATION
+// =============================================================================
+
+/**
+ * Generate Pradosh Vrat occurrences using sunset-based Trayodashi detection.
+ *
+ * Pradosh Vrat requires Trayodashi to be active during Pradosh Kaal (sunset−90min
+ * to sunset+45min). Udaya tithi (sunrise-based) alone is insufficient because:
+ *   - A kshaya Trayodashi never appears as udaya tithi
+ *   - tithiEndTime values past midnight are stored as early-morning times of the
+ *     same day, requiring sunrise comparison to detect them
+ *
+ * Two valid cases for a given calendar day:
+ *   Case 2 — Dwadashi is udaya tithi AND tithiEndTime < sunset: Trayodashi starts
+ *             before Pradosh window. Observe on this day (Hindu tradition: prefer
+ *             the earlier day Trayodashi first enters the Pradosh window).
+ *   Case 1 — Trayodashi is udaya tithi: valid when active during Pradosh Kaal
+ *             (tithiEndTime ≥ sunset−90min, or null/next-day/vriddhi).
+ *             Skipped when Case 2 already covers the same Trayodashi span.
+ *
+ * Time storage convention: tithiEndTime < sunrise means the stored time is from
+ * the following calendar day (past midnight). Such a tithi extends past sunset.
+ *
+ * ruleConfig must contain: { paksha: "SHUKLA" | "KRISHNA", weekday: 0–6 }
+ */
+async function generatePradoshOccurrences(
+  event: Event,
+  startDate: Date,
+  endDate: Date,
+  _location: { name: string; lat: number; lon: number },
+  _timezone: string
+): Promise<GeneratedOccurrence[]> {
+  const config = (event.ruleConfig as Record<string, unknown>) ?? {};
+  const paksha = config.paksha as string | undefined;
+  const weekday = config.weekday;
+
+  if (!paksha || (paksha !== "SHUKLA" && paksha !== "KRISHNA")) {
+    logWarn(`PRADOSH event "${event.name}" missing valid paksha in ruleConfig`);
+    return [];
+  }
+  if (typeof weekday !== "number") {
+    logWarn(`PRADOSH event "${event.name}" missing numeric weekday in ruleConfig`);
+    return [];
+  }
+
+  const trayodashiTithi: Tithi =
+    paksha === "SHUKLA" ? "TRAYODASHI_SHUKLA" : "TRAYODASHI_KRISHNA";
+  const dwadasiTithi: Tithi =
+    paksha === "SHUKLA" ? "DWADASHI_SHUKLA" : "DWADASHI_KRISHNA";
+
+  // Case 1: Trayodashi is the udaya tithi
+  const trayodashiDays = await prisma.dailyInfo.findMany({
+    where: { date: { gte: startDate, lte: endDate }, tithi: trayodashiTithi },
+    orderBy: { date: "asc" },
+    select: { date: true, tithiEndTime: true, sunrise: true, sunset: true },
+  });
+
+  // Case 2: Dwadashi is the udaya tithi (catches kshaya Trayodashi and early-start cases)
+  const dwadasiDays = await prisma.dailyInfo.findMany({
+    where: { date: { gte: startDate, lte: endDate }, tithi: dwadasiTithi },
+    orderBy: { date: "asc" },
+    select: { date: true, tithiEndTime: true, sunrise: true, sunset: true },
+  });
+
+  const validDates = new Map<string, Date>();
+
+  // Index of all Trayodashi udaya-tithi dates for vriddhi detection
+  // (vriddhi = extended tithi spanning two consecutive sunrises)
+  const trayodashiDateSet = new Set(
+    trayodashiDays.map((d) => d.date.toISOString().split("T")[0]!)
+  );
+
+  // ── STEP 1: Case 2 (Dwadashi udaya, higher priority) ──────────────────────
+  // Per Hindu tradition: if Trayodashi starts before sunset on the Dwadashi day,
+  // Pradosh is observed on that earlier day.
+  for (const day of dwadasiDays) {
+    if (!day.sunset || !day.tithiEndTime) continue;
+
+    const tithiEndMin = parseTimeToMinutes(day.tithiEndTime);
+    const sunriseMin = parseTimeToMinutes(day.sunrise);
+    const sunsetMin = parseTimeToMinutes(day.sunset);
+
+    if (tithiEndMin === null || sunsetMin === null) continue;
+
+    // Skip if tithiEndTime is a next-day time (tithiEndTime < sunrise):
+    // Dwadashi extends past midnight → it does NOT end within today's Pradosh window.
+    if (sunriseMin !== null && tithiEndMin < sunriseMin) continue;
+
+    // Dwadashi ends before the close of Pradosh Kaal (sunset + 45min) →
+    // Trayodashi starts within or before the Pradosh window.
+    // This catches: (a) normal case where Dwadashi ends well before sunset,
+    //               (b) edge case where Dwadashi ends just after sunset but
+    //                   Trayodashi is still active during the 45-min post-sunset window.
+    if (tithiEndMin < sunsetMin + 45) {
+      validDates.set(day.date.toISOString().split("T")[0]!, day.date);
+    }
+  }
+
+  // ── STEP 2: Case 1 (Trayodashi udaya) ─────────────────────────────────────
+  // Skip when Case 2 already covers this Trayodashi span (previous day in validDates).
+  for (const day of trayodashiDays) {
+    if (!day.sunset) continue;
+
+    const tithiEndMin = parseTimeToMinutes(day.tithiEndTime);
+    const sunriseMin = parseTimeToMinutes(day.sunrise);
+    const sunsetMin = parseTimeToMinutes(day.sunset);
+
+    if (sunsetMin === null) continue;
+
+    const iso = day.date.toISOString().split("T")[0]!;
+
+    // Skip if previous day was already added by Case 2
+    const prevDay = new Date(day.date);
+    prevDay.setUTCDate(prevDay.getUTCDate() - 1);
+    if (validDates.has(prevDay.toISOString().split("T")[0]!)) continue;
+
+    // Vriddhi: same tithi on the following day → Trayodashi spans at least two
+    // sunrises and is definitely active during today's sunset.
+    const nextDay = new Date(day.date);
+    nextDay.setUTCDate(nextDay.getUTCDate() + 1);
+    const isVriddhi = trayodashiDateSet.has(nextDay.toISOString().split("T")[0]!);
+
+    // Valid when Trayodashi is active during Pradosh Kaal (sunset − 90 min):
+    //   • null         → extends past midnight → past sunset
+    //   • < sunrise    → next-day time → extends past midnight → past sunset
+    //   • ≥ sunset−90  → active at or after Pradosh start
+    //   • vriddhi      → spans two sunrises → active all day
+    const pradoshStartMin = sunsetMin - 90;
+    const isValid =
+      day.tithiEndTime === null ||
+      isVriddhi ||
+      (sunriseMin !== null && tithiEndMin !== null && tithiEndMin < sunriseMin) ||
+      (tithiEndMin !== null && tithiEndMin >= pradoshStartMin);
+
+    if (isValid) {
+      validDates.set(iso, day.date);
+    }
+  }
+
+  return Array.from(validDates.values())
+    .sort((a, b) => a.getTime() - b.getTime())
+    .filter((date) => date.getUTCDay() === weekday)
+    .map((date) => ({ date }));
 }
 
 // =============================================================================

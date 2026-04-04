@@ -18,6 +18,7 @@ const MOCK_DAILY_INFO = {
   moonPhasePercent: 50,
   moonPhaseName: "Eerste Kwartier",
   isWaxing: true,
+  maas: { name: "Margashirsha" },
   tithi: { name: "Pratipada", paksha: "Shukla", endTime: "12:00" },
   nakshatra: { name: "Ashwini", pada: 1 },
 };
@@ -49,7 +50,7 @@ describe("TodayHero Component", () => {
   it("renders loading state initially", () => {
     mockFetch.mockReturnValue(new Promise(() => {}));
     render(<TodayHero />);
-    expect(screen.getByText(/Loading today's info/i)).toBeInTheDocument();
+    expect(screen.getByText(/Vandaag laden.../i)).toBeInTheDocument();
   });
 
   it("renders daily info after fetch", async () => {
@@ -72,7 +73,7 @@ describe("TodayHero Component", () => {
 
     // Wait for loading to disappear
     await waitFor(() => {
-      expect(screen.queryByText(/Loading today's info/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Vandaag laden.../i)).not.toBeInTheDocument();
     });
 
     // Check header info
@@ -103,7 +104,7 @@ describe("TodayHero Component", () => {
     render(<TodayHero />);
 
     await waitFor(() => {
-      expect(screen.queryByText(/Loading/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Vandaag laden.../i)).not.toBeInTheDocument();
     });
 
     expect(screen.getByText("New Year Puja")).toBeInTheDocument();

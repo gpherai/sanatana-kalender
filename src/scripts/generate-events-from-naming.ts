@@ -50,7 +50,7 @@ async function generateEventsFromNaming() {
       "YEARLY_LUNAR";
     if (naming.ruleType === "SOLAR") {
       recurrenceType = "YEARLY_SOLAR";
-    } else if (naming.ruleType === "WEEKDAY_TITHI") {
+    } else if (naming.ruleType === "WEEKDAY_TITHI" || naming.ruleType === "PRADOSH") {
       recurrenceType = "MONTHLY_LUNAR";
     } else if (
       naming.ruleType === "TITHI" &&

@@ -179,4 +179,45 @@ describe("Database Client", () => {
 
     errorSpy.mockRestore();
   });
+
+  it("registers shutdown handlers and handles disconnect successfully", async () => {
+    const processOnSpy = vi.spyOn(process, "on").mockImplementation(() => process);
+    const consoleLogSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+    await importDbModule();
+
+    const sigtermCall = processOnSpy.mock.calls.find((call) => call[0] === "SIGTERM");
+    expect(sigtermCall).toBeDefined();
+
+    const shutdownHandler = sigtermCall![1] as () => Promise<void>;
+
+    prismaDisconnect.mockResolvedValueOnce(undefined);
+    await shutdownHandler();
+
+    expect(prismaDisconnect).toHaveBeenCalled();
+    expect(consoleLogSpy).toHaveBeenCalledWith("[DB] Database connections closed.");
+
+    processOnSpy.mockRestore();
+    consoleLogSpy.mockRestore();
+  });
+
+  it("handles errors during graceful shutdown", async () => {
+    const processOnSpy = vi.spyOn(process, "on").mockImplementation(() => process);
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    await importDbModule();
+
+    const sigtermCall = processOnSpy.mock.calls.find((call) => call[0] === "SIGTERM");
+    const shutdownHandler = sigtermCall![1] as () => Promise<void>;
+
+    const error = new Error("disconnect failed");
+    prismaDisconnect.mockRejectedValueOnce(error);
+
+    await shutdownHandler();
+
+    expect(consoleErrorSpy).toHaveBeenCalledWith("[DB] Error during shutdown:", error);
+
+    processOnSpy.mockRestore();
+    consoleErrorSpy.mockRestore();
+  });
 });

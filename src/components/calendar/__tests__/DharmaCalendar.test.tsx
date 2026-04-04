@@ -66,10 +66,15 @@ describe("DharmaCalendar", () => {
       },
     };
 
-    fetchMock.mockResolvedValue({
-      ok: true,
-      json: async () => [event],
-    } as Response);
+    fetchMock.mockImplementation(async (url) => {
+      if (typeof url === "string" && url.includes("/api/daily-info")) {
+        return { ok: true, json: async () => [] } as Response;
+      }
+      return {
+        ok: true,
+        json: async () => [event],
+      } as Response;
+    });
 
     const now = new Date();
     const expectedStart = startOfMonth(addMonths(now, -1));
@@ -95,7 +100,8 @@ describe("DharmaCalendar", () => {
     const endStr = formatDateLocal(expectedEnd);
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `/api/events?start=${startStr}T00:00:00.000Z&end=${endStr}T23:59:59.999Z`
+      `/api/events?start=${startStr}T00:00:00.000Z&end=${endStr}T23:59:59.999Z`,
+      expect.any(Object)
     );
     expect(calendar).toHaveAttribute("data-first-event-start", "date");
     expect(lastCalendarProps?.view).toBe("month");
@@ -165,10 +171,15 @@ describe("DharmaCalendar", () => {
       },
     };
 
-    fetchMock.mockResolvedValue({
-      ok: true,
-      json: async () => [event],
-    } as Response);
+    fetchMock.mockImplementation(async (url) => {
+      if (typeof url === "string" && url.includes("/api/daily-info")) {
+        return { ok: true, json: async () => [] } as Response;
+      }
+      return {
+        ok: true,
+        json: async () => [event],
+      } as Response;
+    });
 
     render(<DharmaCalendar />);
 

@@ -66,14 +66,21 @@ src/
 
 In `additionalCss` wordt `[[t]]` vervangen door `[data-theme="thema-naam"]` door de CSS-generator.
 
-## Bhairava Nocturne — Voltooid (gemerged naar main)
+## Database
 
-### Kleurenpalet
-- Indigo aura: `oklch(0.62 0.22 275)`
-- Ember vuur: `oklch(0.74 0.18 45)`
-- Void (bijna-zwart): `oklch(0.09 0.025 278)`
-
-Alle Bhairava Nocturne features zijn gemerged naar `main`. Backup branches bewaard voor referentie.
+- **PostgreSQL** (lokaal, geen Docker) — `postgresql://gerald:password@localhost:5432/dharma_db`
+- Tabel: `Event` (kolom `namingKey`), `EventOccurrence` (kolom `date`)
+- **Verificatie via psql:**
+  ```bash
+  PGPASSWORD=password psql -h localhost -U gerald -d dharma_db -c "
+  SELECT e.name, o.date::date
+  FROM \"EventOccurrence\" o
+  JOIN \"Event\" e ON o.\"eventId\" = e.id
+  WHERE e.\"namingKey\" = '<key>'
+  ORDER BY o.date;"
+  ```
+- **Nooit** inline `tsx -e` of `require()` gebruiken voor db-queries — schrijf een script of gebruik psql
+- Prisma Studio: `npm run db:studio`
 
 ## Events Catalog
 
@@ -85,16 +92,7 @@ Alle Bhairava Nocturne features zijn gemerged naar `main`. Backup branches bewaa
 2. Run `npm run db:events` — synchroniseert Event-tabel
 3. Run `npm run db:occurrences -- --start 2026-01-01 --end 2029-12-31 --replace` — regenereert alle occurrences
 
-### Chaturthi events architectuur
-- **Sankashti Chaturthi** (Krishna Paksha): 12 benoemde maandspecifieke entries (commit `9c7ef83`)
-  - Angarki suppression via tags in `almanac/page.tsx`: "sankashti"-events verborgen wanneer "angaraka" aanwezig, tenzij ook "sakat"
-  - Bug gefixed: WEEKDAY_TITHI backshift nu vóór weekdag-filter (spanning-tithi Angarki)
-- **Vinayaka Chaturthi** (Shukla Paksha): `monthly_vinayaka_chaturthi` vervangen door benoemde entries — zelfde patroon als Sankashti
-  - Bhadrapada: `bhadrapada_ganesh_chaturthi` (al specifiek)
-  - Magha: `magha_ganesh_jayanti` (al specifiek, Gauriganesha alias)
-  - Chaitra + Ashwin: naast `navadurga_dag4_kushmanda` (aparte observances, beide tonen)
-  - Adhika Jyeshtha: `adhika_jyeshtha_varada_chaturthi` (isAdhikaOnly) — Adhika = Varada
-  - Regulier Jyeshtha: `jyeshtha_pradyumna_chaturthi` — altijd Pradyumna (zelfde als Sankashti-patroon)
+## Vishnu Events — In Bespreking
 
 ## Ontwikkeling
 

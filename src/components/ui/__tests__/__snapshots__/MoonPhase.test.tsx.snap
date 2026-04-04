@@ -50,47 +50,17 @@ exports[`MoonPhase Component > renders full moon state (snapshot) 1`] = `
             style="stop-color: var(--theme-moon-shadow-deep, oklch(0.105 0.010 275));"
           />
         </radialgradient>
-        <filter
-          height="140%"
-          id="moonTexture-120"
-          width="140%"
-          x="-20%"
-          y="-20%"
-        >
-          <feturbulence
-            baseFrequency="0.02"
-            numOctaves="2"
-            result="noise"
-            type="fractalNoise"
-          />
-          <fecolormatrix
-            in="noise"
-            result="opacity"
-            type="matrix"
-            values="0 0 0 0 0
-                      0 0 0 0 0
-                      0 0 0 0 0
-                      0 0 0 0.05 0"
-          />
-          <feblend
-            in="SourceGraphic"
-            in2="opacity"
-            mode="multiply"
-          />
-        </filter>
       </defs>
       <circle
         cx="60"
         cy="60"
         fill="url(#moonDark-120)"
-        filter="url(#moonTexture-120)"
         r="58"
       />
       <path
-        class="transition-all duration-1000"
+        class="[transition:d_1000ms_ease] motion-reduce:transition-none"
         d="M 60 2 A 58 58 0 1 1 60 118 A 58 58 0 1 1 60 2"
         fill="url(#moonSurface-120)"
-        filter="url(#moonTexture-120)"
       />
       <circle
         cx="60"
@@ -151,40 +121,11 @@ exports[`MoonPhase Component > renders new moon state (snapshot) 1`] = `
             style="stop-color: var(--theme-moon-shadow-deep, oklch(0.105 0.010 275));"
           />
         </radialgradient>
-        <filter
-          height="140%"
-          id="moonTexture-120"
-          width="140%"
-          x="-20%"
-          y="-20%"
-        >
-          <feturbulence
-            baseFrequency="0.02"
-            numOctaves="2"
-            result="noise"
-            type="fractalNoise"
-          />
-          <fecolormatrix
-            in="noise"
-            result="opacity"
-            type="matrix"
-            values="0 0 0 0 0
-                      0 0 0 0 0
-                      0 0 0 0 0
-                      0 0 0 0.05 0"
-          />
-          <feblend
-            in="SourceGraphic"
-            in2="opacity"
-            mode="multiply"
-          />
-        </filter>
       </defs>
       <circle
         cx="60"
         cy="60"
         fill="url(#moonDark-120)"
-        filter="url(#moonTexture-120)"
         r="58"
       />
       <circle
@@ -250,44 +191,15 @@ exports[`MoonPhase Component > renders waxing crescent state (snapshot) 1`] = `
             style="stop-color: var(--theme-moon-shadow-deep, oklch(0.105 0.010 275));"
           />
         </radialgradient>
-        <filter
-          height="140%"
-          id="moonTexture-120"
-          width="140%"
-          x="-20%"
-          y="-20%"
-        >
-          <feturbulence
-            baseFrequency="0.02"
-            numOctaves="2"
-            result="noise"
-            type="fractalNoise"
-          />
-          <fecolormatrix
-            in="noise"
-            result="opacity"
-            type="matrix"
-            values="0 0 0 0 0
-                      0 0 0 0 0
-                      0 0 0 0 0
-                      0 0 0 0.05 0"
-          />
-          <feblend
-            in="SourceGraphic"
-            in2="opacity"
-            mode="multiply"
-          />
-        </filter>
       </defs>
       <circle
         cx="60"
         cy="60"
         fill="url(#moonDark-120)"
-        filter="url(#moonTexture-120)"
         r="58"
       />
       <path
-        class="transition-all duration-1000"
+        class="[transition:d_1000ms_ease] motion-reduce:transition-none"
         d="
         M 60 2
         A 58 58 0 0 1 60 118
@@ -295,7 +207,6 @@ exports[`MoonPhase Component > renders waxing crescent state (snapshot) 1`] = `
         Z
       "
         fill="url(#moonSurface-120)"
-        filter="url(#moonTexture-120)"
       />
       <circle
         cx="60"

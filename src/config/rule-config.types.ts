@@ -51,6 +51,21 @@ export interface WeekdayTithiRuleConfig {
   weekday: 0 | 1 | 2 | 3 | 4 | 5 | 6;
 }
 
+/**
+ * PRADOSH: Trayodashi must be active during Pradosh Kaal (sunset window).
+ *
+ * Uses sunset-based matching instead of udaya tithi (sunrise):
+ * - Case 1: Trayodashi is udaya tithi AND active at sunset (tithiEndTime ≥ sunset or null)
+ * - Case 2: Dwadashi is udaya tithi AND ends before sunset (Trayodashi starts before sunset)
+ *
+ * This correctly handles kshaya Trayodashi (never appears as udaya tithi)
+ * and avoids backshift errors from the regular WEEKDAY_TITHI approach.
+ */
+export interface PradoshRuleConfig {
+  paksha: "SHUKLA" | "KRISHNA";
+  weekday: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+}
+
 /** CUSTOM: open-ended for complex rules not covered by other types */
 export type CustomRuleConfig = Record<string, unknown>;
 
@@ -64,6 +79,7 @@ export interface RuleConfigMap {
   NAKSHATRA: NakshatraRuleConfig;
   TITHI_NAKSHATRA: TithiNakshatraRuleConfig;
   WEEKDAY_TITHI: WeekdayTithiRuleConfig;
+  PRADOSH: PradoshRuleConfig;
   CUSTOM: CustomRuleConfig;
 }
 

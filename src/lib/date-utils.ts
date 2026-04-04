@@ -157,13 +157,7 @@ export function parseCalendarDate(dateString: string): Date {
   }
 
   const [year, month, day] = dateString.split("-").map(Number);
-  const date = new Date(Date.UTC(year!, month! - 1, day!));
-
-  if (!isValidDate(date)) {
-    throw new Error(`Invalid date value: "${dateString}".`);
-  }
-
-  return date;
+  return new Date(Date.UTC(year!, month! - 1, day!));
 }
 
 /**

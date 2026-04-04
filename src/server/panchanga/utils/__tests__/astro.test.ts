@@ -42,7 +42,13 @@ const {
       cb: (result: { error?: string; transitTime?: number }) => void
     ) => {
       const transitTime = riseTransQueue.shift();
-      if (typeof transitTime === "number") {
+      if (transitTime === undefined) {
+        cb({ error: "EMPTY QUEUE" });
+      } else if (transitTime === -1) {
+        cb({ error: "bad transit" });
+      } else if (transitTime === -2) {
+        cb({} as unknown as { transitTime: number }); // missing transitTime
+      } else if (typeof transitTime === "number") {
         cb({ transitTime });
       } else {
         cb({ error: "no transit" });
@@ -124,6 +130,7 @@ import {
   getAyanamsa,
   swe_calc_ut,
   swe_pheno_ut,
+  swe_julday as astro_swe_julday,
 } from "../astro";
 
 describe("Astro Utilities", () => {
@@ -266,5 +273,45 @@ describe("Astro Utilities", () => {
 
     await expect(getAyanamsa(123)).resolves.toBe(24.1);
     expect(sweGetAyanamsa).toHaveBeenCalledWith(123, expect.any(Function));
+  });
+
+  it("rejects swe_julday when Swiss Ephemeris throws an error", async () => {
+    sweJulday.mockImplementationOnce(() => {
+      throw new Error("bad julday");
+    });
+    await expect(astro_swe_julday(2025, 1, 1, 0, 1)).rejects.toThrow("bad julday");
+  });
+
+  it("rejects rise/set calculations when swe_rise_trans returns error or missing transitTime", async () => {
+    const loc = { name: "Test", lat: 10, lon: 20, tz: "UTC" };
+
+    // First: error
+    riseTransQueue.push(-1);
+    await expect(calculateSunriseSunset("2025-01-01", loc)).rejects.toThrow(
+      "bad transit"
+    );
+
+    // Second: missing transitTime
+    riseTransQueue.length = 0;
+    riseTransQueue.push(-2);
+    await expect(calculateSunriseSunset("2025-01-01", loc)).rejects.toThrow(
+      "No rise time found"
+    );
+  });
+
+  it("recalculates moonrise/moonset if upcomingFromNow is true and moonset is in the past", async () => {
+    // sweJulday normally returns 0. If setTimeJD < 0, it's in the past.
+    // jdNow will be 0.
+    riseTransQueue.push(-20, -10, 10, 20); // first rise, set (past), new rise, new set (future)
+    revjulResults.set(10, { year: 2025, month: 1, day: 2, hour: 5 });
+    revjulResults.set(20, { year: 2025, month: 1, day: 2, hour: 17 });
+
+    const loc = { name: "Test", lat: 10, lon: 20, tz: "UTC" };
+
+    const result = await calculateMoonriseMoonset("2025-01-02", loc, true);
+
+    expect(result.moonriseJD).toBe(10);
+    expect(result.moonsetJD).toBe(20);
+    expect(sweRiseTrans).toHaveBeenCalledTimes(4);
   });
 });

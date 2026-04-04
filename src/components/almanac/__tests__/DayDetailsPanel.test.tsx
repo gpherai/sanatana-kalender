@@ -24,6 +24,7 @@ const MOCK_INFO = {
   moonPhaseType: "FIRST_QUARTER",
   moonPhaseEmoji: "🌓",
   isWaxing: true,
+  maas: { name: "Margashirsha" },
   tithi: { number: 1, name: "Pratipada", paksha: "Shukla" as const, endTime: "12:00" },
   nakshatra: { number: 1, name: "Ashwini", pada: 1 as const, endTime: "14:00" },
   yoga: { number: 1, name: "Vishkumbha", endTime: "10:00" },

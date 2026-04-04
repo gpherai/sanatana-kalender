@@ -16,6 +16,7 @@ import {
   formatLongDate,
   formatRelativeDate,
   formatTimeAgo,
+  formatIsoTimeAgo,
   parseCalendarDate,
   safeParseDate,
   addDayForDisplay,
@@ -190,8 +191,11 @@ describe("Date Utilities", () => {
       const date = new Date(Date.UTC(2025, 0, 1));
       expect(formatDateForInput(date).startsWith("2025-01-01")).toBe(true);
     });
-    it("returns empty string for invalid input", () => {
+    it("returns empty string for null", () => {
       expect(formatDateForInput(null)).toBe("");
+    });
+    it("returns empty string for invalid date", () => {
+      expect(formatDateForInput("invalid")).toBe("");
     });
   });
 
@@ -202,6 +206,9 @@ describe("Date Utilities", () => {
     });
     it("returns empty string for null", () => {
       expect(formatDateLocal(null)).toBe("");
+    });
+    it("returns empty string for invalid date", () => {
+      expect(formatDateLocal("invalid")).toBe("");
     });
   });
 
@@ -270,6 +277,44 @@ describe("Date Utilities", () => {
       expect(typeof result).toBe("string");
       expect(result!.length).toBeGreaterThan(0);
     });
+
+    it("returns relative string in years for a future date > 1 year", () => {
+      const future = new Date(Date.UTC(2026, 5, 15, 12, 0, 0)); // > 2 years later
+      const result = formatRelativeDate(future);
+      expect(result).toBe("over 2 jaar");
+    });
+  });
+
+  describe("formatIsoTimeAgo", () => {
+    it("should return placeholder for null", () => {
+      expect(formatIsoTimeAgo(null)).toBe("—");
+    });
+
+    it("should return placeholder for invalid iso string", () => {
+      expect(formatIsoTimeAgo("invalid")).toBe("—");
+    });
+
+    it("should format future time correctly", () => {
+      const now = new Date("2024-01-01T12:00:00Z");
+      // 2 hours 30 mins in future
+      const future = new Date("2024-01-01T14:30:00Z").toISOString();
+      expect(formatIsoTimeAgo(future, now)).toBe("over 2u 30m");
+
+      // 15 mins in future
+      const futureMin = new Date("2024-01-01T12:15:00Z").toISOString();
+      expect(formatIsoTimeAgo(futureMin, now)).toBe("over 15m");
+    });
+
+    it("should format past time correctly", () => {
+      const now = new Date("2024-01-01T12:00:00Z");
+      // 1 hour 30 mins in past
+      const past = new Date("2024-01-01T10:30:00Z").toISOString();
+      expect(formatIsoTimeAgo(past, now)).toBe("1u 30m geleden");
+
+      // 15 mins in past
+      const pastMin = new Date("2024-01-01T11:45:00Z").toISOString();
+      expect(formatIsoTimeAgo(pastMin, now)).toBe("15m geleden");
+    });
   });
 
   describe("formatTimeAgo", () => {
@@ -293,6 +338,9 @@ describe("Date Utilities", () => {
       const now = new Date("2024-01-01T12:00:00");
       const result = formatTimeAgo("10:30", now);
       expect(result).toBe("1u 30m geleden");
+
+      const resultMin = formatTimeAgo("11:45", now);
+      expect(resultMin).toBe("15m geleden");
     });
 
     it("should handle minutes only correctly", () => {
