@@ -1712,27 +1712,155 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       "visarjan",
     ],
   },
+  // ==========================================================================
+  // VINAYAKA CHATURTHI — PER MAAND MET MANIFESTATIENAAM
+  // Elke Shukla Paksha Chaturthi is gewijd aan een specifieke manifestatie
+  // van Ganesha, bepaald door de Hindu maandnaam (maas).
+  // Jyeshtha heeft drie varianten: Varada (alleen in Adhika-jaren, reguliere maand),
+  // Pradyumna (alleen in niet-Adhika jaren, reguliere maand) en
+  // Pradyumna Adhika (altijd in de Adhika Jyeshtha maand).
+  // ==========================================================================
   {
-    key: "monthly_vinayaka_chaturthi",
-    name: "Vinayaka Chaturthi",
+    key: "pausha_vighneshvara_chaturthi",
+    name: "Vighneshvara Chaturthi",
     categories: ["ganesha"],
     eventType: "PUJA",
     ruleType: "TITHI",
-    ruleConfig: { tithi: "CHATURTHI_SHUKLA", monthly: true },
+    ruleConfig: { tithi: "CHATURTHI_SHUKLA", maas: "PAUSHA" },
     timingType: "MADHYAHNA",
     description:
-      "Vinayaka Chaturthi is de maandelijkse viering van Heer Ganesha op de vierde dag (Chaturthi) van de wassende maan. Ganesha staat symbool als de 'Verwijderaar van Obstakels' (Vighnaharta) en 'God van het Begin'. Een toegewijde verering op deze dag verwijdert fysieke obstakels en innerlijke trots. Gelovigen verrichten een uitgebreide puja, bij voorkeur tijdens Madhyahna (het middaguur), brengen Modaks, fruit en Durva-gras als offergaven en zoeken zijn zegen voor wijsheid en voorspoed. In de maand Bhadrapada valt de grote 10-daagse viering (Ganesh Chaturthi).",
+      "Vighneshvara Chaturthi valt in de Pausha maand op Shukla Chaturthi. Vighneshvara betekent 'Heer van de obstakels' — hij die zowel obstakels schept als wegneemt. Devotees verrichten madhyahna-puja met modak, durva-gras en rode bloemen en bidden voor zijn bescherming bij nieuwe ondernemingen.",
+    tags: ["chaturthi", "ganesha", "madhyahna", "puja", "vinayaka"],
+  },
+  {
+    key: "phalguna_dhundhiraja_chaturthi",
+    name: "Dhundhiraja Chaturthi",
+    categories: ["ganesha"],
+    eventType: "PUJA",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "CHATURTHI_SHUKLA", maas: "PHALGUNA" },
+    timingType: "MADHYAHNA",
+    description:
+      "Dhundhiraja Chaturthi valt in de Phalguna maand op Shukla Chaturthi. Dhundhiraja — 'hij die gezocht wordt door allen' — is de manifestatie van Ganesha als de meest begeerde zegengever. Verering tijdens madhyahna (middag) schenkt succes bij doelen die lang verborgen of moeilijk bereikbaar leken.",
+    tags: ["chaturthi", "ganesha", "madhyahna", "puja", "vinayaka"],
+  },
+  {
+    key: "chaitra_vasudeva_chaturthi",
+    name: "Vasudeva Chaturthi",
+    categories: ["ganesha"],
+    eventType: "PUJA",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "CHATURTHI_SHUKLA", maas: "CHAITRA" },
+    timingType: "MADHYAHNA",
+    description:
+      "Vasudeva Chaturthi valt in de Chaitra maand op Shukla Chaturthi. Vasudeva — 'hij die in alle wezens woont' — eert Ganesha als de alomtegenwoordige kosmische kracht. De madhyahna-puja aan het begin van het Hindu nieuwe jaar (Chaitra) geeft een auspicieuze start met bescherming en voorspoed.",
+    tags: ["chaturthi", "ganesha", "madhyahna", "puja", "vinayaka"],
+  },
+  {
+    key: "vaishakha_sankarshana_chaturthi",
+    name: "Sankarshana Chaturthi",
+    categories: ["ganesha"],
+    eventType: "PUJA",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "CHATURTHI_SHUKLA", maas: "VAISHAKHA" },
+    timingType: "MADHYAHNA",
+    description:
+      "Sankarshana Chaturthi valt in de Vaishakha maand op Shukla Chaturthi. Sankarshana — 'hij die trekt en bindt' — eert Ganesha als de kracht die obstakels uit de weg ruimt en het pad bereidt. Madhyahna-puja met durva-gras en modak versterkt toewijding en mentale kracht.",
+    tags: ["chaturthi", "ganesha", "madhyahna", "puja", "vinayaka"],
+  },
+  {
+    key: "jyeshtha_pradyumna_chaturthi",
+    name: "Pradyumna Chaturthi",
+    categories: ["ganesha"],
+    eventType: "PUJA",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "CHATURTHI_SHUKLA", maas: "JYESHTHA" },
+    timingType: "MADHYAHNA",
+    description:
+      "Pradyumna Chaturthi valt op de reguliere Jyeshtha Shukla Chaturthi. Pradyumna — 'de allermachtigste' — eert Ganesha als de meest verheven kracht die het intellect en de creativiteit verlicht. Madhyahna-puja met modak, durva en rode hibiscusbloemen brengt succes in kennis en kunsten.",
+    tags: ["chaturthi", "ganesha", "madhyahna", "puja", "vinayaka"],
+  },
+  {
+    key: "adhika_jyeshtha_varada_chaturthi",
+    name: "Varada Chaturthi",
+    categories: ["ganesha"],
+    aliases: ["Adhika Jyeshtha Vinayaka Chaturthi"],
+    eventType: "PUJA",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "CHATURTHI_SHUKLA", maas: "JYESHTHA", isAdhikaOnly: true },
+    timingType: "MADHYAHNA",
+    description:
+      "Varada Chaturthi valt in de Adhika Jyeshtha maand op Shukla Chaturthi. Varada betekent 'zegengever' — Ganesha in zijn meest gunstige, schenkende gedaante. In jaren met een schrikkelmaand (Adhika Jyeshtha) valt deze zeldzame observance als extra gelegenheid; devotees bidden voor vervulling van wensen en offeren modak, nariyal en bloemen.",
+    tags: ["adhika", "chaturthi", "ganesha", "madhyahna", "puja", "vinayaka"],
+  },
+  {
+    key: "ashadha_aniruddha_chaturthi",
+    name: "Aniruddha Chaturthi",
+    categories: ["ganesha"],
+    eventType: "PUJA",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "CHATURTHI_SHUKLA", maas: "ASHADHA" },
+    timingType: "MADHYAHNA",
+    description:
+      "Aniruddha Chaturthi valt in de Ashadha maand op Shukla Chaturthi. Aniruddha — 'hij die niet tegengehouden kan worden' — eert Ganesha als de onweerstaanbare kracht die elk obstakel overwint. Verering tijdens madhyahna schenkt onbelemmerd succes en beschermt tegen negatieve invloeden.",
+    tags: ["chaturthi", "ganesha", "madhyahna", "puja", "vinayaka"],
+  },
+  {
+    key: "shravana_durva_ganapati_chaturthi",
+    name: "Durva Ganapati Chaturthi",
+    categories: ["ganesha"],
+    eventType: "PUJA",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "CHATURTHI_SHUKLA", maas: "SHRAVANA" },
+    timingType: "MADHYAHNA",
+    description:
+      "Durva Ganapati Chaturthi valt in de Shravana maand op Shukla Chaturthi. Durva-gras (Bermuda-gras) is de meest geliefde offergave van Ganesha — elk paar durva-halmpjes representeert een bede. Deze dag is bijzonder gunstig voor het aanbieden van bundels durva-gras tijdens de madhyahna-puja voor gezondheid, lang leven en welvaart.",
+    tags: ["chaturthi", "durva", "ganesha", "madhyahna", "puja", "vinayaka"],
+  },
+  {
+    key: "ashwina_kapardisha_chaturthi",
+    name: "Kapardisha Chaturthi",
+    categories: ["ganesha"],
+    eventType: "PUJA",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "CHATURTHI_SHUKLA", maas: "ASHWIN" },
+    timingType: "MADHYAHNA",
+    description:
+      "Kapardisha Chaturthi valt in de Ashwina maand op Shukla Chaturthi. Kapardisha — 'Ganesha met de verstrengelde haarlokken' — symboliseert ascetische wijsheid en kosmische kennis. De Ashwina-puja na Navaratri versterkt de innerlijke kracht en bezegelt de zegeningen van het festivalseizoen.",
+    tags: ["chaturthi", "ganesha", "madhyahna", "puja", "vinayaka"],
+  },
+  {
+    key: "kartika_labha_chaturthi",
+    name: "Labha Chaturthi",
+    categories: ["ganesha"],
+    eventType: "PUJA",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "CHATURTHI_SHUKLA", maas: "KARTIK" },
+    timingType: "MADHYAHNA",
+    description:
+      "Labha Chaturthi valt in de Kartika maand op Shukla Chaturthi, vier dagen na Diwali. Labha betekent 'winst, gewin' — bijzonder gunstig voor handelaars, ondernemers en iedereen die een nieuw boekjaar begint. In Gujarat staat deze dag bekend als Labha Pancham en markeert het begin van het Hindu nieuwe handelsjaar.",
     tags: [
       "chaturthi",
-      "durva",
+      "diwali",
       "ganesha",
-      "maandelijks",
+      "handelaar",
+      "labha",
       "madhyahna",
-      "modak",
       "puja",
-      "vighnaharta",
       "vinayaka",
     ],
+  },
+  {
+    key: "margashirsha_krichchhra_chaturthi",
+    name: "Krichchhra Chaturthi",
+    categories: ["ganesha"],
+    eventType: "PUJA",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "CHATURTHI_SHUKLA", maas: "MARGASHIRSHA" },
+    timingType: "MADHYAHNA",
+    description:
+      "Krichchhra Chaturthi valt in de Margashirsha maand op Shukla Chaturthi. Krichchhra betekent 'moeilijk, inspannend' — deze dag is gewijd aan het overwinnen van hardnekkige obstakels en langdurige beproevingen. Vasten en madhyahna-puja aan Ganesha brengen kracht bij grote uitdagingen en verlangen naar bevrijding.",
+    tags: ["chaturthi", "ganesha", "madhyahna", "puja", "vasten", "vinayaka"],
   },
 
   // ==========================================================================
@@ -1986,12 +2114,23 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     key: "magha_ganesh_jayanti",
     name: "Ganesh Jayanti",
     categories: ["ganesha"],
+    aliases: ["Gauriganesha Chaturthi"],
     eventType: "JAYANTI",
     ruleType: "TITHI",
     ruleConfig: { tithi: "CHATURTHI_SHUKLA", maas: "MAGHA" },
+    timingType: "MADHYAHNA",
     description:
-      "Geboortedag van Lord Ganesha volgens de Magha traditie. Wordt gevierd op Shukla Chaturthi in de Magha maand. Devotees vasten, voeren puja's uit en bieden modak en durva gras aan.",
-    tags: ["durva", "ganesha", "geboorte", "jayanti", "modak"],
+      "Geboortedag van Lord Ganesha volgens de Magha traditie, ook bekend als Gauriganesha Chaturthi. Wordt gevierd op Shukla Chaturthi in de Magha maand. Devotees vasten, voeren madhyahna-puja's uit en bieden modak en durva-gras aan.",
+    tags: [
+      "chaturthi",
+      "durva",
+      "ganesha",
+      "geboorte",
+      "jayanti",
+      "madhyahna",
+      "modak",
+      "vinayaka",
+    ],
   },
 
   // ==========================================================================

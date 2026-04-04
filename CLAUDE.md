@@ -66,31 +66,35 @@ src/
 
 In `additionalCss` wordt `[[t]]` vervangen door `[data-theme="thema-naam"]` door de CSS-generator.
 
-## Bhairava Nocturne — Status
-
-**Actieve branch:** `feat/bhairava-card-colors`
+## Bhairava Nocturne — Voltooid (gemerged naar main)
 
 ### Kleurenpalet
 - Indigo aura: `oklch(0.62 0.22 275)`
 - Ember vuur: `oklch(0.74 0.18 45)`
 - Void (bijna-zwart): `oklch(0.09 0.025 278)`
 
-### Voltooid
-- Hero gradient (multi-radiaal: indigo + ember + crimson)
-- Almanac: moon/special/event cel+kaart+badge+icoon vars (licht + donker)
-- Filterpillen: indigo actieve staat (in `feat/bhairava-almanac-fixes`)
-- MoonPhasesTimeline donkermodus (in `feat/bhairava-almanac-fixes`)
-- TodayHero iconen: ember zon, indigo maan
-- DharmaCalendar: indigo-zilver volle maan, void nieuwe maan
-- Rechter panel kaarten: zichtbaar in licht én donker (opacity 0.22→0.72)
-- Panchanga yoga/karana: indigo + ember in plaats van grijs
-- Rahu Kalam: rook-indigo (Rahu als eclips/as) in plaats van generiek rood
-- Events in DayDetailsPanel: EventCard-stijl met kleurstrip en hover
+Alle Bhairava Nocturne features zijn gemerged naar `main`. Backup branches bewaard voor referentie.
 
-### Veiligheidsbranches
-- `backup/bhairava-pre-update` — originele staat
-- `save/bhairava-v1` / `save/bhairava-v2` — mijlpalen
-- `feat/bhairava-almanac-fixes` — filterpillen + MoonPhasesTimeline donker
+## Events Catalog
+
+### Database bereik
+- **2026-01-01 t/m 2029-12-31** — geen 2025 data
+
+### Workflow bij catalog-wijzigingen
+1. Bewerk `src/config/event-naming.ts`
+2. Run `npm run db:events` — synchroniseert Event-tabel
+3. Run `npm run db:occurrences -- --start 2026-01-01 --end 2029-12-31 --replace` — regenereert alle occurrences
+
+### Chaturthi events architectuur
+- **Sankashti Chaturthi** (Krishna Paksha): 12 benoemde maandspecifieke entries (commit `9c7ef83`)
+  - Angarki suppression via tags in `almanac/page.tsx`: "sankashti"-events verborgen wanneer "angaraka" aanwezig, tenzij ook "sakat"
+  - Bug gefixed: WEEKDAY_TITHI backshift nu vóór weekdag-filter (spanning-tithi Angarki)
+- **Vinayaka Chaturthi** (Shukla Paksha): `monthly_vinayaka_chaturthi` vervangen door benoemde entries — zelfde patroon als Sankashti
+  - Bhadrapada: `bhadrapada_ganesh_chaturthi` (al specifiek)
+  - Magha: `magha_ganesh_jayanti` (al specifiek, Gauriganesha alias)
+  - Chaitra + Ashwin: naast `navadurga_dag4_kushmanda` (aparte observances, beide tonen)
+  - Adhika Jyeshtha: `adhika_jyeshtha_varada_chaturthi` (isAdhikaOnly) — Adhika = Varada
+  - Regulier Jyeshtha: `jyeshtha_pradyumna_chaturthi` — altijd Pradyumna (zelfde als Sankashti-patroon)
 
 ## Ontwikkeling
 
