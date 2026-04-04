@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { describe, it, vi, beforeEach } from "vitest";
+import { render, screen } from "@testing-library/react";
 import WeatherPage from "../page";
 
 // Mock next/image

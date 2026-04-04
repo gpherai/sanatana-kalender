@@ -13,7 +13,7 @@ vi.mock("next/navigation", () => ({
 }));
 
 // Mock EventForm
-const eventFormMock = vi.fn(() => <div data-testid="event-form" />);
+const eventFormMock = vi.fn((_props: any) => <div data-testid="event-form" />);
 vi.mock("@/components/events/EventForm", () => ({
   EventForm: (props: any) => eventFormMock(props),
 }));

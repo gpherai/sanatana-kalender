@@ -28,6 +28,7 @@ export default defineConfig({
         ...(configDefaults.coverage.exclude ?? []),
         "src/scripts/**",
         "src/generated/**",
+        "src/app/**/{page,layout,loading,error,not-found}.{ts,tsx}",
         "src/types/**",
         "src/config/**",
         "*.config.{ts,mjs}",
