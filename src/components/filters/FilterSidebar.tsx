@@ -350,8 +350,11 @@ export function FilterSidebar({
       <FilterSection title="Sortering" icon="↕️" defaultOpen={false}>
         <div className="space-y-2">
           <div>
-            <label className="text-theme-fg-muted mb-1 block text-xs">Sorteer op</label>
+            <label htmlFor="sort-by" className="text-theme-fg-muted mb-1 block text-xs">
+              Sorteer op
+            </label>
             <select
+              id="sort-by"
               value={filters.sortBy}
               onChange={(e) =>
                 onFilterChange("sortBy", e.target.value as FilterState["sortBy"])
@@ -368,8 +371,14 @@ export function FilterSidebar({
             </select>
           </div>
           <div>
-            <label className="text-theme-fg-muted mb-1 block text-xs">Volgorde</label>
+            <label
+              htmlFor="sort-order"
+              className="text-theme-fg-muted mb-1 block text-xs"
+            >
+              Volgorde
+            </label>
             <select
+              id="sort-order"
               value={filters.sortOrder}
               onChange={(e) =>
                 onFilterChange("sortOrder", e.target.value as FilterState["sortOrder"])

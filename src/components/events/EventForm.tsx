@@ -490,6 +490,7 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
             <button
               type="button"
               onClick={addTag}
+              aria-label="Tag toevoegen"
               className="bg-theme-surface-raised hover:bg-theme-hover rounded-lg px-3 py-2 transition-colors"
             >
               <Plus className="text-theme-fg-secondary h-5 w-5" />
@@ -508,6 +509,7 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
                   <button
                     type="button"
                     onClick={() => removeTag(tag)}
+                    aria-label={`Tag ${tag} verwijderen`}
                     className="hover:bg-theme-primary/25 rounded-full p-0.5 transition-colors"
                   >
                     <X className="h-3 w-3" />

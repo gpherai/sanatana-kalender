@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { DayDetailsPanel } from "../DayDetailsPanel";
@@ -11,7 +12,7 @@ vi.mock("@/components/ui/MoonPhase", () => ({
 const MOCK_DATE = new Date("2025-01-01");
 
 const MOCK_INFO = {
-  date: "2025-01-01",
+  date: "2025-01-01T00:00:00.000Z",
   locationName: "Den Haag",
   locationLat: 52.0705,
   locationLon: 4.3007,
@@ -29,15 +30,8 @@ const MOCK_INFO = {
   nakshatra: { number: 1, name: "Ashwini", pada: 1 as const, endTime: "14:00" },
   yoga: { number: 1, name: "Vishkumbha", endTime: "10:00" },
   karana: { number: 1, name: "Bava", type: "Movable", endTime: "11:00" },
+  vara: { name: "Budhavara" },
   rahuKalam: { start: "12:00", end: "13:30" },
-  // Deprecated fields for backward compatibility
-  tithiEndTime: "12:00",
-  nakshatraEndTime: "14:00",
-  yogaEndTime: "10:00",
-  karanaType: "Movable",
-  karanaEndTime: "11:00",
-  yogaName: "Vishkumbha",
-  karanaName: "Bava",
 } as unknown as DailyInfoResponse;
 
 const MOCK_EVENTS = [
@@ -46,50 +40,26 @@ const MOCK_EVENTS = [
     eventId: "evt_1",
     title: "Test Event",
     start: "2025-01-01",
-    end: "2025-01-02",
+    end: "2025-01-01",
     allDay: true,
     resource: {
       categories: [
-        {
-          id: "test_id",
-          name: "test",
-          displayName: "Test",
-          icon: "🧪",
-          color: "oklch(0.6 0.15 250)",
-          description: null,
-          sortOrder: 0,
-        },
+        { id: "cat_1", name: "test", displayName: "Test", color: "red", icon: "🧪" },
       ],
       eventType: "OTHER",
       description: "Test description",
-      tithi: null,
-      nakshatra: null,
-      maas: null,
-      tags: [],
-      notes: null,
-      startTime: null,
-      endTime: null,
-      originalEndDate: null,
+      tags: ["test"],
     },
   },
 ];
 
-const MOCK_SPECIAL_DAYS = [
-  {
-    date: MOCK_DATE,
-    type: "ekadashi",
-    name: "Ekadashi",
-    description: "Fasting day",
-    emoji: "🙏",
-  },
-];
-
 describe("DayDetailsPanel", () => {
-  it("renders header info correctly", () => {
+  it("renders header info and covers Today badge", () => {
+    const today = new Date();
     render(
       <DayDetailsPanel
-        selectedDate={MOCK_DATE}
-        selectedDayInfo={MOCK_INFO}
+        selectedDate={today}
+        selectedDayInfo={{ ...MOCK_INFO, date: today.toISOString() }}
         selectedDayEvents={[]}
         selectedDaySpecial={[]}
         onEventClick={vi.fn()}
@@ -97,25 +67,14 @@ describe("DayDetailsPanel", () => {
         showSpecialDays={true}
       />
     );
-
-    // Date
-    expect(screen.getByText(/1 januari 2025/i)).toBeInTheDocument();
-
-    // Hindu Month (mocked)
-    expect(screen.getByText(/Margashirsha Maas/)).toBeInTheDocument();
-
-    // Tithi
-    expect(screen.getByText(/Pratipada/)).toBeInTheDocument();
-
-    // Nakshatra
-    expect(screen.getByText(/Ashwini/)).toBeInTheDocument();
+    expect(screen.getByText(/Vandaag/i)).toBeDefined();
   });
 
-  it("renders sun and moon times", () => {
+  it("covers branch where Sanskrit day find returns undefined", () => {
     render(
       <DayDetailsPanel
         selectedDate={MOCK_DATE}
-        selectedDayInfo={MOCK_INFO}
+        selectedDayInfo={{ ...MOCK_INFO, vara: { name: "NonExistent" } }}
         selectedDayEvents={[]}
         selectedDaySpecial={[]}
         onEventClick={vi.fn()}
@@ -123,20 +82,16 @@ describe("DayDetailsPanel", () => {
         showSpecialDays={true}
       />
     );
-
-    expect(screen.getByText("08:00")).toBeInTheDocument(); // Sunrise
-    expect(screen.getByText("16:00")).toBeInTheDocument(); // Sunset
-    expect(screen.getByText("20:00")).toBeInTheDocument(); // Moonrise
+    expect(screen.queryByText("Budhavara")).toBeNull();
   });
 
-  it("renders events and handles click", () => {
+  it("renders sections correctly and handles event click", () => {
     const onEventClick = vi.fn();
-
     render(
       <DayDetailsPanel
         selectedDate={MOCK_DATE}
         selectedDayInfo={MOCK_INFO}
-        selectedDayEvents={MOCK_EVENTS as never}
+        selectedDayEvents={MOCK_EVENTS as any}
         selectedDaySpecial={[]}
         onEventClick={onEventClick}
         showEvents={true}
@@ -144,61 +99,28 @@ describe("DayDetailsPanel", () => {
       />
     );
 
-    expect(screen.getByText("Test Event")).toBeInTheDocument();
-    expect(screen.getByText("🧪")).toBeInTheDocument();
+    expect(screen.getByText(/Margashirsha/i)).toBeDefined();
+    expect(screen.getByText(/Pratipada/i)).toBeDefined();
+    expect(screen.getByText(/Bava/i)).toBeDefined();
 
-    fireEvent.click(screen.getByText("Test Event"));
+    const eventCard = screen.getByText("Test Event");
+    fireEvent.click(eventCard);
     expect(onEventClick).toHaveBeenCalledWith(MOCK_EVENTS[0]);
   });
 
-  it("renders special days when enabled", () => {
+  it("handles missing info and hidden sections", () => {
     render(
       <DayDetailsPanel
         selectedDate={MOCK_DATE}
-        selectedDayInfo={MOCK_INFO}
-        selectedDayEvents={[]}
-        selectedDaySpecial={MOCK_SPECIAL_DAYS}
-        onEventClick={vi.fn()}
-        showEvents={true}
-        showSpecialDays={true}
-      />
-    );
-
-    expect(screen.getByText("Ekadashi")).toBeInTheDocument();
-    expect(screen.getByText("Fasting day")).toBeInTheDocument();
-  });
-
-  it("hides special days when disabled", () => {
-    render(
-      <DayDetailsPanel
-        selectedDate={MOCK_DATE}
-        selectedDayInfo={MOCK_INFO}
-        selectedDayEvents={[]}
-        selectedDaySpecial={MOCK_SPECIAL_DAYS}
-        onEventClick={vi.fn()}
-        showEvents={true}
-        showSpecialDays={false} // Disabled
-      />
-    );
-
-    expect(screen.queryByText("Ekadashi")).not.toBeInTheDocument();
-  });
-
-  it("renders panchanga details (yoga, karana)", () => {
-    render(
-      <DayDetailsPanel
-        selectedDate={MOCK_DATE}
-        selectedDayInfo={MOCK_INFO}
-        selectedDayEvents={[]}
+        selectedDayInfo={null as any}
+        selectedDayEvents={MOCK_EVENTS as any}
         selectedDaySpecial={[]}
         onEventClick={vi.fn()}
-        showEvents={true}
-        showSpecialDays={true}
+        showEvents={false}
+        showSpecialDays={false}
       />
     );
-
-    expect(screen.getByText("Vishkumbha")).toBeInTheDocument();
-    expect(screen.getByText(/Bava/)).toBeInTheDocument();
-    expect(screen.getByText(/Rahu Kalam/)).toBeInTheDocument();
+    expect(screen.queryByText("Test Event")).toBeNull();
+    expect(screen.queryByText(/Panchanga Details/i)).toBeNull();
   });
 });

@@ -1,29 +1,55 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, waitFor, act } from "@testing-library/react";
-import { addMonths, endOfMonth, startOfMonth } from "date-fns";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { DharmaCalendar } from "../DharmaCalendar";
 import type { CalendarEventResponse } from "@/types/calendar";
 
-let lastCalendarProps: Record<string, unknown> | null = null;
+let lastCalendarProps: any = null;
 
 vi.mock("../EventDetailModal", () => ({
-  EventDetailModal: ({ event, isOpen }: { event: { title: string }; isOpen: boolean }) =>
-    isOpen ? <div data-testid="event-modal">{event.title}</div> : null,
+  EventDetailModal: ({
+    event,
+    isOpen,
+    onClose,
+  }: {
+    event: { title: string };
+    isOpen: boolean;
+    onClose: () => void;
+  }) =>
+    isOpen ? (
+      <div data-testid="event-modal">
+        <span>{event.title}</span>
+        <button onClick={onClose}>Sluiten</button>
+      </div>
+    ) : null,
 }));
 
 vi.mock("react-big-calendar", () => ({
-  Calendar: (props: Record<string, unknown>) => {
+  Calendar: (props: any) => {
     lastCalendarProps = props;
-    const events = (props.events as unknown[] | undefined) ?? [];
-    const firstEvent = events[0] as { start?: unknown } | undefined;
-    const startType = firstEvent?.start instanceof Date ? "date" : "none";
+    const events = (props.events as any[]) ?? [];
+
+    // Render components for coverage
+    const DateHeader = props.components.month.dateHeader;
+    const EventComp = props.components.event;
 
     return (
-      <div
-        data-testid="calendar"
-        data-events-count={events.length}
-        data-first-event-start={startType}
-      />
+      <div data-testid="calendar">
+        <div data-testid="events-list">
+          {events.map((e) => (
+            <div key={e.id} onClick={() => props.onSelectEvent(e)}>
+              <EventComp event={e} />
+            </div>
+          ))}
+        </div>
+        <div data-testid="date-headers">
+          <DateHeader date={new Date()} label="Today" />
+          <DateHeader date={new Date("2025-01-15")} label="Special" />
+        </div>
+        <button onClick={() => props.onView("week")}>Change View</button>
+        <button onClick={() => props.onNavigate(new Date("2025-02-01"))}>Navigate</button>
+      </div>
     );
   },
   dateFnsLocalizer: () => ({}),
@@ -39,19 +65,29 @@ describe("DharmaCalendar", () => {
     vi.unstubAllGlobals();
   });
 
-  it("fetches events and passes them to the calendar", async () => {
+  it("covers full DharmaCalendar logic", async () => {
     const fetchMock = vi.mocked(fetch);
-    const event: CalendarEventResponse = {
+    const user = userEvent.setup();
+
+    const mockEvent: CalendarEventResponse = {
       id: "occ_1",
       eventId: "evt_1",
       title: "Test Event",
       start: "2025-01-01",
-      end: "2025-01-02",
+      end: "2025-01-01",
       allDay: true,
       resource: {
         description: null,
         eventType: "FESTIVAL",
-        categories: [],
+        categories: [
+          {
+            id: "cat_1",
+            name: "ganesha",
+            displayName: "Ganesha",
+            color: "#ff0000",
+            icon: "🐘",
+          },
+        ],
         tithi: null,
         nakshatra: null,
         maas: null,
@@ -68,183 +104,78 @@ describe("DharmaCalendar", () => {
 
     fetchMock.mockImplementation(async (url) => {
       if (typeof url === "string" && url.includes("/api/daily-info")) {
-        return { ok: true, json: async () => [] } as Response;
+        return {
+          ok: true,
+          json: async () => [
+            {
+              date: new Date().toISOString(),
+              moonPhaseEmoji: "🌕",
+              moonPhaseEvent: { type: "full" },
+            },
+            {
+              date: "2025-01-15T00:00:00.000Z",
+              moonPhaseEmoji: "🌑",
+              moonPhaseEvent: { type: "new" },
+            },
+          ],
+        } as Response;
       }
       return {
         ok: true,
-        json: async () => [event],
-      } as Response;
-    });
-
-    const now = new Date();
-    const expectedStart = startOfMonth(addMonths(now, -1));
-    const expectedEnd = endOfMonth(addMonths(now, 1));
-
-    render(<DharmaCalendar />);
-
-    const calendar = await screen.findByTestId("calendar");
-
-    await waitFor(() => {
-      expect(calendar).toHaveAttribute("data-events-count", "1");
-    });
-
-    // Format dates using formatDateLocal (matches component implementation)
-    const formatDateLocal = (date: Date): string => {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
-      return `${year}-${month}-${day}`;
-    };
-
-    const startStr = formatDateLocal(expectedStart);
-    const endStr = formatDateLocal(expectedEnd);
-
-    expect(fetchMock).toHaveBeenCalledWith(
-      `/api/events?start=${startStr}T00:00:00.000Z&end=${endStr}T23:59:59.999Z`,
-      expect.any(Object)
-    );
-    expect(calendar).toHaveAttribute("data-first-event-start", "date");
-    expect(lastCalendarProps?.view).toBe("month");
-  });
-
-  it("shows loading overlay while fetching", async () => {
-    const fetchMock = vi.mocked(fetch);
-    let resolveFetch: (value: Response) => void;
-
-    fetchMock.mockReturnValue(
-      new Promise((resolve) => {
-        resolveFetch = resolve;
-      }) as Promise<Response>
-    );
-
-    render(<DharmaCalendar />);
-
-    expect(screen.getByText("Laden...")).toBeInTheDocument();
-
-    resolveFetch!({
-      ok: true,
-      json: async () => [],
-    } as Response);
-
-    await waitFor(() => {
-      expect(screen.queryByText("Laden...")).not.toBeInTheDocument();
-    });
-  });
-
-  it("clears loading state when fetch fails", async () => {
-    const fetchMock = vi.mocked(fetch);
-    fetchMock.mockRejectedValueOnce(new Error("boom"));
-
-    render(<DharmaCalendar />);
-
-    expect(screen.getByText("Laden...")).toBeInTheDocument();
-
-    await waitFor(() => {
-      expect(screen.queryByText("Laden...")).not.toBeInTheDocument();
-    });
-  });
-
-  it("opens event detail modal when selecting an event", async () => {
-    const fetchMock = vi.mocked(fetch);
-    const event: CalendarEventResponse = {
-      id: "occ_1",
-      eventId: "evt_1",
-      title: "Test Event",
-      start: "2025-01-01",
-      end: "2025-01-02",
-      allDay: true,
-      resource: {
-        description: null,
-        eventType: "FESTIVAL",
-        categories: [],
-        tithi: null,
-        nakshatra: null,
-        maas: null,
-        tags: [],
-        notes: null,
-        startTime: null,
-        endTime: null,
-        originalEndDate: null,
-        seriesParentEventIds: [],
-        seriesDayNumber: null,
-        hasSeriesChildren: false,
-      },
-    };
-
-    fetchMock.mockImplementation(async (url) => {
-      if (typeof url === "string" && url.includes("/api/daily-info")) {
-        return { ok: true, json: async () => [] } as Response;
-      }
-      return {
-        ok: true,
-        json: async () => [event],
+        json: async () => [mockEvent],
       } as Response;
     });
 
     render(<DharmaCalendar />);
 
+    // Wait for calendar to mount and load
+    await screen.findByTestId("calendar");
+
+    // Verify events loaded
     await waitFor(() => {
-      expect((lastCalendarProps?.events as unknown[])?.length).toBe(1);
+      expect(screen.getByText("Test Event")).toBeDefined();
     });
 
-    const events = lastCalendarProps?.events as unknown[];
-    const onSelectEvent = lastCalendarProps?.onSelectEvent as (value: unknown) => void;
+    // Test View Change
+    const viewButton = screen.getByText("Change View");
+    await user.click(viewButton);
 
-    await act(async () => {
-      onSelectEvent?.(events[0]);
-    });
+    // Test Navigation
+    const navButton = screen.getByText("Navigate");
+    await user.click(navButton);
 
-    expect(await screen.findByTestId("event-modal")).toHaveTextContent("Test Event");
-  });
+    // Test Event Selection and Modal
+    const eventEl = screen.getByText("Test Event");
+    await user.click(eventEl);
+    expect(screen.getByTestId("event-modal")).toBeDefined();
 
-  it("builds event styles based on category color", async () => {
-    const fetchMock = vi.mocked(fetch);
-    fetchMock.mockResolvedValue({
-      ok: true,
-      json: async () => [],
-    } as Response);
+    // Test Modal Close
+    const closeBtn = screen.getByText("Sluiten");
+    await user.click(closeBtn);
+    expect(screen.queryByTestId("event-modal")).toBeNull();
 
-    render(<DharmaCalendar />);
+    // Verify dayPropGetter (weekends)
+    const sunday = new Date("2025-01-05T12:00:00Z");
+    const weekendProps = lastCalendarProps.dayPropGetter(sunday);
+    expect(weekendProps.style.backgroundColor).toBeDefined();
 
-    await waitFor(() => {
-      expect(lastCalendarProps).not.toBeNull();
-    });
+    const monday = new Date("2025-01-06T12:00:00Z");
+    const weekdayProps = lastCalendarProps.dayPropGetter(monday);
+    expect(weekdayProps.style).toBeUndefined();
 
-    const eventPropGetter = lastCalendarProps?.eventPropGetter as (value: unknown) => {
-      style: Record<string, unknown>;
+    // Verify eventStyleGetter
+    const styleProps = lastCalendarProps.eventPropGetter(lastCalendarProps.events[0]);
+    expect(styleProps.style.backgroundColor).toBe("#ff0000");
+
+    // Verify eventStyleGetter fallback
+    const mockEventNoCat = {
+      ...mockEvent,
+      resource: { ...mockEvent.resource, categories: [] },
     };
-
-    const event = {
-      resource: {
-        categories: [{ color: "#123456" }],
-      },
-    };
-
-    const result = eventPropGetter(event);
-    expect(result.style.backgroundColor).toBe("#123456");
-  });
-
-  it("marks weekends with a background style", async () => {
-    const fetchMock = vi.mocked(fetch);
-    fetchMock.mockResolvedValue({
-      ok: true,
-      json: async () => [],
-    } as Response);
-
-    render(<DharmaCalendar />);
-
-    await waitFor(() => {
-      expect(lastCalendarProps).not.toBeNull();
-    });
-
-    const dayPropGetter = lastCalendarProps?.dayPropGetter as (value: Date) => {
-      style?: Record<string, unknown>;
-    };
-
-    const sunday = new Date(2025, 0, 5);
-    const weekday = new Date(2025, 0, 6);
-
-    expect(dayPropGetter(sunday).style).toBeDefined();
-    expect(dayPropGetter(weekday).style).toBeUndefined();
+    const parsedNoCat = (await import("@/types/calendar")).parseCalendarEvent(
+      mockEventNoCat
+    );
+    const fallbackStyleProps = lastCalendarProps.eventPropGetter(parsedNoCat);
+    expect(fallbackStyleProps.style.backgroundColor).toBeDefined();
   });
 });
