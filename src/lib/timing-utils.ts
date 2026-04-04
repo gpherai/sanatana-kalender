@@ -35,7 +35,7 @@ export function parseTimeToMinutes(time: string): number | null {
  * Wraps around 24-hour clock (e.g. 1500min → "01:00" next day).
  */
 export function formatMinutesToTime(totalMinutes: number): string {
-  const wrapped = ((totalMinutes % 1440) + 1440) % 1440; // ensure positive, wrap at 24h
+  const wrapped = ((Math.round(totalMinutes) % 1440) + 1440) % 1440; // round to avoid float remainder
   const h = Math.floor(wrapped / 60);
   const m = wrapped % 60;
   return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
