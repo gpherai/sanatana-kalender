@@ -79,12 +79,20 @@ describe("PanchangaSwissService", () => {
   });
 
   it("maps computed values into panchanga response", async () => {
-    calculateSunriseSunset.mockResolvedValue({
-      sunriseJD: 100,
-      sunsetJD: 200,
-      sunriseTime: DateTime.fromISO("2025-01-06T06:00:00", { zone: "UTC" }),
-      sunsetTime: DateTime.fromISO("2025-01-06T18:00:00", { zone: "UTC" }),
-    });
+    calculateSunriseSunset
+      .mockResolvedValueOnce({
+        sunriseJD: 100,
+        sunsetJD: 200,
+        sunriseTime: DateTime.fromISO("2025-01-06T06:00:00", { zone: "UTC" }),
+        sunsetTime: DateTime.fromISO("2025-01-06T18:00:00", { zone: "UTC" }),
+      })
+      .mockResolvedValueOnce({
+        sunriseJD: 110,
+        sunsetJD: 210,
+        sunriseTime: DateTime.fromISO("2025-01-07T06:00:00", { zone: "UTC" }),
+        sunsetTime: DateTime.fromISO("2025-01-07T18:00:00", { zone: "UTC" }),
+      });
+
     calculateMoonriseMoonset.mockResolvedValue({
       moonriseJD: 101,
       moonsetJD: 201,
@@ -164,10 +172,20 @@ describe("PanchangaSwissService", () => {
     revjulMap.set(100.7, { year: 2025, month: 1, day: 6, hour: 18 });
     revjulMap.set(100.8, { year: 2025, month: 1, day: 6, hour: 19 });
 
+    const findAmavasyaSpy = vi
+      .spyOn(PanchangaSwissService.prototype as unknown as unknown, "findNearestAmavasya")
+      .mockResolvedValueOnce(90) // previous
+      .mockResolvedValueOnce(120); // next
+    const getSunRashiSpy = vi
+      .spyOn(PanchangaSwissService.prototype as unknown as unknown, "getSunRashi")
+      .mockResolvedValue(1); // Sun in Vrishabha at both boundaries (Adhika)
+
     const service = new PanchangaSwissService();
     const result = await service.computeDaily("2025-01-06", location);
 
     expect(result.date).toBe("2025-01-06");
+    expect(result.maas.isAdhika).toBe(true);
+    expect(result.maas.name).toBe("Jyeshtha");
     expect(result.sunriseLocal).toBe("06:00:00");
     expect(result.sunsetLocal).toBe("18:00:00");
     expect(result.moonriseLocal).toBe("07:00:00");
@@ -220,6 +238,56 @@ describe("PanchangaSwissService", () => {
     expect(swePhenoUt).toHaveBeenCalledWith(100, 1, expect.any(Number));
     expect(getAyanamsa).toHaveBeenCalledWith(100);
     expect(sweSetSidMode).toHaveBeenCalled();
+
+    findAmavasyaSpy.mockRestore();
+    getSunRashiSpy.mockRestore();
+  });
+
+  it("calculates values for Krishna paksha and fixed karana", async () => {
+    calculateSunriseSunset.mockResolvedValue({
+      sunriseJD: 100,
+      sunsetJD: 200,
+      sunriseTime: DateTime.fromISO("2025-01-06T06:00:00", { zone: "UTC" }),
+      sunsetTime: DateTime.fromISO("2025-01-06T18:00:00", { zone: "UTC" }),
+    });
+    calculateMoonriseMoonset.mockResolvedValue({
+      moonriseJD: 101,
+      moonsetJD: 201,
+      moonriseTime: DateTime.fromISO("2025-01-06T07:00:00", { zone: "UTC" }),
+      moonsetTime: DateTime.fromISO("2025-01-06T19:00:00", { zone: "UTC" }),
+    });
+
+    // Mock indices: Tithi 20 (Krishna), Karana 60 (Naga - Fixed)
+    // Tithi Progress = 19.5 (Krishna Panchami)
+    // Karana Progress = 39 (Tithi 20 first half) -> index 39 is movable.
+    // Let's use Karana 60 -> Tithi 30 second half.
+    // Tithi 30 Progress = 29.6. Karana Prog = 59.2 -> Index 60.
+    sweCalcUt
+      .mockResolvedValueOnce({ longitude: 0, latitude: 0, distance: 1, speed: 0 }) // Sun at sunrise
+      .mockResolvedValueOnce({ longitude: 355.2, latitude: 0, distance: 1, speed: 0 }) // Moon (e=355.2 -> tithi 29.6 -> tithiIdx 30)
+      .mockResolvedValue({ longitude: 0, latitude: 0, distance: 1, speed: 0 }); // Others
+
+    swePhenoUt.mockResolvedValue({ phaseAngle: 5, phaseIllum: 0.99 });
+    findEventEnd.mockResolvedValue(null);
+    getAyanamsa.mockResolvedValue(24.1);
+
+    const findAmavasyaSpy = vi
+      .spyOn(PanchangaSwissService.prototype as unknown, "findNearestAmavasya")
+      .mockResolvedValue(null);
+    const getSunRashiSpy = vi
+      .spyOn(PanchangaSwissService.prototype as unknown, "getSunRashi")
+      .mockResolvedValue(null);
+
+    const service = new PanchangaSwissService();
+    const result = await service.computeDaily("2025-01-06", location);
+
+    expect(result.tithi.paksha).toBe("Krishna");
+    expect(result.karana.name).toBe("Naga");
+    expect(result.karana.type).toBe("Fixed");
+    expect(result.maas.isAdhika).toBe(false);
+
+    findAmavasyaSpy.mockRestore();
+    getSunRashiSpy.mockRestore();
   });
 
   it("uses fixed karana when index falls on fixed values", async () => {
@@ -283,6 +351,8 @@ describe("PanchangaSwissService", () => {
         .mockResolvedValueOnce({ longitude: 10, latitude: 0, distance: 1, speed: 0 })
         .mockResolvedValueOnce({ longitude: 0, latitude: 0, distance: 1, speed: 0 }) // sun
         .mockResolvedValueOnce({ longitude: 355, latitude: 0, distance: 1, speed: 0 }) // moon, e=355 (lo=mid)
+        .mockResolvedValueOnce({ longitude: 0, latitude: 0, distance: 1, speed: 0 }) // sun
+        .mockResolvedValueOnce({ longitude: 5, latitude: 0, distance: 1, speed: 0 }) // moon, e=5 (hi=mid)
         .mockResolvedValue({ longitude: 0, latitude: 0, distance: 1, speed: 0 });
 
       const result = await (service as unknown).detectMoonPhaseEvent(
@@ -302,6 +372,10 @@ describe("PanchangaSwissService", () => {
         .mockResolvedValueOnce({ longitude: 170, latitude: 0, distance: 1, speed: 0 })
         .mockResolvedValueOnce({ longitude: 0, latitude: 0, distance: 1, speed: 0 })
         .mockResolvedValueOnce({ longitude: 190, latitude: 0, distance: 1, speed: 0 })
+        .mockResolvedValueOnce({ longitude: 0, latitude: 0, distance: 1, speed: 0 }) // sun
+        .mockResolvedValueOnce({ longitude: 185, latitude: 0, distance: 1, speed: 0 }) // moon, e=185 (hi=mid)
+        .mockResolvedValueOnce({ longitude: 0, latitude: 0, distance: 1, speed: 0 }) // sun
+        .mockResolvedValueOnce({ longitude: 175, latitude: 0, distance: 1, speed: 0 }) // moon, e=175 (lo=mid)
         .mockResolvedValue({ longitude: 0, latitude: 0, distance: 1, speed: 0 });
 
       const result = await (service as unknown).detectMoonPhaseEvent(
@@ -325,27 +399,60 @@ describe("PanchangaSwissService", () => {
 
     it("detects sankranti and performs binary search", async () => {
       const service = new PanchangaSwissService();
-      sweCalcUt
-        .mockResolvedValueOnce({ longitude: 29, latitude: 0, distance: 1, speed: 0 })
-        .mockResolvedValueOnce({ longitude: 31, latitude: 0, distance: 1, speed: 0 })
-        .mockResolvedValueOnce({ longitude: 29.5, latitude: 0, distance: 1, speed: 0 }) // lo=mid
-        .mockResolvedValue({ longitude: 30.5, latitude: 0, distance: 1, speed: 0 }); // hi=mid
+      const getSunRashiSpy = vi
+        .spyOn(service as unknown, "getSunRashi")
+        .mockResolvedValueOnce(0) // start
+        .mockResolvedValueOnce(1) // end
+        .mockResolvedValueOnce(0) // mid (lo=mid)
+        .mockResolvedValue(1); // mid (hi=mid)
 
       const result = await (service as unknown).detectSankranti(100, "UTC");
       expect(result).not.toBeNull();
       expect(result?.sankranti).toBe("VRISHABHA_SANKRANTI");
+      getSunRashiSpy.mockRestore();
     });
 
     it("handles binary search returning null", async () => {
       const service = new PanchangaSwissService();
-      sweCalcUt
-        .mockResolvedValueOnce({ longitude: 29, latitude: 0, distance: 1, speed: 0 })
-        .mockResolvedValueOnce({ longitude: 31, latitude: 0, distance: 1, speed: 0 })
-        .mockImplementation(() => {
-          throw new Error("bad");
-        });
+      const getSunRashiSpy = vi
+        .spyOn(service as unknown, "getSunRashi")
+        .mockResolvedValueOnce(0)
+        .mockResolvedValueOnce(1)
+        .mockResolvedValue(null);
 
       const result = await (service as unknown).detectSankranti(100, "UTC");
+      expect(result).toBeNull();
+      getSunRashiSpy.mockRestore();
+    });
+  });
+
+  describe("findNearestAmavasya", () => {
+    it("returns null if no Amavasya is found near the date", async () => {
+      const service = new PanchangaSwissService();
+      const getTithiProgressSpy = vi
+        .spyOn(service as unknown, "getTithiProgress")
+        .mockReturnValue(15); // Full Moon progress
+
+      const result = await (service as unknown).findNearestAmavasya(100, "forward");
+      expect(result).toBeNull();
+      getTithiProgressSpy.mockRestore();
+    });
+
+    it("returns amavasya JD if found in correct direction", async () => {
+      const service = new PanchangaSwissService();
+      vi.spyOn(service as unknown, "getTithiProgress").mockReturnValue(29.5); // Near Amavasya
+      findEventEnd.mockResolvedValueOnce(105); // Found at 105
+
+      const result = await (service as unknown).findNearestAmavasya(100, "forward");
+      expect(result).toBe(105);
+    });
+
+    it("returns null if amavasya is in wrong direction", async () => {
+      const service = new PanchangaSwissService();
+      vi.spyOn(service as unknown, "getTithiProgress").mockReturnValue(29.5);
+      findEventEnd.mockResolvedValueOnce(95); // Found at 95 (backward)
+
+      const result = await (service as unknown).findNearestAmavasya(100, "forward");
       expect(result).toBeNull();
     });
   });

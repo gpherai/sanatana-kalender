@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { cn, truncate, logDebug } from "../utils";
+import { describe, it, expect, vi } from "vitest";
+import { cn, truncate, logDebug, logError, logWarn } from "../utils";
 
 describe("General Utilities", () => {
   // =============================================================================
@@ -27,9 +27,40 @@ describe("General Utilities", () => {
   });
 
   describe("Logging", () => {
-    it("does not crash", () => {
-      logDebug("test");
-      expect(true).toBe(true);
+    it("logError calls console.error", () => {
+      const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+      logError("error msg", { detail: 1 });
+      expect(spy).toHaveBeenCalledWith("[Error] error msg", { detail: 1 });
+      spy.mockRestore();
+    });
+
+    it("logWarn calls console.warn", () => {
+      const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
+      logWarn("warn msg");
+      expect(spy).toHaveBeenCalledWith("[Warn] warn msg");
+      spy.mockRestore();
+    });
+
+    it("logDebug is suppressed in test/production environment", () => {
+      const spy = vi.spyOn(console, "log").mockImplementation(() => {});
+      logDebug("debug msg");
+      expect(spy).not.toHaveBeenCalled();
+      spy.mockRestore();
+    });
+
+    it("logDebug calls console.log in development environment", async () => {
+      const originalEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = "development";
+      vi.resetModules();
+      const { logDebug: logDebugDev } = await import("../utils");
+
+      const spy = vi.spyOn(console, "log").mockImplementation(() => {});
+      logDebugDev("debug msg", 123);
+      expect(spy).toHaveBeenCalledWith("[Debug] debug msg", 123);
+
+      spy.mockRestore();
+      process.env.NODE_ENV = originalEnv;
+      vi.resetModules();
     });
   });
 });

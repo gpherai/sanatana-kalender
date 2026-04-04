@@ -206,6 +206,26 @@ describe("Astro Utilities", () => {
     await expect(swe_calc_ut(1, 2, 3)).rejects.toThrow("bad");
   });
 
+  it("handles missing longitudeSpeed in swe_calc_ut", async () => {
+    mockCalcResult.value = {
+      longitude: 10,
+      latitude: 20,
+      distance: 1,
+    } as unknown;
+
+    const result = await swe_calc_ut(1, 2, 3);
+    expect(result.speed).toBe(0);
+  });
+
+  it("finds an event crossing where binary search goes left (t2 = mid)", async () => {
+    const startJD = 400;
+    // vMid will be (400 + 400.05)/2 = 400.025
+    // vMid - 400 = 0.025. Target = 0.01
+    // vMid >= target, so t2 = mid
+    const result = await findEventEnd(startJD, async (jd) => jd - startJD, 0.01, 30);
+    expect(result).toBeLessThan(startJD + 0.02);
+  });
+
   it("wraps swe_pheno_ut results", async () => {
     mockPhenoResult.value = { phaseAngle: 120, phase: 0.42 };
 
@@ -313,5 +333,20 @@ describe("Astro Utilities", () => {
     expect(result.moonriseJD).toBe(10);
     expect(result.moonsetJD).toBe(20);
     expect(sweRiseTrans).toHaveBeenCalledTimes(4);
+  });
+
+  it("does not recalculate moonrise/moonset if upcomingFromNow is true and moonset is in the future", async () => {
+    // jdNow will be 0. setTimeJD will be 10.
+    riseTransQueue.push(5, 10);
+    revjulResults.set(5, { year: 2025, month: 1, day: 2, hour: 5 });
+    revjulResults.set(10, { year: 2025, month: 1, day: 2, hour: 10 });
+
+    const loc = { name: "Test", lat: 10, lon: 20, tz: "UTC" };
+
+    const result = await calculateMoonriseMoonset("2025-01-02", loc, true);
+
+    expect(result.moonriseJD).toBe(5);
+    expect(result.moonsetJD).toBe(10);
+    expect(sweRiseTrans).toHaveBeenCalledTimes(2);
   });
 });

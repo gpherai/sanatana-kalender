@@ -217,6 +217,12 @@ describe("Date Utilities", () => {
       const date = new Date("2024-12-25T15:30:00Z");
       expect(formatDateISO(date)).toBe("2024-12-25");
     });
+
+    it("handles toISOString returning string without T separator", () => {
+      const date = new Date("2024-12-25T15:30:00Z");
+      vi.spyOn(date, "toISOString").mockReturnValue("2024-12-25");
+      expect(formatDateISO(date)).toBe("2024-12-25");
+    });
   });
 
   describe("formatDateNL", () => {
@@ -276,6 +282,30 @@ describe("Date Utilities", () => {
       expect(result).not.toBeNull();
       expect(typeof result).toBe("string");
       expect(result!.length).toBeGreaterThan(0);
+    });
+
+    it("returns relative string in weeks for a future date > 1 week", () => {
+      const future = new Date(Date.UTC(2024, 2, 25, 12, 0, 0)); // ~10 days later
+      const result = formatRelativeDate(future);
+      expect(result).toBe("over 1 week");
+    });
+
+    it("returns relative string in months for exactly 5 weeks future (35 days)", () => {
+      const future = new Date(Date.UTC(2024, 3, 19, 12, 0, 0)); // ~35 days later
+      const result = formatRelativeDate(future);
+      expect(result).toBe("over 1 maand");
+    });
+
+    it("returns relative string in months for a future date > 1 month", () => {
+      const future = new Date(Date.UTC(2024, 3, 25, 12, 0, 0)); // ~40 days later
+      const result = formatRelativeDate(future);
+      expect(result).toBe("over 1 maand");
+    });
+
+    it("returns relative string in months for a future date > 2 months", () => {
+      const future = new Date(Date.UTC(2024, 4, 25, 12, 0, 0)); // ~70 days later
+      const result = formatRelativeDate(future);
+      expect(result).toBe("over 2 maanden");
     });
 
     it("returns relative string in years for a future date > 1 year", () => {
