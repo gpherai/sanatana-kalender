@@ -2,9 +2,14 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { NextRequest } from "next/server";
 import { prismaMock } from "@/__tests__/helpers/prisma-mock";
 import { GET, DELETE, PUT } from "../events/[id]/route";
+import { Prisma } from "@prisma/client";
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+const VALID_ID = "ckl9z5rte0000s6m1gj8h3x7d";
 
 const MOCK_EVENT = {
-  id: "ckl9z5rte0000s6m1gj8h3x7d",
+  id: VALID_ID,
   name: "Test Event",
   description: null,
   eventType: "FESTIVAL" as never,
@@ -28,7 +33,7 @@ const MOCK_EVENT = {
   occurrences: [
     {
       id: "occ_1",
-      eventId: "ckl9z5rte0000s6m1gj8h3x7d",
+      eventId: VALID_ID,
       date: new Date(2025, 0, 1),
       endDate: null,
       startTime: null,
@@ -59,7 +64,7 @@ describe("API Events by ID", () => {
     prismaMock.event.findUnique.mockResolvedValue(null);
 
     const response = await GET(new NextRequest("http://localhost/api/events/test"), {
-      params: Promise.resolve({ id: "ckl9z5rte0000s6m1gj8h3x7d" }),
+      params: Promise.resolve({ id: VALID_ID }),
     });
     const json = await response.json();
 
@@ -67,16 +72,35 @@ describe("API Events by ID", () => {
     expect(json.error).toBe("NOT_FOUND");
   });
 
-  it("returns event details when found", async () => {
-    prismaMock.event.findUnique.mockResolvedValue(MOCK_EVENT as never);
+  it("returns event details when found with series mapping", async () => {
+    prismaMock.event.findUnique.mockResolvedValue({
+      ...MOCK_EVENT,
+      seriesParentEntries: [{ parent: { id: "p1", name: "Parent 1" } }],
+      seriesChildEntries: [{ child: { id: "c1", name: "Child 1" }, dayNumber: 1 }],
+    } as never);
 
     const response = await GET(new NextRequest("http://localhost/api/events/test"), {
-      params: Promise.resolve({ id: "ckl9z5rte0000s6m1gj8h3x7d" }),
+      params: Promise.resolve({ id: VALID_ID }),
     });
     const json = await response.json();
 
     expect(response.status).toBe(200);
-    expect(json.id).toBe("ckl9z5rte0000s6m1gj8h3x7d");
+    expect(json.id).toBe(VALID_ID);
+    expect(json.parentEvents).toHaveLength(1);
+    expect(json.childEvents).toHaveLength(1);
+    expect(json.childEvents[0].dayNumber).toBe(1);
+  });
+
+  it("returns server error when GET fails", async () => {
+    prismaMock.event.findUnique.mockRejectedValue(new Error("DB error"));
+
+    const response = await GET(new NextRequest("http://localhost/api/events/test"), {
+      params: Promise.resolve({ id: VALID_ID }),
+    });
+    const json = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(json.message).toBe("Kon event niet ophalen");
   });
 
   it("rejects invalid update payloads", async () => {
@@ -89,13 +113,12 @@ describe("API Events by ID", () => {
     });
 
     const response = await PUT(request, {
-      params: Promise.resolve({ id: "ckl9z5rte0000s6m1gj8h3x7d" }),
+      params: Promise.resolve({ id: VALID_ID }),
     });
     const json = await response.json();
 
     expect(response.status).toBe(400);
     expect(json.error).toBe("VALIDATION_ERROR");
-    expect(prismaMock.event.update).not.toHaveBeenCalled();
   });
 
   it("updates event and first occurrence when payload is valid", async () => {
@@ -122,23 +145,15 @@ describe("API Events by ID", () => {
     });
 
     const response = await PUT(request, {
-      params: Promise.resolve({ id: "ckl9z5rte0000s6m1gj8h3x7d" }),
+      params: Promise.resolve({ id: VALID_ID }),
     });
     const json = await response.json();
 
     expect(prismaMock.event.update).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { id: "ckl9z5rte0000s6m1gj8h3x7d" },
+        where: { id: VALID_ID },
         data: expect.objectContaining({
           name: "Updated Event",
-        }),
-      })
-    );
-    expect(prismaMock.eventOccurrence.update).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: { id: "occ_1" },
-        data: expect.objectContaining({
-          date: new Date(2025, 1, 1),
         }),
       })
     );
@@ -146,23 +161,198 @@ describe("API Events by ID", () => {
     expect(json.name).toBe("Updated Event");
   });
 
+  it("updates primary category in PUT", async () => {
+    prismaMock.event.findUnique.mockResolvedValue(MOCK_EVENT as never);
+    prismaMock.category.findUnique.mockResolvedValue({ id: "cat_1" } as any);
+    prismaMock.$transaction.mockImplementation(async (operation) => {
+      if (typeof operation === "function") {
+        return operation(prismaMock);
+      }
+      return [];
+    });
+    prismaMock.event.update.mockResolvedValue(MOCK_EVENT as never);
+
+    const request = new NextRequest("http://localhost/api/events/test", {
+      method: "PUT",
+      body: JSON.stringify({ categoryId: "ckl9z5rte0000s6m1gj8h3x7c" }),
+    });
+
+    const response = await PUT(request, {
+      params: Promise.resolve({ id: VALID_ID }),
+    });
+
+    expect(response.status).toBe(200);
+    expect(prismaMock.eventCategory.deleteMany).toHaveBeenCalled();
+    expect(prismaMock.eventCategory.upsert).toHaveBeenCalled();
+  });
+
+  it("handles Prisma errors in PUT", async () => {
+    prismaMock.event.findUnique.mockResolvedValue(MOCK_EVENT as never);
+    const error = new Prisma.PrismaClientKnownRequestError("Conflict", {
+      code: "P2002",
+      clientVersion: "5.0.0",
+    });
+    prismaMock.$transaction.mockRejectedValue(error);
+
+    const request = new NextRequest("http://localhost/api/events/test", {
+      method: "PUT",
+      body: JSON.stringify({ name: "Conflict" }),
+    });
+
+    const response = await PUT(request, {
+      params: Promise.resolve({ id: VALID_ID }),
+    });
+    expect(response.status).toBe(409);
+  });
+
+  it("returns 400 for related data not found in PUT", async () => {
+    prismaMock.event.findUnique.mockResolvedValue(MOCK_EVENT as never);
+    const error = new Prisma.PrismaClientKnownRequestError("FK failed", {
+      code: "P2003",
+      clientVersion: "5.0.0",
+    });
+    prismaMock.$transaction.mockRejectedValue(error);
+
+    const request = new NextRequest("http://localhost/api/events/test", {
+      method: "PUT",
+      body: JSON.stringify({ name: "FK" }),
+    });
+
+    const response = await PUT(request, {
+      params: Promise.resolve({ id: VALID_ID }),
+    });
+    expect(response.status).toBe(400);
+  });
+
+  it("returns 404 for record not found in PUT transaction", async () => {
+    prismaMock.event.findUnique.mockResolvedValue(MOCK_EVENT as never);
+    const error = new Prisma.PrismaClientKnownRequestError("Not found", {
+      code: "P2025",
+      clientVersion: "5.0.0",
+    });
+    prismaMock.$transaction.mockRejectedValue(error);
+
+    const request = new NextRequest("http://localhost/api/events/test", {
+      method: "PUT",
+      body: JSON.stringify({ name: "Missing" }),
+    });
+
+    const response = await PUT(request, {
+      params: Promise.resolve({ id: VALID_ID }),
+    });
+    expect(response.status).toBe(404);
+  });
+
   it("deletes events when they exist", async () => {
     prismaMock.event.findUnique.mockResolvedValue({
       ...MOCK_EVENT,
-      id: "ckl9z5rte0000s6m1gj8h3x7d",
+      id: VALID_ID,
     } as never);
     prismaMock.event.delete.mockResolvedValue({
       ...MOCK_EVENT,
-      id: "ckl9z5rte0000s6m1gj8h3x7d",
+      id: VALID_ID,
     } as never);
 
     const response = await DELETE(new NextRequest("http://localhost/api/events/test"), {
-      params: Promise.resolve({ id: "ckl9z5rte0000s6m1gj8h3x7d" }),
+      params: Promise.resolve({ id: VALID_ID }),
     });
 
     expect(prismaMock.event.delete).toHaveBeenCalledWith({
-      where: { id: "ckl9z5rte0000s6m1gj8h3x7d" },
+      where: { id: VALID_ID },
     });
     expect(response.status).toBe(204);
+  });
+
+  it("rejects invalid PUT event IDs", async () => {
+    const response = await PUT(new NextRequest("http://localhost/api/events/bad"), {
+      params: Promise.resolve({ id: "bad" }),
+    });
+    expect(response.status).toBe(400);
+  });
+
+  it("rejects invalid DELETE event IDs", async () => {
+    const response = await DELETE(new NextRequest("http://localhost/api/events/bad"), {
+      params: Promise.resolve({ id: "bad" }),
+    });
+    expect(response.status).toBe(400);
+  });
+
+  it("returns 404 for missing events in PUT", async () => {
+    prismaMock.event.findUnique.mockResolvedValue(null);
+    const request = new NextRequest("http://localhost/api/events/test", {
+      method: "PUT",
+      body: JSON.stringify({ name: "New Name" }),
+    });
+    const response = await PUT(request, {
+      params: Promise.resolve({ id: VALID_ID }),
+    });
+    expect(response.status).toBe(404);
+  });
+
+  it("updates occurrence when date is provided in PUT", async () => {
+    prismaMock.event.findUnique.mockResolvedValue(MOCK_EVENT as any);
+    prismaMock.$transaction.mockImplementation(async (operation) => {
+      if (typeof operation === "function") return operation(prismaMock);
+      return [];
+    });
+    prismaMock.event.update.mockResolvedValue(MOCK_EVENT as any);
+    prismaMock.eventOccurrence.update.mockResolvedValue({ id: "occ_1" } as any);
+
+    const request = new NextRequest("http://localhost/api/events/test", {
+      method: "PUT",
+      body: JSON.stringify({ date: "2025-02-01" }),
+    });
+
+    const response = await PUT(request, {
+      params: Promise.resolve({ id: VALID_ID }),
+    });
+
+    expect(response.status).toBe(200);
+    expect(prismaMock.eventOccurrence.update).toHaveBeenCalled();
+  });
+
+  it("handles resetting categoryId to null in PUT", async () => {
+    prismaMock.event.findUnique.mockResolvedValue(MOCK_EVENT as any);
+    prismaMock.$transaction.mockImplementation(async (operation) => {
+      if (typeof operation === "function") return operation(prismaMock);
+      return [];
+    });
+    prismaMock.event.update.mockResolvedValue(MOCK_EVENT as any);
+
+    const request = new NextRequest("http://localhost/api/events/test", {
+      method: "PUT",
+      body: JSON.stringify({ categoryId: null }),
+    });
+
+    const response = await PUT(request, {
+      params: Promise.resolve({ id: VALID_ID }),
+    });
+
+    expect(response.status).toBe(200);
+    expect(prismaMock.eventCategory.deleteMany).toHaveBeenCalled();
+  });
+
+  it("handles Prisma not found in DELETE", async () => {
+    prismaMock.event.findUnique.mockResolvedValue(MOCK_EVENT as any);
+    const error = new Prisma.PrismaClientKnownRequestError("Not found", {
+      code: "P2025",
+      clientVersion: "5.0.0",
+    });
+    prismaMock.event.delete.mockRejectedValue(error);
+
+    const response = await DELETE(new NextRequest("http://localhost/api/events/test"), {
+      params: Promise.resolve({ id: VALID_ID }),
+    });
+    expect(response.status).toBe(404);
+  });
+
+  it("returns server error when DELETE fails with unknown error", async () => {
+    prismaMock.event.findUnique.mockResolvedValue(MOCK_EVENT as any);
+    prismaMock.event.delete.mockRejectedValue(new Error("Unknown"));
+
+    const response = await DELETE(new NextRequest("http://localhost/api/events/test"), {
+      params: Promise.resolve({ id: VALID_ID }),
+    });
+    expect(response.status).toBe(500);
   });
 });

@@ -55,6 +55,18 @@ describe("GET /api/daily-info", () => {
     expect(json.message).toBe("Ongeldige datum formaat. Gebruik YYYY-MM-DD.");
   });
 
+  it("rejects invalid range date formats", async () => {
+    const request = new NextRequest(
+      "http://localhost/api/daily-info?start=bad&end=2025-01-01"
+    );
+
+    const response = await GET(request);
+    const json = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(json.message).toBe("Ongeldige datum formaat. Gebruik YYYY-MM-DD.");
+  });
+
   it("rejects ranges where start is after end", async () => {
     const request = new NextRequest(
       "http://localhost/api/daily-info?start=2025-02-01&end=2025-01-01"
@@ -119,6 +131,76 @@ describe("GET /api/daily-info", () => {
     expect(response.status).toBe(200);
     expect(json).toHaveLength(2);
     expect(json[1].date).toBe("2025-01-02");
+  });
+
+  it("identifies Purnima from moonPhaseEvent", async () => {
+    calculateDaily.mockResolvedValue({
+      ...basePanchanga,
+      moonPhaseEvent: {
+        type: "full",
+        timeLocal: "12:00",
+        timeUtcIso: "2025-01-01T12:00:00Z",
+      },
+    });
+
+    const request = new NextRequest("http://localhost/api/daily-info?date=2025-01-01");
+    const response = await GET(request);
+    const json = await response.json();
+
+    expect(json.specialDay.type).toBe("purnima");
+  });
+
+  it("identifies Amavasya from moonPhaseEvent", async () => {
+    calculateDaily.mockResolvedValue({
+      ...basePanchanga,
+      moonPhaseEvent: {
+        type: "new",
+        timeLocal: "12:00",
+        timeUtcIso: "2025-01-01T12:00:00Z",
+      },
+    });
+
+    const request = new NextRequest("http://localhost/api/daily-info?date=2025-01-01");
+    const response = await GET(request);
+    const json = await response.json();
+
+    expect(json.specialDay.type).toBe("amavasya");
+  });
+
+  it("identifies Ekadashi from tithi data", async () => {
+    calculateDaily.mockResolvedValue({
+      ...basePanchanga,
+      tithi: { number: 11, name: "Ekadashi", paksha: "Shukla" },
+    });
+
+    const request = new NextRequest("http://localhost/api/daily-info?date=2025-01-01");
+    const response = await GET(request);
+    const json = await response.json();
+
+    expect(json.specialDay.type).toBe("ekadashi");
+  });
+
+  it("returns server error on calculation failure", async () => {
+    calculateDaily.mockRejectedValue(new Error("Panchanga calculation failed"));
+
+    const request = new NextRequest("http://localhost/api/daily-info?date=2025-01-01");
+    const response = await GET(request);
+    const json = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(json.message).toBe("Kon Panchanga niet berekenen");
+  });
+
+  it("uses current date when no parameters are provided", async () => {
+    calculateDaily.mockResolvedValue(basePanchanga);
+
+    const request = new NextRequest("http://localhost/api/daily-info");
+    const response = await GET(request);
+    const json = await response.json();
+
+    expect(calculateDaily).toHaveBeenCalled();
+    expect(response.status).toBe(200);
+    expect(json.date).toBeDefined();
   });
 
   it("rejects ranges longer than 90 days", async () => {

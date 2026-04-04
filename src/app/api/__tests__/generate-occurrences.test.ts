@@ -12,15 +12,17 @@ vi.mock("@/services/recurrence.service", () => ({
   generateOccurrencesForEvents,
 }));
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { POST } from "../events/generate-occurrences/route";
 
 describe("POST /api/events/generate-occurrences", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Make $transaction execute the callback with prismaMock as the transaction client
-    prismaMock.$transaction.mockImplementation((fn: unknown) => {
-      if (typeof fn === "function") return fn(prismaMock);
-      return Promise.all(fn as Promise<unknown>[]);
+    prismaMock.$transaction.mockImplementation(async (fn: any) => {
+      if (typeof fn === "function") return await fn(prismaMock);
+      return Promise.all(fn);
     });
   });
 
@@ -77,7 +79,7 @@ describe("POST /api/events/generate-occurrences", () => {
 
   it("returns early when event has no recurrence", async () => {
     prismaMock.event.findUnique.mockResolvedValue({
-      id: "evt_1",
+      id: "ckl9z5rte0000s6m1gj8h3x7d",
       name: "One-off",
       recurrenceType: "NONE",
 
@@ -122,7 +124,7 @@ describe("POST /api/events/generate-occurrences", () => {
 
   it("generates occurrences for a recurring event", async () => {
     prismaMock.event.findUnique.mockResolvedValue({
-      id: "evt_1",
+      id: "ckl9z5rte0000s6m1gj8h3x7d",
       name: "Recurring",
       recurrenceType: "YEARLY_LUNAR",
 
@@ -178,7 +180,7 @@ describe("POST /api/events/generate-occurrences", () => {
     const json = await response.json();
 
     expect(generateOccurrences).toHaveBeenCalledWith(
-      expect.objectContaining({ id: "evt_1" }),
+      expect.objectContaining({ id: "ckl9z5rte0000s6m1gj8h3x7d" }),
       expect.objectContaining({
         startDate: new Date("2025-01-01"),
         endDate: new Date("2025-01-05"),
@@ -192,7 +194,7 @@ describe("POST /api/events/generate-occurrences", () => {
   it("generates occurrences for all recurring events", async () => {
     prismaMock.event.findMany.mockResolvedValue([
       {
-        id: "evt_1",
+        id: "ckl9z5rte0000s6m1gj8h3x7d",
         name: "Event 1",
         recurrenceType: "YEARLY_LUNAR",
 
@@ -245,7 +247,7 @@ describe("POST /api/events/generate-occurrences", () => {
     generateOccurrencesForEvents.mockResolvedValue(
       new Map([
         [
-          "evt_1",
+          "ckl9z5rte0000s6m1gj8h3x7d",
           [
             {
               date: new Date(2025, 0, 1),
@@ -275,7 +277,7 @@ describe("POST /api/events/generate-occurrences", () => {
 
     expect(generateOccurrencesForEvents).toHaveBeenCalledWith(
       expect.arrayContaining([
-        expect.objectContaining({ id: "evt_1" }),
+        expect.objectContaining({ id: "ckl9z5rte0000s6m1gj8h3x7d" }),
         expect.objectContaining({ id: "evt_2" }),
       ]),
       expect.objectContaining({
@@ -287,5 +289,113 @@ describe("POST /api/events/generate-occurrences", () => {
     expect(response.status).toBe(200);
     expect(json.eventsProcessed).toBe(2);
     expect(json.generated).toBe(1);
+  });
+
+  it("returns 400 when startDate is after endDate", async () => {
+    const request = new NextRequest("http://localhost/api/events/generate-occurrences", {
+      method: "POST",
+      body: JSON.stringify({
+        startDate: "2025-01-05",
+        endDate: "2025-01-01",
+      }),
+    });
+
+    const response = await POST(request);
+    const json = await response.json();
+    expect(response.status).toBe(400);
+    expect(json.error).toBe("startDate must be before endDate");
+  });
+
+  it("handles replace logic for single event", async () => {
+    prismaMock.event.findUnique.mockResolvedValue({
+      id: "ckl9z5rte0000s6m1gj8h3x7d",
+      name: "Recurring",
+      recurrenceType: "YEARLY_LUNAR",
+      tags: [],
+      aliases: [],
+    } as any);
+    generateOccurrences.mockResolvedValue([{ date: new Date() }]);
+    prismaMock.eventOccurrence.deleteMany.mockResolvedValue({ count: 5 } as any);
+    prismaMock.eventOccurrence.createMany.mockResolvedValue({ count: 1 } as any);
+
+    const request = new NextRequest("http://localhost/api/events/generate-occurrences", {
+      method: "POST",
+      body: JSON.stringify({
+        eventId: "ckl9z5rte0000s6m1gj8h3x7d",
+        startDate: "2025-01-01",
+        endDate: "2025-01-05",
+        replace: true,
+      }),
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const response = await POST(request);
+    const json = await response.json();
+    expect(response.status).toBe(200);
+    expect(json.deleted).toBe(5);
+    expect(prismaMock.eventOccurrence.deleteMany).toHaveBeenCalled();
+  });
+
+  it("handles no events with recurrence found in batch mode", async () => {
+    prismaMock.event.findMany.mockResolvedValue([]);
+
+    const request = new NextRequest("http://localhost/api/events/generate-occurrences", {
+      method: "POST",
+      body: JSON.stringify({
+        startDate: "2025-01-01",
+        endDate: "2025-01-05",
+      }),
+    });
+
+    const response = await POST(request);
+    const json = await response.json();
+    expect(json.message).toContain("No events with recurrence found");
+  });
+
+  it("handles replace logic for batch generation", async () => {
+    prismaMock.event.findMany.mockResolvedValue([
+      {
+        id: "ckl9z5rte0000s6m1gj8h3x7d",
+        recurrenceType: "YEARLY_LUNAR",
+        tags: [],
+        aliases: [],
+      } as any,
+    ]);
+    generateOccurrencesForEvents.mockResolvedValue(
+      new Map([["ckl9z5rte0000s6m1gj8h3x7d", [{ date: new Date() }]]])
+    );
+    prismaMock.eventOccurrence.deleteMany.mockResolvedValue({ count: 3 });
+    prismaMock.eventOccurrence.createMany.mockResolvedValue({ count: 1 });
+
+    const request = new NextRequest("http://localhost/api/events/generate-occurrences", {
+      method: "POST",
+      body: JSON.stringify({
+        startDate: "2025-01-01",
+        endDate: "2025-01-05",
+        replace: true,
+      }),
+    });
+
+    const response = await POST(request);
+    const json = await response.json();
+    expect(json.deleted).toBe(3);
+    expect(prismaMock.eventOccurrence.deleteMany).toHaveBeenCalled();
+  });
+
+  it("returns server error when generation fails", async () => {
+    prismaMock.event.findMany.mockRejectedValue(new Error("DB error"));
+
+    const request = new NextRequest("http://localhost/api/events/generate-occurrences", {
+      method: "POST",
+      body: JSON.stringify({
+        startDate: "2025-01-01",
+        endDate: "2025-01-05",
+      }),
+    });
+
+    const response = await POST(request);
+    const json = await response.json();
+    expect(response.status).toBe(500);
+    expect(json.message).toBe("Kon occurrences niet genereren");
   });
 });

@@ -3,6 +3,9 @@ import { NextRequest } from "next/server";
 import { prismaMock } from "@/__tests__/helpers/prisma-mock";
 import { formatDateLocal } from "@/lib/date-utils";
 import { GET, POST } from "../events/route";
+import { Prisma } from "@prisma/client";
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 describe("API Events", () => {
   beforeEach(() => {
@@ -71,6 +74,33 @@ describe("API Events", () => {
     expect(json[0].resource.eventType).toBe("FESTIVAL");
   });
 
+  it("handles complex query parameters", async () => {
+    prismaMock.eventOccurrence.findMany.mockResolvedValue([]);
+
+    const request = new NextRequest(
+      "http://localhost/api/events?categories=cat1,cat2&types=FESTIVAL,PUJA&tithis=PURNIMA&search=holi&sortBy=name&order=desc"
+    );
+
+    const response = await GET(request);
+    expect(response.status).toBe(200);
+    expect(prismaMock.eventOccurrence.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        orderBy: [{ event: { name: "desc" } }],
+      })
+    );
+  });
+
+  it("returns server error when GET fails", async () => {
+    prismaMock.eventOccurrence.findMany.mockRejectedValue(new Error("DB error"));
+
+    const request = new NextRequest("http://localhost/api/events");
+    const response = await GET(request);
+    const json = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(json.message).toBe("Kon events niet ophalen");
+  });
+
   it("rejects invalid event payloads", async () => {
     const request = new NextRequest("http://localhost/api/events", {
       method: "POST",
@@ -128,6 +158,32 @@ describe("API Events", () => {
     expect(json.id).toBe("evt_1");
   });
 
+  it("creates an event with categoryId", async () => {
+    const VALID_CAT_ID = "ckl9z5rte0000s6m1gj8h3x7c";
+    prismaMock.$transaction.mockImplementation(async (operation) => {
+      if (typeof operation === "function") {
+        return operation(prismaMock);
+      }
+      return [];
+    });
+    prismaMock.category.findUnique.mockResolvedValue({ id: VALID_CAT_ID } as any);
+    prismaMock.event.create.mockResolvedValue({ id: "evt_1" } as any);
+
+    const request = new NextRequest("http://localhost/api/events", {
+      method: "POST",
+      body: JSON.stringify({
+        name: "Cat Event",
+        eventType: "FESTIVAL",
+        date: "2025-01-01",
+        categoryId: VALID_CAT_ID,
+      }),
+    });
+
+    const response = await POST(request);
+    expect(response.status).toBe(201);
+    expect(prismaMock.eventCategory.create).toHaveBeenCalled();
+  });
+
   it("rejects unknown category IDs", async () => {
     prismaMock.category.findUnique.mockResolvedValue(null);
 
@@ -147,5 +203,86 @@ describe("API Events", () => {
 
     expect(response.status).toBe(400);
     expect(json.message).toBe("Categorie niet gevonden");
+  });
+
+  it("handles Prisma unique constraint error", async () => {
+    const error = new Prisma.PrismaClientKnownRequestError("Conflict", {
+      code: "P2002",
+      clientVersion: "5.0.0",
+    });
+    prismaMock.$transaction.mockRejectedValue(error);
+
+    const request = new NextRequest("http://localhost/api/events", {
+      method: "POST",
+      body: JSON.stringify({
+        name: "Conflict Event",
+        eventType: "FESTIVAL",
+        date: "2025-01-01",
+      }),
+    });
+
+    const response = await POST(request);
+    const json = await response.json();
+    expect(response.status).toBe(409);
+    expect(json.message).toContain("Er bestaat al een event");
+  });
+
+  it("handles Prisma foreign key constraint error", async () => {
+    const error = new Prisma.PrismaClientKnownRequestError("FK failed", {
+      code: "P2003",
+      clientVersion: "5.0.0",
+    });
+    prismaMock.$transaction.mockRejectedValue(error);
+
+    const request = new NextRequest("http://localhost/api/events", {
+      method: "POST",
+      body: JSON.stringify({
+        name: "FK Event",
+        eventType: "FESTIVAL",
+        date: "2025-01-01",
+      }),
+    });
+
+    const response = await POST(request);
+    expect(response.status).toBe(400);
+  });
+
+  it("handles Prisma record not found error", async () => {
+    const error = new Prisma.PrismaClientKnownRequestError("Not found", {
+      code: "P2025",
+      clientVersion: "5.0.0",
+    });
+    prismaMock.$transaction.mockRejectedValue(error);
+
+    const request = new NextRequest("http://localhost/api/events", {
+      method: "POST",
+      body: JSON.stringify({
+        name: "Missing Event",
+        eventType: "FESTIVAL",
+        date: "2025-01-01",
+      }),
+    });
+
+    const response = await POST(request);
+    expect(response.status).toBe(404);
+  });
+
+  it("returns server error when POST fails with unknown error", async () => {
+    prismaMock.$transaction.mockRejectedValue(new Error("Unknown error"));
+
+    const request = new NextRequest("http://localhost/api/events", {
+      method: "POST",
+      body: JSON.stringify({
+        name: "Fail Event",
+        eventType: "FESTIVAL",
+        date: "2025-01-01",
+      }),
+    });
+
+    const response = await POST(request);
+    const json = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(json.message).toBe("Kon event niet aanmaken");
   });
 });
