@@ -19,11 +19,11 @@ const BASE_EVENT: Event = {
   maas: "PAUSHA",
   description: null,
   eventType: "FESTIVAL",
-  categories: [],
   createdAt: new Date(),
   updatedAt: new Date(),
   nakshatra: null,
   tags: [],
+  aliases: [],
   sankranti: null,
   isAdhikaOnly: false,
   includeAdhika: false,
@@ -57,7 +57,7 @@ describe("Recurrence Service Extended", () => {
 
     // 2. applyDynamicTiming early return and dynamic calc
     const eventDynamic: Event = { ...BASE_EVENT, timingType: "NISHITA_KAAL" };
-    prismaMock.dailyInfo.findMany.mockImplementation(async (args: any) => {
+    prismaMock.dailyInfo.findMany.mockImplementation((async (args: any) => {
       if (args.where.tithi === "EKADASHI_SHUKLA")
         return [{ date: new Date("2025-01-10T00:00:00.000Z"), maas: "PAUSHA" }] as any;
       if (args.where.date?.in)
@@ -70,7 +70,7 @@ describe("Recurrence Service Extended", () => {
           { date: new Date("2025-01-11T00:00:00.000Z"), sunrise: "08:00" },
         ] as any;
       return [];
-    });
+    }) as any);
     const res2 = await generateOccurrences(eventDynamic, options);
     expect(res2[0]!.startTime).toBeDefined();
 
@@ -132,7 +132,7 @@ describe("Recurrence Service Extended", () => {
     const d2 = new Date(Date.UTC(2025, 4, 13));
     const d3 = new Date(Date.UTC(2026, 5, 10));
     const d4 = new Date(Date.UTC(2026, 5, 11));
-    prismaMock.dailyInfo.findMany.mockImplementation(async (args: any) => {
+    prismaMock.dailyInfo.findMany.mockImplementation((async (args: any) => {
       if (args.where.tithi === "PURNIMA")
         return [
           { date: d1, maas: "PAUSHA", isAdhika: false },
@@ -146,7 +146,7 @@ describe("Recurrence Service Extended", () => {
           { date: d4, moonPhasePercent: 99.0 },
         ] as any;
       return [];
-    });
+    }) as any);
     const res5 = await generateOccurrences(eventPhase, options);
     expect(res5).toHaveLength(2);
     expect(res5[0]!.date.getUTCDate()).toBe(13);
@@ -170,7 +170,7 @@ describe("Recurrence Service Extended", () => {
       ruleType: "PRADOSH",
       ruleConfig: { paksha: "SHUKLA", weekday: 6 } as any,
     };
-    prismaMock.dailyInfo.findMany.mockImplementation(async (args: any) => {
+    prismaMock.dailyInfo.findMany.mockImplementation((async (args: any) => {
       if (args.where.tithi === "DWADASHI_SHUKLA")
         return [
           {
@@ -193,7 +193,7 @@ describe("Recurrence Service Extended", () => {
           },
         ] as any;
       return [];
-    });
+    }) as any);
     const res7 = await generateOccurrences(eventPradosh, options);
     expect(res7).toHaveLength(2);
     expect(res7[0]!.date.getUTCDate()).toBe(11);
@@ -223,7 +223,7 @@ describe("Recurrence Service Extended", () => {
       eventType: EventType.VRAT,
       tithi: "NAVAMI_SHUKLA",
     };
-    prismaMock.dailyInfo.findMany.mockImplementation(async (args: any) => {
+    prismaMock.dailyInfo.findMany.mockImplementation((async (args: any) => {
       if (args.where.tithi === "NAVAMI_SHUKLA") return [] as any;
       if (args.where.tithi === "ASHTAMI_SHUKLA")
         return [
@@ -244,7 +244,7 @@ describe("Recurrence Service Extended", () => {
           },
         ] as any;
       return [];
-    });
+    }) as any);
     const res10 = await generateOccurrences(eventVrat, options);
     expect(res10).toHaveLength(1);
 

@@ -49,8 +49,7 @@ describe("General Utilities", () => {
     });
 
     it("logDebug calls console.log in development environment", async () => {
-      const originalEnv = process.env.NODE_ENV;
-      process.env.NODE_ENV = "development";
+      vi.stubEnv("NODE_ENV", "development");
       vi.resetModules();
       const { logDebug: logDebugDev } = await import("../utils");
 
@@ -59,7 +58,7 @@ describe("General Utilities", () => {
       expect(spy).toHaveBeenCalledWith("[Debug] debug msg", 123);
 
       spy.mockRestore();
-      process.env.NODE_ENV = originalEnv;
+      vi.unstubAllEnvs();
       vi.resetModules();
     });
   });

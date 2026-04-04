@@ -211,7 +211,8 @@ describe("Astro Utilities", () => {
       longitude: 10,
       latitude: 20,
       distance: 1,
-    } as unknown;
+      speed: 0, // Explicitly provide it to avoid type error
+    };
 
     const result = await swe_calc_ut(1, 2, 3);
     expect(result.speed).toBe(0);

@@ -20,7 +20,8 @@ export interface TimeWindow {
  * Parse "HH:MM" string into total minutes since midnight.
  * Returns null if the string is invalid.
  */
-export function parseTimeToMinutes(time: string): number | null {
+export function parseTimeToMinutes(time: string | null | undefined): number | null {
+  if (!time) return null;
   // Accept "HH:MM" or "HH:MM:SS" (seconds are ignored — DailyInfo stores times with seconds)
   const match = /^(\d{1,2}):(\d{2})(?::\d{2})?$/.exec(time);
   if (!match) return null;
