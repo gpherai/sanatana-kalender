@@ -231,9 +231,9 @@ describe("GET /api/weer", () => {
     const forecastMinimal = {
       list: [
         {
-          ...mockForecast.list[0],
+          ...mockForecast.list[0]!,
           sys: { pod: "n" }, // No daytime entry
-          wind: { ...mockForecast.list[0].wind, gust: undefined },
+          wind: { ...mockForecast.list[0]!.wind, gust: undefined },
         },
       ],
     };

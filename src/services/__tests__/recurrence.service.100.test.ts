@@ -47,7 +47,7 @@ describe("Recurrence Service 100% Coverage", () => {
   });
 
   it("covers applyDynamicTiming missing DailyInfo warning", async () => {
-    const event: Event = { ...BASE_EVENT, timingType: "BRAHMA_MUHURTA" };
+    const event: Event = { ...BASE_EVENT, timingType: "SUNRISE" };
     prismaMock.dailyInfo.findMany.mockResolvedValueOnce([
       { date: new Date("2025-01-10T00:00:00.000Z"), maas: "PAUSHA" },
     ] as any);
