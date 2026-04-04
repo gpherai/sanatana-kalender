@@ -72,24 +72,26 @@ describe("WeatherPage", () => {
     ...overrides,
   });
 
-  it("covers various wind directions, AQIs and alerts", async () => {
-    const directions = [0, 45, 90, 135, 180, 225, 270, 315];
+  it("covers all wind directions and AQI levels", async () => {
+    const directions = [
+      0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5, 180, 202.5, 225, 247.5, 270, 292.5, 315,
+      337.5,
+    ];
     const aqis = [1, 2, 3, 4, 5];
 
-    // Test a combination that covers most
-    for (let i = 0; i < directions.length; i++) {
+    for (const deg of directions) {
       const data = generateMockData({
-        current: { ...generateMockData().current, wind_deg: directions[i] },
+        current: { ...generateMockData().current, wind_deg: deg },
         aqi: {
           list: [
             {
-              main: { aqi: aqis[i] || 1 },
+              main: { aqi: aqis[directions.indexOf(deg) % aqis.length] || 1 },
               components: { pm2_5: 10, pm10: 20, no2: 20, o3: 50 },
             },
           ],
         },
         alerts:
-          i === 0
+          deg === 0
             ? [
                 {
                   event: "Storm",
@@ -109,15 +111,17 @@ describe("WeatherPage", () => {
     }
   });
 
-  it("covers extreme daily conditions", async () => {
-    // Daily wind > 12 triggers different icon/logic
+  it("covers extreme daily conditions and snowy weather", async () => {
     const data = generateMockData({
+      current: {
+        ...generateMockData().current,
+        weather: [{ icon: "13d", description: "snow" }],
+      },
       daily: generateMockData().daily.map((d) => ({
         ...d,
         wind_speed: 15,
         wind_gust: 20,
         pop: 0.9,
-        weather: [{ icon: "13d", description: "snow" }],
       })),
     });
     vi.mocked(fetch).mockResolvedValue({ ok: true, json: async () => data } as any);

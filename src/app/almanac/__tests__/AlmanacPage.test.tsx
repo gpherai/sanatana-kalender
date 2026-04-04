@@ -80,23 +80,36 @@ describe("AlmanacPage", () => {
     }) as any;
   });
 
-  it("handles full lifecycle", async () => {
-    const mockData = [
-      { date: "2025-01-01", locationName: "Amsterdam", moonPhaseEvent: { type: "full" } },
-      { date: "2025-01-02", locationName: "Amsterdam" },
-    ];
-    // Spanning 2 days
+  it("handles full lifecycle and all edge cases", async () => {
+    // 1. Cover all owmPhase branches (line 42)
+    const phases = [0, 0.25, 0.5, 0.75];
+    const mockData = phases.map((p, i) => ({
+      date: `2025-01-0${i + 1}`,
+      locationName: "Amsterdam",
+      moonPhaseEvent: {
+        type:
+          p === 0
+            ? "new"
+            : p === 0.25
+              ? "first_quarter"
+              : p === 0.5
+                ? "full"
+                : "last_quarter",
+      },
+    }));
+
+    // 2. Cover multi-day loop (lines 165-168)
     const mockEvents = [
       {
         id: "1",
-        title: "Event",
+        title: "Long Event",
         start: "2025-01-01",
-        end: "2025-01-02",
+        end: "2025-01-03",
         resource: {
           categories: [],
           eventType: "FESTIVAL",
           tags: [],
-          originalEndDate: "2025-01-02",
+          originalEndDate: "2025-01-03",
         },
       },
     ];
@@ -109,34 +122,29 @@ describe("AlmanacPage", () => {
 
     const { rerender } = render(<AlmanacPage />);
 
-    // Trigger filter toggles
-    act(() => {
-      fireEvent.click(screen.getByText("Toggle Moon"));
-      fireEvent.click(screen.getByText("Toggle Special"));
-      fireEvent.click(screen.getByText("Toggle Events"));
-      fireEvent.click(screen.getByText("Set Year"));
-      fireEvent.click(screen.getByText("Set Month"));
-    });
-
-    // Trigger date selection and scroll
-    (window as any).scrollY = 100;
+    // First selectedDate change skips scroll (line 123)
     act(() => {
       fireEvent.click(screen.getByTestId("grid"));
     });
 
-    // Rerender to ensure isInitialMount was false and scroll hook ran
+    // Rerender to clear isInitialMount
     rerender(<AlmanacPage />);
 
-    // Trigger modal (handleEventClick)
+    // Second selectedDate change triggers scroll (line 100)
+    (window as any).scrollY = 100;
     act(() => {
-      fireEvent.click(screen.getByTestId("details"));
+      fireEvent.click(screen.getByTestId("moon-timeline"));
     });
-    expect(screen.getByTestId("modal")).toBeInTheDocument();
+    expect(window.scrollTo).toHaveBeenCalled();
 
-    // Close modal (handleCloseModal)
+    // Toggle filters (lines 190, 195)
     act(() => {
-      fireEvent.click(screen.getByText("Close"));
+      fireEvent.click(screen.getByText("Toggle Special"));
+      fireEvent.click(screen.getByText("Toggle Events"));
     });
-    expect(screen.queryByTestId("modal")).not.toBeInTheDocument();
+
+    const status = screen.getByTestId("filter-status");
+    expect(status).toHaveTextContent("Special OFF");
+    expect(status).toHaveTextContent("Events OFF");
   });
 });

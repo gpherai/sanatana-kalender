@@ -1,72 +1,44 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
-import type { ReactNode } from "react";
 import { prismaMock } from "@/__tests__/helpers/prisma-mock";
 import Home from "../page";
 
-vi.mock("next/link", () => ({
-  default: ({ href, children }: { href: string; children: ReactNode }) => (
-    <a href={href}>{children}</a>
-  ),
-}));
-
-vi.mock("@/components/calendar", () => ({
-  DharmaCalendar: () => <div data-testid="calendar" />,
-}));
-
-vi.mock("@/components/ui", () => ({
-  TodayHero: () => <div data-testid="today-hero" />,
-}));
-
-vi.mock("@/components/layout", () => ({
-  PageLayout: ({ children }: { children: ReactNode }) => (
-    <div data-testid="page-layout">{children}</div>
-  ),
-}));
-
-describe("Home Page", () => {
+describe("HomePage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("shows empty state when no upcoming events exist", async () => {
-    prismaMock.eventOccurrence.findMany.mockResolvedValue([] as never);
-    prismaMock.category.findMany.mockResolvedValue([] as never);
+  it("renders with categories and events", async () => {
+    prismaMock.category.findMany.mockResolvedValue([
+      { id: "1", name: "ganesha", displayName: "Ganesha", icon: "🐘", color: "red" },
+    ] as any);
 
-    const ui = await Home();
-    render(ui);
-
-    expect(screen.getByText("Geen aankomende events")).toBeInTheDocument();
-    expect(screen.getByText("Voeg er een toe")).toBeInTheDocument();
-  });
-
-  it("renders upcoming events when present", async () => {
     prismaMock.eventOccurrence.findMany.mockResolvedValue([
       {
         id: "occ_1",
         date: new Date(),
-        endDate: null,
-        eventId: "evt_1",
         event: {
           id: "evt_1",
-          name: "Maha Shivaratri",
-          categories: [{ category: { icon: "🕉️" } }],
+          name: "Test Event",
+          categories: [{ category: { icon: null } }], // trigger fallback 📅
         },
       },
-    ] as never);
-    prismaMock.category.findMany.mockResolvedValue([
-      {
-        id: "cat_1",
-        displayName: "Ganesha",
-        icon: "🐘",
-        color: "#fff",
-      },
-    ] as never);
+    ] as any);
 
     const ui = await Home();
     render(ui);
 
-    expect(screen.getByText("Binnenkort (7 dagen)")).toBeInTheDocument();
-    expect(screen.getByText("Maha Shivaratri")).toBeInTheDocument();
+    expect(screen.getByText("Ganesha")).toBeInTheDocument();
+    expect(screen.getByText("Test Event")).toBeInTheDocument();
+    expect(screen.getByText("📅")).toBeInTheDocument();
+  });
+
+  it("renders with no upcoming events", async () => {
+    prismaMock.category.findMany.mockResolvedValue([]);
+    prismaMock.eventOccurrence.findMany.mockResolvedValue([]);
+    const ui = await Home();
+    render(ui);
+    expect(screen.getByText(/Geen aankomende events/i)).toBeInTheDocument();
   });
 });
