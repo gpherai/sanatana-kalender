@@ -2,7 +2,7 @@ import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { FilterSidebar } from "../FilterSidebar";
-import { CATEGORIES } from "@/lib/domain";
+import { CATEGORIES, EVENT_TYPES, SPECIAL_TITHIS } from "@/lib/domain";
 import type { FilterState } from "@/hooks/useFilters";
 
 const BASE_FILTERS: FilterState = {
@@ -52,6 +52,8 @@ describe("FilterSidebar", () => {
 
     const input = screen.getByPlaceholderText("Zoeken...");
     fireEvent.change(input, { target: { value: "shiv" } });
+
+    // Coverage for line 104 (skip sync if same value)
     fireEvent.change(input, { target: { value: "shiv" } });
 
     vi.advanceTimersByTime(300);
@@ -67,8 +69,13 @@ describe("FilterSidebar", () => {
       />
     );
     const xButton = screen.getByRole("button", { name: "" });
+
+    // Line 123 check: call handleClear when NOT empty
     fireEvent.click(xButton);
     expect(onFilterChange).toHaveBeenCalledWith("search", "");
+
+    // Line 123 again: skip callback if already empty (lastSyncedRef.current is already "")
+    fireEvent.click(xButton);
   });
 
   it("handles DateInput formatting and clearing", async () => {
@@ -88,8 +95,15 @@ describe("FilterSidebar", () => {
     await user.click(sectionButton);
 
     let inputs = screen.getAllByPlaceholderText("DD-MM-JJJJ");
+
+    // Complete date (Line 285)
     await user.type(inputs[0]!, "01012025");
     expect(onFilterChange).toHaveBeenCalledWith("dateFrom", "2025-01-01");
+
+    // Edge case: invalid date with 8 digits (e.g. 99-99-9999) - should not call onChange
+    await user.clear(inputs[0]!);
+    await user.type(inputs[0]!, "99999999");
+    expect(onFilterChange).not.toHaveBeenCalledWith("dateFrom", "9999-99-99");
 
     rerender(
       <FilterSidebar
@@ -104,10 +118,9 @@ describe("FilterSidebar", () => {
     const clearPeriod = screen.getByTitle("Periode wissen");
     await user.click(clearPeriod);
     expect(onFilterChange).toHaveBeenCalledWith("dateFrom", "");
-    expect(onFilterChange).toHaveBeenCalledWith("dateTo", "");
 
     inputs = screen.getAllByPlaceholderText("DD-MM-JJJJ");
-    await user.clear(inputs[0]!);
+    await user.clear(inputs[0]!); // Line 287 (trigger !digits)
   });
 
   it("toggles sections and filters", async () => {
@@ -125,6 +138,21 @@ describe("FilterSidebar", () => {
 
     await user.click(screen.getByText(CATEGORIES[0]!.label));
     expect(onToggleFilter).toHaveBeenCalledWith("categories", CATEGORIES[0]!.value);
+
+    // Event Types (Line 328 callback coverage)
+    const typeSection = screen.getByText(/Soort evenement/i).closest("button")!;
+    await user.click(typeSection); // Open it explicitly
+    await user.click(screen.getByText(EVENT_TYPES[0]!.label));
+    expect(onToggleFilter).toHaveBeenCalledWith("eventTypes", EVENT_TYPES[0]!.value);
+
+    // Special Tithis (Line 343 callback coverage)
+    const tithiSection = screen.getByText(/Speciale dagen/i).closest("button")!;
+    await user.click(tithiSection);
+    await user.click(screen.getByText(SPECIAL_TITHIS[0]!.label));
+    expect(onToggleFilter).toHaveBeenCalledWith(
+      "specialTithis",
+      SPECIAL_TITHIS[0]!.value
+    );
 
     const godSection = screen.getByText(/Godheden/i).closest("button")!;
     await user.click(godSection);

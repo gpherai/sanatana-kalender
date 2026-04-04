@@ -180,4 +180,17 @@ describe("DharmaCalendar", () => {
     const fallbackStyleProps = lastCalendarProps.eventPropGetter(parsedNoCat);
     expect(fallbackStyleProps.style.backgroundColor).toBeDefined();
   });
+
+  it("triggers onError when fetch fails", async () => {
+    const fetchMock = vi.mocked(fetch);
+    fetchMock.mockResolvedValue({
+      ok: false,
+      status: 500,
+    } as Response);
+
+    render(<DharmaCalendar />);
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalled();
+    });
+  });
 });

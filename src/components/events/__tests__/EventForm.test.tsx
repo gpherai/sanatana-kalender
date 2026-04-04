@@ -120,6 +120,19 @@ describe("EventForm", () => {
     });
   });
 
+  it("throws error in edit mode without ID (line 124)", async () => {
+    // Suppress console.error for this test
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    render(<EventForm mode="edit" initialData={{ name: "Test", date: "2025-01-01" }} />);
+    await userEvent.click(screen.getByRole("button", { name: "Opslaan" }));
+
+    await waitFor(() => {
+      expect(toastError).toHaveBeenCalledWith("Event ID is required in edit mode");
+    });
+    errorSpy.mockRestore();
+  });
+
   it("handles successful submission without onSuccess (redirects)", async () => {
     const fetchMock = vi.mocked(fetch);
     fetchMock.mockResolvedValue({
