@@ -92,7 +92,15 @@ describe("DayDetailsPanel", () => {
         selectedDate={MOCK_DATE}
         selectedDayInfo={MOCK_INFO}
         selectedDayEvents={MOCK_EVENTS as any}
-        selectedDaySpecial={[{ name: "Special Day", emoji: "✨", description: "Test" }]}
+        selectedDaySpecial={[
+          {
+            date: new Date("2025-01-01"),
+            type: "festival",
+            name: "Special Day",
+            emoji: "✨",
+            description: "Test",
+          },
+        ]}
         onEventClick={onEventClick}
         showEvents={true}
         showSpecialDays={true}

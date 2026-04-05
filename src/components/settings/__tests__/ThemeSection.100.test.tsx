@@ -21,6 +21,7 @@ describe("ThemeSection 100% Coverage", () => {
         themes={minimalThemes as any}
         themeName="light"
         colorMode="light"
+        resolvedColorMode="light"
         onThemeChange={vi.fn()}
         onColorModeChange={vi.fn()}
       />

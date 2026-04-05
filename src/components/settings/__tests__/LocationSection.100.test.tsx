@@ -13,6 +13,7 @@ describe("LocationSection 100% Coverage", () => {
         locationName="Test"
         locationLat={52}
         locationLon={4}
+        dailyInfo={null}
         onLocationPreset={onLocationPreset}
         onLocationChange={onLocationChange}
       />
