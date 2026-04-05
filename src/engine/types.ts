@@ -5,21 +5,6 @@
  * does not depend on Prisma directly, making it fully unit-testable.
  */
 
-/** Subset of DailyInfo needed by occurrence-matching logic */
-export interface DailyInfoRow {
-  date: Date;
-  tithi: string | null;
-  tithiEndTime: string | null;
-  nakshatra: string | null;
-  nakshatraEndTime: string | null;
-  maas: string | null;
-  isAdhika: boolean;
-  sankranti: string | null;
-  sankrantiTime: string | null;
-  sunrise: string | null;
-  sunset: string | null;
-}
-
 /** A single calendar occurrence produced by the rule engine */
 export interface GeneratedOccurrence {
   date: Date;

@@ -8,7 +8,7 @@
  *   import { computeTithiOccurrence, groupConsecutiveDays, ... } from "@/engine"
  */
 
-export type { DailyInfoRow, GeneratedOccurrence, PrevDayInfo } from "./types";
+export type { GeneratedOccurrence, PrevDayInfo } from "./types";
 export {
   isConsecutiveDay,
   groupConsecutiveDays,

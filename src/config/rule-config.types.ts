@@ -82,6 +82,3 @@ export interface RuleConfigMap {
   PRADOSH: PradoshRuleConfig;
   CUSTOM: CustomRuleConfig;
 }
-
-/** Union of all possible ruleConfig shapes */
-export type AnyRuleConfig = RuleConfigMap[keyof RuleConfigMap];
