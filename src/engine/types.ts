@@ -33,4 +33,6 @@ export interface GeneratedOccurrence {
 export interface PrevDayInfo {
   tithiEndTime: string | null;
   sunrise: string | null;
+  /** Required for Nishitakal date-shift rule; optional for other callers */
+  sunset?: string | null;
 }

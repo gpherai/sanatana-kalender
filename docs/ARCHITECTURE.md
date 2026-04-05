@@ -1,7 +1,7 @@
 # 🗏️ Dharma Calendar - Architecture Document
 
-> **Versie:** 4.3
-> **Laatst bijgewerkt:** 1 april 2026 - Pagina-metadata, TodayHero glassmorphism, speciale thema-upgrades, weer-pagina
+> **Versie:** 4.5
+> **Laatst bijgewerkt:** 5 april 2026 - Engine uitbreidingen (Nishitakal-regel, Maargazhi-regel), nieuwe events, test coverage lagenmodel
 
 ---
 
@@ -75,26 +75,28 @@ Dharma Calendar is een persoonlijke web applicatie voor het bijhouden van Sanata
 | Laag | Technologie | Versie | Doel |
 |------|-------------|--------|------|
 | **Runtime** | Node.js | 24+ LTS | Server runtime (v24.0.0+, LTS vanaf okt 2025) |
-| **Frontend** | Next.js (App Router) | 16.0.x | Server-side rendering, routing |
+| **Frontend** | Next.js (App Router) | 16.2.x | Server-side rendering, routing |
 | **UI Framework** | React | 19.2.x | Component-based UI |
-| **Styling** | Tailwind CSS | 4.1.x | Utility-first CSS |
+| **Styling** | Tailwind CSS | 4.2.x | Utility-first CSS |
 | **Kalender** | react-big-calendar | 1.19.x | Kalender weergave |
 | **Database** | PostgreSQL | 17+ | Data opslag |
-| **ORM** | Prisma | 7.0.x | Database toegang |
-| **Validatie** | Zod | 4.2.x | Schema validatie |
+| **ORM** | Prisma (+ adapter-pg) | 7.5.x | Database toegang |
+| **Validatie** | Zod | 4.3.x | Schema validatie |
 | **Datum/Tijd** | date-fns, luxon | 4.1.x, 3.7.x | Datum manipulatie |
 | **Astronomie** | Swiss Ephemeris (swisseph) | 0.5.x | Vedische astronomie (Tithi, Nakshatra, Yoga, Karana) |
-| **Taal** | TypeScript | 5.9.x | Type safety (ES2022 target) |
-| **Accessibility** | focus-trap-react | 11.0.x | Modal focus management |
-| **Icons** | lucide-react | 0.562.x | UI iconen |
-| **Utilities** | tailwind-merge, clsx | 3.4.x, 2.1.x | Class utilities |
+| **Taal** | TypeScript | 5.x | Type safety (ES2022 target) |
+| **Accessibility** | focus-trap-react | 12.0.x | Modal focus management |
+| **Icons** | lucide-react | 0.577.x | UI iconen |
+| **Utilities** | tailwind-merge, clsx | 3.5.x, 2.1.x | Class utilities |
 | **Code Quality** | Husky, lint-staged | 9.x, 16.x | Pre-commit hooks |
 
 ### 2.3 Project Structuur
 
+Tests staan **co-located** als `__tests__/` subfolder naast de source. Ze zijn hieronder weggelaten voor leesbaarheid; elke module heeft er één.
+
 ```
 dharma-calendar/
-├── _dev/                      # Tijdelijke dev/test scripts (niet in git)
+├── _dev/                      # Lokale ad-hoc scripts (gitignored, inhoud wisselt)
 ├── docs/                      # Documentatie
 │   ├── ARCHITECTURE.md        # Technische architectuur (dit document)
 │   ├── CHANGELOG.md           # Ontwikkelingslog
@@ -112,132 +114,82 @@ dharma-calendar/
 │   └── docker-entrypoint.sh   # Docker container startup script
 ├── src/
 │   ├── app/                   # Next.js App Router
-│   │   ├── layout.tsx         # Root layout + ThemeProvider + metadata template
-│   │   ├── page.tsx           # Homepage (kalender + sidebar)
-│   │   ├── globals.css        # Globale styles + theme CSS
-│   │   ├── api/               # API endpoints
-│   │   │   ├── events/
-│   │   │   │   ├── route.ts                                   # GET (lijst), POST (aanmaken)
-│   │   │   │   ├── [id]/route.ts                              # GET, PUT, DELETE (specifiek event)
-│   │   │   │   ├── [id]/occurrences/[occurrenceId]/route.ts   # PUT (individuele occurrence bewerken)
-│   │   │   │   └── generate-occurrences/route.ts              # POST (genereer recurring occurrences)
-│   │   │   ├── categories/route.ts             # GET categorieën
-│   │   │   ├── daily-info/route.ts             # GET zon/maan/dag info
-│   │   │   ├── preferences/route.ts            # GET, PUT voorkeuren
-│   │   │   ├── themes/route.ts                 # GET thema's
-│   │   │   ├── weer/route.ts                   # GET weerdata (OpenWeatherMap, revalidate 600s)
-│   │   │   └── health/route.ts                 # GET health check
-│   │   ├── almanac/
-│   │   │   ├── layout.tsx     # Metadata: title "Almanak"
-│   │   │   └── page.tsx       # Panchang Almanac (split-view)
-│   │   ├── events/
-│   │   │   ├── layout.tsx     # Metadata: title "Events"
-│   │   │   ├── page.tsx       # Events overzicht
-│   │   │   ├── new/page.tsx   # Nieuw event
-│   │   │   └── [id]/page.tsx  # Event bewerken (generateMetadata met eventnaam)
-│   │   ├── settings/
-│   │   │   ├── layout.tsx     # Metadata: title "Instellingen"
-│   │   │   └── page.tsx       # Instellingen (auto-save)
-│   │   └── weer/
-│   │       ├── layout.tsx     # Metadata: title "Weer"
-│   │       └── page.tsx       # Weerdetails (OpenWeatherMap, uurlijks/dagelijks/luchtkwaliteit)
+│   │   ├── layout.tsx         # Root layout + theme init script + providers
+│   │   ├── page.tsx           # Homepage (TodayHero + kalender + sidebar)
+│   │   ├── globals.css        # Gegenereerde theme CSS + base styles
+│   │   ├── api/               # API routes (/events, /daily-info, /weer, etc.)
+│   │   ├── almanac/           # Almanac route (layout + page)
+│   │   ├── events/            # Events routes (overview / new / [id])
+│   │   ├── settings/          # Settings route (layout + page, auto-save)
+│   │   ├── weer/              # Weer dashboard route (layout + page)
+│   │   └── woordenboek/       # Sanskrit woordenboek route (page, geen layout)
 │   ├── components/            # React componenten
-│   │   ├── almanac/
-│   │   │   ├── index.ts               # Barrel export
-│   │   │   ├── AlmanacHeader.tsx      # Almanac paginakop + locatie badge
-│   │   │   ├── AlmanacFilters.tsx     # Jaar/maand navigatie + filter toggles
-│   │   │   ├── MoonPhasesTimeline.tsx # Maanfasen tijdlijn (4 per maand)
-│   │   │   ├── MonthGrid.tsx          # Maandgrid (7×6, zon/maan tijden per cel)
-│   │   │   └── DayDetailsPanel.tsx    # Dagdetail panel rechts (sticky)
-│   │   ├── calendar/
-│   │   │   ├── index.ts               # Barrel export
-│   │   │   ├── DharmaCalendar.tsx     # Hoofd kalender component
-│   │   │   ├── CalendarToolbar.tsx    # Navigatie toolbar
-│   │   │   ├── EventDetailModal.tsx   # Event details popup
-│   │   │   └── calendar.css           # Kalender styling
-│   │   ├── events/
-│   │   │   ├── index.ts               # Barrel export
-│   │   │   ├── EventCard.tsx          # Event card + compact variant
-│   │   │   └── EventForm.tsx          # Event formulier
-│   │   ├── filters/
-│   │   │   ├── index.ts               # Barrel export
-│   │   │   └── FilterSidebar.tsx      # Filter sidebar
-│   │   ├── layout/
-│   │   │   ├── index.ts               # Barrel export
-│   │   │   └── PageLayout.tsx         # Standaard page wrapper component
-│   │   ├── settings/
-│   │   │   ├── index.ts               # Barrel export
-│   │   │   ├── ThemeSection.tsx       # Thema-kiezer (grid met preview)
-│   │   │   ├── CalendarSection.tsx    # Kalendervoorkeuren (standaard weergave)
-│   │   │   └── LocationSection.tsx    # Locatie-instellingen (preset + handmatig + preview)
-│   │   ├── theme/
-│   │   │   ├── index.ts               # Barrel export + type re-exports
-│   │   │   ├── ThemeProvider.tsx      # Theme context + hook
-│   │   │   └── ColorModeToggle.tsx    # Light/dark/system toggle
-│   │   └── ui/
-│   │       ├── index.ts               # Barrel export
-│   │       ├── Header.tsx             # Navigatie header
-│   │       ├── Section.tsx            # Herbruikbare sectie-wrapper met icoon + titel
-│   │       ├── Toast.tsx              # ToastProvider + useToast
-│   │       ├── MoonPhase.tsx          # SVG moon visualization
-│   │       └── TodayHero.tsx          # Vandaag sectie homepage (zon/maan, klok, weer)
-│   ├── config/                # Configuratie (Single Source of Truth)
-│   │   ├── index.ts           # Barrel export
-│   │   ├── themes.ts          # Theme definities + helpers
-│   │   ├── categories.ts      # Categorie seed data
-│   │   ├── event-naming.ts    # Event catalog (127 entries, enige bron voor events)
-│   │   └── rule-config.types.ts  # Type-safe ruleConfig per ruleType (discriminated union)
-│   ├── generated/
-│   │   └── prisma/            # Prisma client (generated)
-│   ├── hooks/                 # Custom React hooks
-│   │   ├── index.ts           # Barrel export
-│   │   ├── useFetch.ts        # Data fetching with AbortController
-│   │   ├── useDebounce.ts     # Debounce hook
-│   │   └── useFilters.ts      # URL filter state hook
-│   ├── lib/                   # Utilities
-│   │   ├── api-response.ts    # Centralized API error responses
-│   │   ├── constants.ts       # App constanten (EVENT_TYPES, TITHIS, etc.)
-│   │   ├── date-utils.ts      # Centralized date/time utilities
+│   │   │   ├── almanac/           # AlmanacFilters, AlmanacHeader, DayDetailsPanel,
+│   │   │   │                  #   MonthGrid, MoonPhasesTimeline + index.ts barrel
+│   │   ├── calendar/          # DharmaCalendar, EventDetailModal, CalendarToolbar
+│   │   ├── events/            # EventCard, EventForm
+│   │   ├── filters/           # FilterSidebar + index.ts barrel
+│   │   ├── layout/            # PageLayout + index.ts barrel
+│   │   ├── settings/          # ThemeSection, CalendarSection, LocationSection
+│   │   │   │                  #   + index.ts barrel
+│   │   ├── theme/             # ThemeProvider, ColorModeToggle
+│   │   └── ui/                # Header, Toast, Section, MoonPhase, TodayHero
+│   ├── config/                # Type-safe configuratie
+│   │   ├── categories.ts
+│   │   ├── event-naming.ts    # Eventcatalogus (164 entries)
+│   │   ├── rule-config.types.ts  # Typed ruleConfig interfaces per ruleType
+│   │   └── themes.ts          # ENIGE bron voor thema-definities
+│   ├── engine/                # Pure recurrence helpers (geen DB-toegang)
+│   │   ├── index.ts           # Barrel: exporteert types + helpers
+│   │   ├── tithi-helpers.ts   # groupConsecutiveDays, computeTithiOccurrence,
+│   │   │                      #   isPredecessorEndsAfterSunrise,
+│   │   │                      #   isNishitakalDateShiftNeeded, selectFirstPerYear
+│   │   └── types.ts           # DailyInfoRow, GeneratedOccurrence, PrevDayInfo
+│   ├── hooks/                 # useFetch, useDebounce, useFilters
+│   ├── lib/                   # Utilities + domeinconstanten
+│   │   ├── api-response.ts    # Gestandaardiseerde API responses
+│   │   ├── category-styles.ts # Kleur/icoon mapping voor categorieën
+│   │   ├── date-utils.ts      # isSameDay, formatDateNL, parseCalendarDate, ...
 │   │   ├── db.ts              # Prisma client singleton
-│   │   ├── env.ts             # Environment validation (Zod)
-│   │   ├── moon-phases.ts     # Moon phase helpers
-│   │   ├── panchanga-helpers.ts  # Panchanga calculation helpers
-│   │   ├── patterns.ts        # Regex patterns voor validatie
-│   │   ├── utils.ts           # Algemene utilities + logging
-│   │   └── validations.ts     # Zod schemas + enum helpers
-│   ├── scripts/               # Build/seed scripts
-│   │   ├── generate-events-from-naming.ts  # Event generator vanuit naming conventions
-│   │   ├── generate-theme-css.ts  # Theme CSS generator
-│   │   ├── seed-helpers.ts        # Seed helper functies
-│   │   └── seed.ts                # Database seed
-│   ├── server/                # Server-only code (niet bundelen in client)
-│   │   └── panchanga/         # Swiss Ephemeris integratie
-│   │       ├── index.ts               # Barrel export
-│   │       ├── services/
-│   │       │   └── PanchangaSwissService.ts  # Swiss Ephemeris calculations
-│   │       ├── utils/
-│   │       │   └── astro.ts           # Astronomische utilities
-│   │       ├── constants.ts           # Panchanga constanten
-│   │       └── types.ts               # Panchanga types
-│   ├── repositories/          # Data access layer (complexe query-constructie)
-│   │   └── event.repository.ts    # Event occurrence filter-queries
-│   ├── engine/                # Pure rule engine (geen DB-toegang, unit-testbaar)
+│   │   ├── dictionary.ts      # Sanskrit woordenboek data
+│   │   ├── domain.ts          # Single source of truth voor UI-domeinconstanten
+│   │   ├── env.ts             # Zod environment validatie
+│   │   ├── moon-phases.ts     # getMoonPhaseEmoji, getMoonPhaseName, ...
+│   │   ├── panchanga-helpers.ts  # UI-transformaties voor panchanga data
+│   │   ├── patterns.ts        # Gecentraliseerde regex patterns
+│   │   ├── timing-utils.ts    # parseTimeToMinutes, calculateNishitaKaal, ...
+│   │   ├── utils.ts           # logError/logWarn/logDebug, classNames
+│   │   └── validations.ts     # Gedeelde Zod schemas
+│   ├── repositories/          # Query-constructie voor complexe filters
+│   │   └── event.repository.ts  # buildEventWhere, findEventOccurrences
+│   ├── scripts/               # Applicatie build/seed scripts
+│   │   ├── seed.ts                          # Infrastructuur: DailyInfo + categorieën
+│   │   ├── seed-helpers.ts                  # Enum mapping helpers voor seed.ts
+│   │   ├── generate-events-from-naming.ts   # Sync catalog → Event records
+│   │   ├── generate-occurrences.ts          # CLI: genereer EventOccurrence records
+│   │   ├── cleanup-legacy-events.ts         # Eenmalig: verwijder orphan events
+│   │   └── generate-theme-css.ts            # Theme CSS generator
+│   ├── server/panchanga/      # Swiss Ephemeris serverlaag (server-only)
 │   │   ├── index.ts           # Barrel export
-│   │   ├── types.ts           # DailyInfoRow, GeneratedOccurrence, PrevDayInfo
-│   │   └── tithi-helpers.ts   # Zuivere functies: computeTithiOccurrence, groupConsecutiveDays, etc.
-│   ├── services/              # Business logica (server-only)
-│   │   ├── index.ts           # Barrel export (met server-only notes)
-│   │   ├── panchanga.service.ts   # Panchanga calculations wrapper
-│   │   └── recurrence.service.ts  # Event recurrence generation (strategy registry + engine)
-│   └── types/                 # TypeScript types
+│   │   ├── constants.ts       # Ephemeris flags, ayanamsa, lokale constanten
+│   │   ├── types.ts           # PanchangaResult, LocationConfig, ...
+│   │   ├── services/
+│   │   │   └── panchanga-swiss-service.ts  # Low-level Swiss Ephemeris wrapper
+│   │   └── utils/
+│   │       └── astro.ts       # calculateSunriseSunset, findEventEnd, ...
+│   ├── services/              # Businesslogica (server-only)
+│   │   ├── index.ts           # Barrel export
+│   │   ├── panchanga.service.ts   # LRU-cached wrapper voor PanchangaSwissService
+│   │   └── recurrence.service.ts  # Recurrence generatie (strategy registry)
+│   └── types/                 # Gedeelde TypeScript types
 │       ├── index.ts           # Barrel export
-│       ├── api.ts             # API types
-│       ├── calendar.ts        # Calendar/Event types
-│       ├── theme.ts           # Theme types
-│       └── weather.ts         # WeatherApiResponse + WeatherCondition + AirQuality
+│       ├── api.ts             # API response types
+│       ├── calendar.ts        # Kalender-specifieke types
+│       └── weather.ts         # Weerdata types
 ├── .env.example               # Environment template
 ├── package.json
 ├── tsconfig.json
+├── vitest.config.ts           # Test configuratie (Vitest, v8 coverage)
 └── README.md
 ```
 
@@ -259,15 +211,12 @@ Het project heeft **drie verschillende script directories** met distinct purpose
 # ✅  Safe voor local development, NIET voor production
 
 _dev/
-├── README.md              # Uitleg en waarschuwingen
-├── audit-database.ts      # Database consistency checks
-├── check-duplicates.mjs   # Find duplicate occurrences
-├── test-api.mjs          # API smoke tests
-└── ...                   # Andere tijdelijke helpers
+├── check-events.ts        # Voorbeeld lokaal hulpscript
+└── ...                    # Overige lokale scripts (niet in git)
 
 # Gebruik:
-npx tsx _dev/script-name.ts
-node _dev/script-name.mjs
+npx tsx _dev/<script>.ts
+node _dev/<script>.mjs
 ```
 
 **`/scripts/` - DevOps Scripts (Production Safe)**
@@ -296,12 +245,12 @@ docker run ... # Uses docker-entrypoint.sh
 # ✅  Called by npm scripts
 
 src/scripts/
-├── seed.ts                          # Pure infrastructuur: DailyInfo + categorieën + voorkeuren
+├── seed.ts                          # Infrastructuur: DailyInfo + categorieën + voorkeuren
+├── seed-helpers.ts                  # Enum mapping helpers voor seed.ts
 ├── generate-events-from-naming.ts   # Sync event-naming catalog → database (db:events)
 ├── generate-occurrences.ts          # CLI: genereer EventOccurrence records (db:occurrences)
 ├── cleanup-legacy-events.ts         # Eenmalig: verwijder autoGenerated=false orphans (db:cleanup)
-├── generate-theme-css.ts            # Theme CSS generation (prebuild)
-└── seed-helpers.ts                  # Enum mapping helpers voor seed.ts
+└── generate-theme-css.ts            # Theme CSS generation (prebuild)
 
 # Gebruik (via package.json):
 npm run db:seed          # Stap 1: infrastructuur
@@ -327,7 +276,7 @@ De event-pipeline bestaat uit drie onafhankelijke lagen:
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │  src/config/event-naming.ts                                      │
-│  Event Catalog — 127 entries, pure data                          │
+│  Event Catalog — 164 entries, pure data                          │
 │  Type-safe ruleConfig via rule-config.types.ts                   │
 └──────────────────────┬──────────────────────────────────────────┘
                        │ npm run db:events
@@ -357,9 +306,22 @@ De core matching-logica is geëxtraheerd naar `src/engine/` als **pure functies*
 | `selectFirstPerYear` | Pikt de eerste dag per jaar (of per jaar+maas voor multi-maas events) |
 | `computeTithiOccurrence` | Berekent startTime/endDate voor één tithi window, detecteert avondstart |
 | `isPredecessorEndsAfterSunrise` | Kshaya-tithi detectie: eindigt vorige tithi na zonsopgang? |
+| `isNishitakalDateShiftNeeded` | Nishitakal-regel: verschuift festivaldag naar de nacht waarvan de Nishitakal de tithi bevat (minimaal 1 muhurta voor aanvang); gebruikt door `nishitakalDateRule: true` events |
 | `isConsecutiveDay` | UTC-correcte consecutiviteitscheck |
 
 **Voordeel:** Engine-functies zijn unit-testbaar zonder database of Prisma.
+
+**`PrevDayInfo` type (engine/types.ts):**
+
+```typescript
+interface PrevDayInfo {
+  tithiEndTime: string | null;  // Wanneer vorige tithi eindigde (= start huidige tithi)
+  sunrise: string | null;       // Zonsopgang van de vorige dag
+  sunset?: string | null;       // Zonsondergang van de vorige dag (vereist voor Nishitakal-regel)
+}
+```
+
+Het `sunset` veld is optioneel om terugwaartse compatibiliteit te bewaren; `isNishitakalDateShiftNeeded` retourneert `false` als het ontbreekt.
 
 ### Type-safe ruleConfig
 
@@ -375,6 +337,31 @@ De core matching-logica is geëxtraheerd naar `src/engine/` als **pure functies*
 
 De compiler checkt automatisch elke catalog-entry. Typo's in `tithi`, `maas`, of `sankranti` zijn compile-time errors.
 
+### Geavanceerde ruleConfig flags
+
+Buiten de getypeerde interfaces in `rule-config.types.ts` bestaan een aantal **runtime flags** die via `as Record<string, unknown>` worden gelezen door de recurrence service. Ze zijn opzettelijk uit de strict-typed interfaces gelaten omdat ze zelden voorkomen.
+
+| Flag | Op welk ruleType | Beschrijving |
+|------|-----------------|--------------|
+| `nishitakalDateRule: true` | TITHI | Overschrijft de standaard VRAT-logica. Wijst het festival toe aan de dag waarvan de **Nishitakal** (Hindoe middernacht) de tithi bevat — maar alleen als de tithi minstens 1 muhurta (≈ nachtduur / 15 min) vóór Nishitakal begon. Voorbeeld: Vaikuntha Chaturdashi. |
+| `maargazhiRule: true` | NAKSHATRA | Beperkt NAKSHATRA-matches tot het datumvenster **14 dec – 15 jan** (de Dhanu zonnemaand, "Maargazhi"). Geen per-jaar deduplicatie: sommige jaren hebben 0 of 2 occurrences. Voorbeeld: Arudra Darshan. |
+
+**`includeAdhika` op EventNaming-niveau:**
+
+```typescript
+{
+  key: "kartik_kartik_purnima",
+  includeAdhika: true,   // Staat ook de Adhika-maas-variant toe bij het zoeken
+  ruleConfig: { tithi: "PURNIMA", maas: "KARTIK" },
+}
+```
+
+Standaard (`false`) filtert de recurrence service op `isAdhika=false` in DailyInfo. Met `true` worden Adhika-maas-rijen wél meegenomen zodat de vroegere occurrence (in de Adhika-KARTIK) wordt gevonden vóór de reguliere (Nija) maand.
+
+**`PHASE_CORRECTION_TITHI` (interne kaart in recurrence.service.ts):**
+
+Verschuift de occurrence-datum van tithidag naar astronomisch hoogtepunt (volle of nieuwe maan). Bevat bewust **geen** PURNIMA — DrikPanchang gebruikt voor Purnima de strikte tithi-at-sunrise-regel, niet de astronomische volle maan. Alleen `AMAVASYA` staat in de kaart.
+
 ---
 
 ## 3. Design Principes
@@ -389,27 +376,25 @@ Alle configuratie en constanten komen uit één bron. Nooit hardcoded waarden in
 ```
 
 **Toepassingen:**
-- Event types → `EVENT_TYPES` in lib/constants.ts
-- Categorieën → `CATEGORIES` in lib/constants.ts  
-- Tithi's en Nakshatra's → lib/constants.ts
-- Thema's → `THEME_CATALOG` in config/themes.ts
-- Standaard locatie → `DEFAULT_LOCATION` in lib/constants.ts
+- Event types, recurrence, tithi/nakshatra/maas/sankranti en default locatie → `src/lib/domain.ts`
+- Thema's → `THEME_CATALOG` in `src/config/themes.ts`
+- Categoriecatalogus → `src/config/categories.ts`
+- Eventcatalogus → `src/config/event-naming.ts`
 
 ### 3.2 Barrel Exports
 
-Elke folder met meerdere bestanden heeft een `index.ts` barrel export:
+Barrel exports worden **selectief** gebruikt, niet in elke map.
 
-```typescript
-// components/calendar/index.ts
-export { DharmaCalendar } from "./DharmaCalendar";
-export { CalendarToolbar } from "./CalendarToolbar";
-export { EventDetailModal } from "./EventDetailModal";
-```
+**Huidige barrels in de codebase:**
+- `src/components/almanac/index.ts`
+- `src/components/filters/index.ts`
+- `src/components/layout/index.ts`
+- `src/components/settings/index.ts`
+- `src/types/index.ts`
 
-**Voordelen:**
-- Cleane imports: `import { DharmaCalendar } from "@/components/calendar"`
-- Expliciete public API per module
-- Makkelijker refactoring
+**Praktijk:**
+- Waar een barrel bestaat: gebruik de module-import (bijv. `@/components/layout`)
+- Waar geen barrel bestaat: importeer direct uit het bestand (bijv. `@/components/calendar/DharmaCalendar`)
 
 ### 3.3 Type Safety
 
@@ -426,7 +411,7 @@ TypeScript wordt strikt gebruikt. Geen `as any` casts die type checking omzeilen
 Types worden automatisch gegenereerd vanuit constants voor synchronisatie:
 
 ```typescript
-// constants.ts - Single source of truth
+// domain.ts - Single source of truth voor UI domeinconstanten
 export const EVENT_TYPES = [
   { value: 'FESTIVAL', label: 'Festival', icon: '🎉' },
   { value: 'PUJA', label: 'Puja', icon: '🙏' },
@@ -517,18 +502,15 @@ Alle maanfase logica is gecentraliseerd in `src/lib/moon-phases.ts`:
 
 | Categorie | Functies | Gebruik |
 |-----------|----------|---------|
-| **Exact (Swiss Ephemeris)** | `getMoonPhaseEmoji(pct, waxing)`, `getMoonPhaseType()`, `getMoonPhaseName()` | Server-side via /api/daily-info |
-| **Approximatie (client)** | `getApproxMoonPhaseEmoji(date)`, `getApproxMoonIllumination(date)` | Client-side kalender UI decoratie |
+| **Exact mapping helpers** | `getMoonPhaseEmoji(pct, waxing)`, `getMoonPhaseType()`, `getMoonPhaseName(type)` | Server-side transformatie van Swiss Ephemeris output (o.a. `/api/daily-info`) |
 
 ```typescript
-// Server-side: exact via Swiss Ephemeris data
+// Server-side: transformatie van exacte Swiss Ephemeris data
 import { getMoonPhaseEmoji, getMoonPhaseName } from "@/lib/moon-phases";
 const emoji = getMoonPhaseEmoji(illuminationPct, panchanga.moon.waxing);
-
-// Client-side: approximatie voor UI decoratie (geen API call nodig)
-import { getApproxMoonPhaseEmoji } from "@/lib/moon-phases";
-const { emoji, isSpecial } = getApproxMoonPhaseEmoji(date);
 ```
+
+Clientcomponenten (zoals `DharmaCalendar`) gebruiken de maanfase-data uit `/api/daily-info` in plaats van aparte approximatiefuncties.
 
 #### 3.5.2 Calendar Dates (voor Events)
 
@@ -537,14 +519,14 @@ const { emoji, isSpecial } = getApproxMoonPhaseEmoji(date);
 **Best Practice:**
 ```typescript
 // ✅ CORRECT: parseCalendarDate voor kalender events
-import { parseCalendarDate } from "@/lib/utils";
-date: parseCalendarDate("2025-01-01")  // → 1 jan 2025 lokaal
+import { parseCalendarDate } from "@/lib/date-utils";
+date: parseCalendarDate("2025-01-01")  // → UTC-midnight voor stabiele @db.Date opslag
 ```
 
-**Waarom GEEN UTC:**
-- "Nieuwjaar 2025" moet op 1 januari vallen, ongeacht timezone
-- UTC conversie kan dag verschuiven (31 dec ↔ 1 jan)
-- PostgreSQL `DATE` type heeft geen timezone info
+**Waarom UTC-midnight + geen locale date parsing:**
+- Kalenderdagen moeten stabiel blijven (bijv. "2025-01-01" blijft "2025-01-01")
+- Locale parsing + timezone-conversie kan dagverschuiving geven (31 dec ↔ 1 jan)
+- PostgreSQL `DATE` heeft geen timezone; daarom is consistente normalisatie cruciaal
 
 **Database:** `@db.Date` (pure date, YYYY-MM-DD)
 
@@ -597,7 +579,7 @@ Het project gebruikt **beide** Luxon en date-fns voor verschillende doeleinden:
 2. **date-fns is essentieel voor:**
    - React Big Calendar vereist een localizer: `dateFnsLocalizer()`, `momentLocalizer()`, of `luxonLocalizer()`
    - Wij gebruiken `dateFnsLocalizer` met Dutch locale support
-   - Event formatting in modals (formatDistanceToNow, isPast, isToday, etc.)
+   - Kalender-toolbar/header formatting in de calendar UI
 
 **Alternatief overwogen:** Migratie naar `luxonLocalizer` zou date-fns elimineren, maar:
 - Vereist refactoring van alle calendar components
@@ -639,9 +621,10 @@ Alle componenten gebruiken theme-onafhankelijke CSS custom properties (semantic 
 
 /* Theme brand colors */
 --theme-primary           /* Primaire theme kleur */
+--theme-primary-10        /* Primary met 10% opacity */
 --theme-primary-15        /* Primary met 15% opacity */
 --theme-primary-20        /* Primary met 20% opacity */
---theme-primary-25        /* Primary met 25% opacity */
+--theme-primary-30        /* Primary met 30% opacity */
 --theme-secondary         /* Secundaire theme kleur */
 --theme-accent            /* Accent kleur */
 ```
@@ -677,23 +660,14 @@ Bij het maken van nieuwe componenten of refactoren van bestaande code:
 | `hover:bg-zinc-100 dark:hover:bg-zinc-700` | `hover:bg-theme-surface-hover` | Hover states |
 | `border-zinc-200 dark:border-zinc-700` | `border-theme-border` | Borders |
 
-**Migratie Status (v0.11.0):**
+**Status (april 2026):**
 
-Alle core componenten zijn gemigreerd naar semantic tokens:
-- ✅ almanac/page.tsx
-- ✅ events/page.tsx
-- ✅ events/new/page.tsx
-- ✅ events/[id]/page.tsx
-- ✅ page.tsx (homepage)
-- ✅ EventDetailModal.tsx
-- ✅ ColorModeToggle.tsx
-- ✅ TodayHero.tsx
-- ✅ MoonPhase.tsx
+Het grootste deel van de core UI gebruikt semantic tokens. Er zijn nog gerichte uitzonderingen met expliciete kleuren/`dark:` classes, met name in de weerpagina en enkele status/error states.
 
 **Best Practices:**
 
 1. **Gebruik nooit hardcoded zinc/gray/slate kleuren** - altijd semantic tokens
-2. **Voorkom dark: modifiers** - semantic tokens handelen dit automatisch af
+2. **Gebruik `dark:` alleen waar nodig** - semantic tokens eerst, uitzonderingen bewust en beperkt
 3. **Test beide color modes** - verifieer dat componenten werken in light én dark mode
 4. **Gebruik specifieke tokens** - kies `text-theme-fg-muted` ipv generic `text-theme-fg` voor hints
 
@@ -956,8 +930,8 @@ De service layer wordt alleen gebruikt voor complexe business logica. Alle servi
 |---------|---------|----------------------|
 | `PanchangaSwissService` | `/server/panchanga/` | Swiss Ephemeris integratie voor Vedische astronomie (Tithi, Nakshatra, Yoga, Karana met exacte eindtijden) + astronomische berekeningen (sunrise/sunset, moonrise/moonset) |
 | `panchangaService` | `/services/panchanga.service.ts` | Wrapper voor PanchangaSwissService, exposeert high-level API voor daily info calculations, LRU caching (365 dagen, 24h TTL) |
-| `recurrenceService` | `/services/recurrence.service.ts` | Event recurrence generation via strategy registry (YEARLY_LUNAR, YEARLY_SOLAR, MONTHLY_LUNAR, MONTHLY_SOLAR, ruleTypes SOLAR/TITHI). Nieuw recurrence-type toevoegen = één regel in `RECURRENCE_STRATEGIES` map. |
-| `/api/weer` route | `/app/api/weer/route.ts` | Stateless route: haalt current + hourly + daily weerdata + luchtkwaliteit op via OpenWeatherMap API v2.5 (geen service laag nodig — geen caching state). Next.js `revalidate: 600` voor server-side caching. |
+| `recurrenceService` | `/services/recurrence.service.ts` | Event recurrence generation via strategy registry (YEARLY_*, MONTHLY_*) + rule-based dispatch (SOLAR, TITHI, NAKSHATRA, TITHI_NAKSHATRA, WEEKDAY_TITHI, PRADOSH). |
+| `/api/weer` route | `/src/app/api/weer/route.ts` | Stateless route: haalt current + hourly + daily weerdata + luchtkwaliteit op via OpenWeatherMap API v2.5 (geen aparte service-laag nodig). Next.js `revalidate: 600` voor server-side caching. |
 
 **Architectuur Principes:**
 
@@ -1403,9 +1377,9 @@ const tithiEndJD = await findEventEnd(
 
 Dit algoritme garandeert **second-level accuracy** voor alle Panchanga elementen.
 
-### 5.3.2 Drik Panchang Extended Fields (v1.4.0+)
+### 5.3.2 Drik Panchang Extended Fields
 
-Vanaf versie 1.4.0 bevat de DailyInfo API response uitgebreide Vedische kalender velden volgens Drik Panchang standaarden:
+De DailyInfo API response bevat uitgebreide Vedische kalender velden volgens Drik Panchang standaarden:
 
 **Lunar Month (Maas) - Amanta/Purnimanta Systeem:**
 - `maasName`: Sanskrit maand naam (bijv. "Pausha", "Magha")
@@ -1506,7 +1480,6 @@ Een type-safe hook voor data fetching met automatisch AbortController management
 - ✅ TypeScript generics voor type-safe data
 - ✅ Manual refetch capability
 - ✅ AbortError filtering (geen console errors bij unmount)
-- ✅ Mounted state tracking (voorkomt state updates na unmount)
 
 **Signature:**
 
@@ -1515,7 +1488,7 @@ function useFetch<T>(
   url: string | null,
   options?: {
     skip?: boolean;              // Skip initial fetch
-    onSuccess?: (data: T) => void;
+    onSuccess?: (data: unknown) => void;
     onError?: (error: Error) => void;
     errorMessage?: string;
   }
@@ -1547,19 +1520,6 @@ const { data } = useFetch<Event[]>(
 );
 ```
 
-**useFetchMultiple Variant:**
-
-Voor parallel fetching van meerdere endpoints:
-
-```typescript
-const { data, loading } = useFetchMultiple<Preferences | DailyInfo>(
-  ["/api/preferences", "/api/daily-info"]
-);
-
-// data[0] = Preferences
-// data[1] = DailyInfo
-```
-
 **Wanneer WEL gebruiken:**
 - ✅ Statische URLs (bv. `/api/categories`, `/api/preferences`)
 - ✅ Eenmalige fetch bij component mount
@@ -1574,8 +1534,8 @@ const { data, loading } = useFetchMultiple<Preferences | DailyInfo>(
 - ❌ Complexe data transformaties na fetch
 
 **Voorbeelden in codebase:**
-- `EventForm.tsx` - Load categories (was 22 regels → nu 7 regels)
-- Toekomstige refactors kunnen ~50+ regels boilerplate elimineren
+- `EventForm.tsx` - Laden van categorieën via `useFetch`
+- Hetzelfde patroon is bruikbaar voor andere eenvoudige endpoint-fetches
 
 #### useFilters Hook
 
@@ -1775,8 +1735,10 @@ Color mode werkt onafhankelijk van theme via:
 ```css
 /* Background met opacity */
 .bg-theme-primary      /* 100% */
+.bg-theme-primary-10   /* 10% opacity */
 .bg-theme-primary-15   /* 15% opacity */
-.bg-theme-primary-25   /* 25% opacity */
+.bg-theme-primary-20   /* 20% opacity */
+.bg-theme-primary-30   /* 30% opacity */
 
 /* Text color */
 .text-theme-primary
@@ -1956,28 +1918,25 @@ const optionalTimeStringSchema = z.string()...  // string | null
 ### 8.1 Schema Overview
 
 ```
-┌─────────────────┐         ┌─────────────────┐
-│    Category     │         │  UserPreference │
-│  (categorieën)  │         │  (instellingen) │
-└────────┬────────┘         └─────────────────┘
-         │
-         │ 1:N
-         ▼
-┌─────────────────┐         ┌─────────────────┐
-│      Event      │         │    DailyInfo    │
-│  (beschrijving) │         │ (zon/maan/dag)  │
-└────────┬────────┘         └─────────────────┘
-         │
-         │ 1:N
-         ▼
-┌─────────────────┐
-│ EventOccurrence │
-│  (wanneer)      │
-└─────────────────┘
+┌─────────────────┐      ┌──────────────────┐      ┌─────────────────┐
+│    Category     │◀────▶│  EventCategory   │◀────▶│      Event      │
+│  (catalogus)    │      │   (M:N join)     │      │ (definitie)     │
+└─────────────────┘      └──────────────────┘      └────────┬────────┘
+                                                             │ 1:N
+                                                             ▼
+                                                    ┌─────────────────┐
+                                                    │ EventOccurrence │
+                                                    │   (datums)      │
+                                                    └─────────────────┘
+
+┌──────────────────────┐
+│   EventSeriesEntry   │   Parent/child series-relaties tussen events
+│   (M:N self-join)    │   (bijv. Navratri dag-events)
+└──────────────────────┘
 
 ┌─────────────────┐         ┌─────────────────┐
-│   LunarEvent    │         │    MoonPhase    │
-│   (reserved)    │         │   (reserved)    │
+│    DailyInfo    │         │  UserPreference │
+│ (panchanga/day) │         │  (single-row)   │
 └─────────────────┘         └─────────────────┘
 ```
 
@@ -1985,13 +1944,13 @@ const optionalTimeStringSchema = z.string()...  // string | null
 
 | Model | Beschrijving |
 |-------|--------------|
-| **Event** | Wat een event is (naam, type, categorie, lunar info) |
-| **EventOccurrence** | Wanneer het plaatsvindt (datum, begintijd, eindtijd, notities) |
-| **Category** | Categorieën met kleuren en iconen |
-| **DailyInfo** | Astronomische data per dag (Swiss Ephemeris - Tithi, Nakshatra, Yoga, Karana met eindtijden) + **Drik Panchang Extended Fields** (v1.4.0+): Maas (Amanta/Purnimanta), Vikrama/Shaka Samvat jaren, Samvatsara (60-year cycle), Sun/Moon Signs (Rashi), Pravishte/Gate, meervoudige transities per dag |
-| **UserPreference** | Gebruikersinstellingen (theme, locatie, etc.) |
-| **LunarEvent** | Reserved voor toekomstige eclips/speciale events |
-| **MoonPhase** | Reserved voor toekomstige maanfase cache |
+| **Event** | Event-definitie (naam, type, recurrence, ruleType/ruleConfig, timing, tags, maas/tithi/nakshatra/sankranti, series-relaties) |
+| **EventOccurrence** | Concrete event-instanties op datum (eventId + date uniek), optionele tijden/notities |
+| **Category** | Categoriecatalogus met icon/color/sortering |
+| **EventCategory** | M:N join tussen event en categorie (met `sortOrder`, waarbij `0` primary category is) |
+| **EventSeriesEntry** | Parent-child serie-relaties tussen events (optioneel `dayNumber`) |
+| **DailyInfo** | Astronomische dagdata (Swiss Ephemeris) + uitgebreide Vedische velden (maas, samvat, rashi, sankranti/next transitions) |
+| **UserPreference** | Single-user voorkeuren (theme, view, locatie, zichtbaarheid, notificaties) |
 
 ### 8.3 Native Prisma Enums
 
@@ -1999,12 +1958,14 @@ const optionalTimeStringSchema = z.string()...  // string | null
 |------|---------|---------|
 | `EventType` | FESTIVAL, PUJA, VRAT, JAYANTI, TITHI, SANKRANTI, ECLIPSE, OTHER | Type event |
 | `RecurrenceType` | NONE, YEARLY_LUNAR, YEARLY_SOLAR, MONTHLY_LUNAR, MONTHLY_SOLAR | Herhaling |
-| `Importance` | MAJOR, MODERATE, MINOR | Belangrijkheid |
+| `RuleType` | TITHI, SOLAR, NAKSHATRA, TITHI_NAKSHATRA, WEEKDAY_TITHI, PRADOSH, CUSTOM | Rule-engine dispatch |
+| `TimingType` | NISHITA_KAAL, PRADOSH_KAAL, SUNRISE, SUNSET, MADHYAHNA | Dynamische tijdvensters |
 | `CalendarView` | month, week, day, agenda | Kalender weergave |
 | `Paksha` | SHUKLA (wassend), KRISHNA (afnemend) | Maanfortnight |
 | `Tithi` | 30 waarden (PRATIPADA_SHUKLA t/m AMAVASYA) | Lunar dag |
 | `Nakshatra` | 27 waarden (ASHWINI t/m REVATI) | Maansterrenbeeld |
 | `Maas` | 12 waarden (CHAITRA t/m PHALGUNA) | Hindu maand |
+| `Sankranti` | 12 solar ingress enums (MESHA..MEENA) | Solar transities |
 | `MoonPhaseType` | NEW_MOON, WAXING_CRESCENT, FIRST_QUARTER, etc. | Maanfase |
 
 ---
@@ -2019,7 +1980,9 @@ Via Husky + lint-staged:
 {
   "lint-staged": {
     "*.{ts,tsx}": ["prettier --write", "eslint --fix"],
-    "*.{json,md,yml,yaml,css}": ["prettier --write"]
+    "*.{js,mjs,cjs}": ["prettier --write", "eslint --fix"],
+    "*.{json,md,yml,yaml}": ["prettier --write"],
+    "*.css": ["prettier --write"]
   }
 }
 ```
@@ -2030,7 +1993,48 @@ Via Husky + lint-staged:
 npm run validate  # format:check + lint + type-check
 ```
 
-### 9.3 Environment Validation
+### 9.3 Test Coverage
+
+Het project gebruikt **Vitest** (v8 provider) met een gelaagde test-aanpak waarbij elke laag onafhankelijk 100% line coverage nastreeft.
+
+**Lagenmodel:**
+
+| Laag | Inhoud | Coverage-doel |
+|------|--------|---------------|
+| Layer 1 | `src/lib/`, `src/engine/` (pure utils) | 100% |
+| Layer 2 | `src/services/` (business logica) | 100% |
+| Layer 3 | `src/server/panchanga/` (Swiss Ephemeris wrapper) | >80% |
+| Layer 4 | `src/app/api/**` (API routes) | 100% |
+| Layer 5 | `src/components/ui/`, core UI components | 100% |
+| Layer 6 | Page-niveau components (Almanac, Events, Weather, Settings) | >80% |
+
+**Configuratie (`vitest.config.ts`):**
+```typescript
+coverage: {
+  provider: "v8",
+  reporter: ["text", "html"],
+  exclude: [
+    "src/scripts/**",     // Build scripts
+    "src/generated/**",   // Prisma generated code
+    "src/types/**",       // Pure type declarations
+    "src/config/**",      // Catalog data (geen logica)
+    "*.config.{ts,mjs}",
+    "vitest.setup.ts",
+    "prisma/**",
+  ],
+}
+```
+
+**Run:**
+```bash
+npm run test              # Alle tests
+npm run test:coverage     # Met coverage rapport
+```
+
+**Waarom engine-functies apart testen:**
+`src/engine/` bevat pure functies zonder DB-afhankelijkheid. Dit maakt deterministische unit tests mogelijk met expliciete tijdstip-data, zodat edge cases als kshaya-tithi, avondstart-tithi en Nishitakal-grensgeval (1 muhurta check) afdoende gedekt zijn.
+
+### 9.4 Environment Validation
 
 Zod schema voor environment variables in `lib/env.ts`:
 
@@ -2054,25 +2058,48 @@ export const env = envSchema.parse(process.env);
 | `npm run dev` | Development server (Turbopack) |
 | `npm run build` | Production build |
 | `npm run validate` | Format + lint + type-check (pre-deployment check) |
+| `npm run test` | Alle unit tests éénmalig uitvoeren (Vitest) |
+| `npm run test:watch` | Tests in watch-mode (tijdens development) |
+| `npm run test:coverage` | Tests + coverage rapport (v8, HTML + text) |
 | `npm run db:migrate` | Database schema migratie (development) |
-| `npm run db:seed` | Database seeden met initial data |
+| `npm run db:seed` | Seed infrastructuurdata (DailyInfo/categorieën/voorkeuren) |
+| `npm run db:events` | Sync eventcatalogus (`event-naming`) naar database |
+| `npm run db:occurrences` | Genereer `EventOccurrence` records via recurrence engine |
+| `npm run db:setup` | Volledige setup: seed + events + occurrences |
+| `npm run db:cleanup` | Cleanup legacy/orphan eventdata |
 | `npm run generate:css` | Theme CSS genereren vanuit config/themes.ts |
 
 ### 10.2 Database Scripts
 
 ```bash
 npm run db:generate        # Prisma client genereren
+npm run db:push            # Direct schema push (development-only)
 npm run db:migrate         # Migratie maken en uitvoeren (development)
 npm run db:migrate:deploy  # Migraties deployen (production)
 npm run db:migrate:reset   # Reset database met migraties
 npm run db:seed            # Seed data invoegen
+npm run db:events          # Event catalog -> Event records
+npm run db:occurrences     # Occurrences genereren
+npm run db:setup           # Volledige initialisatie pipeline
+npm run db:cleanup         # Legacy cleanup script
 npm run db:studio          # Prisma Studio openen
 npm run db:reset           # Reset + seed (convenience script)
 ```
 
 **Huidige migraties:**
-- `20251224214939_init` - Initial schema (comprehensive database setup)
-- `20251225215951_add_panchanga_end_times` - Added Panchanga end times (Tithi, Nakshatra, Yoga, Karana)
+- `20251224214939_init`
+- `20251225215951_add_panchanga_end_times`
+- `20251226222328_fix_user_preference_id`
+- `20251226224428_add_drik_panchang_fields`
+- `20251227104409_add_adhika_maas_support`
+- `20251227114940_add_sankranti_support`
+- `20251227120542_add_rule_engine_fields`
+- `20251227161859_add_event_series_parent_child`
+- `20260319000000_indexes_check_constraint_dailyinfo_cleanup`
+- `20260319120000_remove_rashi_enum`
+- `20260324120000_event_category_m2m`
+- `20260403000000_add_missing_event_timing_and_moon_iso_columns`
+- `20260403000001_add_event_series_entry_table`
 
 **Migratie strategie:**
 - **Development:** Gebruik `prisma migrate dev` voor schema wijzigingen - creëert migration files en past database aan
@@ -2098,7 +2125,7 @@ npm run db:reset           # Reset + seed (convenience script)
 1. **Semantic Tokens Over Hardcoded Colors:**
    - ✅ Gebruik `text-theme-fg` ipv `text-zinc-600 dark:text-zinc-400`
    - ✅ Gebruik `bg-theme-surface-raised` ipv `bg-white dark:bg-zinc-900`
-   - ✅ Voorkom alle `dark:` modifiers - semantic tokens handelen dit automatisch af
+   - ✅ Gebruik semantic tokens als default; `dark:` alleen voor gerichte uitzonderingen
    - ✅ Test altijd in beide color modes (light/dark)
    - Zie sectie 3.7 voor volledige migratierichtlijnen
 
@@ -2128,4 +2155,3 @@ npm run db:reset           # Reset + seed (convenience script)
 | Handmatige event invoer | Geen externe Panchang API-integratie | Handmatig invoeren via EventForm |
 | Locatie vast (Den Haag default) | Configureerbaar maar niet multi-locatie | Instelbaar via Settings → Locatie |
 | Weerdata externe afhankelijkheid | OpenWeatherMap API key vereist | Degradeert graceful zonder weerdata |
-

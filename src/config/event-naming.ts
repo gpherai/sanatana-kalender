@@ -631,6 +631,23 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     tags: ["guru", "leraar", "purnima", "vyasa"],
   },
   {
+    key: "kartik_vaikuntha_chaturdashi",
+    name: "Vaikuntha Chaturdashi",
+    categories: ["vishnu", "shiva"],
+    eventType: "FESTIVAL",
+    ruleType: "TITHI",
+    ruleConfig: {
+      tithi: "CHATURDASHI_SHUKLA",
+      maas: "KARTIK",
+      nishitakalDateRule: true,
+    },
+    includeAdhika: true,
+    timingType: "NISHITA_KAAL",
+    description:
+      "De dag voor Kartik Purnima waarop Vishnu en Shiva samen worden vereerd. Vishnu-aanbidding tijdens Nishitakal (middernacht); Shiva-aanbidding bij Arunodaya (dageraad).",
+    tags: ["chaturdashi", "kartik", "nishita kaal", "shiva", "vishnu"],
+  },
+  {
     key: "kartik_kartik_purnima",
     name: "Kartik Purnima",
     categories: ["general"],
@@ -640,6 +657,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       tithi: "PURNIMA",
       maas: "KARTIK",
     },
+    includeAdhika: true,
     description:
       "De meest gunstige Purnima (volle maan). Karthigai Deepam in Zuid-India.",
     tags: ["deepam", "kartik", "licht", "purnima", "tripuri"],
@@ -1223,6 +1241,29 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     description:
       "Verschijningsdag van Godin Lakshmi. De Margashirsha Purnima wordt in Noord-Indiase traditie als haar jayanti gevierd.",
     tags: ["jayanti", "lakshmi", "margashirsha", "purnima", "rijkdom"],
+  },
+  {
+    key: "maargazhi_arudra_darshan",
+    name: "Arudra Darshan",
+    categories: ["shiva"],
+    eventType: "FESTIVAL",
+    ruleType: "NAKSHATRA",
+    ruleConfig: {
+      nakshatra: "ARDRA",
+      maargazhiRule: true,
+    },
+    description:
+      "Arudra Darshan is een Tamil festival gewijd aan de Nataraja-verschijning van Heer Shiva — de kosmische danser. Het wordt gevierd op de dag dat de Ardra nakshatra (Thiruvathirai) valt tijdens de Maargazhi maand (zon in Dhanu). In tempels wordt Nataraja bij het aanbreken van de dageraad (Arunodaya) vereerd met Vedische hymnen en rituele wassingen. De dag geldt als de verjaardag van Shiva in de Tamil traditie. Sommige jaren valt de Ardra nakshatra niet tijdens Maargazhi en wordt het festival dat jaar niet gevierd.",
+    tags: [
+      "ardra",
+      "arunodaya",
+      "maargazhi",
+      "nakshatra",
+      "nataraja",
+      "shiva",
+      "tamil",
+      "thiruvathirai",
+    ],
   },
   {
     key: "vaishakha_vaikasi_visakam",

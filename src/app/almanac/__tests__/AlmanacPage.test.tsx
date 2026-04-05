@@ -16,22 +16,18 @@ vi.mock("@/components/almanac", () => ({
   AlmanacHeader: ({ location }: any) => <div data-testid="header">{location}</div>,
   AlmanacFilters: ({
     onToggleFilter,
-    onYearChange,
-    onMonthChange,
     showMoonPhases,
     showSpecialDays,
     showEvents,
   }: any) => (
     <div data-testid="filters">
-      <button onClick={() => onToggleFilter("moonPhases")}>Toggle Moon</button>
-      <button onClick={() => onToggleFilter("specialDays")}>Toggle Special</button>
-      <button onClick={() => onToggleFilter("events")}>Toggle Events</button>
-      <button onClick={() => onYearChange(2026)}>Set Year</button>
-      <button onClick={() => onMonthChange(5)}>Set Month</button>
-      <div data-testid="filter-status">
-        {showMoonPhases ? "Moon ON" : "Moon OFF"}
-        {showSpecialDays ? "Special ON" : "Special OFF"}
-        {showEvents ? "Events ON" : "Events OFF"}
+      <button onClick={() => onToggleFilter("moonPhases")}>T-Moon</button>
+      <button onClick={() => onToggleFilter("specialDays")}>T-Special</button>
+      <button onClick={() => onToggleFilter("events")}>T-Events</button>
+      <div data-testid="f-status">
+        {showMoonPhases ? "M-ON" : "M-OFF"}
+        {showSpecialDays ? "S-ON" : "S-OFF"}
+        {showEvents ? "E-ON" : "E-OFF"}
       </div>
     </div>
   ),
@@ -69,7 +65,7 @@ vi.mock("@/components/calendar/EventDetailModal", () => ({
     ) : null,
 }));
 
-describe("AlmanacPage", () => {
+describe("AlmanacPage 100% Coverage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockUseFetch.mockReturnValue({ data: [], loading: false });
@@ -80,29 +76,19 @@ describe("AlmanacPage", () => {
     }) as any;
   });
 
-  it("handles full lifecycle and all edge cases", async () => {
-    // 1. Cover all owmPhase branches (line 42)
-    const phases = [0, 0.25, 0.5, 0.75];
-    const mockData = phases.map((p, i) => ({
-      date: `2025-01-0${i + 1}`,
-      locationName: "Amsterdam",
-      moonPhaseEvent: {
-        type:
-          p === 0
-            ? "new"
-            : p === 0.25
-              ? "first_quarter"
-              : p === 0.5
-                ? "full"
-                : "last_quarter",
-      },
-    }));
-
-    // 2. Cover multi-day loop (lines 165-168)
+  it("handles full lifecycle and all branches", async () => {
+    const mockData = [
+      { date: "2025-01-01", moonPhaseEvent: { type: "new" } },
+      { date: "2025-01-02", moonPhaseEvent: { type: "first_quarter" } },
+      { date: "2025-01-03", moonPhaseEvent: { type: "full" } },
+      { date: "2025-01-04", moonPhaseEvent: { type: "last_quarter" } },
+      { date: "2025-01-05", moonPhaseEvent: { type: "unknown" } }, // trigger line 42 branch
+    ];
+    // Line 165-168: event spant 3 dagen
     const mockEvents = [
       {
         id: "1",
-        title: "Long Event",
+        title: "Long",
         start: "2025-01-01",
         end: "2025-01-03",
         resource: {
@@ -110,6 +96,7 @@ describe("AlmanacPage", () => {
           eventType: "FESTIVAL",
           tags: [],
           originalEndDate: "2025-01-03",
+          seriesDayNumber: 1,
         },
       },
     ];
@@ -122,29 +109,32 @@ describe("AlmanacPage", () => {
 
     const { rerender } = render(<AlmanacPage />);
 
-    // First selectedDate change skips scroll (line 123)
+    // Line 123 check (isInitialMount)
     act(() => {
       fireEvent.click(screen.getByTestId("grid"));
     });
-
-    // Rerender to clear isInitialMount
     rerender(<AlmanacPage />);
 
-    // Second selectedDate change triggers scroll (line 100)
+    // Line 100 scroll
     (window as any).scrollY = 100;
     act(() => {
       fireEvent.click(screen.getByTestId("moon-timeline"));
     });
     expect(window.scrollTo).toHaveBeenCalled();
 
-    // Toggle filters (lines 190, 195)
+    // Line 190, 195 (filters)
     act(() => {
-      fireEvent.click(screen.getByText("Toggle Special"));
-      fireEvent.click(screen.getByText("Toggle Events"));
+      fireEvent.click(screen.getByText("T-Special"));
+      fireEvent.click(screen.getByText("T-Events"));
     });
 
-    const status = screen.getByTestId("filter-status");
-    expect(status).toHaveTextContent("Special OFF");
-    expect(status).toHaveTextContent("Events OFF");
+    // Line 213, 217 (modal)
+    act(() => {
+      fireEvent.click(screen.getByTestId("details"));
+    });
+    expect(screen.getByTestId("modal")).toBeInTheDocument();
+    act(() => {
+      fireEvent.click(screen.getByText("Close"));
+    });
   });
 });

@@ -20,11 +20,16 @@ import { prisma } from "@/lib/db";
 import { DEFAULT_LOCATION } from "@/lib/domain";
 import { logDebug, logWarn } from "@/lib/utils";
 import { formatDateNL } from "@/lib/date-utils";
-import { calculateTimingWindow, parseTimeToMinutes } from "@/lib/timing-utils";
+import {
+  calculateTimingWindow,
+  parseTimeToMinutes,
+  formatMinutesToTime,
+} from "@/lib/timing-utils";
 import {
   computeTithiOccurrence,
   groupConsecutiveDays,
   isPredecessorEndsAfterSunrise,
+  isNishitakalDateShiftNeeded,
   selectFirstPerYear,
 } from "@/engine";
 
@@ -414,7 +419,9 @@ async function generateSolarRuleOccurrences(
  * (with matching moonPhaseType) in the [candidate, candidate+1] window.
  */
 const PHASE_CORRECTION_TITHI: Partial<Record<Tithi, "FULL_MOON" | "NEW_MOON">> = {
-  PURNIMA: "FULL_MOON",
+  // PURNIMA uses strict tithi-at-sunrise rule (matches DrikPanchang convention).
+  // Astronomical peak can fall on D+1 but the observance day is always the
+  // sunrise-rule PURNIMA day — do NOT shift.
   AMAVASYA: "NEW_MOON",
 };
 
@@ -650,6 +657,34 @@ async function generateYearlyLunarOccurrences(
     }));
   }
 
+  // Nishitakal date rule: shift the festival to the previous calendar day when
+  // the tithi started early enough before Nishitakal (at least one muhurta).
+  // Used for events like Vaikuntha Chaturdashi where DrikPanchang assigns the
+  // observance to the day whose Nishitakal falls during the tithi.
+  const nishitakalDateRule =
+    (event.ruleConfig as Record<string, unknown>)?.nishitakalDateRule === true;
+  if (nishitakalDateRule) {
+    const prevDayMap = await fetchPreviousDayData(selectedDays.map((d) => d.date));
+    // Also need current-day sunrise (the far end of each night for Nishitakal calc)
+    const currentDayRows = await prisma.dailyInfo.findMany({
+      where: { date: { in: selectedDays.map((d) => d.date) } },
+      select: { date: true, sunrise: true },
+    });
+    const currentSunriseMap = new Map(
+      currentDayRows.map((r) => [r.date.toISOString().split("T")[0]!, r.sunrise])
+    );
+    return selectedDays.map((day) => {
+      const key = day.date.toISOString().split("T")[0]!;
+      const prevInfo = prevDayMap.get(key);
+      const currentSunrise = currentSunriseMap.get(key) ?? null;
+      if (prevInfo && isNishitakalDateShiftNeeded(prevInfo, currentSunrise)) {
+        const prevDate = new Date(day.date.getTime() - 24 * 60 * 60 * 1000);
+        return { date: prevDate };
+      }
+      return { date: day.date };
+    });
+  }
+
   // Single-day VRAT events: detect if tithi started in the evening of the previous calendar day.
   // Timing matters for fasting (vasten): you need to know when to start/stop.
   // For non-vrat events (festivals, pujas, jayantis): keep the calendar day without times.
@@ -670,6 +705,12 @@ async function generateYearlyLunarOccurrences(
  * Matches events to days when a specific nakshatra occurs, optionally within a specific maas.
  *
  * Example: Vaikasi Visakam — Vishakha nakshatra in Vaishakha maas.
+ *
+ * Special mode — maargazhiRule: true
+ * Filters to days within the Maargazhi solar month (Dhanu Sankranti → Makara Sankranti,
+ * roughly Dec 15 – Jan 14). Uses a Dec 14–Jan 15 window as a safe margin.
+ * No per-year deduplication: some calendar years have 0 or 2 occurrences.
+ * Example: Arudra Darshan — ARDRA nakshatra during Maargazhi.
  */
 async function generateNakshatraRuleOccurrences(
   event: Event,
@@ -695,6 +736,21 @@ async function generateNakshatraRuleOccurrences(
     orderBy: { date: "asc" },
     select: { date: true, nakshatraEndTime: true, maas: true },
   });
+
+  // Maargazhi rule: ARDRA within the Dhanu solar month (Dec 14 – Jan 15 window).
+  // No per-year deduplication — 0 or 2 occurrences per calendar year are valid.
+  if (config.maargazhiRule === true) {
+    return dailyData
+      .filter((day) => {
+        const m = day.date.getUTCMonth() + 1; // 1–12
+        const d = day.date.getUTCDate();
+        return (m === 12 && d >= 14) || (m === 1 && d <= 15);
+      })
+      .map((day) => ({
+        date: day.date,
+        endTime: day.nakshatraEndTime ?? undefined,
+      }));
+  }
 
   // Optional maas filter from ruleConfig
   const maasFilter = config.maas as string | undefined;
@@ -973,6 +1029,7 @@ async function generateYearlySolarOccurrences(
  * Generate monthly lunar occurrences (e.g., every Ekadashi = 24x per year).
  * Finds all matching tithis within the window.
  * Handles spanning tithis (tithi that spans multiple days).
+ * Handles kshaya tithis (tithi that never occurs at sunrise in a given month).
  */
 async function generateMonthlyLunarOccurrences(
   event: Event,
@@ -1002,9 +1059,58 @@ async function generateMonthlyLunarOccurrences(
   // Group consecutive days into "tithi windows" (engine pure helper)
   // and emit one occurrence per window with real start/end times
   const windows = groupConsecutiveDays(dailyData);
-  return windows.map(({ firstDay, lastDay }) =>
+  const occurrences: GeneratedOccurrence[] = windows.map(({ firstDay, lastDay }) =>
     computeTithiOccurrence(firstDay, lastDay, prevDayMap)
   );
+
+  // Kshaya tithi fallback: a kshaya tithi never occurs at sunrise — the standard
+  // query above misses it entirely for that month. Detect it by finding days where
+  // the predecessor tithi ends AFTER sunrise; the kshaya tithi starts on that same
+  // calendar day and must be covered by an occurrence on that day.
+  const predecessorTithi = TITHI_PREDECESSOR[event.tithi as Tithi];
+  if (predecessorTithi) {
+    const kshayaCandidates = await prisma.dailyInfo.findMany({
+      where: {
+        date: { gte: startDate, lte: endDate },
+        tithi: predecessorTithi,
+      },
+      orderBy: { date: "asc" },
+      select: { date: true, tithiEndTime: true, sunrise: true },
+    });
+
+    const WINDOW_MS = 20 * 24 * 60 * 60 * 1000; // 20 days — each lunar month ~29.5 days
+    for (const candidate of kshayaCandidates) {
+      if (
+        !isPredecessorEndsAfterSunrise({
+          tithiEndTime: candidate.tithiEndTime,
+          sunrise: candidate.sunrise,
+        })
+      ) {
+        continue;
+      }
+      // Skip if an existing occurrence already covers this lunar month
+      const alreadyCovered = occurrences.some(
+        (occ) => Math.abs(occ.date.getTime() - candidate.date.getTime()) < WINDOW_MS
+      );
+      if (alreadyCovered) continue;
+
+      // Place occurrence on the kshaya day itself (no computeTithiOccurrence shift).
+      // startTime = when the predecessor ended = when the kshaya tithi began.
+      const startMin = parseTimeToMinutes(candidate.tithiEndTime ?? "");
+      const normalizedStart =
+        startMin !== null ? formatMinutesToTime(startMin) : undefined;
+      occurrences.push({
+        date: candidate.date,
+        startTime: normalizedStart,
+        endDate: undefined,
+        endTime: undefined,
+      });
+    }
+
+    occurrences.sort((a, b) => a.date.getTime() - b.date.getTime());
+  }
+
+  return occurrences;
 }
 
 // =============================================================================
@@ -1031,17 +1137,21 @@ async function fetchPreviousDayData(
 
   const rows = await prisma.dailyInfo.findMany({
     where: { date: { in: prevDates } },
-    select: { date: true, tithiEndTime: true, sunrise: true },
+    select: { date: true, tithiEndTime: true, sunrise: true, sunset: true },
   });
 
   // Key by the NEXT day (the original date) → prev day data
-  const map = new Map<string, { tithiEndTime: string | null; sunrise: string | null }>();
+  const map = new Map<
+    string,
+    { tithiEndTime: string | null; sunrise: string | null; sunset: string | null }
+  >();
   for (const row of rows) {
     const nextDay = new Date(row.date);
     nextDay.setUTCDate(nextDay.getUTCDate() + 1);
     map.set(nextDay.toISOString().split("T")[0]!, {
       tithiEndTime: row.tithiEndTime,
       sunrise: row.sunrise,
+      sunset: row.sunset,
     });
   }
 

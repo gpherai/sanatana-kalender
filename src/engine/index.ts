@@ -14,5 +14,6 @@ export {
   groupConsecutiveDays,
   selectFirstPerYear,
   isPredecessorEndsAfterSunrise,
+  isNishitakalDateShiftNeeded,
   computeTithiOccurrence,
 } from "./tithi-helpers";

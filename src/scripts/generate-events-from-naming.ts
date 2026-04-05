@@ -68,6 +68,8 @@ async function generateEventsFromNaming() {
     const sankranti = "sankranti" in config ? config.sankranti : null;
     const isAdhikaOnly =
       "isAdhikaOnly" in config ? (config.isAdhikaOnly ?? false) : false;
+    const includeAdhika =
+      "includeAdhika" in naming ? (naming.includeAdhika ?? false) : false;
     const maas = "maas" in config ? config.maas : null;
 
     // When maas is an array (multi-month event like Navadurga), leave event.maas null.
@@ -87,6 +89,7 @@ async function generateEventsFromNaming() {
       nakshatra: nakshatra || null,
       sankranti: sankranti || null,
       isAdhikaOnly: isAdhikaOnly || false,
+      includeAdhika: includeAdhika || false,
 
       // Rule engine fields
       ruleType: naming.ruleType,

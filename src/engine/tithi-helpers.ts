@@ -7,7 +7,11 @@
  * Used by: src/services/recurrence.service.ts
  */
 
-import { parseTimeToMinutes, formatMinutesToTime } from "@/lib/timing-utils";
+import {
+  parseTimeToMinutes,
+  formatMinutesToTime,
+  calculateNishitaKaal,
+} from "@/lib/timing-utils";
 import type { GeneratedOccurrence, PrevDayInfo } from "./types";
 
 // ---------------------------------------------------------------------------
@@ -88,6 +92,55 @@ export function isPredecessorEndsAfterSunrise(prev: PrevDayInfo): boolean {
   const endMin = parseTimeToMinutes(prev.tithiEndTime ?? "");
   const sunriseMin = parseTimeToMinutes(prev.sunrise ?? "");
   return endMin !== null && sunriseMin !== null && endMin >= sunriseMin;
+}
+
+/**
+ * Returns true when the target tithi started early enough before the
+ * Nishitakal of the previous day's night to warrant shifting the festival
+ * date back one calendar day.
+ *
+ * DrikPanchang places certain events (e.g. Vaikuntha Chaturdashi) on the day
+ * whose Nishitakal falls during the tithi — but only if the tithi was already
+ * active for at least one muhurta (≈ nightDuration/15 min) before Nishitakal
+ * began. A tithi that starts just 1–2 minutes before Nishitakal is treated as
+ * belonging to the following (sunrise-rule) day.
+ *
+ * @param prev           Previous day data: tithiEndTime (= when target tithi
+ *                       started), sunrise and sunset for that night's Nishitakal.
+ * @param currentSunrise Sunrise of the candidate day — the far end of the night.
+ */
+export function isNishitakalDateShiftNeeded(
+  prev: PrevDayInfo,
+  currentSunrise: string | null
+): boolean {
+  if (!prev.tithiEndTime || !prev.sunrise || !prev.sunset || !currentSunrise)
+    return false;
+
+  // Tithi must have started AFTER sunrise on prevDay (evening/night start only)
+  const tithiStartMin = parseTimeToMinutes(prev.tithiEndTime);
+  const prevSunriseMin = parseTimeToMinutes(prev.sunrise);
+  if (tithiStartMin === null || prevSunriseMin === null) return false;
+  if (tithiStartMin < prevSunriseMin) return false;
+
+  // Nishitakal of the night prevDay → currentDay
+  const nishitakal = calculateNishitaKaal(prev.sunset, currentSunrise);
+  if (!nishitakal) return false;
+
+  // Raw Nishitakal-start in minutes from prevDay midnight.
+  // calculateNishitaKaal returns "HH:MM" (wrapped to 0–1439), but the real
+  // start can be > 1440 when it falls past midnight. We reconstruct the raw
+  // value from the sunset and the known night-duration formula so comparisons
+  // stay on a single continuous timeline.
+  const sunsetMin = parseTimeToMinutes(prev.sunset);
+  const nextSunriseMin = parseTimeToMinutes(currentSunrise);
+  if (sunsetMin === null || nextSunriseMin === null) return false;
+
+  const nightDuration = nextSunriseMin + 1440 - sunsetMin;
+  const muhurta = nightDuration / 15;
+  const nishitakalStartRaw = sunsetMin + nightDuration / 2 - muhurta;
+
+  // Shift only if tithi started at least one muhurta before Nishitakal
+  return tithiStartMin + muhurta <= nishitakalStartRaw;
 }
 
 // ---------------------------------------------------------------------------
