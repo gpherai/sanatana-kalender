@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import WeatherPage from "../page";
 
 // Mock next/image
 vi.mock("next/image", () => ({
+  // eslint-disable-next-line @next/next/no-img-element
   default: (props: any) => <img {...props} alt={props.alt || "weather icon"} />,
 }));
 
