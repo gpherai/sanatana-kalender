@@ -25,6 +25,12 @@ export interface TithiRuleConfig {
   durationDays?: number;
   /** For kshaya tithi: place occurrence on the next calendar day instead of the predecessor's day */
   kshayaNextDay?: boolean;
+  /**
+   * Use Nishitakal-based date assignment instead of the udaya (sunrise) rule.
+   * The festival is placed on the day whose Nishitakal the tithi was active in
+   * for at least one muhurta. Example: Vaikuntha Chaturdashi.
+   */
+  nishitakalDateRule?: boolean;
 }
 
 /** SOLAR: match a specific Sankranti (sun entering a new sign) */
@@ -36,6 +42,12 @@ export interface SolarRuleConfig {
 export interface NakshatraRuleConfig {
   nakshatra: Nakshatra;
   maas?: Maas;
+  /**
+   * Filter to the Maargazhi solar month (Dhanu Sankranti → Makara Sankranti,
+   * ~14 dec – 15 jan). No per-year deduplication: 0 or 2 occurrences per
+   * calendar year are valid. Example: Arudra Darshan.
+   */
+  maargazhiRule?: boolean;
 }
 
 /** TITHI_NAKSHATRA: both tithi AND nakshatra must match */

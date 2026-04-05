@@ -56,6 +56,13 @@ export type EventNaming = {
     parentKeys?: string[];
     /** Position within the parent series (1-based) */
     dayNumber?: number;
+    /**
+     * When true, Adhika (leap) month occurrences are included in addition to
+     * the regular (Nija) month. Default false (only Nija maas matched).
+     * Example: kartik_kartik_purnima — includes Adhika KARTIK so the Nov
+     * occurrence is found before the Nija Dec occurrence in adhika years.
+     */
+    includeAdhika?: boolean;
   };
 }[RuleType];
 
