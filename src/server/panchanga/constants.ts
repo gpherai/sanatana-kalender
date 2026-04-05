@@ -317,3 +317,47 @@ export const SAMVATSARA_NAMES = [
 ] as const;
 
 // =============================================================================
+// RASHI (12 ZODIAC SIGNS)
+// =============================================================================
+
+/**
+ * 12 Rashis (sidereal zodiac signs used in Jyotisha)
+ * Index 0-11 corresponds to Rashi numbers 1-12
+ * These are sidereal signs (shifted ~23° from tropical zodiac via Lahiri ayanamsa)
+ */
+export const RASHI_NAMES = [
+  "Mesha", // Aries
+  "Vrishabha", // Taurus
+  "Mithuna", // Gemini
+  "Karka", // Cancer
+  "Simha", // Leo
+  "Kanya", // Virgo
+  "Tula", // Libra
+  "Vrishchika", // Scorpio
+  "Dhanu", // Sagittarius
+  "Makara", // Capricorn
+  "Kumbha", // Aquarius
+  "Meena", // Pisces
+] as const;
+
+// =============================================================================
+// GRAHA (9 PLANETS)
+// =============================================================================
+
+/**
+ * The 9 Grahas (Navagrahas) with their swisseph planet IDs.
+ * Ketu has no ipl — it is always computed as Rahu longitude + 180°.
+ */
+export const GRAHA_DEFINITIONS = [
+  { key: "surya", name: "Surya", ipl: 0 }, // SE_SUN
+  { key: "chandra", name: "Chandra", ipl: 1 }, // SE_MOON (topocentric)
+  { key: "mangala", name: "Mangala", ipl: 4 }, // SE_MARS
+  { key: "budha", name: "Budha", ipl: 2 }, // SE_MERCURY
+  { key: "guru", name: "Guru", ipl: 5 }, // SE_JUPITER
+  { key: "shukra", name: "Shukra", ipl: 3 }, // SE_VENUS
+  { key: "shani", name: "Shani", ipl: 6 }, // SE_SATURN
+  { key: "rahu", name: "Rahu", ipl: 10 }, // SE_MEAN_NODE
+  { key: "uranus", name: "Uranus", ipl: 7 }, // SE_URANUS
+  { key: "neptune", name: "Neptune", ipl: 8 }, // SE_NEPTUNE
+  { key: "pluto", name: "Pluto", ipl: 9 }, // SE_PLUTO
+] as const;

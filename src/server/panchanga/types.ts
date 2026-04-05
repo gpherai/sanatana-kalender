@@ -3,6 +3,73 @@
  * Type definitions for Swiss Ephemeris Panchanga calculations
  */
 
+// =============================================================================
+// BIRTH CHART TYPES
+// =============================================================================
+
+export interface BirthData {
+  date: string; // YYYY-MM-DD (local calendar date)
+  time: string; // HH:mm or HH:mm:ss (local time)
+  lat: number; // Geographic latitude
+  lon: number; // Geographic longitude
+  tz: string; // IANA timezone (e.g. "Europe/Amsterdam")
+  altitude?: number; // Meters above sea level (default 0)
+}
+
+export interface RashiInfo {
+  number: number; // 1-12 (Mesha to Meena)
+  name: string; // Sanskrit name
+}
+
+export interface NakshatraInfo {
+  number: number; // 1-27
+  name: string; // Sanskrit name
+  pada: 1 | 2 | 3 | 4; // Quarter (each pada = 3°20')
+}
+
+export interface GrahaPosition {
+  name: string; // Sanskrit name (e.g. "Surya", "Chandra")
+  longitude: number; // Sidereal longitude 0-360°
+  latitude: number; // Celestial latitude
+  speed: number; // Degrees/day (negative = retrograde)
+  retrograde: boolean;
+  rashi: RashiInfo;
+  degreeInRashi: number; // 0-29.999° within rashi
+  nakshatra: NakshatraInfo;
+}
+
+export interface LagnaInfo {
+  longitude: number; // Sidereal ascendant 0-360°
+  rashi: RashiInfo;
+  degreeInRashi: number; // 0-29.999°
+  nakshatra: NakshatraInfo;
+}
+
+export type GrahaKey =
+  | "surya"
+  | "chandra"
+  | "mangala"
+  | "budha"
+  | "guru"
+  | "shukra"
+  | "shani"
+  | "rahu"
+  | "ketu"
+  | "uranus"
+  | "neptune"
+  | "pluto";
+
+export interface BirthChart {
+  birthData: BirthData;
+  julianDay: number; // JD (UT) of birth moment
+  ayanamsa: {
+    name: string; // "Lahiri"
+    degrees: number; // Ayanamsa value at birth JD
+  };
+  lagna: LagnaInfo;
+  grahas: Record<GrahaKey, GrahaPosition>;
+}
+
 export interface LocationConfig {
   name: string;
   lat: number;

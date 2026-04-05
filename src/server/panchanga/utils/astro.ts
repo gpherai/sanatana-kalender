@@ -420,3 +420,57 @@ export const getAyanamsa = (jd: number): Promise<number> => {
     });
   });
 };
+
+// =============================================================================
+// TOPOCENTRIC SETUP
+// =============================================================================
+
+/**
+ * Set geographic position for topocentric calculations.
+ * Must be called before swe_calc_ut with SEFLG_TOPOCTR.
+ * Affects Moon position by up to ~57 arcminutes.
+ */
+export const sweSetTopo = (lon: number, lat: number, altMeters = 0): void => {
+  swisseph.swe_set_topo(lon, lat, altMeters);
+};
+
+// =============================================================================
+// HOUSE CALCULATIONS
+// =============================================================================
+
+export interface HousesResult {
+  ascendant: number; // Sidereal ascendant in degrees (0-360)
+  mc: number; // Midheaven
+  houses: number[]; // 12 house cusps [0..11]
+}
+
+/**
+ * Calculate house cusps and ascendant using sidereal Lahiri ayanamsa.
+ * Uses swe_houses_ex which applies the ayanamsa automatically when
+ * SEFLG_SIDEREAL is passed.
+ *
+ * @param jd        Julian Day (UT)
+ * @param geolat    Geographic latitude
+ * @param geolon    Geographic longitude
+ * @param hsys      House system: 'W' = Whole Sign (default, traditional Jyotisha)
+ */
+export const sweHousesEx = (
+  jd: number,
+  geolat: number,
+  geolon: number,
+  hsys: string = "W"
+): HousesResult => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const result = (swisseph as any).swe_houses_ex(
+    jd,
+    swisseph.SEFLG_SIDEREAL,
+    geolat,
+    geolon,
+    hsys
+  );
+  return {
+    ascendant: ((result.ascendant % 360) + 360) % 360,
+    mc: ((result.mc % 360) + 360) % 360,
+    houses: result.house as number[],
+  };
+};
