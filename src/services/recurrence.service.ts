@@ -867,8 +867,9 @@ async function generatePradoshOccurrences(
   const paksha = config.paksha as string | undefined;
   const weekday = config.weekday;
 
-  if (!paksha || (paksha !== "SHUKLA" && paksha !== "KRISHNA")) {
-    logWarn(`PRADOSH event "${event.name}" missing valid paksha in ruleConfig`);
+  // paksha is optional — if omitted, generate for both SHUKLA and KRISHNA
+  if (paksha && paksha !== "SHUKLA" && paksha !== "KRISHNA") {
+    logWarn(`PRADOSH event "${event.name}" has invalid paksha value: "${paksha}"`);
     return [];
   }
   if (typeof weekday !== "number") {
@@ -876,21 +877,30 @@ async function generatePradoshOccurrences(
     return [];
   }
 
-  const trayodashiTithi: Tithi =
-    paksha === "SHUKLA" ? "TRAYODASHI_SHUKLA" : "TRAYODASHI_KRISHNA";
-  const dwadasiTithi: Tithi =
-    paksha === "SHUKLA" ? "DWADASHI_SHUKLA" : "DWADASHI_KRISHNA";
+  const pakshaList: Array<"SHUKLA" | "KRISHNA"> =
+    paksha === "SHUKLA"
+      ? ["SHUKLA"]
+      : paksha === "KRISHNA"
+        ? ["KRISHNA"]
+        : ["SHUKLA", "KRISHNA"];
+
+  const trayodashiTithis: Tithi[] = pakshaList.map((p) =>
+    p === "SHUKLA" ? "TRAYODASHI_SHUKLA" : "TRAYODASHI_KRISHNA"
+  );
+  const dwadasiTithis: Tithi[] = pakshaList.map((p) =>
+    p === "SHUKLA" ? "DWADASHI_SHUKLA" : "DWADASHI_KRISHNA"
+  );
 
   // Case 1: Trayodashi is the udaya tithi
   const trayodashiDays = await prisma.dailyInfo.findMany({
-    where: { date: { gte: startDate, lte: endDate }, tithi: trayodashiTithi },
+    where: { date: { gte: startDate, lte: endDate }, tithi: { in: trayodashiTithis } },
     orderBy: { date: "asc" },
     select: { date: true, tithiEndTime: true, sunrise: true, sunset: true },
   });
 
   // Case 2: Dwadashi is the udaya tithi (catches kshaya Trayodashi and early-start cases)
   const dwadasiDays = await prisma.dailyInfo.findMany({
-    where: { date: { gte: startDate, lte: endDate }, tithi: dwadasiTithi },
+    where: { date: { gte: startDate, lte: endDate }, tithi: { in: dwadasiTithis } },
     orderBy: { date: "asc" },
     select: { date: true, tithiEndTime: true, sunrise: true, sunset: true },
   });
