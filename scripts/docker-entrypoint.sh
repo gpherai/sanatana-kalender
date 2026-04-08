@@ -42,21 +42,6 @@ fi
 echo "✅ Database is ready!"
 
 # -----------------------------------------------------------------------------
-# Run Prisma Migrations
-# -----------------------------------------------------------------------------
-echo ""
-echo "📦 Running database migrations..."
-
-# Deploy pending migrations to production database
-# This applies all migrations that haven't been applied yet
-node node_modules/prisma/build/index.js migrate deploy 2>&1 || {
-  echo "❌ Migration deployment failed"
-  exit 1
-}
-
-echo "✅ Database schema is up to date!"
-
-# -----------------------------------------------------------------------------
 # Start Application
 # -----------------------------------------------------------------------------
 echo ""
