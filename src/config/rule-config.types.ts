@@ -74,7 +74,7 @@ export interface WeekdayTithiRuleConfig {
  * and avoids backshift errors from the regular WEEKDAY_TITHI approach.
  */
 export interface PradoshRuleConfig {
-  paksha: "SHUKLA" | "KRISHNA";
+  paksha?: "SHUKLA" | "KRISHNA";
   weekday: 0 | 1 | 2 | 3 | 4 | 5 | 6;
 }
 
