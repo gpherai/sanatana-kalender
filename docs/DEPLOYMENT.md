@@ -1,7 +1,7 @@
 # 🚀 Dharma Calendar - Deployment Guide
 
-> **Versie:** 1.0  
-> **Laatst bijgewerkt:** 28 november 2025
+> **Versie:** 1.1  
+> **Laatst bijgewerkt:** 8 april 2026
 
 Dit document beschrijft hoe je Dharma Calendar deployt op een VPS met Docker.
 
@@ -179,12 +179,18 @@ docker-compose logs -f
 # Enter app container
 docker-compose exec app sh
 
-# Inside container: seed database
-npx prisma db seed
+# Inside container: volledige database setup
+npm run db:seed        # Seed: categorieën + voorkeuren
+npm run db:events      # Sync event-naming catalog → database
+
+# Genereer event occurrences voor gewenste periode
+npm run db:occurrences -- --start 2026-01-01 --end 2029-12-31 --replace
 
 # Exit container
 exit
 ```
+
+> **Let op:** De database bevat events van 2026 t/m 2029. Pas `--start` en `--end` aan als je een andere periode wilt.
 
 ### Verify Deployment
 

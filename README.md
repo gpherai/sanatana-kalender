@@ -10,6 +10,8 @@ Een Next.js applicatie voor het bijhouden van Hindu festivals, puja's, ekadashi'
 - Almanac maandoverzicht met maanfases, speciale dagen en events
 - Volledig Vedisch panchanga (tithi, nakshatra, yoga, karana, vara) via Swiss Ephemeris
 - Eerstvolgende maanopkomst en -ondergang op basis van huidige tijd
+- **Kundali** — Jyotisha geboortehoroscoop met alle 9 navagrahas, lagna en nakshatra (Lahiri ayanamsa, Whole Sign huizen, Mean Node)
+- iCal export — abonneer op de kalender vanuit Google Calendar, Apple Calendar etc.
 - Categorisatie per godheid (Ganesha, Shiva, Krishna, etc.)
 - Geavanceerd filteren en zoeken
 - Meerdere thema's met dark mode — waaronder Bhairava Nocturne
@@ -166,6 +168,7 @@ sanatana-kalender/
 │   │   ├── api/             # API endpoints
 │   │   ├── almanac/         # Almanac maandoverzicht
 │   │   ├── events/          # Events overzichtspagina
+│   │   ├── kundali/         # Jyotisha geboortehoroscoop
 │   │   ├── settings/        # Instellingen
 │   │   └── weer/            # Weerpagina
 │   ├── components/
@@ -198,6 +201,8 @@ sanatana-kalender/
 | `/api/daily-info` | GET | Dagelijkse panchanga data |
 | `/api/preferences` | GET/PUT | Gebruikersvoorkeuren |
 | `/api/themes` | GET | Beschikbare thema's |
+| `/api/kundali` | POST | Jyotisha geboortehoroscoop (alle 9 navagrahas + lagna) |
+| `/api/ical/export` | GET | iCal export van alle events (.ics) |
 
 ## Tech Stack
 
@@ -227,4 +232,4 @@ Private project — Alle rechten voorbehouden.
 
 ---
 
-**Versie:** 0.10.0 | **Laatst bijgewerkt:** 2 april 2026
+**Versie:** 0.11.0 | **Laatst bijgewerkt:** 8 april 2026
