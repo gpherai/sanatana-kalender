@@ -1,4 +1,7 @@
 services:
+  # ---------------------------------------------------------------------------
+  # PostgreSQL Database
+  # ---------------------------------------------------------------------------
   db:
     image: postgres:17
     container_name: dharma-db
@@ -11,6 +14,61 @@ services:
       - "5432:5432"
     volumes:
       - dharma_db_data:/var/lib/postgresql/data
+    networks:
+      - dharma-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
+  # Next.js Application
+  # ---------------------------------------------------------------------------
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dharma-app
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    environment:
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: "1"
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - dharma-network
+
+  # ---------------------------------------------------------------------------
+  # Backup Service (optioneel — gebruik: docker-compose --profile backup run backup)
+  # ---------------------------------------------------------------------------
+  backup:
+    image: postgres:17
+    container_name: dharma-backup
+    profiles:
+      - backup
+    environment:
+      PGHOST: db
+      PGUSER: ${POSTGRES_USER}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: ${POSTGRES_DB}
+    volumes:
+      - ./backups:/backups
+      - ./scripts/backup-db.sh:/backup-db.sh:ro
+    entrypoint: ["/bin/sh", "/backup-db.sh"]
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - dharma-network
 
 volumes:
   dharma_db_data:
+
+networks:
+  dharma-network:
+    driver: bridge

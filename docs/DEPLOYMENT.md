@@ -54,8 +54,8 @@ cd dharma-calendar
 cp .env.example .env.production
 nano .env.production  # Edit with your settings
 
-# 3. Build and start
-docker-compose --env-file .env.production up -d --build
+# 3. Build and start (met productie-overrides)
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 
 # 4. Check status
 docker-compose ps
@@ -160,11 +160,8 @@ openssl rand -base64 32
 ```bash
 cd /opt/dharma-calendar
 
-# Build images
-docker-compose --env-file .env.production build
-
-# Start services
-docker-compose --env-file .env.production up -d
+# Build images en start met productie-overrides (resource limits, geen exposed DB port)
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.production up -d --build
 
 # Check status
 docker-compose ps
