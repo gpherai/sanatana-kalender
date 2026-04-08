@@ -11,7 +11,7 @@
 FROM node:24-alpine AS deps
 
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat python3 make g++
 
 WORKDIR /app
 
@@ -19,6 +19,7 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 
 # Install ALL dependencies (devDependencies needed for build stage)
+# python3 + make + g++ are required by swisseph (native node-gyp addon)
 # The runner stage only uses standalone output, so this doesn't affect final image size
 RUN npm ci && npm cache clean --force
 
