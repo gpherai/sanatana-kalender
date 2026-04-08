@@ -3,7 +3,7 @@
 import { ToolbarProps, View } from "react-big-calendar";
 import { format } from "date-fns";
 import { nl } from "date-fns/locale";
-import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
+import { ChevronLeft, ChevronRight, Calendar, Download } from "lucide-react";
 import type { CalendarEvent } from "@/types/calendar";
 import { cn } from "@/lib/utils";
 
@@ -62,22 +62,38 @@ export function CalendarToolbar({
         {format(date, "MMMM yyyy", { locale: nl })}
       </h2>
 
-      {/* View Buttons */}
-      <div className="bg-theme-surface-raised flex items-center gap-1 rounded-lg p-1">
-        {viewButtons.map(({ key, label }) => (
-          <button
-            key={key}
-            onClick={() => onView(key)}
-            className={cn(
-              "rounded-md px-3 py-1 text-sm font-medium transition-colors",
-              view === key
-                ? "text-theme-primary bg-theme-surface shadow-sm"
-                : "text-theme-fg-secondary hover:text-theme-fg"
-            )}
-          >
-            {label}
-          </button>
-        ))}
+      {/* View Buttons & Export */}
+      <div className="flex items-center gap-2">
+        <div className="bg-theme-surface-raised flex items-center gap-1 rounded-lg p-1">
+          {viewButtons.map(({ key, label }) => (
+            <button
+              key={key}
+              onClick={() => onView(key)}
+              className={cn(
+                "rounded-md px-3 py-1 text-sm font-medium transition-colors",
+                view === key
+                  ? "text-theme-primary bg-theme-surface shadow-sm"
+                  : "text-theme-fg-secondary hover:text-theme-fg"
+              )}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        <a
+          href="/api/ical/export"
+          download="sanatana-kalender.ics"
+          className={cn(
+            "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium",
+            "bg-theme-primary-15 text-theme-primary hover:bg-theme-primary-25",
+            "transition-colors"
+          )}
+          title="Exporteer kalender (iCal)"
+        >
+          <Download className="h-4 w-4" />
+          <span className="hidden sm:inline">Exporteer</span>
+        </a>
       </div>
     </div>
   );
