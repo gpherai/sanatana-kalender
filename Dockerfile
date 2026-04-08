@@ -80,6 +80,9 @@ COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modul
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/dotenv ./node_modules/dotenv
 
+# swisseph native addon (.node binary) — not included in standalone output
+COPY --from=deps --chown=nextjs:nodejs /app/node_modules/swisseph ./node_modules/swisseph
+
 # Copy entrypoint script
 COPY --chmod=755 scripts/docker-entrypoint.sh /docker-entrypoint.sh
 
