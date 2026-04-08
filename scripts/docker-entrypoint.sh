@@ -49,7 +49,7 @@ echo "📦 Running database migrations..."
 
 # Deploy pending migrations to production database
 # This applies all migrations that haven't been applied yet
-npx prisma migrate deploy 2>&1 || {
+node node_modules/prisma/build/index.js migrate deploy 2>&1 || {
   echo "❌ Migration deployment failed"
   exit 1
 }
