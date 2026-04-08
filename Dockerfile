@@ -68,9 +68,6 @@ RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
 # Copy necessary files from builder
-# Public assets
-COPY --from=builder --chown=nextjs:nodejs /app/public ./public
-
 # Standalone build output (includes only necessary node_modules)
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
