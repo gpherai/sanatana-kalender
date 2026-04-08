@@ -11,7 +11,7 @@
 FROM node:24-alpine AS deps
 
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine
-RUN apk add --no-cache libc6-compat python3 make g++
+RUN apk add --no-cache libc6-compat python3 make g++ py3-setuptools
 
 WORKDIR /app
 
