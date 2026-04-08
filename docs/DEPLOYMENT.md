@@ -172,19 +172,20 @@ docker-compose logs -f
 
 ### Seed Database (Eerste keer)
 
+De runner-container is een minimale standalone-image zonder `npm`. Gebruik de `seeder` service (draait op de builder stage met volledige deps):
+
 ```bash
-# Enter app container
-docker-compose exec app sh
+# Stap 1: seed categorieën & voorkeuren
+docker compose --env-file .env.production --profile seed run --rm seeder \
+  -c "npm run db:seed"
 
-# Inside container: volledige database setup
-npm run db:seed        # Seed: categorieën + voorkeuren
-npm run db:events      # Sync event-naming catalog → database
+# Stap 2: sync event-catalog naar database
+docker compose --env-file .env.production --profile seed run --rm seeder \
+  -c "npm run db:events"
 
-# Genereer event occurrences voor gewenste periode
-npm run db:occurrences -- --start 2026-01-01 --end 2029-12-31 --replace
-
-# Exit container
-exit
+# Stap 3: genereer event occurrences voor gewenste periode
+docker compose --env-file .env.production --profile seed run --rm seeder \
+  -c "npm run db:occurrences -- --start 2026-01-01 --end 2029-12-31 --replace"
 ```
 
 > **Let op:** De database bevat events van 2026 t/m 2029. Pas `--start` en `--end` aan als je een andere periode wilt.

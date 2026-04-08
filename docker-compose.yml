@@ -44,6 +44,27 @@ services:
       - dharma-network
 
   # ---------------------------------------------------------------------------
+  # Seeder Service (eenmalig — gebruik: docker compose --profile seed run --rm seeder)
+  # Draait op de builder stage zodat npm/tsx beschikbaar zijn.
+  # Voorbeeld: npm run db:seed && npm run db:events && npm run db:occurrences -- --start 2026-01-01 --end 2029-12-31 --replace
+  # ---------------------------------------------------------------------------
+  seeder:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    profiles:
+      - seed
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+    entrypoint: ["sh"]
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - dharma-network
+
+  # ---------------------------------------------------------------------------
   # Backup Service (optioneel — gebruik: docker-compose --profile backup run backup)
   # ---------------------------------------------------------------------------
   backup:
