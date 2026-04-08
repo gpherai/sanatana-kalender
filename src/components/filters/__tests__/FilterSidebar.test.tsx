@@ -141,7 +141,6 @@ describe("FilterSidebar", () => {
 
     // Event Types (Line 328 callback coverage)
     const typeSection = screen.getByText(/Soort evenement/i).closest("button")!;
-    await user.click(typeSection); // Open it explicitly
     await user.click(screen.getByText(EVENT_TYPES[0]!.label));
     expect(onToggleFilter).toHaveBeenCalledWith("eventTypes", EVENT_TYPES[0]!.value);
 

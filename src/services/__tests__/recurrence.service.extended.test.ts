@@ -127,18 +127,18 @@ describe("Recurrence Service Extended", () => {
     ).toEqual([]);
 
     // 5. Peak Correction (shift and no-shift)
-    const eventPhase: Event = { ...BASE_EVENT, tithi: "PURNIMA", maas: null };
+    const eventPhase: Event = { ...BASE_EVENT, tithi: "AMAVASYA", maas: null };
     const d1 = new Date(Date.UTC(2025, 4, 12));
     const d2 = new Date(Date.UTC(2025, 4, 13));
     const d3 = new Date(Date.UTC(2026, 5, 10));
     const d4 = new Date(Date.UTC(2026, 5, 11));
     prismaMock.dailyInfo.findMany.mockImplementation((async (args: any) => {
-      if (args.where.tithi === "PURNIMA")
+      if (args.where.tithi === "AMAVASYA")
         return [
           { date: d1, maas: "PAUSHA", isAdhika: false },
           { date: d3, maas: "MAGHA", isAdhika: false },
         ] as any;
-      if (args.where.moonPhaseType === "FULL_MOON")
+      if (args.where.moonPhaseType === "NEW_MOON")
         return [
           { date: d1, moonPhasePercent: 99.0 },
           { date: d2, moonPhasePercent: 100.0 },
