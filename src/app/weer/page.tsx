@@ -440,7 +440,7 @@ export default function WeerPage() {
           onClick={() => void fetchWeather(true)}
           disabled={refreshing}
           aria-label="Vernieuwen"
-          className="text-theme-fg-muted hover:text-theme-fg hover:bg-theme-hover cursor-pointer rounded-xl p-3 transition-colors disabled:opacity-40"
+          className="text-theme-fg-muted hover:text-theme-fg hover:bg-theme-hover flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-xl transition-colors disabled:opacity-40"
         >
           <RefreshCw
             className={cn(
@@ -484,7 +484,7 @@ export default function WeerPage() {
         <CurrentWeatherCard current={c} today={today} />
 
         {/* Rechterkolom: Zon · Maan · Lucht */}
-        <div className="grid grid-cols-3 gap-3 lg:flex lg:flex-col lg:gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:flex lg:flex-col lg:gap-4">
           {/* Zon */}
           <div className="bg-theme-surface border-theme-border rounded-2xl border p-4 shadow-sm">
             <div className="mb-3 flex items-center gap-2">
@@ -532,15 +532,15 @@ export default function WeerPage() {
             </div>
           </div>
 
-          {/* Lucht */}
-          <div className="bg-theme-surface border-theme-border rounded-2xl border p-4 shadow-sm">
+          {/* Lucht — full width on mobile (2-col grid), auto on sm+ */}
+          <div className="bg-theme-surface border-theme-border col-span-2 rounded-2xl border p-4 shadow-sm sm:col-span-1">
             <div className="mb-3 flex items-center gap-2">
               <div className="bg-theme-primary-10 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg">
                 <Gauge className="text-theme-primary h-4 w-4" />
               </div>
               <span className="text-theme-fg text-sm font-semibold">Lucht</span>
             </div>
-            <div className="space-y-2.5">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 sm:block sm:space-y-2.5">
               <SideRow
                 icon={<Gauge className="text-theme-fg-muted h-3.5 w-3.5" />}
                 label="Zeeniv. druk"
@@ -580,13 +580,16 @@ export default function WeerPage() {
             <h2 className="text-theme-fg-muted text-[10px] font-bold tracking-[0.12em] uppercase">
               Vandaag · per uur
             </h2>
-            <span className="text-theme-fg-muted text-[9px] normal-case opacity-50">
+            <span className="text-theme-fg-muted hidden text-[9px] normal-case opacity-50 sm:inline">
               (lineair geïnterpoleerd uit 3u-sloten)
             </span>
           </div>
           <div className="bg-theme-surface border-theme-border rounded-2xl border shadow-sm">
             <div className="overflow-x-auto p-3">
-              <div className="flex gap-1.5">
+              <div
+                className="flex gap-1.5 [&>*]:snap-start"
+                style={{ scrollSnapType: "x mandatory" }}
+              >
                 {todayHourlyInterp.map((h) => (
                   <HourlyCard key={h.dt} h={h} tz={tz} />
                 ))}
@@ -647,7 +650,10 @@ export default function WeerPage() {
           <SectionTitle>Per 3 uur · komende dagen</SectionTitle>
           <div className="bg-theme-surface border-theme-border rounded-2xl border shadow-sm">
             <div className="overflow-x-auto p-3">
-              <div className="flex items-stretch gap-1">
+              <div
+                className="flex items-stretch gap-1"
+                style={{ scrollSnapType: "x mandatory" }}
+              >
                 {futureItems.map((item, i) =>
                   item.kind === "sep" ? (
                     <div
