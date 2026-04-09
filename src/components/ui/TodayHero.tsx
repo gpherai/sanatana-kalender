@@ -123,10 +123,10 @@ export function TodayHero() {
       </div>
 
       <div className="relative z-10 p-6 md:p-8">
-        {/* Top Row: Date and Time */}
-        <div className="mb-8 flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
-          {/* Date Display */}
-          <div>
+        {/* Top Row: Date heading + Time always side by side */}
+        <div className="mb-3 flex items-start justify-between gap-4">
+          {/* Date + weekday */}
+          <div className="min-w-0 flex-1">
             <div className="mb-1 flex items-center gap-2 text-sm text-white/70">
               <Calendar className="h-4 w-4" />
               <span>{today.toLocaleDateString("nl-NL", { weekday: "long" })}</span>
@@ -135,81 +135,13 @@ export function TodayHero() {
                 {sanskritDay.icon} {dailyInfo?.vara?.name ?? sanskritDay.name}
               </span>
             </div>
-
-            <h1 className="mb-1 text-4xl font-bold text-white md:text-5xl">
+            <h1 className="mb-0 text-4xl font-bold text-white md:text-5xl">
               {formatDate(today)}
             </h1>
-
-            {/* Vedic Calendar Year Info */}
-            {dailyInfo?.vikramaSamvat && (
-              <div className="mb-2 flex flex-wrap items-center gap-2 text-xs text-white/50">
-                <span>Vikrama Samvat {dailyInfo.vikramaSamvat.year}</span>
-                {dailyInfo.samvatsara && (
-                  <>
-                    <span className="text-white/25">•</span>
-                    <span>{dailyInfo.samvatsara.name}</span>
-                  </>
-                )}
-                {/* Shaka Samvat */}
-                {dailyInfo.shakaSamvat && (
-                  <>
-                    <span className="text-white/25">•</span>
-                    <span>
-                      Shaka {dailyInfo.shakaSamvat.year} ({dailyInfo.shakaSamvat.name})
-                    </span>
-                  </>
-                )}
-              </div>
-            )}
-
-            <div className="flex flex-col gap-1">
-              {/* Main Panchanga line - more compact */}
-              <div className="flex flex-wrap items-center gap-2 text-base text-white/70">
-                {dailyInfo?.maas && (
-                  <span>
-                    {dailyInfo.maas.name} Maas
-                    {dailyInfo.maas.lunarDay && (
-                      <span className="ml-1 text-sm text-white/50">
-                        (dag {dailyInfo.maas.lunarDay})
-                      </span>
-                    )}
-                  </span>
-                )}
-
-                {/* Compact TITHI */}
-                {dailyInfo?.tithi && (
-                  <>
-                    <span className="text-white/25">•</span>
-                    <span>
-                      {dailyInfo.tithi.name} ({dailyInfo.tithi.paksha})
-                    </span>
-                  </>
-                )}
-
-                {/* NAKSHATRA (no pada in main line) */}
-                {dailyInfo?.nakshatra && (
-                  <>
-                    <span className="text-white/25">•</span>
-                    <span>{dailyInfo.nakshatra.name}</span>
-                  </>
-                )}
-              </div>
-
-              {/* Secondary details line - smaller */}
-              <div className="flex flex-wrap items-center gap-2 text-sm text-white/50">
-                {dailyInfo?.tithi?.endTime && (
-                  <span>Tithi eindigt {dailyInfo.tithi.endTime}</span>
-                )}
-                {dailyInfo?.nakshatra && dailyInfo?.tithi?.endTime && (
-                  <span className="text-white/25">•</span>
-                )}
-                {dailyInfo?.nakshatra && <span>Pada {dailyInfo.nakshatra.pada}</span>}
-              </div>
-            </div>
           </div>
 
           {/* Current Time + Weather */}
-          <div className="text-right">
+          <div className="shrink-0 text-right">
             <div className="text-3xl font-light text-white tabular-nums md:text-4xl">
               {currentTime.toLocaleTimeString("nl-NL", {
                 hour: "2-digit",
@@ -244,6 +176,76 @@ export function TodayHero() {
                 </div>
               </div>
             )}
+          </div>
+        </div>
+
+        {/* Panchanga details — full width below header */}
+        <div className="mb-8">
+          {/* Vedic Calendar Year Info */}
+          {dailyInfo?.vikramaSamvat && (
+            <div className="mb-2 flex flex-wrap items-center gap-2 text-xs text-white/50">
+              <span>Vikrama Samvat {dailyInfo.vikramaSamvat.year}</span>
+              {dailyInfo.samvatsara && (
+                <>
+                  <span className="text-white/25">•</span>
+                  <span>{dailyInfo.samvatsara.name}</span>
+                </>
+              )}
+              {/* Shaka Samvat */}
+              {dailyInfo.shakaSamvat && (
+                <>
+                  <span className="text-white/25">•</span>
+                  <span>
+                    Shaka {dailyInfo.shakaSamvat.year} ({dailyInfo.shakaSamvat.name})
+                  </span>
+                </>
+              )}
+            </div>
+          )}
+
+          <div className="flex flex-col gap-1">
+            {/* Main Panchanga line - more compact */}
+            <div className="flex flex-wrap items-center gap-2 text-base text-white/70">
+              {dailyInfo?.maas && (
+                <span>
+                  {dailyInfo.maas.name} Maas
+                  {dailyInfo.maas.lunarDay && (
+                    <span className="ml-1 text-sm text-white/50">
+                      (dag {dailyInfo.maas.lunarDay})
+                    </span>
+                  )}
+                </span>
+              )}
+
+              {/* Compact TITHI */}
+              {dailyInfo?.tithi && (
+                <>
+                  <span className="text-white/25">•</span>
+                  <span>
+                    {dailyInfo.tithi.name} ({dailyInfo.tithi.paksha})
+                  </span>
+                </>
+              )}
+
+              {/* NAKSHATRA (no pada in main line) */}
+              {dailyInfo?.nakshatra && (
+                <>
+                  <span className="text-white/25">•</span>
+                  <span>{dailyInfo.nakshatra.name}</span>
+                </>
+              )}
+            </div>
+
+            {/* Secondary details line - smaller */}
+            <div className="flex flex-wrap items-center gap-2 text-sm text-white/50">
+              {dailyInfo?.tithi?.endTime && (
+                <span>Tithi eindigt {dailyInfo.tithi.endTime}</span>
+              )}
+              {dailyInfo?.nakshatra && dailyInfo?.tithi?.endTime && (
+                <span className="text-white/25">•</span>
+              )}
+              {dailyInfo?.nakshatra && <span>Pada {dailyInfo.nakshatra.pada}</span>}
+            </div>
           </div>
         </div>
 
@@ -394,11 +396,11 @@ export function TodayHero() {
 
         {/* Yoga / Karana / Rahu Kalam */}
         {(dailyInfo?.yoga || dailyInfo?.karana || dailyInfo?.rahuKalam) && (
-          <div className="mt-6 grid grid-cols-3 gap-3">
+          <div className="mt-6 grid grid-cols-3 gap-2 sm:gap-3">
             {dailyInfo?.yoga && (
-              <div className="rounded-xl border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] p-3 backdrop-blur-md">
+              <div className="rounded-xl border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] p-2.5 backdrop-blur-md sm:p-3">
                 <div className="mb-1 text-xs text-white/50">Yoga</div>
-                <div className="text-sm font-medium text-white">
+                <div className="text-xs font-medium text-white sm:text-sm">
                   {dailyInfo.yoga.name}
                 </div>
                 {dailyInfo.yoga.endTime && (
@@ -409,9 +411,9 @@ export function TodayHero() {
               </div>
             )}
             {dailyInfo?.karana && (
-              <div className="rounded-xl border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] p-3 backdrop-blur-md">
+              <div className="rounded-xl border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] p-2.5 backdrop-blur-md sm:p-3">
                 <div className="mb-1 text-xs text-white/50">Karana</div>
-                <div className="text-sm font-medium text-white">
+                <div className="text-xs font-medium text-white sm:text-sm">
                   {dailyInfo.karana.name}
                 </div>
                 {dailyInfo.karana.endTime && (
@@ -422,9 +424,9 @@ export function TodayHero() {
               </div>
             )}
             {dailyInfo?.rahuKalam && (
-              <div className="rounded-xl border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] p-3 backdrop-blur-md">
+              <div className="rounded-xl border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] p-2.5 backdrop-blur-md sm:p-3">
                 <div className="mb-1 text-xs text-white/50">Rahu Kalam</div>
-                <div className="text-sm font-medium text-white">
+                <div className="text-xs font-medium text-white sm:text-sm">
                   {dailyInfo.rahuKalam.start} – {dailyInfo.rahuKalam.end}
                 </div>
               </div>
@@ -466,7 +468,8 @@ export function TodayHero() {
                 <Link
                   key={event.id}
                   href={`/events/${event.id}`}
-                  className="flex items-center gap-2 rounded-full border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] px-4 py-3 text-white/70 backdrop-blur-sm transition-opacity hover:opacity-80"
+                  className="flex items-center gap-2 rounded-full border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] px-4 py-3 text-white/70 backdrop-blur-sm transition-opacity hover:opacity-80 active:opacity-60"
+                  style={{ touchAction: "manipulation" }}
                 >
                   {event.category?.icon && <span>{event.category.icon}</span>}
                   <span className="font-medium">{event.name}</span>

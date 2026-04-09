@@ -89,7 +89,8 @@ export default async function Home() {
                     <Link
                       key={occ.id}
                       href={`/events/${occ.event.id}`}
-                      className="group hover:bg-theme-surface-hover flex items-center gap-3 rounded-xl p-3 transition-colors"
+                      className="group hover:bg-theme-surface-hover flex items-center gap-3 rounded-xl p-3 transition-colors active:opacity-75"
+                      style={{ touchAction: "manipulation" }}
                     >
                       <div className="text-xl">{category?.icon || "📅"}</div>
                       <div className="min-w-0 flex-1">
