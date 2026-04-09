@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useCallback } from "react";
 import { Sun, Moon, Sparkles, Star, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FALLBACK_CATEGORY_COLOR } from "@/lib/category-styles";
@@ -90,6 +91,28 @@ export function DayDetailsPanel({
   const selectedHinduMonth = selectedDayInfo?.maas?.name;
   const selectedDateStr = formatDateLocal(selectedDate);
 
+  // Back button: push history state on open, close on popstate
+  useEffect(() => {
+    if (!isOpen) return;
+    history.pushState({ panel: true }, "");
+    const handlePopState = () => onClose?.();
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [isOpen, onClose]);
+
+  // Swipe down to dismiss
+  const touchStartY = useRef(0);
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartY.current = e.touches[0]!.clientY;
+  }, []);
+  const handleTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      const dy = e.changedTouches[0]!.clientY - touchStartY.current;
+      if (dy > 80) onClose?.();
+    },
+    [onClose]
+  );
+
   return (
     <>
       {/* Mobile backdrop */}
@@ -110,6 +133,8 @@ export function DayDetailsPanel({
           "lg:sticky lg:top-20 lg:w-72 lg:flex-shrink-0 lg:self-start",
           isOpen ? "translate-y-0" : "translate-y-full lg:translate-y-0"
         )}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
       >
         {/* Drag handle (mobile only) */}
         <div className="flex justify-center pt-3 pb-2 lg:hidden">
