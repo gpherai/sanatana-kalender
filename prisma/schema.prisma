@@ -335,6 +335,78 @@ enum MoonPhaseType {
   WANING_CRESCENT
 }
 
+// =============================================================================
+// SADHANA TRACKER
+// =============================================================================
+
+enum SadhanaPracticeType {
+  mantra_japa
+  parayana
+  other
+}
+
+enum SadhanaItemUnit {
+  malas
+  count
+}
+
+enum SadhanaGoalType {
+  daily
+  weekly
+}
+
+model SadhanaPractice {
+  id        String              @id @default(cuid())
+  name      String
+  type      SadhanaPracticeType
+  notes     String?
+  active    Boolean             @default(true)
+  createdAt DateTime            @default(now())
+  items     SadhanaSessionItem[]
+
+  @@map("sadhana_practices")
+}
+
+model SadhanaSession {
+  id              String               @id @default(cuid())
+  date            DateTime             @db.Date
+  startedAt       DateTime?
+  durationMinutes Int?
+  notes           String?
+  createdAt       DateTime             @default(now())
+  items           SadhanaSessionItem[]
+
+  @@index([date])
+  @@map("sadhana_sessions")
+}
+
+model SadhanaSessionItem {
+  id              String          @id @default(cuid())
+  sessionId       String
+  practiceId      String
+  quantity        Int
+  unit            SadhanaItemUnit @default(malas)
+  durationMinutes Int?
+  notes           String?
+  createdAt       DateTime        @default(now())
+  session         SadhanaSession  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  practice        SadhanaPractice @relation(fields: [practiceId], references: [id])
+
+  @@index([sessionId])
+  @@map("sadhana_session_items")
+}
+
+model SadhanaGoal {
+  id            String          @id @default(cuid())
+  type          SadhanaGoalType
+  targetMalas   Int
+  targetMinutes Int?
+  active        Boolean         @default(true)
+  createdAt     DateTime        @default(now())
+
+  @@map("sadhana_goals")
+}
+
 /// Solar transitions between zodiac signs (Sankranti)
 enum Sankranti {
   MESHA_SANKRANTI

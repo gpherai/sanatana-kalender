@@ -23,6 +23,7 @@ import {
   BookMarked,
   CloudSun,
   Star,
+  Sparkles,
 } from "lucide-react";
 import { ColorModeToggle } from "@/components/theme/ColorModeToggle";
 import { cn } from "@/lib/utils";
@@ -33,6 +34,7 @@ const navItems = [
   { href: "/events", label: "Events", icon: ListTodo },
   { href: "/kundali", label: "Kundali", icon: Star },
   { href: "/weer", label: "Weer", icon: CloudSun },
+  { href: "/sadhana", label: "Sadhana", icon: Sparkles },
   { href: "/woordenboek", label: "Woordenboek", icon: BookMarked },
   { href: "/settings", label: "Instellingen", icon: Settings },
 ] as const;
