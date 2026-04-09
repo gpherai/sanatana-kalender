@@ -267,11 +267,14 @@ function EventsContent() {
           "bg-[var(--theme-surface)]",
           showFilters ? "translate-y-0" : "translate-y-full"
         )}
-        onTouchStart={handleFilterTouchStart}
-        onTouchEnd={handleFilterTouchEnd}
       >
-        <div className="flex justify-center pt-3 pb-2">
-          <div className="h-1 w-10 rounded-full bg-[var(--theme-fg-muted)]/30" />
+        {/* Drag handle — only this zone triggers swipe-to-dismiss */}
+        <div
+          className="flex touch-none justify-center px-4 pt-3 pb-4"
+          onTouchStart={handleFilterTouchStart}
+          onTouchEnd={handleFilterTouchEnd}
+        >
+          <div className="h-1.5 w-12 rounded-full bg-[var(--theme-fg-muted)]/30" />
         </div>
         <FilterSidebar
           filters={filters}

@@ -133,12 +133,14 @@ export function DayDetailsPanel({
           "lg:sticky lg:top-20 lg:w-72 lg:flex-shrink-0 lg:self-start",
           isOpen ? "translate-y-0" : "translate-y-full lg:translate-y-0"
         )}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
       >
-        {/* Drag handle (mobile only) */}
-        <div className="flex justify-center pt-3 pb-2 lg:hidden">
-          <div className="h-1 w-10 rounded-full bg-[var(--theme-fg-muted)]/30" />
+        {/* Drag handle — only this zone triggers swipe-to-dismiss */}
+        <div
+          className="flex touch-none justify-center px-4 pt-3 pb-4 lg:hidden"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
+          <div className="h-1.5 w-12 rounded-full bg-[var(--theme-fg-muted)]/30" />
         </div>
 
         <div className="space-y-4 px-4 pb-8 lg:px-0 lg:pb-0">
