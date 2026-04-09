@@ -167,7 +167,7 @@ export function TodayHero() {
                     {Math.round(currentWeather.temp)}°
                   </span>
                 </div>
-                <div className="text-xs text-white/50 capitalize">
+                <div className="overflow-hidden text-xs whitespace-nowrap text-white/50 capitalize">
                   {currentWeather.weather[0].description}
                 </div>
                 <div className="text-xs text-white/50">
