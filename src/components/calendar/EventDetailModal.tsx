@@ -56,6 +56,7 @@ export function EventDetailModal({
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const touchStartY = useRef(0);
   interface EventRelations {
     parentEvents: { id: string; name: string }[];
     childEvents: { id: string; name: string; dayNumber?: number | null }[];
@@ -82,6 +83,27 @@ export function EventDetailModal({
       setIsVisible(false);
     }
   }, [isOpen]);
+
+  // Back button support: push history state on open, close on popstate
+  useEffect(() => {
+    if (!isOpen) return;
+    history.pushState({ modal: true }, "");
+    const handlePopState = () => onClose();
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [isOpen, onClose]);
+
+  // Swipe down to dismiss
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartY.current = e.touches[0]!.clientY;
+  }, []);
+  const handleTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      const dy = e.changedTouches[0]!.clientY - touchStartY.current;
+      if (dy > 80) onClose();
+    },
+    [onClose]
+  );
 
   // Close on ESC key
   const handleKeyDown = useCallback(
@@ -182,7 +204,7 @@ export function EventDetailModal({
     >
       <div
         className={cn(
-          "fixed inset-0 z-50 flex items-center justify-center p-4",
+          "fixed inset-0 z-50 flex items-end sm:items-center sm:justify-center sm:p-4",
           "transition-opacity duration-300",
           isVisible ? "opacity-100" : "opacity-0"
         )}
@@ -194,7 +216,7 @@ export function EventDetailModal({
           aria-hidden="true"
         />
 
-        {/* Modal */}
+        {/* Modal — bottom sheet on mobile, centered dialog on sm+ */}
         <div
           ref={modalRef}
           role="dialog"
@@ -202,16 +224,22 @@ export function EventDetailModal({
           aria-labelledby="modal-title"
           tabIndex={-1}
           className={cn(
-            "bg-theme-surface relative w-full max-w-lg rounded-3xl shadow-2xl",
+            "bg-theme-surface relative w-full shadow-2xl outline-none",
+            "rounded-t-3xl sm:max-w-lg sm:rounded-3xl",
             "max-h-[90vh] overflow-hidden",
-            "outline-none",
             "transition-all duration-300",
             isVisible
               ? "translate-y-0 scale-100 opacity-100"
-              : "translate-y-4 scale-95 opacity-0"
+              : "translate-y-full scale-100 opacity-0 sm:translate-y-4 sm:scale-95"
           )}
           onClick={(e) => e.stopPropagation()}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
         >
+          {/* Drag handle (mobile only) */}
+          <div className="flex justify-center pt-3 pb-1 sm:hidden">
+            <div className="h-1 w-10 rounded-full bg-[var(--theme-fg-muted)]/30" />
+          </div>
           {/* Header with gradient */}
           <div
             className="relative overflow-hidden p-6 pb-5"
