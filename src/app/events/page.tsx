@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense, useMemo, useEffect, useCallback } from "react";
+import { useState, Suspense, useMemo, useEffect, useCallback, useRef } from "react";
 import { useFetch } from "@/hooks/useFetch";
 import Link from "next/link";
 import { Plus, LayoutGrid, List, SlidersHorizontal } from "lucide-react";
@@ -120,6 +120,19 @@ function EventsContent() {
     window.addEventListener("popstate", handleCloseFilters);
     return () => window.removeEventListener("popstate", handleCloseFilters);
   }, [showFilters, handleCloseFilters]);
+
+  // Swipe down to dismiss filter sheet
+  const filterTouchStartY = useRef(0);
+  const handleFilterTouchStart = useCallback((e: React.TouchEvent) => {
+    filterTouchStartY.current = e.touches[0]!.clientY;
+  }, []);
+  const handleFilterTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      const dy = e.changedTouches[0]!.clientY - filterTouchStartY.current;
+      if (dy > 80) handleCloseFilters();
+    },
+    [handleCloseFilters]
+  );
 
   const {
     filters,
@@ -254,6 +267,8 @@ function EventsContent() {
           "bg-[var(--theme-surface)]",
           showFilters ? "translate-y-0" : "translate-y-full"
         )}
+        onTouchStart={handleFilterTouchStart}
+        onTouchEnd={handleFilterTouchEnd}
       >
         <div className="flex justify-center pt-3 pb-2">
           <div className="h-1 w-10 rounded-full bg-[var(--theme-fg-muted)]/30" />
