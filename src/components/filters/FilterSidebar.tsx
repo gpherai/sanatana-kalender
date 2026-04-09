@@ -15,6 +15,7 @@ interface FilterSidebarProps {
   ) => void;
   onClearFilters: () => void;
   activeFilterCount: number;
+  className?: string;
 }
 
 interface FilterSectionProps {
@@ -221,6 +222,7 @@ export function FilterSidebar({
   onToggleFilter,
   onClearFilters,
   activeFilterCount,
+  className,
 }: FilterSidebarProps) {
   // Stable callback for search changes
   const handleSearchChange = useCallback(
@@ -237,7 +239,12 @@ export function FilterSidebar({
   }, [filters.search]);
 
   return (
-    <aside className="bg-theme-surface sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto rounded-xl p-4 shadow-md">
+    <aside
+      className={cn(
+        "bg-theme-surface sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto rounded-xl p-4 shadow-md",
+        className
+      )}
+    >
       {/* Header */}
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-theme-fg flex items-center gap-2 font-semibold">

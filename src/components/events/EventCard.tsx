@@ -92,7 +92,7 @@ export function EventCard({
     "border border-theme-border",
     "shadow-sm hover:shadow-xl",
     "transition-all duration-300 ease-out",
-    "hover:-translate-y-1",
+    "hover:-translate-y-1 active:opacity-75 active:scale-[0.99]",
     className
   );
 
@@ -207,8 +207,8 @@ export function EventCard({
           </div>
         )}
 
-        {/* Hover Arrow */}
-        <div className="absolute right-5 bottom-5 opacity-0 transition-opacity group-hover:opacity-100">
+        {/* Arrow — always subtly visible on mobile, full opacity on hover */}
+        <div className="absolute right-5 bottom-5 opacity-30 transition-opacity group-hover:opacity-100 lg:opacity-0">
           <ChevronRight className="text-theme-primary h-5 w-5" />
         </div>
       </div>
@@ -226,14 +226,23 @@ export function EventCard({
   // Render button or link based on onClick prop
   if (onClick) {
     return (
-      <button type="button" onClick={onClick} className={cardClassName}>
+      <button
+        type="button"
+        onClick={onClick}
+        style={{ touchAction: "manipulation" }}
+        className={cardClassName}
+      >
         {cardContent}
       </button>
     );
   }
 
   return (
-    <Link href={`/events/${id}`} className={cardClassName}>
+    <Link
+      href={`/events/${id}`}
+      style={{ touchAction: "manipulation" }}
+      className={cardClassName}
+    >
       {cardContent}
     </Link>
   );

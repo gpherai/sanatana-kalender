@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense, useMemo } from "react";
+import { useState, Suspense, useMemo, useEffect, useCallback } from "react";
 import { useFetch } from "@/hooks/useFetch";
 import Link from "next/link";
 import { Plus, LayoutGrid, List, SlidersHorizontal } from "lucide-react";
@@ -109,7 +109,17 @@ function groupChildrenUnderParents(
 function EventsContent() {
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
-  const [showFilters, setShowFilters] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
+
+  const handleCloseFilters = useCallback(() => setShowFilters(false), []);
+
+  // Back button closes the mobile filter sheet
+  useEffect(() => {
+    if (!showFilters) return;
+    history.pushState({ filters: true }, "");
+    window.addEventListener("popstate", handleCloseFilters);
+    return () => window.removeEventListener("popstate", handleCloseFilters);
+  }, [showFilters, handleCloseFilters]);
 
   const {
     filters,
@@ -173,8 +183,9 @@ function EventsContent() {
           <div className="bg-theme-surface-raised flex items-center rounded-lg p-1 shadow-sm">
             <button
               onClick={() => setViewMode("grid")}
+              style={{ touchAction: "manipulation" }}
               className={cn(
-                "rounded-md p-2 transition-colors",
+                "flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md transition-colors",
                 viewMode === "grid"
                   ? "bg-theme-primary-15 text-theme-primary"
                   : "text-theme-fg-muted hover:text-theme-fg"
@@ -185,8 +196,9 @@ function EventsContent() {
             </button>
             <button
               onClick={() => setViewMode("list")}
+              style={{ touchAction: "manipulation" }}
               className={cn(
-                "rounded-md p-2 transition-colors",
+                "flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md transition-colors",
                 viewMode === "list"
                   ? "bg-theme-primary-15 text-theme-primary"
                   : "text-theme-fg-muted hover:text-theme-fg"
@@ -226,10 +238,40 @@ function EventsContent() {
         </div>
       </div>
 
+      {/* Mobile filter bottom sheet */}
+      <div
+        className={cn(
+          "fixed inset-0 z-40 bg-black/50 transition-opacity duration-300 lg:hidden",
+          showFilters
+            ? "pointer-events-auto opacity-100"
+            : "pointer-events-none opacity-0"
+        )}
+        onClick={handleCloseFilters}
+      />
+      <div
+        className={cn(
+          "fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-y-auto overscroll-contain rounded-t-2xl transition-transform duration-300 ease-out lg:hidden",
+          "bg-[var(--theme-surface)]",
+          showFilters ? "translate-y-0" : "translate-y-full"
+        )}
+      >
+        <div className="flex justify-center pt-3 pb-2">
+          <div className="h-1 w-10 rounded-full bg-[var(--theme-fg-muted)]/30" />
+        </div>
+        <FilterSidebar
+          filters={filters}
+          onFilterChange={setFilter}
+          onToggleFilter={toggleFilter}
+          onClearFilters={clearFilters}
+          activeFilterCount={activeFilterCount}
+          className="relative max-h-none overflow-visible rounded-none bg-transparent shadow-none"
+        />
+      </div>
+
       {/* Main Layout: Sidebar + Events */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
-        {/* Filter Sidebar */}
-        <div className={cn("lg:col-span-1", !showFilters && "hidden lg:block")}>
+        {/* Filter Sidebar — desktop only, always visible */}
+        <div className="hidden lg:col-span-1 lg:block">
           <div className="sticky top-4">
             <FilterSidebar
               filters={filters}
