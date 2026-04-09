@@ -56,7 +56,6 @@ export function EventDetailModal({
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const touchStartY = useRef(0);
   interface EventRelations {
     parentEvents: { id: string; name: string }[];
     childEvents: { id: string; name: string; dayNumber?: number | null }[];
@@ -92,18 +91,6 @@ export function EventDetailModal({
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
   }, [isOpen, onClose]);
-
-  // Swipe down to dismiss
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    touchStartY.current = e.touches[0]!.clientY;
-  }, []);
-  const handleTouchEnd = useCallback(
-    (e: React.TouchEvent) => {
-      const dy = e.changedTouches[0]!.clientY - touchStartY.current;
-      if (dy > 80) onClose();
-    },
-    [onClose]
-  );
 
   // Close on ESC key
   const handleKeyDown = useCallback(
@@ -233,8 +220,6 @@ export function EventDetailModal({
               : "translate-y-full scale-100 opacity-0 sm:translate-y-4 sm:scale-95"
           )}
           onClick={(e) => e.stopPropagation()}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
         >
           {/* Drag handle (mobile only) */}
           <div className="flex justify-center pt-3 pb-1 sm:hidden">
