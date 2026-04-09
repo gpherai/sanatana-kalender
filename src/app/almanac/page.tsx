@@ -104,11 +104,16 @@ export default function AlmanacPage() {
     return () => cancelAnimationFrame(timer);
   }, [selectedDate]);
 
+  const [mobilePanelOpen, setMobilePanelOpen] = useState(false);
+
   // Save scroll position before date selection
   const handleDateSelect = useCallback((date: Date) => {
     scrollPositionRef.current = window.scrollY;
     setSelectedDate(date);
+    setMobilePanelOpen(true);
   }, []);
+
+  const handleCloseMobilePanel = useCallback(() => setMobilePanelOpen(false), []);
 
   // Derived data
   const days = useMemo(() => getMonthDays(year, month), [year, month]);
@@ -269,7 +274,7 @@ export default function AlmanacPage() {
             />
           </div>
 
-          {/* Right Panel - Day Details */}
+          {/* Right Panel - Day Details (bottom sheet on mobile) */}
           <DayDetailsPanel
             selectedDate={selectedDate}
             selectedDayInfo={selectedDayInfo}
@@ -278,6 +283,8 @@ export default function AlmanacPage() {
             onEventClick={handleEventClick}
             showEvents={showEvents}
             showSpecialDays={showSpecialDays}
+            isOpen={mobilePanelOpen}
+            onClose={handleCloseMobilePanel}
           />
         </div>
       )}

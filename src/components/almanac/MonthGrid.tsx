@@ -93,8 +93,9 @@ export function MonthGrid({
             <button
               key={dateStr}
               onClick={() => onSelectDate(date)}
+              style={{ touchAction: "manipulation" }}
               className={cn(
-                "group focus:ring-theme-primary relative flex flex-col rounded-lg p-1.5 text-left transition-all focus:ring-2 focus:ring-offset-1 focus:outline-none",
+                "group focus:ring-theme-primary relative flex min-h-[44px] flex-col rounded-lg p-1.5 text-left transition-all focus:ring-2 focus:ring-offset-1 focus:outline-none active:opacity-75",
                 isSelected
                   ? "bg-theme-primary ring-theme-primary text-white shadow-lg ring-2 ring-offset-2 ring-offset-[var(--theme-surface)]"
                   : isTodayDate
@@ -125,11 +126,11 @@ export function MonthGrid({
                 {info && <span className="text-sm">{info.moonPhaseEmoji}</span>}
               </div>
 
-              {/* Sun times */}
+              {/* Sun times — hidden on mobile, shown on desktop */}
               {info && (
                 <div
                   className={cn(
-                    "mt-0.5 text-[10px] leading-tight",
+                    "mt-0.5 hidden text-[10px] leading-tight lg:block",
                     isSelected ? "text-white/80" : "text-theme-fg-muted"
                   )}
                 >
