@@ -171,7 +171,7 @@ describe("Recurrence Service Extended", () => {
       ruleConfig: { paksha: "SHUKLA", weekday: 6 } as any,
     };
     prismaMock.dailyInfo.findMany.mockImplementation((async (args: any) => {
-      if (args.where.tithi === "DWADASHI_SHUKLA")
+      if (args.where.tithi?.in?.includes("DWADASHI_SHUKLA"))
         return [
           {
             date: new Date("2025-01-18T00:00:00.000Z"),

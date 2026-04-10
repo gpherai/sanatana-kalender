@@ -67,10 +67,10 @@ describe("Recurrence Service 100% Coverage", () => {
 
     prismaMock.dailyInfo.findMany.mockImplementation((async (args: any) => {
       // Step 1 (Case 2): DWADASHI
-      if (args.where.tithi === "DWADASHI_SHUKLA") return [];
+      if (args.where.tithi?.in?.includes("DWADASHI_SHUKLA")) return [];
 
       // Step 2 (Case 1): TRAYODASHI
-      if (args.where.tithi === "TRAYODASHI_SHUKLA") {
+      if (args.where.tithi?.in?.includes("TRAYODASHI_SHUKLA")) {
         return [
           {
             date: new Date("2025-01-06T00:00:00.000Z"), // Monday
@@ -107,8 +107,8 @@ describe("Recurrence Service 100% Coverage", () => {
     };
 
     prismaMock.dailyInfo.findMany.mockImplementation((async (args: any) => {
-      if (args.where.tithi === "DWADASHI_SHUKLA") return [];
-      if (args.where.tithi === "TRAYODASHI_SHUKLA") {
+      if (args.where.tithi?.in?.includes("DWADASHI_SHUKLA")) return [];
+      if (args.where.tithi?.in?.includes("TRAYODASHI_SHUKLA")) {
         return [
           {
             date: new Date("2025-01-06T00:00:00.000Z"), // Monday
