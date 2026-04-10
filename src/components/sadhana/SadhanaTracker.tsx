@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useId } from "react";
 import {
   Flame,
   Award,
@@ -385,6 +385,7 @@ function SessionForm({
     quantity: "",
     unit: "malas",
   };
+  const uid = useId();
   const [date, setDate] = useState(initial?.date ?? todayString());
   const [duration, setDuration] = useState(initial?.duration ?? "");
   const [notes, setNotes] = useState(initial?.notes ?? "");
@@ -422,10 +423,14 @@ function SessionForm({
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div>
-          <label className="text-theme-fg-secondary mb-1 block text-xs font-medium">
+          <label
+            htmlFor={`${uid}-date`}
+            className="text-theme-fg-secondary mb-1 block text-xs font-medium"
+          >
             Datum
           </label>
           <input
+            id={`${uid}-date`}
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
@@ -434,10 +439,14 @@ function SessionForm({
           />
         </div>
         <div>
-          <label className="text-theme-fg-secondary mb-1 block text-xs font-medium">
+          <label
+            htmlFor={`${uid}-duration`}
+            className="text-theme-fg-secondary mb-1 block text-xs font-medium"
+          >
             Duur (minuten, optioneel)
           </label>
           <input
+            id={`${uid}-duration`}
             type="number"
             value={duration}
             onChange={(e) => setDuration(e.target.value)}
@@ -496,7 +505,7 @@ function SessionForm({
                 <button
                   type="button"
                   onClick={() => removeItem(i)}
-                  className="text-theme-fg-muted hover:text-theme-error p-1 transition-colors"
+                  className="text-theme-fg-muted hover:text-theme-error flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center transition-colors"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -507,17 +516,21 @@ function SessionForm({
         <button
           type="button"
           onClick={addItem}
-          className="text-theme-primary flex items-center gap-1 text-xs transition-opacity hover:opacity-70"
+          className="text-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1 text-xs transition-opacity hover:opacity-70"
         >
           <Plus className="h-3.5 w-3.5" /> Item toevoegen
         </button>
       </div>
 
       <div>
-        <label className="text-theme-fg-secondary mb-1 block text-xs font-medium">
+        <label
+          htmlFor={`${uid}-notes`}
+          className="text-theme-fg-secondary mb-1 block text-xs font-medium"
+        >
           Notities (optioneel)
         </label>
         <textarea
+          id={`${uid}-notes`}
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Bijzonderheden..."
@@ -532,14 +545,14 @@ function SessionForm({
         <button
           type="button"
           onClick={onCancel}
-          className="text-theme-fg-secondary hover:text-theme-fg rounded-lg px-4 py-2 text-sm transition-colors"
+          className="text-theme-fg-secondary hover:text-theme-fg min-h-[44px] cursor-pointer rounded-lg px-4 py-2 text-sm transition-colors"
         >
           Annuleren
         </button>
         <button
           type="submit"
           disabled={submitting}
-          className="bg-theme-primary flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white shadow hover:opacity-90 disabled:opacity-50"
+          className="bg-theme-primary flex min-h-[44px] cursor-pointer items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white shadow hover:opacity-90 disabled:opacity-50"
         >
           {submitting && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
           {submitLabel}
@@ -662,7 +675,8 @@ function SessionCard({
         <div className="flex shrink-0 items-center gap-1">
           <button
             onClick={() => setEditing(true)}
-            className="text-theme-fg-muted hover:text-theme-primary rounded p-1.5 transition-colors"
+            className="text-theme-fg-muted hover:text-theme-primary flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors"
+            aria-label="Sessie bewerken"
             title="Bewerken"
           >
             <Pencil className="h-3.5 w-3.5" />
@@ -672,7 +686,8 @@ function SessionCard({
               <button
                 onClick={handleDelete}
                 disabled={deleting}
-                className="text-theme-error rounded p-1.5 transition-colors hover:opacity-70"
+                className="text-theme-error flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors hover:opacity-70"
+                aria-label="Verwijderen bevestigen"
                 title="Bevestig verwijderen"
               >
                 {deleting ? (
@@ -683,7 +698,8 @@ function SessionCard({
               </button>
               <button
                 onClick={() => setConfirmDelete(false)}
-                className="text-theme-fg-muted hover:text-theme-fg rounded p-1.5 transition-colors"
+                className="text-theme-fg-muted hover:text-theme-fg flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors"
+                aria-label="Annuleren"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -691,7 +707,8 @@ function SessionCard({
           ) : (
             <button
               onClick={() => setConfirmDelete(true)}
-              className="text-theme-fg-muted hover:text-theme-error rounded p-1.5 transition-colors"
+              className="text-theme-fg-muted hover:text-theme-error flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors"
+              aria-label="Sessie verwijderen"
               title="Verwijderen"
             >
               <Trash2 className="h-3.5 w-3.5" />
@@ -835,13 +852,13 @@ function PracticesPanel({
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowInactive((v) => !v)}
-            className="text-theme-fg-muted hover:text-theme-fg text-xs transition-colors"
+            className="text-theme-fg-muted hover:text-theme-fg min-h-[44px] cursor-pointer text-xs transition-colors"
           >
             {showInactive ? "Verberg inactief" : "Toon inactief"}
           </button>
           <button
             onClick={() => setShowAdd((v) => !v)}
-            className="bg-theme-primary flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-white hover:opacity-90"
+            className="bg-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1 rounded-lg px-3 py-2 text-xs font-medium text-white hover:opacity-90"
           >
             <Plus className="h-3.5 w-3.5" /> Toevoegen
           </button>
@@ -855,14 +872,22 @@ function PracticesPanel({
           className="bg-theme-surface mb-4 space-y-3 rounded-xl p-4"
         >
           <div className="flex flex-wrap gap-2">
+            <label htmlFor="pa-name" className="sr-only">
+              Naam beoefening
+            </label>
             <input
+              id="pa-name"
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               placeholder="Naam beoefening"
               className={cn(inputCls, "min-w-40 flex-1")}
               required
             />
+            <label htmlFor="pa-type" className="sr-only">
+              Type
+            </label>
             <select
+              id="pa-type"
               value={newType}
               onChange={(e) => setNewType(e.target.value as PracticeType)}
               className={cn(inputCls, "cursor-pointer")}
@@ -872,7 +897,11 @@ function PracticesPanel({
               <option value="other">Overig</option>
             </select>
           </div>
+          <label htmlFor="pa-notes" className="sr-only">
+            Notities
+          </label>
           <input
+            id="pa-notes"
             value={newNotes}
             onChange={(e) => setNewNotes(e.target.value)}
             placeholder="Notities (optioneel)"
@@ -882,14 +911,14 @@ function PracticesPanel({
             <button
               type="button"
               onClick={() => setShowAdd(false)}
-              className="text-theme-fg-secondary hover:text-theme-fg text-sm"
+              className="text-theme-fg-secondary hover:text-theme-fg min-h-[44px] cursor-pointer text-sm"
             >
               Annuleren
             </button>
             <button
               type="submit"
               disabled={adding}
-              className="bg-theme-primary flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-white hover:opacity-90 disabled:opacity-50"
+              className="bg-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm text-white hover:opacity-90 disabled:opacity-50"
             >
               {adding && <Loader2 className="h-3.5 w-3.5 animate-spin" />} Opslaan
             </button>
@@ -931,14 +960,14 @@ function PracticesPanel({
               <div className="flex justify-end gap-2">
                 <button
                   onClick={() => setEditingId(null)}
-                  className="text-theme-fg-secondary hover:text-theme-fg text-sm"
+                  className="text-theme-fg-secondary hover:text-theme-fg min-h-[44px] cursor-pointer text-sm"
                 >
                   Annuleren
                 </button>
                 <button
                   onClick={() => handleSave(p.id)}
                   disabled={saving}
-                  className="bg-theme-primary flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-white hover:opacity-90 disabled:opacity-50"
+                  className="bg-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm text-white hover:opacity-90 disabled:opacity-50"
                 >
                   {saving && <Loader2 className="h-3.5 w-3.5 animate-spin" />} Opslaan
                 </button>
@@ -962,14 +991,16 @@ function PracticesPanel({
               <div className="flex shrink-0 items-center gap-1">
                 <button
                   onClick={() => startEdit(p)}
-                  className="text-theme-fg-muted hover:text-theme-primary rounded p-1.5 transition-colors"
+                  className="text-theme-fg-muted hover:text-theme-primary flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors"
+                  aria-label={`${p.name} bewerken`}
                   title="Bewerken"
                 >
                   <Pencil className="h-3.5 w-3.5" />
                 </button>
                 <button
                   onClick={() => handleToggle(p)}
-                  className="text-theme-fg-muted hover:text-theme-primary rounded p-1.5 transition-colors"
+                  className="text-theme-fg-muted hover:text-theme-primary flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors"
+                  aria-label={p.active ? `${p.name} deactiveren` : `${p.name} activeren`}
                   title={p.active ? "Deactiveren" : "Activeren"}
                 >
                   {p.active ? (
@@ -980,7 +1011,8 @@ function PracticesPanel({
                 </button>
                 <button
                   onClick={() => handleDelete(p.id)}
-                  className="text-theme-fg-muted hover:text-theme-error rounded p-1.5 transition-colors"
+                  className="text-theme-fg-muted hover:text-theme-error flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors"
+                  aria-label={`${p.name} verwijderen`}
                   title="Verwijderen"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
@@ -1091,13 +1123,13 @@ function GoalPanel({ goals, onChanged }: { goals: Goal[]; onChanged: () => void 
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowInactive((v) => !v)}
-            className="text-theme-fg-muted hover:text-theme-fg text-xs transition-colors"
+            className="text-theme-fg-muted hover:text-theme-fg min-h-[44px] cursor-pointer text-xs transition-colors"
           >
             {showInactive ? "Verberg inactief" : "Toon inactief"}
           </button>
           <button
             onClick={() => setShowAdd((v) => !v)}
-            className="bg-theme-primary flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-white hover:opacity-90"
+            className="bg-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1 rounded-lg px-3 py-2 text-xs font-medium text-white hover:opacity-90"
           >
             <Plus className="h-3.5 w-3.5" /> Toevoegen
           </button>
@@ -1110,7 +1142,11 @@ function GoalPanel({ goals, onChanged }: { goals: Goal[]; onChanged: () => void 
           className="bg-theme-surface mb-4 space-y-3 rounded-xl p-4"
         >
           <div className="flex flex-wrap gap-2">
+            <label htmlFor="ga-type" className="sr-only">
+              Type doel
+            </label>
             <select
+              id="ga-type"
               value={newType}
               onChange={(e) => setNewType(e.target.value as GoalType)}
               className={cn(inputCls, "cursor-pointer")}
@@ -1118,7 +1154,11 @@ function GoalPanel({ goals, onChanged }: { goals: Goal[]; onChanged: () => void 
               <option value="daily">Dagdoel</option>
               <option value="weekly">Weekdoel</option>
             </select>
+            <label htmlFor="ga-malas" className="sr-only">
+              Malas doel
+            </label>
             <input
+              id="ga-malas"
               type="number"
               value={newMalas}
               onChange={(e) => setNewMalas(e.target.value)}
@@ -1127,7 +1167,11 @@ function GoalPanel({ goals, onChanged }: { goals: Goal[]; onChanged: () => void 
               className={cn(inputCls, "w-32")}
               required
             />
+            <label htmlFor="ga-minutes" className="sr-only">
+              Minuten doel (optioneel)
+            </label>
             <input
+              id="ga-minutes"
               type="number"
               value={newMinutes}
               onChange={(e) => setNewMinutes(e.target.value)}
@@ -1140,14 +1184,14 @@ function GoalPanel({ goals, onChanged }: { goals: Goal[]; onChanged: () => void 
             <button
               type="button"
               onClick={() => setShowAdd(false)}
-              className="text-theme-fg-secondary hover:text-theme-fg text-sm"
+              className="text-theme-fg-secondary hover:text-theme-fg min-h-[44px] cursor-pointer text-sm"
             >
               Annuleren
             </button>
             <button
               type="submit"
               disabled={adding}
-              className="bg-theme-primary flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-white hover:opacity-90 disabled:opacity-50"
+              className="bg-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm text-white hover:opacity-90 disabled:opacity-50"
             >
               {adding && <Loader2 className="h-3.5 w-3.5 animate-spin" />} Opslaan
             </button>
@@ -1187,14 +1231,14 @@ function GoalPanel({ goals, onChanged }: { goals: Goal[]; onChanged: () => void 
               <div className="flex justify-end gap-2">
                 <button
                   onClick={() => setEditingId(null)}
-                  className="text-theme-fg-secondary hover:text-theme-fg text-sm"
+                  className="text-theme-fg-secondary hover:text-theme-fg min-h-[44px] cursor-pointer text-sm"
                 >
                   Annuleren
                 </button>
                 <button
                   onClick={() => handleSave(g.id)}
                   disabled={saving}
-                  className="bg-theme-primary flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-white hover:opacity-90 disabled:opacity-50"
+                  className="bg-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm text-white hover:opacity-90 disabled:opacity-50"
                 >
                   {saving && <Loader2 className="h-3.5 w-3.5 animate-spin" />} Opslaan
                 </button>
@@ -1218,14 +1262,20 @@ function GoalPanel({ goals, onChanged }: { goals: Goal[]; onChanged: () => void 
               <div className="flex shrink-0 items-center gap-1">
                 <button
                   onClick={() => startEdit(g)}
-                  className="text-theme-fg-muted hover:text-theme-primary rounded p-1.5 transition-colors"
+                  className="text-theme-fg-muted hover:text-theme-primary flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors"
+                  aria-label={`${GOAL_TYPE_LABELS[g.type]} bewerken`}
                   title="Bewerken"
                 >
                   <Pencil className="h-3.5 w-3.5" />
                 </button>
                 <button
                   onClick={() => handleToggle(g)}
-                  className="text-theme-fg-muted hover:text-theme-primary rounded p-1.5 transition-colors"
+                  className="text-theme-fg-muted hover:text-theme-primary flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors"
+                  aria-label={
+                    g.active
+                      ? `${GOAL_TYPE_LABELS[g.type]} deactiveren`
+                      : `${GOAL_TYPE_LABELS[g.type]} activeren`
+                  }
                   title={g.active ? "Deactiveren" : "Activeren"}
                 >
                   {g.active ? (
@@ -1236,7 +1286,8 @@ function GoalPanel({ goals, onChanged }: { goals: Goal[]; onChanged: () => void 
                 </button>
                 <button
                   onClick={() => handleDelete(g.id)}
-                  className="text-theme-fg-muted hover:text-theme-error rounded p-1.5 transition-colors"
+                  className="text-theme-fg-muted hover:text-theme-error flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors"
+                  aria-label={`${GOAL_TYPE_LABELS[g.type]} verwijderen`}
                   title="Verwijderen"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
@@ -1339,7 +1390,8 @@ export function SadhanaTracker() {
         </div>
         <button
           onClick={loadAll}
-          className="text-theme-fg-muted hover:text-theme-fg rounded-lg p-2 transition-colors"
+          className="text-theme-fg-muted hover:text-theme-fg flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-lg transition-colors"
+          aria-label="Pagina verversen"
           title="Verversen"
         >
           <RefreshCw className="h-4 w-4" />
@@ -1420,7 +1472,7 @@ export function SadhanaTracker() {
           <h2 className="text-theme-fg font-semibold">Sessies (laatste 30 dagen)</h2>
           <button
             onClick={() => setShowAddSession((v) => !v)}
-            className="bg-theme-primary flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-white shadow hover:opacity-90"
+            className="bg-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-white shadow hover:opacity-90"
           >
             <Plus className="h-4 w-4" />
             Toevoegen
