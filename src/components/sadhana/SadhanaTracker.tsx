@@ -1617,6 +1617,9 @@ export function SadhanaTracker() {
                     method: "POST",
                     body: JSON.stringify({
                       date: data.date,
+                      started_at: data.startedAt
+                        ? new Date(`${data.date}T${data.startedAt}`).toISOString()
+                        : null,
                       duration_minutes: data.duration
                         ? parseInt(data.duration, 10)
                         : null,

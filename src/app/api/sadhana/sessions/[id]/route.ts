@@ -25,6 +25,9 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       where: { id },
       data: {
         ...(body.date !== undefined && { date: utcDate(body.date) }),
+        ...(body.started_at !== undefined && {
+          startedAt: body.started_at ? new Date(body.started_at) : null,
+        }),
         ...(body.duration_minutes !== undefined && {
           durationMinutes: body.duration_minutes ?? null,
         }),

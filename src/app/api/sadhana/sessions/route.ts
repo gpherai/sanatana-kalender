@@ -37,6 +37,7 @@ export async function POST(req: NextRequest) {
     const s = await tx.sadhanaSession.create({
       data: {
         date: utcDate(body.date),
+        startedAt: body.started_at ? new Date(body.started_at) : null,
         durationMinutes: body.duration_minutes ?? null,
         notes: body.notes ?? null,
       },
