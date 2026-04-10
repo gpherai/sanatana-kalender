@@ -94,6 +94,7 @@ In `additionalCss` wordt `[[t]]` vervangen door `[data-theme="thema-naam"]` door
 
 ## Vishnu Events — In Bespreking
 
+
 ## Sadhana Tracker — Status
 
 ### Geïmplementeerd
@@ -118,6 +119,7 @@ In `additionalCss` wordt `[[t]]` vervangen door `[data-theme="thema-naam"]` door
 - `motion-safe:` prefix op alle transitions (prefers-reduced-motion)
 - Light + dark mode contrast (Bhairava Nocturne getest)
 - Mobiel layout geoptimaliseerd voor 412px (OnePlus 8T)
+- Kalender-integratie: tithi + specialDay per sessie, heatmap-dots op heilige dagen
 
 ### Paginavolgorde (huidig)
 1. Header

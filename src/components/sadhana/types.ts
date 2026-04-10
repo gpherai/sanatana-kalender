@@ -106,6 +106,13 @@ export interface FormItem {
 
 export type HeatmapCell = { date: string; malas: number } | null;
 
+export interface DayInfo {
+  tithi?: { name: string; paksha: "Shukla" | "Krishna" };
+  specialDay?: { name: string; emoji: string; type: string } | null;
+  moonPhaseEvent?: { type: "new" | "first_quarter" | "full" | "last_quarter" } | null;
+}
+export type DayInfoMap = Map<string, DayInfo>;
+
 // =============================================================================
 // API
 // =============================================================================
@@ -118,6 +125,26 @@ export async function apiFetch<T>(path: string, opts?: RequestInit): Promise<T> 
   if (!res.ok) throw new Error(`API ${res.status}`);
   if (res.status === 204) return undefined as T;
   return res.json() as Promise<T>;
+}
+
+export async function fetchDayInfoMap(start: string, end: string): Promise<DayInfoMap> {
+  const res = await fetch(`/api/daily-info?start=${start}&end=${end}`);
+  if (!res.ok) return new Map();
+  const arr = (await res.json()) as Array<{
+    date: string;
+    tithi?: { name: string; paksha: "Shukla" | "Krishna" };
+    specialDay?: { name: string; emoji: string; type: string } | null;
+    moonPhaseEvent?: { type: "new" | "first_quarter" | "full" | "last_quarter" } | null;
+  }>;
+  const map: DayInfoMap = new Map();
+  for (const d of arr) {
+    map.set(d.date.slice(0, 10), {
+      tithi: d.tithi,
+      specialDay: d.specialDay,
+      moonPhaseEvent: d.moonPhaseEvent,
+    });
+  }
+  return map;
 }
 
 // =============================================================================

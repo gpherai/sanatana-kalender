@@ -1,7 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { type CalendarDay, type HeatmapCell, localDateString, formatDate } from "./types";
+import {
+  type CalendarDay,
+  type HeatmapCell,
+  type DayInfoMap,
+  localDateString,
+  formatDate,
+} from "./types";
 
 // =============================================================================
 // HELPERS
@@ -57,20 +63,33 @@ const MONTH_LABELS = [
 const DAY_LABELS = ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"];
 
 // =============================================================================
+// HELPERS
+// =============================================================================
+
+function dayLabel(info: DayInfoMap extends Map<string, infer V> ? V : never): string {
+  if (info.specialDay) return `${info.specialDay.emoji} ${info.specialDay.name}`;
+  if (info.tithi) return `${info.tithi.paksha} ${info.tithi.name}`;
+  return "";
+}
+
+// =============================================================================
 // COMPONENT
 // =============================================================================
 
 export function Heatmap({
   weeks,
   cellSize = 12,
+  dayInfoMap,
 }: {
   weeks: HeatmapCell[][];
   cellSize?: number;
+  dayInfoMap?: DayInfoMap;
 }) {
   const [tapped, setTapped] = useState<{ date: string; malas: number } | null>(null);
   const colWidth = cellSize + 2; // cell + gap-0.5 (2px)
   const labelWidth = cellSize === 10 ? 20 : 26;
   const labelFontSize = cellSize === 10 ? 9 : 10;
+  const dotSize = cellSize <= 10 ? 2 : 3;
 
   const monthPositions: { month: number; col: number }[] = [];
   let lastMonth = -1;
@@ -83,6 +102,9 @@ export function Heatmap({
       lastMonth = m;
     }
   });
+
+  const tappedInfo = tapped ? dayInfoMap?.get(tapped.date) : undefined;
+  const tappedLabel = tappedInfo ? dayLabel(tappedInfo) : null;
 
   return (
     <div className="overflow-x-auto">
@@ -118,13 +140,17 @@ export function Heatmap({
           </div>
           {weeks.map((week, wi) => (
             <div key={wi} className="flex flex-col gap-0.5">
-              {week.map((cell, di) =>
-                cell === null ? (
-                  <div key={di} style={{ width: cellSize, height: cellSize }} />
-                ) : (
+              {week.map((cell, di) => {
+                if (cell === null) {
+                  return <div key={di} style={{ width: cellSize, height: cellSize }} />;
+                }
+                const info = dayInfoMap?.get(cell.date);
+                const isSpecial = !!(info?.specialDay || info?.moonPhaseEvent);
+                const label = info ? dayLabel(info) : "";
+                return (
                   <div
                     key={di}
-                    className="cursor-pointer rounded-sm motion-safe:transition-colors"
+                    className="relative cursor-pointer rounded-sm motion-safe:transition-colors"
                     style={{
                       width: cellSize,
                       height: cellSize,
@@ -133,7 +159,7 @@ export function Heatmap({
                           ? "color-mix(in oklch, var(--theme-fg) 10%, transparent)"
                           : heatColor(cell.malas),
                     }}
-                    title={`${formatDate(cell.date)}: ${cell.malas} malas`}
+                    title={`${formatDate(cell.date)}: ${cell.malas} malas${label ? ` · ${label}` : ""}`}
                     onClick={() =>
                       setTapped((prev) =>
                         prev?.date === cell.date
@@ -141,9 +167,16 @@ export function Heatmap({
                           : { date: cell.date, malas: cell.malas }
                       )
                     }
-                  />
-                )
-              )}
+                  >
+                    {isSpecial && (
+                      <span
+                        className="absolute rounded-full bg-white/70"
+                        style={{ width: dotSize, height: dotSize, bottom: 1, right: 1 }}
+                      />
+                    )}
+                  </div>
+                );
+              })}
             </div>
           ))}
         </div>
@@ -151,6 +184,7 @@ export function Heatmap({
           <div className="text-theme-fg-secondary mt-2 text-xs">
             {formatDate(tapped.date)}:{" "}
             <span className="text-theme-fg font-medium">{tapped.malas} malas</span>
+            {tappedLabel && <span className="text-theme-fg-muted"> · {tappedLabel}</span>}
           </div>
         )}
         <div className="text-theme-fg-muted mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">

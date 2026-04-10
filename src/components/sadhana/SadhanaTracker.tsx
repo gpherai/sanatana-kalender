@@ -21,8 +21,11 @@ import {
   type SessionData,
   type Practice,
   type Goal,
+  type DayInfoMap,
   apiFetch,
+  fetchDayInfoMap,
   localDateString,
+  todayString,
   formatDuration,
 } from "./types";
 import { buildHeatmap, Heatmap } from "./Heatmap";
@@ -50,6 +53,7 @@ export function SadhanaTracker() {
   const sessionsCountRef = useRef(0);
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [dayInfoMap, setDayInfoMap] = useState<DayInfoMap>(new Map());
 
   const activePractices = allPractices.filter((p) => p.active);
 
@@ -60,7 +64,10 @@ export function SadhanaTracker() {
       const fromDate = new Date();
       fromDate.setDate(fromDate.getDate() - sessionDaysRef.current);
 
-      const [ts, st, ov, cal, sess, pracs, gl] = await Promise.all([
+      const yearAgo = new Date();
+      yearAgo.setDate(yearAgo.getDate() - 364);
+
+      const [ts, st, ov, cal, sess, pracs, gl, dim] = await Promise.all([
         apiFetch<TodayStats>("/stats/today"),
         apiFetch<StreakStats>("/stats/streak"),
         apiFetch<OverviewStats>("/stats/overview"),
@@ -68,6 +75,7 @@ export function SadhanaTracker() {
         apiFetch<SessionData[]>(`/sessions?from=${localDateString(fromDate)}`),
         apiFetch<Practice[]>("/practices?active_only=false"),
         apiFetch<Goal[]>("/goals"),
+        fetchDayInfoMap(localDateString(yearAgo), todayString()),
       ]);
 
       setTodayStats(ts);
@@ -79,6 +87,7 @@ export function SadhanaTracker() {
       setNoMoreSessions(false);
       setAllPractices(pracs);
       setGoals(gl);
+      setDayInfoMap(dim);
     } catch {
       setError("Backend niet bereikbaar. Controleer of de Next.js server draait.");
     } finally {
@@ -261,6 +270,7 @@ export function SadhanaTracker() {
                 key={s.id}
                 session={s}
                 practices={activePractices}
+                dayInfo={dayInfoMap.get(s.date)}
                 onUpdated={() => {
                   loadAll();
                   showToast("Sessie opgeslagen");
@@ -343,10 +353,10 @@ export function SadhanaTracker() {
           </h2>
         </div>
         <div className="hidden sm:block">
-          <Heatmap weeks={heatmapFull} />
+          <Heatmap weeks={heatmapFull} dayInfoMap={dayInfoMap} />
         </div>
         <div className="sm:hidden">
-          <Heatmap weeks={heatmapMobile} cellSize={10} />
+          <Heatmap weeks={heatmapMobile} cellSize={10} dayInfoMap={dayInfoMap} />
         </div>
       </div>
 

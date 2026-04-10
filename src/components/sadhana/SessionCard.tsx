@@ -17,6 +17,7 @@ import {
   type SessionData,
   type Practice,
   type FormItem,
+  type DayInfo,
   apiFetch,
   todayString,
   formatDate,
@@ -29,11 +30,13 @@ import { SessionForm } from "./SessionForm";
 export function SessionCard({
   session,
   practices,
+  dayInfo,
   onUpdated,
   onDeleted,
 }: {
   session: SessionData;
   practices: Practice[];
+  dayInfo?: DayInfo;
   onUpdated: () => void;
   onDeleted: () => void;
 }) {
@@ -143,6 +146,15 @@ export function SessionCard({
                 ? ` · ${formatDuration(session.duration_minutes)}`
                 : ""}
             </div>
+            {dayInfo?.specialDay ? (
+              <div className="text-theme-fg-muted mt-0.5 text-xs">
+                {dayInfo.specialDay.emoji} {dayInfo.specialDay.name}
+              </div>
+            ) : dayInfo?.tithi ? (
+              <div className="text-theme-fg-muted mt-0.5 text-xs">
+                {dayInfo.tithi.paksha} {dayInfo.tithi.name}
+              </div>
+            ) : null}
           </div>
           <div className="text-theme-fg-muted mt-0.5 shrink-0">
             {open ? (
