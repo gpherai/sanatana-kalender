@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useId } from "react";
+import { useState, useEffect, useCallback, useId, useRef } from "react";
 import {
   Flame,
   Award,
@@ -14,6 +14,7 @@ import {
   BookOpen,
   Sparkles,
   Activity,
+  TrendingUp,
   Pencil,
   Check,
   X,
@@ -58,6 +59,7 @@ interface SessionItemData {
 interface SessionData {
   id: string;
   date: string;
+  started_at: string | null;
   duration_minutes: number | null;
   total_malas: number;
   total_mantras: number;
@@ -102,10 +104,14 @@ interface OverviewStats {
   total_sessions: number;
   total_malas_all_time: number;
   total_minutes_all_time: number;
+  total_sessions_this_week: number;
+  total_malas_this_week: number;
+  total_minutes_this_week: number;
   total_sessions_this_month: number;
   total_malas_this_month: number;
   total_minutes_this_month: number;
   avg_malas_per_session: number;
+  avg_minutes_per_session: number;
   practices: PracticeStat[];
 }
 
@@ -161,6 +167,18 @@ function formatDate(dateStr: string) {
     month: "short",
     year: "numeric",
   });
+}
+
+function formatTime(isoStr: string) {
+  return new Date(isoStr).toLocaleTimeString("nl-NL", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function isoToLocalTime(isoStr: string) {
+  const d = new Date(isoStr);
+  return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }
 
 const PRACTICE_TYPE_LABELS: Record<PracticeType, string> = {
@@ -303,23 +321,29 @@ function Heatmap({
             </div>
           ))}
         </div>
-        <div className="text-theme-fg-muted mt-3 flex items-center gap-1.5 text-xs">
-          <span>Minder</span>
-          {[0, 3, 7, 11, 14].map((m, i) => (
-            <div
-              key={i}
-              className="rounded-sm"
-              style={{
-                width: cellSize,
-                height: cellSize,
-                background:
-                  m === 0
-                    ? "color-mix(in oklch, var(--theme-fg) 10%, transparent)"
-                    : heatColor(m),
-              }}
-            />
+        <div className="text-theme-fg-muted mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+          {[
+            { m: 0, label: "0" },
+            { m: 2, label: "1–3" },
+            { m: 5, label: "4–7" },
+            { m: 9, label: "8–11" },
+            { m: 14, label: "≥12" },
+          ].map(({ m, label }) => (
+            <div key={label} className="flex items-center gap-1">
+              <div
+                className="rounded-sm"
+                style={{
+                  width: cellSize,
+                  height: cellSize,
+                  background:
+                    m === 0
+                      ? "color-mix(in oklch, var(--theme-fg) 10%, transparent)"
+                      : heatColor(m),
+                }}
+              />
+              <span>{label}</span>
+            </div>
           ))}
-          <span>Meer</span>
         </div>
       </div>
     </div>
@@ -350,7 +374,7 @@ function StatCard({
         <span className="text-theme-fg-secondary text-sm font-medium">{label}</span>
       </div>
       <div className="text-theme-fg text-3xl font-bold tabular-nums">{value}</div>
-      {sub && <div className="text-theme-fg-secondary mt-1 text-xs">{sub}</div>}
+      {sub && <div className="text-theme-fg-secondary mt-1 text-sm">{sub}</div>}
       {progress !== undefined && (
         <div
           className="mt-3 h-1.5 overflow-hidden rounded-full"
@@ -378,10 +402,17 @@ interface FormItem {
 
 interface SessionFormProps {
   practices: Practice[];
-  initial?: { date: string; duration: string; notes: string; items: FormItem[] };
+  initial?: {
+    date: string;
+    startedAt: string;
+    duration: string;
+    notes: string;
+    items: FormItem[];
+  };
   submitLabel: string;
   onSubmit: (data: {
     date: string;
+    startedAt: string;
     duration: string;
     notes: string;
     items: FormItem[];
@@ -403,6 +434,7 @@ function SessionForm({
   };
   const uid = useId();
   const [date, setDate] = useState(initial?.date ?? todayString());
+  const [startedAt, setStartedAt] = useState(initial?.startedAt ?? "");
   const [duration, setDuration] = useState(initial?.duration ?? "");
   const [notes, setNotes] = useState(initial?.notes ?? "");
   const [items, setItems] = useState<FormItem[]>(initial?.items ?? [defaultItem]);
@@ -424,7 +456,7 @@ function SessionForm({
     }
     setSubmitting(true);
     try {
-      await onSubmit({ date, duration, notes, items: valid });
+      await onSubmit({ date, startedAt, duration, notes, items: valid });
     } catch {
       setError("Opslaan mislukt.");
     } finally {
@@ -437,7 +469,7 @@ function SessionForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <div>
           <label
             htmlFor={`${uid}-date`}
@@ -452,6 +484,21 @@ function SessionForm({
             onChange={(e) => setDate(e.target.value)}
             className={inputCls}
             required
+          />
+        </div>
+        <div>
+          <label
+            htmlFor={`${uid}-time`}
+            className="text-theme-fg-secondary mb-1 block text-xs font-medium"
+          >
+            Starttijd (optioneel)
+          </label>
+          <input
+            id={`${uid}-time`}
+            type="time"
+            value={startedAt}
+            onChange={(e) => setStartedAt(e.target.value)}
+            className={inputCls}
           />
         </div>
         <div>
@@ -615,6 +662,7 @@ function SessionCard({
 
   const handleUpdate = async (data: {
     date: string;
+    startedAt: string;
     duration: string;
     notes: string;
     items: FormItem[];
@@ -623,6 +671,9 @@ function SessionCard({
       method: "PATCH",
       body: JSON.stringify({
         date: data.date,
+        started_at: data.startedAt
+          ? new Date(`${data.date}T${data.startedAt}`).toISOString()
+          : null,
         duration_minutes: data.duration ? parseInt(data.duration, 10) : null,
         notes: data.notes.trim() || null,
         items: data.items.map((it) => ({
@@ -644,6 +695,7 @@ function SessionCard({
           practices={practices}
           initial={{
             date: session.date,
+            startedAt: session.started_at ? isoToLocalTime(session.started_at) : "",
             duration: session.duration_minutes ? String(session.duration_minutes) : "",
             notes: session.notes ?? "",
             items: session.items.map((i) => ({
@@ -674,6 +726,11 @@ function SessionCard({
           <div className="min-w-0 flex-1">
             <div className="text-theme-fg text-sm font-semibold">
               {formatDate(session.date)}
+              {session.started_at && (
+                <span className="text-theme-fg-muted ml-1.5 text-xs font-normal">
+                  {formatTime(session.started_at)}
+                </span>
+              )}
             </div>
             <div className="text-theme-fg-muted text-xs">
               {session.total_mantras.toLocaleString("nl-NL")} mantras
@@ -1336,6 +1393,9 @@ export function SadhanaTracker() {
   const [allPractices, setAllPractices] = useState<Practice[]>([]);
   const [goals, setGoals] = useState<Goal[]>([]);
   const [showAddSession, setShowAddSession] = useState(false);
+  const [sessionDaysBack, setSessionDaysBack] = useState(30);
+  const sessionDaysRef = useRef(30);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   const activePractices = allPractices.filter((p) => p.active);
 
@@ -1343,15 +1403,15 @@ export function SadhanaTracker() {
     setLoading(true);
     try {
       setError(null);
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      const fromDate = new Date();
+      fromDate.setDate(fromDate.getDate() - sessionDaysRef.current);
 
       const [ts, st, ov, cal, sess, pracs, gl] = await Promise.all([
         apiFetch<TodayStats>("/stats/today"),
         apiFetch<StreakStats>("/stats/streak"),
         apiFetch<OverviewStats>("/stats/overview"),
         apiFetch<CalendarDay[]>("/stats/calendar"),
-        apiFetch<SessionData[]>(`/sessions?from=${localDateString(thirtyDaysAgo)}`),
+        apiFetch<SessionData[]>(`/sessions?from=${localDateString(fromDate)}`),
         apiFetch<Practice[]>("/practices?active_only=false"),
         apiFetch<Goal[]>("/goals"),
       ]);
@@ -1373,6 +1433,23 @@ export function SadhanaTracker() {
   useEffect(() => {
     loadAll();
   }, [loadAll]);
+
+  const handleLoadMore = useCallback(async () => {
+    const newDays = sessionDaysRef.current + 30;
+    sessionDaysRef.current = newDays;
+    setSessionDaysBack(newDays);
+    setLoadingMore(true);
+    try {
+      const fromDate = new Date();
+      fromDate.setDate(fromDate.getDate() - newDays);
+      const sess = await apiFetch<SessionData[]>(
+        `/sessions?from=${localDateString(fromDate)}`
+      );
+      setSessions(sess);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, []);
 
   const heatmapFull = buildHeatmap(calDays, 364);
   const heatmapMobile = buildHeatmap(calDays, 154); // ~22 weken, past op 375px
@@ -1420,19 +1497,23 @@ export function SadhanaTracker() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <StatCard
           icon={<Sparkles className="h-5 w-5" />}
           label="Vandaag"
-          value={`${todayStats?.total_malas ?? 0} malas`}
+          value={
+            todayStats?.goal_malas_target
+              ? `${todayStats.total_malas} / ${todayStats.goal_malas_target} malas`
+              : `${todayStats?.total_malas ?? 0} malas`
+          }
           sub={`${(todayStats?.total_mantras ?? 0).toLocaleString("nl-NL")} mantras${todayStats?.total_minutes ? ` · ${formatDuration(todayStats.total_minutes)}` : ""}`}
           progress={todayStats?.goal_malas_progress ?? undefined}
         />
         <StatCard
-          icon={<Flame className="h-5 w-5" />}
-          label="Streak"
-          value={`${streak?.current_streak ?? 0} dagen`}
-          sub={`Langste: ${streak?.longest_streak ?? 0} dagen`}
+          icon={<TrendingUp className="h-5 w-5" />}
+          label="Deze week"
+          value={`${overview?.total_malas_this_week ?? 0} malas`}
+          sub={`${overview?.total_sessions_this_week ?? 0} sessies${overview?.total_minutes_this_week ? ` · ${formatDuration(overview.total_minutes_this_week)}` : ""}`}
         />
         <StatCard
           icon={<Activity className="h-5 w-5" />}
@@ -1440,10 +1521,16 @@ export function SadhanaTracker() {
           value={`${overview?.total_malas_this_month ?? 0} malas`}
           sub={`${overview?.total_sessions_this_month ?? 0} sessies${overview?.total_minutes_this_month ? ` · ${formatDuration(overview.total_minutes_this_month)}` : ""}`}
         />
+        <StatCard
+          icon={<Flame className="h-5 w-5" />}
+          label="Streak"
+          value={`${streak?.current_streak ?? 0} dagen`}
+          sub={`Langste: ${streak?.longest_streak ?? 0} dagen`}
+        />
       </div>
 
       {/* Per-practice vandaag */}
-      {todayStats && todayStats.practices.length > 0 && (
+      {todayStats && (
         <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
           <div className="mb-3 flex items-center gap-2">
             <Sparkles className="text-theme-primary h-4 w-4" />
@@ -1451,28 +1538,33 @@ export function SadhanaTracker() {
               Vandaag per beoefening
             </h2>
           </div>
-          <div className="space-y-2">
-            {todayStats.practices.map((ps) => (
-              <div key={ps.practice_id} className="flex items-center gap-3">
-                <div className="text-theme-primary shrink-0">
-                  {ps.practice_type === "mantra_japa" ? (
-                    <Sparkles className="h-3.5 w-3.5" />
-                  ) : (
-                    <BookOpen className="h-3.5 w-3.5" />
-                  )}
+          {todayStats.practices.length === 0 ? (
+            <p className="text-theme-fg-muted text-sm">Vandaag nog niets gelogd.</p>
+          ) : (
+            <div className="space-y-2">
+              {todayStats.practices.map((ps) => (
+                <div key={ps.practice_id} className="flex items-center gap-3">
+                  <div className="text-theme-primary shrink-0">
+                    {ps.practice_type === "mantra_japa" ? (
+                      <Sparkles className="h-3.5 w-3.5" />
+                    ) : (
+                      <BookOpen className="h-3.5 w-3.5" />
+                    )}
+                  </div>
+                  <span className="text-theme-fg-secondary min-w-0 flex-1 truncate text-sm">
+                    {ps.practice_name}
+                  </span>
+                  <span className="text-theme-fg-muted shrink-0 text-xs tabular-nums">
+                    {ps.total_quantity}{" "}
+                    {ps.practice_type === "mantra_japa" ? "malas" : "×"}
+                    {ps.total_mantras
+                      ? ` · ${ps.total_mantras.toLocaleString("nl-NL")} mantras`
+                      : ""}
+                  </span>
                 </div>
-                <span className="text-theme-fg-secondary min-w-0 flex-1 truncate text-sm">
-                  {ps.practice_name}
-                </span>
-                <span className="text-theme-fg-muted shrink-0 text-xs tabular-nums">
-                  {ps.total_quantity} {ps.practice_type === "mantra_japa" ? "malas" : "×"}
-                  {ps.total_mantras
-                    ? ` · ${ps.total_mantras.toLocaleString("nl-NL")} mantras`
-                    : ""}
-                </span>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -1497,7 +1589,9 @@ export function SadhanaTracker() {
       {/* Sessions */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-theme-fg font-semibold">Sessies (laatste 30 dagen)</h2>
+          <h2 className="text-theme-fg font-semibold">
+            Sessies (laatste {sessionDaysBack} dagen)
+          </h2>
           <button
             onClick={() => setShowAddSession((v) => !v)}
             className="bg-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-white shadow hover:opacity-90"
@@ -1546,7 +1640,7 @@ export function SadhanaTracker() {
         {sessions.length === 0 ? (
           <div className="bg-theme-surface-raised rounded-2xl p-8 text-center shadow-lg">
             <div className="text-theme-fg-muted text-sm">
-              Geen sessies in de afgelopen 30 dagen.
+              Geen sessies in de afgelopen {sessionDaysBack} dagen.
             </div>
           </div>
         ) : (
@@ -1562,12 +1656,24 @@ export function SadhanaTracker() {
             ))}
           </div>
         )}
-      </div>
 
-      {/* Goals + Practices naast elkaar */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-start">
-        <GoalPanel goals={goals} onChanged={loadAll} />
-        <PracticesPanel practices={allPractices} onChanged={loadAll} />
+        {/* Laad meer */}
+        <div className="flex justify-center pt-1">
+          <button
+            onClick={handleLoadMore}
+            disabled={loadingMore}
+            className="text-theme-primary flex min-h-[44px] cursor-pointer items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium hover:opacity-70 disabled:opacity-50"
+          >
+            {loadingMore ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Laden…
+              </>
+            ) : (
+              <>Laad meer</>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* All-time overview */}
@@ -1577,7 +1683,7 @@ export function SadhanaTracker() {
             <Award className="text-theme-primary h-4 w-4" />
             <h2 className="text-theme-fg text-sm font-semibold">All-time overzicht</h2>
           </div>
-          <div className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-3 lg:grid-cols-5">
             {[
               {
                 label: "Sessies",
@@ -1594,6 +1700,10 @@ export function SadhanaTracker() {
               {
                 label: "Gem. malas/sessie",
                 value: overview.avg_malas_per_session.toFixed(1),
+              },
+              {
+                label: "Gem. min/sessie",
+                value: overview.avg_minutes_per_session.toFixed(1),
               },
             ].map(({ label, value }) => (
               <div key={label}>
@@ -1637,6 +1747,12 @@ export function SadhanaTracker() {
           )}
         </div>
       )}
+
+      {/* Goals + Practices naast elkaar */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-start">
+        <GoalPanel goals={goals} onChanged={loadAll} />
+        <PracticesPanel practices={allPractices} onChanged={loadAll} />
+      </div>
     </div>
   );
 }

@@ -94,6 +94,44 @@ In `additionalCss` wordt `[[t]]` vervangen door `[data-theme="thema-naam"]` door
 
 ## Vishnu Events — In Bespreking
 
+## Sadhana Tracker — Status
+
+### Geïmplementeerd
+
+**Backend API** (`src/app/api/sadhana/`)
+- `GET/POST /practices`, `PATCH/DELETE /practices/[id]`
+- `GET/POST /sessions` (met `?from=` query param), `PATCH/DELETE /sessions/[id]`
+- `GET /stats/today` — incl. goal progress + per-practice stats
+- `GET /stats/streak`, `GET /stats/calendar`, `GET /stats/overview`
+- `GET/POST /goals`, `PATCH/DELETE /goals/[id]`
+
+**UI** (`src/components/sadhana/SadhanaTracker.tsx`)
+- Volledige CRUD: sessies, beoefeingen, doelen
+- StatCards: vandaag (met `X / Y malas` bij actief doel), streak, deze maand
+- Vandaag per beoefening — altijd zichtbaar, lege staat
+- Activiteitsheatmap — desktop 52 wkn / mobiel 22 wkn, gelabelde legende (0, 1–3, 4–7, 8–11, ≥12)
+- Sessieslijst met "Laad meer" (+30 dagen per klik)
+- All-time overzicht + per-practice breakdown
+- GoalPanel + PracticesPanel naast elkaar (lg:grid-cols-2)
+- WCAG touch targets (44×44px), aria-labels, htmlFor/id via useId()
+- Light + dark mode contrast (Bhairava Nocturne getest)
+- Mobiel layout geoptimaliseerd voor 412px (OnePlus 8T)
+
+### Paginavolgorde (huidig)
+1. Header
+2. 3 StatCards
+3. Vandaag per beoefening
+4. Activiteitsheatmap
+5. Sessieslijst + Laad meer
+6. All-time overzicht
+7. Goals + Practices naast elkaar
+
+### Wat ontbreekt t.o.v. Python referentie-backend
+- `/sessions/{id}/items` sub-routes (individuele items toevoegen/bewerken/verwijderen) — **niet nodig**: UI doet hele-sessie replace
+- `GET /sessions/{id}` enkel ophalen — **niet nodig**: UI laadt altijd de lijst
+- `started_at` veld op sessie — veld bestaat in DB, maar niet gebruikt in UI
+- Week-statistieken (`this_week` totalen) — API geeft ze terug maar UI toont ze niet
+
 ## Ontwikkeling
 
 ```bash
