@@ -249,6 +249,7 @@ function Heatmap({
   weeks: HeatmapCell[][];
   cellSize?: number;
 }) {
+  const [tapped, setTapped] = useState<{ date: string; malas: number } | null>(null);
   const colWidth = cellSize + 2; // cell + gap-0.5 (2px)
   const labelWidth = cellSize === 10 ? 20 : 26;
   const labelFontSize = cellSize === 10 ? 9 : 10;
@@ -305,7 +306,7 @@ function Heatmap({
                 ) : (
                   <div
                     key={di}
-                    className="rounded-sm transition-colors"
+                    className="cursor-pointer rounded-sm motion-safe:transition-colors"
                     style={{
                       width: cellSize,
                       height: cellSize,
@@ -315,12 +316,25 @@ function Heatmap({
                           : heatColor(cell.malas),
                     }}
                     title={`${formatDate(cell.date)}: ${cell.malas} malas`}
+                    onClick={() =>
+                      setTapped((prev) =>
+                        prev?.date === cell.date
+                          ? null
+                          : { date: cell.date, malas: cell.malas }
+                      )
+                    }
                   />
                 )
               )}
             </div>
           ))}
         </div>
+        {tapped && (
+          <div className="text-theme-fg-secondary mt-2 text-xs">
+            {formatDate(tapped.date)}:{" "}
+            <span className="text-theme-fg font-medium">{tapped.malas} malas</span>
+          </div>
+        )}
         <div className="text-theme-fg-muted mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
           {[
             { m: 0, label: "0" },
@@ -373,7 +387,9 @@ function StatCard({
         <div className="text-theme-primary">{icon}</div>
         <span className="text-theme-fg-secondary text-sm font-medium">{label}</span>
       </div>
-      <div className="text-theme-fg text-3xl font-bold tabular-nums">{value}</div>
+      <div className="text-theme-fg text-xl font-bold tabular-nums sm:text-3xl">
+        {value}
+      </div>
       {sub && <div className="text-theme-fg-secondary mt-1 text-sm">{sub}</div>}
       {progress !== undefined && (
         <div
@@ -381,7 +397,7 @@ function StatCard({
           style={{ background: "color-mix(in oklch, var(--theme-fg) 12%, transparent)" }}
         >
           <div
-            className="bg-theme-primary h-full rounded-full transition-all duration-500"
+            className="bg-theme-primary h-full rounded-full motion-safe:transition-all motion-safe:duration-500"
             style={{ width: `${Math.min(100, Math.round(progress * 100))}%` }}
           />
         </div>
@@ -473,7 +489,7 @@ function SessionForm({
         <div>
           <label
             htmlFor={`${uid}-date`}
-            className="text-theme-fg-secondary mb-1 block text-xs font-medium"
+            className="text-theme-fg-secondary mb-1 block text-sm font-medium"
           >
             Datum
           </label>
@@ -489,7 +505,7 @@ function SessionForm({
         <div>
           <label
             htmlFor={`${uid}-time`}
-            className="text-theme-fg-secondary mb-1 block text-xs font-medium"
+            className="text-theme-fg-secondary mb-1 block text-sm font-medium"
           >
             Starttijd (optioneel)
           </label>
@@ -504,13 +520,14 @@ function SessionForm({
         <div>
           <label
             htmlFor={`${uid}-duration`}
-            className="text-theme-fg-secondary mb-1 block text-xs font-medium"
+            className="text-theme-fg-secondary mb-1 block text-sm font-medium"
           >
             Duur (minuten, optioneel)
           </label>
           <input
             id={`${uid}-duration`}
             type="number"
+            inputMode="numeric"
             value={duration}
             onChange={(e) => setDuration(e.target.value)}
             placeholder="bijv. 45"
@@ -559,6 +576,7 @@ function SessionForm({
               <div className="flex gap-2">
                 <input
                   type="number"
+                  inputMode="numeric"
                   value={item.quantity}
                   onChange={(e) => updateItem(i, { quantity: e.target.value })}
                   placeholder="aantal"
@@ -592,7 +610,7 @@ function SessionForm({
       <div>
         <label
           htmlFor={`${uid}-notes`}
-          className="text-theme-fg-secondary mb-1 block text-xs font-medium"
+          className="text-theme-fg-secondary mb-1 block text-sm font-medium"
         >
           Notities (optioneel)
         </label>
@@ -689,7 +707,7 @@ function SessionCard({
 
   if (editing) {
     return (
-      <div className="bg-theme-surface-raised rounded-xl p-4 shadow">
+      <div className="bg-theme-surface-raised rounded-2xl p-4 shadow">
         <h4 className="text-theme-fg mb-3 text-sm font-semibold">Sessie bewerken</h4>
         <SessionForm
           practices={practices}
@@ -712,8 +730,15 @@ function SessionCard({
     );
   }
 
+  const isToday = session.date === todayString();
+
   return (
-    <div className="bg-theme-surface-raised rounded-xl p-4 shadow">
+    <div
+      className={cn(
+        "bg-theme-surface-raised rounded-2xl p-4 shadow",
+        isToday && "ring-1 ring-[var(--theme-primary)]"
+      )}
+    >
       <div className="flex items-start gap-3">
         {/* Expand toggle */}
         <button
@@ -724,10 +749,15 @@ function SessionCard({
             {session.total_malas}
           </div>
           <div className="min-w-0 flex-1">
-            <div className="text-theme-fg text-sm font-semibold">
+            <div className="text-theme-fg flex flex-wrap items-center gap-1.5 text-sm font-semibold">
               {formatDate(session.date)}
+              {isToday && (
+                <span className="bg-theme-primary/15 text-theme-primary rounded-full px-2 py-0.5 text-xs font-medium">
+                  Vandaag
+                </span>
+              )}
               {session.started_at && (
-                <span className="text-theme-fg-muted ml-1.5 text-xs font-normal">
+                <span className="text-theme-fg-muted text-xs font-normal">
                   {formatTime(session.started_at)}
                 </span>
               )}
@@ -916,6 +946,7 @@ function PracticesPanel({
   };
 
   const visible = practices.filter((p) => showInactive || p.active);
+  const inactivePracticeCount = practices.filter((p) => !p.active).length;
   const inputCls =
     "bg-theme-surface border-theme-border text-theme-fg placeholder:text-theme-fg-muted rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-ring)]";
 
@@ -927,12 +958,16 @@ function PracticesPanel({
           <h2 className="text-theme-fg text-sm font-semibold">Beoefeningen</h2>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setShowInactive((v) => !v)}
-            className="text-theme-fg-muted hover:text-theme-fg min-h-[44px] cursor-pointer text-xs transition-colors"
-          >
-            {showInactive ? "Verberg inactief" : "Toon inactief"}
-          </button>
+          {inactivePracticeCount > 0 && (
+            <button
+              onClick={() => setShowInactive((v) => !v)}
+              className="text-theme-fg-muted hover:text-theme-fg min-h-[44px] cursor-pointer text-xs transition-colors"
+            >
+              {showInactive
+                ? "Verberg inactief"
+                : `Toon inactief (${inactivePracticeCount})`}
+            </button>
+          )}
           <button
             onClick={() => setShowAdd((v) => !v)}
             className="bg-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1 rounded-lg px-3 py-2 text-xs font-medium text-white hover:opacity-90"
@@ -1187,6 +1222,7 @@ function GoalPanel({ goals, onChanged }: { goals: Goal[]; onChanged: () => void 
   };
 
   const visible = goals.filter((g) => showInactive || g.active);
+  const inactiveGoalCount = goals.filter((g) => !g.active).length;
   const inputCls =
     "bg-theme-surface border-theme-border text-theme-fg placeholder:text-theme-fg-muted rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-ring)]";
 
@@ -1198,12 +1234,14 @@ function GoalPanel({ goals, onChanged }: { goals: Goal[]; onChanged: () => void 
           <h2 className="text-theme-fg text-sm font-semibold">Doelen</h2>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setShowInactive((v) => !v)}
-            className="text-theme-fg-muted hover:text-theme-fg min-h-[44px] cursor-pointer text-xs transition-colors"
-          >
-            {showInactive ? "Verberg inactief" : "Toon inactief"}
-          </button>
+          {inactiveGoalCount > 0 && (
+            <button
+              onClick={() => setShowInactive((v) => !v)}
+              className="text-theme-fg-muted hover:text-theme-fg min-h-[44px] cursor-pointer text-xs transition-colors"
+            >
+              {showInactive ? "Verberg inactief" : `Toon inactief (${inactiveGoalCount})`}
+            </button>
+          )}
           <button
             onClick={() => setShowAdd((v) => !v)}
             className="bg-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1 rounded-lg px-3 py-2 text-xs font-medium text-white hover:opacity-90"
@@ -1237,6 +1275,7 @@ function GoalPanel({ goals, onChanged }: { goals: Goal[]; onChanged: () => void 
             <input
               id="ga-malas"
               type="number"
+              inputMode="numeric"
               value={newMalas}
               onChange={(e) => setNewMalas(e.target.value)}
               placeholder="Malas doel"
@@ -1250,6 +1289,7 @@ function GoalPanel({ goals, onChanged }: { goals: Goal[]; onChanged: () => void 
             <input
               id="ga-minutes"
               type="number"
+              inputMode="numeric"
               value={newMinutes}
               onChange={(e) => setNewMinutes(e.target.value)}
               placeholder="Min. (optioneel)"
@@ -1289,6 +1329,7 @@ function GoalPanel({ goals, onChanged }: { goals: Goal[]; onChanged: () => void 
               <div className="flex flex-wrap gap-2">
                 <input
                   type="number"
+                  inputMode="numeric"
                   value={editMalas}
                   onChange={(e) => setEditMalas(e.target.value)}
                   placeholder="Malas doel"
@@ -1298,6 +1339,7 @@ function GoalPanel({ goals, onChanged }: { goals: Goal[]; onChanged: () => void 
                 />
                 <input
                   type="number"
+                  inputMode="numeric"
                   value={editMinutes}
                   onChange={(e) => setEditMinutes(e.target.value)}
                   placeholder="Min. (optioneel)"
@@ -1330,11 +1372,25 @@ function GoalPanel({ goals, onChanged }: { goals: Goal[]; onChanged: () => void 
               )}
             >
               <div className="min-w-0 flex-1">
+                <div className="mb-1 flex items-center gap-2">
+                  <span
+                    className={cn(
+                      "rounded-full px-2 py-0.5 text-xs font-medium",
+                      g.type === "daily"
+                        ? "bg-theme-primary/15 text-theme-primary"
+                        : "bg-theme-secondary/15 text-theme-secondary"
+                    )}
+                  >
+                    {GOAL_TYPE_LABELS[g.type]}
+                  </span>
+                  {!g.active && (
+                    <span className="text-theme-fg-muted text-xs">Inactief</span>
+                  )}
+                </div>
                 <div className="text-theme-fg text-sm font-medium">
-                  {GOAL_TYPE_LABELS[g.type]}: {g.target_malas} malas
+                  {g.target_malas} malas
                   {g.target_minutes ? ` · ${g.target_minutes} min` : ""}
                 </div>
-                {!g.active && <div className="text-theme-fg-muted text-xs">Inactief</div>}
               </div>
               <div className="flex shrink-0 items-center gap-1">
                 <button
@@ -1396,6 +1452,10 @@ export function SadhanaTracker() {
   const [sessionDaysBack, setSessionDaysBack] = useState(30);
   const sessionDaysRef = useRef(30);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [noMoreSessions, setNoMoreSessions] = useState(false);
+  const sessionsCountRef = useRef(0);
+  const [toast, setToast] = useState<string | null>(null);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const activePractices = allPractices.filter((p) => p.active);
 
@@ -1421,6 +1481,8 @@ export function SadhanaTracker() {
       setOverview(ov);
       setCalDays(cal);
       setSessions(sess);
+      sessionsCountRef.current = sess.length;
+      setNoMoreSessions(false);
       setAllPractices(pracs);
       setGoals(gl);
     } catch {
@@ -1445,10 +1507,18 @@ export function SadhanaTracker() {
       const sess = await apiFetch<SessionData[]>(
         `/sessions?from=${localDateString(fromDate)}`
       );
+      if (sess.length === sessionsCountRef.current) setNoMoreSessions(true);
+      sessionsCountRef.current = sess.length;
       setSessions(sess);
     } finally {
       setLoadingMore(false);
     }
+  }, []);
+
+  const showToast = useCallback((msg: string) => {
+    setToast(msg);
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(null), 2500);
   }, []);
 
   const heatmapFull = buildHeatmap(calDays, 364);
@@ -1633,6 +1703,7 @@ export function SadhanaTracker() {
                   });
                   setShowAddSession(false);
                   loadAll();
+                  showToast("Sessie opgeslagen");
                 }}
                 onCancel={() => setShowAddSession(false)}
               />
@@ -1653,30 +1724,38 @@ export function SadhanaTracker() {
                 key={s.id}
                 session={s}
                 practices={activePractices}
-                onUpdated={loadAll}
-                onDeleted={loadAll}
+                onUpdated={() => {
+                  loadAll();
+                  showToast("Sessie opgeslagen");
+                }}
+                onDeleted={() => {
+                  loadAll();
+                  showToast("Sessie verwijderd");
+                }}
               />
             ))}
           </div>
         )}
 
         {/* Laad meer */}
-        <div className="flex justify-center pt-1">
-          <button
-            onClick={handleLoadMore}
-            disabled={loadingMore}
-            className="text-theme-primary flex min-h-[44px] cursor-pointer items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium hover:opacity-70 disabled:opacity-50"
-          >
-            {loadingMore ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Laden…
-              </>
-            ) : (
-              <>Laad meer</>
-            )}
-          </button>
-        </div>
+        {!noMoreSessions && (
+          <div className="flex justify-center pt-1">
+            <button
+              onClick={handleLoadMore}
+              disabled={loadingMore}
+              className="text-theme-primary flex min-h-[44px] cursor-pointer items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium hover:opacity-70 disabled:opacity-50"
+            >
+              {loadingMore ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Laden…
+                </>
+              ) : (
+                <>Laad meer</>
+              )}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* All-time overview */}
@@ -1756,6 +1835,13 @@ export function SadhanaTracker() {
         <GoalPanel goals={goals} onChanged={loadAll} />
         <PracticesPanel practices={allPractices} onChanged={loadAll} />
       </div>
+
+      {/* Toast */}
+      {toast && (
+        <div className="bg-theme-primary fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full px-5 py-2.5 text-sm font-medium text-white shadow-lg">
+          {toast}
+        </div>
+      )}
     </div>
   );
 }

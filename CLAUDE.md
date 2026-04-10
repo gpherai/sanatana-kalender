@@ -139,7 +139,13 @@ npm run dev           # Ontwikkelserver starten
 npm run generate:css  # globals.css regenereren na thema-edits
 ```
 
-Geen Docker. SQLite database is lokaal.
+## Deployment (app-VPS)
+
+App draait in Docker op de VPS. Na een `git pull` op de VPS:
+
+```bash
+git pull && docker compose up -d --build
+```
 
 ## Belangrijke Afspraken
 
