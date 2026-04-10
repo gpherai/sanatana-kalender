@@ -1,7 +1,7 @@
 # 🗏️ Dharma Calendar - Architecture Document
 
-> **Versie:** 4.5
-> **Laatst bijgewerkt:** 5 april 2026 - Engine uitbreidingen (Nishitakal-regel, Maargazhi-regel), nieuwe events, test coverage lagenmodel
+> **Versie:** 4.6
+> **Laatst bijgewerkt:** 10 april 2026 - Sadhana Tracker module (volledige CRUD, kalender-integratie, heatmap, doelen)
 
 ---
 
@@ -18,6 +18,7 @@ Dharma Calendar is een persoonlijke web applicatie voor het bijhouden van Sanata
 - Visualisatie van maanfasen en zon/maan tijden
 - Panchang Almanac met speciale lunaire dagen
 - Eenvoudig events beheren (toevoegen, bewerken, verwijderen)
+- Sadhana tracker voor mantra japa, parayana en meditatie sessies
 - Meerdere visuele thema's voor persoonlijke voorkeur
 
 ### 1.3 Scope & Beperkingen
@@ -25,7 +26,7 @@ Dharma Calendar is een persoonlijke web applicatie voor het bijhouden van Sanata
 | Aspect | Huidige Scope | Toekomstige Mogelijkheid |
 |--------|---------------|--------------------------|
 | Gebruikers | Single-user | Multi-user met authenticatie |
-| Deployment | Homelab / Lokaal | VPS met Docker |
+| Deployment | VPS met Docker | Multi-instance / cloud |
 | Data source | Handmatige invoer + berekening | Panchang API integratie |
 | Taal | Nederlands/Engels | Meertalig (i18n) |
 | Locatie | Den Haag (standaard) | Instelbare locatie |
@@ -39,18 +40,19 @@ Dharma Calendar is een persoonlijke web applicatie voor het bijhouden van Sanata
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                         BROWSER                                  │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐              │
-│  │   Home      │  │   Almanac   │  │  Settings   │              │
-│  │   Page      │  │    Page     │  │    Page     │              │
-│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘              │
-└─────────┼────────────────┼────────────────┼─────────────────────┘
-          │                │                │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐          │
+│  │   Home   │  │ Almanac  │  │ Settings │  │ Sadhana  │          │
+│  │   Page   │  │   Page   │  │   Page   │  │  Tracker │          │
+│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘          │
+└───────┼─────────────┼─────────────┼──────────────┼───────────────┘
+        │             │             │              │
           ▼                ▼                ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                      NEXT.JS SERVER                              │
 │  ┌─────────────────────────────────────────────────────────┐    │
 │  │                    API Routes                            │    │
-│  │   /api/events  /api/categories  /api/daily-info  ...    │    │
+│  │   /api/events  /api/categories  /api/daily-info          │    │
+│  │   /api/sadhana/sessions  /api/sadhana/practices  ...    │    │
 │  └──────────────────────────┬───────────────────────────────┘    │
 │                             │                                    │
 │  ┌──────────────────────────▼──────────────────────────────┐    │
@@ -118,8 +120,10 @@ dharma-calendar/
 │   │   ├── page.tsx           # Homepage (TodayHero + kalender + sidebar)
 │   │   ├── globals.css        # Gegenereerde theme CSS + base styles
 │   │   ├── api/               # API routes (/events, /daily-info, /weer, etc.)
+│   │   │   └── sadhana/       # Sadhana CRUD API (/practices, /sessions, /goals, /stats/*)
 │   │   ├── almanac/           # Almanac route (layout + page)
 │   │   ├── events/            # Events routes (overview / new / [id])
+│   │   ├── sadhana/           # Sadhana tracker route (layout + page)
 │   │   ├── settings/          # Settings route (layout + page, auto-save)
 │   │   ├── weer/              # Weer dashboard route (layout + page)
 │   │   └── woordenboek/       # Sanskrit woordenboek route (page, geen layout)
@@ -130,6 +134,16 @@ dharma-calendar/
 │   │   ├── events/            # EventCard, EventForm
 │   │   ├── filters/           # FilterSidebar + index.ts barrel
 │   │   ├── layout/            # PageLayout + index.ts barrel
+│   │   ├── sadhana/           # Sadhana Tracker module
+│   │   │   ├── index.ts       # Barrel export (SadhanaTracker)
+│   │   │   ├── types.ts       # Shared types + apiFetch + fetchDayInfoMap + helpers
+│   │   │   ├── SadhanaTracker.tsx  # Root component (state, data fetching, layout)
+│   │   │   ├── StatCard.tsx   # Statistiek kaart (waarde, sub, progress bar)
+│   │   │   ├── Heatmap.tsx    # Activiteitsheatmap + buildHeatmap()
+│   │   │   ├── SessionCard.tsx    # Sessie weergave (expand, edit, delete)
+│   │   │   ├── SessionForm.tsx    # Sessie formulier (nieuw/bewerken)
+│   │   │   ├── GoalPanel.tsx  # Doelen CRUD
+│   │   │   └── PracticesPanel.tsx # Beoefeningen CRUD
 │   │   ├── settings/          # ThemeSection, CalendarSection, LocationSection
 │   │   │   │                  #   + index.ts barrel
 │   │   ├── theme/             # ThemeProvider, ColorModeToggle
@@ -389,6 +403,7 @@ Barrel exports worden **selectief** gebruikt, niet in elke map.
 - `src/components/almanac/index.ts`
 - `src/components/filters/index.ts`
 - `src/components/layout/index.ts`
+- `src/components/sadhana/index.ts`
 - `src/components/settings/index.ts`
 - `src/types/index.ts`
 
@@ -921,6 +936,16 @@ Zorg ervoor dat glassmorphism elementen voldoende contrast hebben met de achterg
 | `/api/themes` | GET | Beschikbare thema's ophalen |
 | `/api/weer` | GET | Actuele weerdata (current, hourly, daily, luchtkwaliteit) via OpenWeatherMap — gecached 10 min (`revalidate: 600`) |
 | `/api/health` | GET | Health check voor monitoring (database connectivity) |
+| `/api/sadhana/practices` | GET, POST | Beoefeningen ophalen en aanmaken |
+| `/api/sadhana/practices/[id]` | PATCH, DELETE | Beoefening bewerken of verwijderen |
+| `/api/sadhana/sessions` | GET, POST | Sessies ophalen (`?from=YYYY-MM-DD`) en aanmaken |
+| `/api/sadhana/sessions/[id]` | PATCH, DELETE | Sessie bewerken of verwijderen |
+| `/api/sadhana/goals` | GET, POST | Doelen ophalen en aanmaken |
+| `/api/sadhana/goals/[id]` | PATCH, DELETE | Doel bewerken of verwijderen |
+| `/api/sadhana/stats/today` | GET | Vandaag stats (malas, mantras, minuten, goal progress, per beoefening) |
+| `/api/sadhana/stats/streak` | GET | Huidige en langste streak |
+| `/api/sadhana/stats/calendar` | GET | Dagdata voor heatmap (datum, malas, minuten, sessies) |
+| `/api/sadhana/stats/overview` | GET | All-time statistieken + per-beoefening breakdown |
 
 ### 4.3 Service Layer
 
@@ -1162,6 +1187,7 @@ export async function calculateMoonriseMoonset(
 /events                 → Events overzicht (card grid + filters)
 /events/new             → Nieuw event aanmaken
 /events/[id]            → Event bewerken + verwijderen
+/sadhana                → Sadhana Tracker (sessies, stats, heatmap, doelen, beoefeningen)
 /settings               → Instellingen (theme, locatie, voorkeuren)
 /weer                   → Weerdetails (OpenWeatherMap — current, uurlijks, dagelijks, luchtkwaliteit)
 /woordenboek            → Sanskrit woordenboek
@@ -1190,6 +1216,7 @@ Per route:
 | `/events` | `title: "Events"` | `Events \| Dharma Calendar` |
 | `/events/new` | — (via events layout) | `Events \| Dharma Calendar` |
 | `/events/[id]` | `generateMetadata` → eventnaam | `<naam> \| Dharma Calendar` |
+| `/sadhana` | `title: "Sadhana"` | `Sadhana \| Dharma Calendar` |
 | `/settings` | `title: "Instellingen"` | `Instellingen \| Dharma Calendar` |
 | `/weer` | `title: "Weer"` | `Weer \| Dharma Calendar` |
 
@@ -1240,6 +1267,16 @@ RootLayout
     │   ├── ColorModeToggle (light/dark/system)
     │   ├── CalendarSection (standaard kalenderweergave)
     │   └── LocationSection (preset + handmatig + zon/maan preview)
+    │
+    ├── SadhanaPage (full width, geen spacing prop)
+    │   └── SadhanaTracker (client component)
+    │       ├── StatCards (vandaag malas/mantras/minuten, streak, week totaal)
+    │       ├── Vandaag per beoefening (altijd zichtbaar, lege staat)
+    │       ├── Heatmap (desktop 52 wkn / mobiel 22 wkn, DayInfo markers)
+    │       ├── SessionCard[] (expand/edit/delete, Tithi/specialDay badge)
+    │       ├── All-time overzicht (OverviewStats + PracticeStat breakdown)
+    │       ├── GoalPanel (CRUD, dagelijks/wekelijks, type pills)
+    │       └── PracticesPanel (CRUD, mantra_japa / parayana / other)
     │
     └── WeerPage (full width)
         ├── Current weather (temperatuur, windsnelheid, vochtigheid, UV-index, etc.)
@@ -1572,7 +1609,82 @@ Debounce waarde voor performance (bv. search inputs).
 const debouncedSearch = useDebounce(searchTerm, 300);
 ```
 
-### 5.6 Request Deduplication
+### 5.6 Sadhana Tracker Module
+
+De Sadhana Tracker is een zelfstandig subsysteem voor het bijhouden van spirituele beoefening (mantra japa, parayana, meditatie). Het volgt de almanac-component-architectuur: barrel export, gesplitste bestanden, gedeelde `types.ts`.
+
+#### 5.6.1 Component Structuur
+
+```
+src/components/sadhana/
+├── index.ts           # Barrel: exporteert SadhanaTracker
+├── types.ts           # Alle types, apiFetch, fetchDayInfoMap, formatters
+├── SadhanaTracker.tsx # Root: state, data fetching, layout, toast
+├── StatCard.tsx       # Herbruikbaar statistiek kaartje
+├── Heatmap.tsx        # Activiteitsheatmap (buildHeatmap + component)
+├── SessionCard.tsx    # Sessie kaart (expand/edit/delete)
+├── SessionForm.tsx    # Sessie formulier (nieuw + bewerken)
+├── GoalPanel.tsx      # Doelen CRUD
+└── PracticesPanel.tsx # Beoefeningen CRUD
+```
+
+**Client boundary:** Alle componenten zijn `"use client"` behalve `StatCard.tsx` (geen hooks). De pagina (`src/app/sadhana/page.tsx`) heeft geen `"use client"` — die is server-component.
+
+#### 5.6.2 Data Flow
+
+```
+SadhanaTracker (loadAll)
+  ├── /api/sadhana/stats/today       → TodayStats (StatCards, per-practice)
+  ├── /api/sadhana/stats/streak      → StreakStats (StatCard streak)
+  ├── /api/sadhana/stats/overview    → OverviewStats (all-time sectie)
+  ├── /api/sadhana/stats/calendar    → CalendarDay[] (heatmap)
+  ├── /api/sadhana/sessions?from=X   → SessionData[] (sessieslijst)
+  ├── /api/sadhana/practices         → Practice[] (forms + panels)
+  ├── /api/sadhana/goals             → Goal[] (GoalPanel)
+  └── /api/daily-info?start=X&end=Y → DayInfoMap (kalender-integratie)
+```
+
+Alle fetches lopen parallel via `Promise.all`. Na elke mutatie (toevoegen/bewerken/verwijderen) wordt `loadAll()` opnieuw aangeroepen.
+
+#### 5.6.3 Kalender-Integratie
+
+De tracker haalt voor het volledige heatmap-bereik (364 dagen) panchanga-data op via `/api/daily-info`. Dit levert per dag:
+- `tithi`: Tithi naam en paksha (Shukla/Krishna)
+- `specialDay`: Festival/puja naam en emoji
+- `moonPhaseEvent`: Maanfase type
+
+**Gebruik:**
+- **SessionCard**: Toont Tithi of specialDay onder de malas/duur regel
+- **Heatmap**: Toont een witte stip (2-3px) op cellen met specialDay of moonPhaseEvent; tooltip en tapped-state tonen de Tithi-naam
+
+```typescript
+// types.ts
+export interface DayInfo {
+  tithi?: { name: string; paksha: "Shukla" | "Krishna" };
+  specialDay?: { name: string; emoji: string; type: string } | null;
+  moonPhaseEvent?: { type: "new" | "first_quarter" | "full" | "last_quarter" } | null;
+}
+export type DayInfoMap = Map<string, DayInfo>;
+```
+
+#### 5.6.4 Pagina Volgorde
+
+1. StatCards (vandaag + streak + week)
+2. Vandaag per beoefening
+3. Activiteitsheatmap
+4. Sessieslijst (met "Laad meer" +30 dagen)
+5. All-time overzicht
+6. GoalPanel + PracticesPanel (naast elkaar op lg:)
+
+#### 5.6.5 UX Details
+
+- **Toast**: Interne toast (geen ToastProvider) — `showToast(msg)` met 2500ms auto-dismiss
+- **Laad meer**: Verborgen zodra `noMoreSessions` true is (gedetecteerd via sessie-count vergelijking)
+- **Heatmap mobiel**: 22 weken (~154 dagen) i.p.v. 52 weken — past op 375px
+- **inputMode="numeric"**: Op alle number inputs voor mobiel numeriek toetsenbord
+- **motion-safe**: `motion-safe:transition-*` op progress bar en heatmap cellen
+
+### 5.8 Request Deduplication
 
 Alle fetch operaties gebruiken AbortController voor proper cleanup:
 
@@ -1938,6 +2050,21 @@ const optionalTimeStringSchema = z.string()...  // string | null
 │    DailyInfo    │         │  UserPreference │
 │ (panchanga/day) │         │  (single-row)   │
 └─────────────────┘         └─────────────────┘
+
+┌─────────────────┐      ┌──────────────────┐
+│    Practice     │◀────▶│  SadhanaItem     │
+│ (beoefening)   │      │  (sessie-item)   │
+└─────────────────┘      └──────┬───────────┘
+                                │ N:1
+                                ▼
+                        ┌───────────────────┐
+                        │  SadhanaSession   │
+                        │  (datum, duur)    │
+                        └───────────────────┘
+
+┌─────────────────┐
+│   SadhanaGoal  │   Dagelijks/wekelijks doel (malas/minuten)
+└─────────────────┘
 ```
 
 ### 8.2 Key Tables
@@ -1951,6 +2078,10 @@ const optionalTimeStringSchema = z.string()...  // string | null
 | **EventSeriesEntry** | Parent-child serie-relaties tussen events (optioneel `dayNumber`) |
 | **DailyInfo** | Astronomische dagdata (Swiss Ephemeris) + uitgebreide Vedische velden (maas, samvat, rashi, sankranti/next transitions) |
 | **UserPreference** | Single-user voorkeuren (theme, view, locatie, zichtbaarheid, notificaties) |
+| **Practice** | Beoefening-definitie (naam, type mantra_japa/parayana/other, mantra_count, actief) |
+| **SadhanaSession** | Sessie per dag (datum, started_at, duration_minutes, notes, totals via computed fields) |
+| **SadhanaItem** | Item binnen een sessie (practice_id, quantity, unit malas/count) |
+| **SadhanaGoal** | Doel (type daily/weekly, target_malas, target_minutes, actief) |
 
 ### 8.3 Native Prisma Enums
 
@@ -1965,6 +2096,9 @@ const optionalTimeStringSchema = z.string()...  // string | null
 | `Tithi` | 30 waarden (PRATIPADA_SHUKLA t/m AMAVASYA) | Lunar dag |
 | `Nakshatra` | 27 waarden (ASHWINI t/m REVATI) | Maansterrenbeeld |
 | `Maas` | 12 waarden (CHAITRA t/m PHALGUNA) | Hindu maand |
+| `PracticeType` | mantra_japa, parayana, other | Type beoefening (Sadhana) |
+| `ItemUnit` | malas, count | Eenheid van sessie-item (Sadhana) |
+| `GoalType` | daily, weekly | Type doel (Sadhana) |
 | `Sankranti` | 12 solar ingress enums (MESHA..MEENA) | Solar transities |
 | `MoonPhaseType` | NEW_MOON, WAXING_CRESCENT, FIRST_QUARTER, etc. | Maanfase |
 
