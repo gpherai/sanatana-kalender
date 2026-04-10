@@ -282,8 +282,9 @@ function Heatmap({ weeks }: { weeks: HeatmapCell[][] }) {
                       width: 12,
                       height: 12,
                       background:
-                        cell.malas === 0 ? "var(--theme-surface)" : heatColor(cell.malas),
-                      opacity: cell.malas === 0 ? 0.45 : 1,
+                        cell.malas === 0
+                          ? "color-mix(in oklch, var(--theme-fg) 10%, transparent)"
+                          : heatColor(cell.malas),
                     }}
                     title={`${formatDate(cell.date)}: ${cell.malas} malas`}
                   />
@@ -301,8 +302,10 @@ function Heatmap({ weeks }: { weeks: HeatmapCell[][] }) {
               style={{
                 width: 12,
                 height: 12,
-                background: m === 0 ? "var(--theme-surface)" : heatColor(m),
-                opacity: m === 0 ? 0.45 : 1,
+                background:
+                  m === 0
+                    ? "color-mix(in oklch, var(--theme-fg) 10%, transparent)"
+                    : heatColor(m),
               }}
             />
           ))}
@@ -337,9 +340,12 @@ function StatCard({
         <span className="text-theme-fg-secondary text-sm font-medium">{label}</span>
       </div>
       <div className="text-theme-fg text-3xl font-bold tabular-nums">{value}</div>
-      {sub && <div className="text-theme-fg-muted mt-1 text-xs">{sub}</div>}
+      {sub && <div className="text-theme-fg-secondary mt-1 text-xs">{sub}</div>}
       {progress !== undefined && (
-        <div className="bg-theme-surface mt-3 h-1.5 overflow-hidden rounded-full">
+        <div
+          className="mt-3 h-1.5 overflow-hidden rounded-full"
+          style={{ background: "color-mix(in oklch, var(--theme-fg) 12%, transparent)" }}
+        >
           <div
             className="bg-theme-primary h-full rounded-full transition-all duration-500"
             style={{ width: `${Math.min(100, Math.round(progress * 100))}%` }}
