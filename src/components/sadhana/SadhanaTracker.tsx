@@ -1599,63 +1599,6 @@ export function SadhanaTracker() {
         />
       </div>
 
-      {/* Per-practice vandaag */}
-      {todayStats && (
-        <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
-          <div className="mb-3 flex items-center gap-2">
-            <Sparkles className="text-theme-primary h-4 w-4" />
-            <h2 className="text-theme-fg text-sm font-semibold">
-              Vandaag per beoefening
-            </h2>
-          </div>
-          {todayStats.practices.length === 0 ? (
-            <p className="text-theme-fg-muted text-sm">Vandaag nog niets gelogd.</p>
-          ) : (
-            <div className="space-y-2">
-              {todayStats.practices.map((ps) => (
-                <div key={ps.practice_id} className="flex items-center gap-3">
-                  <div className="text-theme-primary shrink-0">
-                    {ps.practice_type === "mantra_japa" ? (
-                      <Sparkles className="h-3.5 w-3.5" />
-                    ) : (
-                      <BookOpen className="h-3.5 w-3.5" />
-                    )}
-                  </div>
-                  <span className="text-theme-fg-secondary min-w-0 flex-1 truncate text-sm">
-                    {ps.practice_name}
-                  </span>
-                  <span className="text-theme-fg-muted shrink-0 text-xs tabular-nums">
-                    {ps.total_quantity}{" "}
-                    {ps.practice_type === "mantra_japa" ? "malas" : "×"}
-                    {ps.total_mantras
-                      ? ` · ${ps.total_mantras.toLocaleString("nl-NL")} mantras`
-                      : ""}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Heatmap */}
-      <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
-        <div className="mb-4 flex items-center gap-2">
-          <Calendar className="text-theme-primary h-4 w-4" />
-          <h2 className="text-theme-fg text-sm font-semibold">
-            Activiteit — laatste jaar
-          </h2>
-        </div>
-        {/* Desktop: 52 weken */}
-        <div className="hidden sm:block">
-          <Heatmap weeks={heatmapFull} />
-        </div>
-        {/* Mobiel: ~22 weken met kleinere cellen */}
-        <div className="sm:hidden">
-          <Heatmap weeks={heatmapMobile} cellSize={10} />
-        </div>
-      </div>
-
       {/* Sessions */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
@@ -1756,6 +1699,63 @@ export function SadhanaTracker() {
             </button>
           </div>
         )}
+      </div>
+
+      {/* Per-practice vandaag */}
+      {todayStats && (
+        <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
+          <div className="mb-3 flex items-center gap-2">
+            <Sparkles className="text-theme-primary h-4 w-4" />
+            <h2 className="text-theme-fg text-sm font-semibold">
+              Vandaag per beoefening
+            </h2>
+          </div>
+          {todayStats.practices.length === 0 ? (
+            <p className="text-theme-fg-muted text-sm">Vandaag nog niets gelogd.</p>
+          ) : (
+            <div className="space-y-2">
+              {todayStats.practices.map((ps) => (
+                <div key={ps.practice_id} className="flex items-center gap-3">
+                  <div className="text-theme-primary shrink-0">
+                    {ps.practice_type === "mantra_japa" ? (
+                      <Sparkles className="h-3.5 w-3.5" />
+                    ) : (
+                      <BookOpen className="h-3.5 w-3.5" />
+                    )}
+                  </div>
+                  <span className="text-theme-fg-secondary min-w-0 flex-1 truncate text-sm">
+                    {ps.practice_name}
+                  </span>
+                  <span className="text-theme-fg-muted shrink-0 text-xs tabular-nums">
+                    {ps.total_quantity}{" "}
+                    {ps.practice_type === "mantra_japa" ? "malas" : "×"}
+                    {ps.total_mantras
+                      ? ` · ${ps.total_mantras.toLocaleString("nl-NL")} mantras`
+                      : ""}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Heatmap */}
+      <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
+        <div className="mb-4 flex items-center gap-2">
+          <Calendar className="text-theme-primary h-4 w-4" />
+          <h2 className="text-theme-fg text-sm font-semibold">
+            Activiteit — laatste jaar
+          </h2>
+        </div>
+        {/* Desktop: 52 weken */}
+        <div className="hidden sm:block">
+          <Heatmap weeks={heatmapFull} />
+        </div>
+        {/* Mobiel: ~22 weken met kleinere cellen */}
+        <div className="sm:hidden">
+          <Heatmap weeks={heatmapMobile} cellSize={10} />
+        </div>
       </div>
 
       {/* All-time overview */}
