@@ -175,12 +175,12 @@ const PRACTICE_TYPE_LABELS: Record<PracticeType, string> = {
 
 type HeatmapCell = { date: string; malas: number } | null;
 
-function buildHeatmap(calendarDays: CalendarDay[]): HeatmapCell[][] {
+function buildHeatmap(calendarDays: CalendarDay[], days = 364): HeatmapCell[][] {
   const map = new Map(calendarDays.map((d) => [d.date, d.total_malas]));
   const todayDate = new Date();
   todayDate.setHours(0, 0, 0, 0);
   const start = new Date(todayDate);
-  start.setDate(start.getDate() - 364);
+  start.setDate(start.getDate() - days);
   const dow = start.getDay();
   start.setDate(start.getDate() - (dow === 0 ? 6 : dow - 1));
   const weeks: HeatmapCell[][] = [];
@@ -224,7 +224,17 @@ const MONTH_LABELS = [
 ];
 const DAY_LABELS = ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"];
 
-function Heatmap({ weeks }: { weeks: HeatmapCell[][] }) {
+function Heatmap({
+  weeks,
+  cellSize = 12,
+}: {
+  weeks: HeatmapCell[][];
+  cellSize?: number;
+}) {
+  const colWidth = cellSize + 2; // cell + gap-0.5 (2px)
+  const labelWidth = cellSize === 10 ? 20 : 26;
+  const labelFontSize = cellSize === 10 ? 9 : 10;
+
   const monthPositions: { month: number; col: number }[] = [];
   let lastMonth = -1;
   weeks.forEach((week, i) => {
@@ -240,15 +250,15 @@ function Heatmap({ weeks }: { weeks: HeatmapCell[][] }) {
   return (
     <div className="overflow-x-auto">
       <div style={{ display: "inline-block" }}>
-        <div className="mb-1 flex" style={{ paddingLeft: 30 }}>
+        <div className="mb-1 flex" style={{ paddingLeft: labelWidth + 4 }}>
           {weeks.map((_, i) => {
             const mp = monthPositions.find((p) => p.col === i);
             return (
-              <div key={i} style={{ width: 14, flexShrink: 0 }}>
+              <div key={i} style={{ width: colWidth, flexShrink: 0 }}>
                 {mp && (
                   <span
                     className="text-theme-fg-muted"
-                    style={{ fontSize: 10, whiteSpace: "nowrap" }}
+                    style={{ fontSize: labelFontSize, whiteSpace: "nowrap" }}
                   >
                     {MONTH_LABELS[mp.month]}
                   </span>
@@ -258,12 +268,12 @@ function Heatmap({ weeks }: { weeks: HeatmapCell[][] }) {
           })}
         </div>
         <div className="flex gap-0.5">
-          <div className="mr-1 flex flex-col gap-0.5">
+          <div className="flex flex-col gap-0.5" style={{ marginRight: 4 }}>
             {DAY_LABELS.map((d) => (
               <div
                 key={d}
                 className="text-theme-fg-muted flex items-center justify-end"
-                style={{ height: 12, width: 24, fontSize: 9 }}
+                style={{ height: cellSize, width: labelWidth, fontSize: 9 }}
               >
                 {d}
               </div>
@@ -273,14 +283,14 @@ function Heatmap({ weeks }: { weeks: HeatmapCell[][] }) {
             <div key={wi} className="flex flex-col gap-0.5">
               {week.map((cell, di) =>
                 cell === null ? (
-                  <div key={di} style={{ width: 12, height: 12 }} />
+                  <div key={di} style={{ width: cellSize, height: cellSize }} />
                 ) : (
                   <div
                     key={di}
                     className="rounded-sm transition-colors"
                     style={{
-                      width: 12,
-                      height: 12,
+                      width: cellSize,
+                      height: cellSize,
                       background:
                         cell.malas === 0
                           ? "color-mix(in oklch, var(--theme-fg) 10%, transparent)"
@@ -300,8 +310,8 @@ function Heatmap({ weeks }: { weeks: HeatmapCell[][] }) {
               key={i}
               className="rounded-sm"
               style={{
-                width: 12,
-                height: 12,
+                width: cellSize,
+                height: cellSize,
                 background:
                   m === 0
                     ? "color-mix(in oklch, var(--theme-fg) 10%, transparent)"
@@ -470,52 +480,56 @@ function SessionForm({
         {items.map((item, i) => {
           const practice = practices.find((p) => p.id === item.practice_id);
           return (
-            <div
-              key={i}
-              className="bg-theme-surface flex flex-wrap items-center gap-2 rounded-xl p-3"
-            >
-              <select
-                value={item.practice_id}
-                onChange={(e) =>
-                  updateItem(i, { practice_id: e.target.value, unit: "malas" })
-                }
-                className={cn(inputCls, "min-w-32 flex-1 cursor-pointer")}
-                required
-              >
-                {practices.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name}
-                  </option>
-                ))}
-              </select>
-              <input
-                type="number"
-                value={item.quantity}
-                onChange={(e) => updateItem(i, { quantity: e.target.value })}
-                placeholder="aantal"
-                min={1}
-                className={cn(inputCls, "w-24")}
-                required
-              />
-              <select
-                value={item.unit}
-                onChange={(e) => updateItem(i, { unit: e.target.value as ItemUnit })}
-                className={cn(inputCls, "w-28 cursor-pointer")}
-              >
-                <option value="malas">malas</option>
-                <option value="count">
-                  {practice?.type === "mantra_japa" ? "tellers" : "keer"}
-                </option>
-              </select>
-              {items.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => removeItem(i)}
-                  className="text-theme-fg-muted hover:text-theme-error flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center transition-colors"
+            <div key={i} className="bg-theme-surface space-y-2 rounded-xl p-3">
+              {/* Rij 1: Beoefening + verwijder-knop */}
+              <div className="flex items-center gap-2">
+                <select
+                  value={item.practice_id}
+                  onChange={(e) =>
+                    updateItem(i, { practice_id: e.target.value, unit: "malas" })
+                  }
+                  className={cn(inputCls, "min-w-0 flex-1 cursor-pointer")}
+                  required
                 >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              )}
+                  {practices.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}
+                    </option>
+                  ))}
+                </select>
+                {items.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeItem(i)}
+                    aria-label="Item verwijderen"
+                    className="text-theme-fg-muted hover:text-theme-error flex min-h-[44px] min-w-[44px] shrink-0 cursor-pointer items-center justify-center transition-colors"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+              {/* Rij 2: Hoeveelheid + eenheid */}
+              <div className="flex gap-2">
+                <input
+                  type="number"
+                  value={item.quantity}
+                  onChange={(e) => updateItem(i, { quantity: e.target.value })}
+                  placeholder="aantal"
+                  min={1}
+                  className={cn(inputCls, "w-24 shrink-0")}
+                  required
+                />
+                <select
+                  value={item.unit}
+                  onChange={(e) => updateItem(i, { unit: e.target.value as ItemUnit })}
+                  className={cn(inputCls, "min-w-0 flex-1 cursor-pointer")}
+                >
+                  <option value="malas">malas</option>
+                  <option value="count">
+                    {practice?.type === "mantra_japa" ? "tellers" : "keer"}
+                  </option>
+                </select>
+              </div>
             </div>
           );
         })}
@@ -1360,7 +1374,8 @@ export function SadhanaTracker() {
     loadAll();
   }, [loadAll]);
 
-  const heatmap = buildHeatmap(calDays);
+  const heatmapFull = buildHeatmap(calDays, 364);
+  const heatmapMobile = buildHeatmap(calDays, 154); // ~22 weken, past op 375px
 
   if (loading) {
     return (
@@ -1469,7 +1484,14 @@ export function SadhanaTracker() {
             Activiteit — laatste jaar
           </h2>
         </div>
-        <Heatmap weeks={heatmap} />
+        {/* Desktop: 52 weken */}
+        <div className="hidden sm:block">
+          <Heatmap weeks={heatmapFull} />
+        </div>
+        {/* Mobiel: ~22 weken met kleinere cellen */}
+        <div className="sm:hidden">
+          <Heatmap weeks={heatmapMobile} cellSize={10} />
+        </div>
       </div>
 
       {/* Sessions */}
@@ -1543,7 +1565,7 @@ export function SadhanaTracker() {
       </div>
 
       {/* Goals + Practices naast elkaar */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-start">
         <GoalPanel goals={goals} onChanged={loadAll} />
         <PracticesPanel practices={allPractices} onChanged={loadAll} />
       </div>
