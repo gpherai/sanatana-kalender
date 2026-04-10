@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { todayStr, utcDate } from "../../_helpers";
+import { todayStr, utcDate, computePracticeStats } from "../../_helpers";
 
 export async function GET() {
   const today = todayStr();
@@ -45,5 +45,6 @@ export async function GET() {
     goal_malas_progress: goal?.targetMalas ? totalMalas / goal.targetMalas : null,
     goal_minutes_target: goal?.targetMinutes ?? null,
     goal_minutes_progress: goal?.targetMinutes ? totalMinutes / goal.targetMinutes : null,
+    practices: computePracticeStats(sessions),
   });
 }

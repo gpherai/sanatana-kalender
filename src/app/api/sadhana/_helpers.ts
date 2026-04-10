@@ -1,4 +1,9 @@
-import type { SadhanaPractice, SadhanaSession, SadhanaSessionItem } from "@prisma/client";
+import type {
+  SadhanaPractice,
+  SadhanaSession,
+  SadhanaSessionItem,
+  SadhanaGoal,
+} from "@prisma/client";
 
 // =============================================================================
 // TYPES
@@ -86,4 +91,52 @@ export function dateStr(d: Date): string {
 /** Today as YYYY-MM-DD (UTC) */
 export function todayStr(): string {
   return dateStr(new Date());
+}
+
+// =============================================================================
+// GOALS
+// =============================================================================
+
+export function formatGoal(g: SadhanaGoal) {
+  return {
+    id: g.id,
+    type: g.type,
+    target_malas: g.targetMalas,
+    target_minutes: g.targetMinutes,
+    active: g.active,
+    created_at: g.createdAt.toISOString(),
+  };
+}
+
+// =============================================================================
+// PRACTICE STATS
+// =============================================================================
+
+export function computePracticeStats(sessions: SessionWithItems[]) {
+  const map = new Map<
+    string,
+    { id: string; name: string; type: string; malas: number; countQty: number }
+  >();
+
+  for (const s of sessions) {
+    for (const item of s.items) {
+      const p = item.practice;
+      if (!map.has(p.id)) {
+        map.set(p.id, { id: p.id, name: p.name, type: p.type, malas: 0, countQty: 0 });
+      }
+      const entry = map.get(p.id)!;
+      if (item.unit === "malas") entry.malas += item.quantity;
+      else entry.countQty += item.quantity;
+    }
+  }
+
+  return [...map.values()]
+    .map((d) => ({
+      practice_id: d.id,
+      practice_name: d.name,
+      practice_type: d.type,
+      total_quantity: d.type === "mantra_japa" ? d.malas : d.countQty,
+      total_mantras: d.type === "mantra_japa" ? d.malas * 108 + d.countQty : null,
+    }))
+    .sort((a, b) => b.total_quantity - a.total_quantity);
 }

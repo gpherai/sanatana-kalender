@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { utcDate, todayStr } from "../../_helpers";
+import { utcDate, todayStr, computePracticeStats } from "../../_helpers";
 
 function computeTotals(
   sessions: {
@@ -55,5 +55,6 @@ export async function GET() {
     total_minutes_this_month: month.minutes,
     avg_malas_per_session: all.sessions > 0 ? all.malas / all.sessions : 0,
     avg_minutes_per_session: all.sessions > 0 ? all.minutes / all.sessions : 0,
+    practices: computePracticeStats(allSessions),
   });
 }

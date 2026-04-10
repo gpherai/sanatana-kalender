@@ -19,6 +19,7 @@ import {
   X,
   ToggleLeft,
   ToggleRight,
+  Target,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -64,6 +65,14 @@ interface SessionData {
   items: SessionItemData[];
 }
 
+interface PracticeStat {
+  practice_id: string;
+  practice_name: string;
+  practice_type: PracticeType;
+  total_quantity: number;
+  total_mantras: number | null;
+}
+
 interface TodayStats {
   date: string;
   total_malas: number;
@@ -71,6 +80,9 @@ interface TodayStats {
   total_mantras: number;
   goal_malas_target: number | null;
   goal_malas_progress: number | null;
+  goal_minutes_target: number | null;
+  goal_minutes_progress: number | null;
+  practices: PracticeStat[];
 }
 
 interface StreakStats {
@@ -94,6 +106,17 @@ interface OverviewStats {
   total_malas_this_month: number;
   total_minutes_this_month: number;
   avg_malas_per_session: number;
+  practices: PracticeStat[];
+}
+
+type GoalType = "daily" | "weekly";
+
+interface Goal {
+  id: string;
+  type: GoalType;
+  target_malas: number;
+  target_minutes: number | null;
+  active: boolean;
 }
 
 // =============================================================================
@@ -972,6 +995,262 @@ function PracticesPanel({
 }
 
 // =============================================================================
+// GOAL PANEL
+// =============================================================================
+
+const GOAL_TYPE_LABELS: Record<GoalType, string> = {
+  daily: "Dagdoel",
+  weekly: "Weekdoel",
+};
+
+function GoalPanel({ goals, onChanged }: { goals: Goal[]; onChanged: () => void }) {
+  const [showAdd, setShowAdd] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [showInactive, setShowInactive] = useState(false);
+
+  // Add form
+  const [newType, setNewType] = useState<GoalType>("daily");
+  const [newMalas, setNewMalas] = useState("");
+  const [newMinutes, setNewMinutes] = useState("");
+  const [adding, setAdding] = useState(false);
+
+  // Edit form
+  const [editMalas, setEditMalas] = useState("");
+  const [editMinutes, setEditMinutes] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const startEdit = (g: Goal) => {
+    setEditingId(g.id);
+    setEditMalas(String(g.target_malas));
+    setEditMinutes(g.target_minutes ? String(g.target_minutes) : "");
+  };
+
+  const handleAdd = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMalas) return;
+    setAdding(true);
+    try {
+      await apiFetch("/goals", {
+        method: "POST",
+        body: JSON.stringify({
+          type: newType,
+          target_malas: parseInt(newMalas, 10),
+          target_minutes: newMinutes ? parseInt(newMinutes, 10) : null,
+        }),
+      });
+      setNewMalas("");
+      setNewMinutes("");
+      setShowAdd(false);
+      onChanged();
+    } finally {
+      setAdding(false);
+    }
+  };
+
+  const handleSave = async (id: string) => {
+    setSaving(true);
+    try {
+      await apiFetch(`/goals/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          target_malas: parseInt(editMalas, 10),
+          target_minutes: editMinutes ? parseInt(editMinutes, 10) : null,
+        }),
+      });
+      setEditingId(null);
+      onChanged();
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleToggle = async (g: Goal) => {
+    await apiFetch(`/goals/${g.id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ active: !g.active }),
+    });
+    onChanged();
+  };
+
+  const handleDelete = async (id: string) => {
+    await apiFetch(`/goals/${id}`, { method: "DELETE" });
+    onChanged();
+  };
+
+  const visible = goals.filter((g) => showInactive || g.active);
+  const inputCls =
+    "bg-theme-surface border-theme-border text-theme-fg placeholder:text-theme-fg-muted rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-ring)]";
+
+  return (
+    <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
+      <div className="mb-4 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Target className="text-theme-primary h-4 w-4" />
+          <h2 className="text-theme-fg text-sm font-semibold">Doelen</h2>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowInactive((v) => !v)}
+            className="text-theme-fg-muted hover:text-theme-fg text-xs transition-colors"
+          >
+            {showInactive ? "Verberg inactief" : "Toon inactief"}
+          </button>
+          <button
+            onClick={() => setShowAdd((v) => !v)}
+            className="bg-theme-primary flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-white hover:opacity-90"
+          >
+            <Plus className="h-3.5 w-3.5" /> Toevoegen
+          </button>
+        </div>
+      </div>
+
+      {showAdd && (
+        <form
+          onSubmit={handleAdd}
+          className="bg-theme-surface mb-4 space-y-3 rounded-xl p-4"
+        >
+          <div className="flex flex-wrap gap-2">
+            <select
+              value={newType}
+              onChange={(e) => setNewType(e.target.value as GoalType)}
+              className={cn(inputCls, "cursor-pointer")}
+            >
+              <option value="daily">Dagdoel</option>
+              <option value="weekly">Weekdoel</option>
+            </select>
+            <input
+              type="number"
+              value={newMalas}
+              onChange={(e) => setNewMalas(e.target.value)}
+              placeholder="Malas doel"
+              min={1}
+              className={cn(inputCls, "w-32")}
+              required
+            />
+            <input
+              type="number"
+              value={newMinutes}
+              onChange={(e) => setNewMinutes(e.target.value)}
+              placeholder="Min. (optioneel)"
+              min={1}
+              className={cn(inputCls, "w-36")}
+            />
+          </div>
+          <div className="flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => setShowAdd(false)}
+              className="text-theme-fg-secondary hover:text-theme-fg text-sm"
+            >
+              Annuleren
+            </button>
+            <button
+              type="submit"
+              disabled={adding}
+              className="bg-theme-primary flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-white hover:opacity-90 disabled:opacity-50"
+            >
+              {adding && <Loader2 className="h-3.5 w-3.5 animate-spin" />} Opslaan
+            </button>
+          </div>
+        </form>
+      )}
+
+      <div className="space-y-2">
+        {visible.length === 0 && (
+          <p className="text-theme-fg-muted text-sm">Geen doelen ingesteld.</p>
+        )}
+        {visible.map((g) =>
+          editingId === g.id ? (
+            <div key={g.id} className="bg-theme-surface space-y-2 rounded-xl p-3">
+              <div className="text-theme-fg-secondary text-xs font-medium">
+                {GOAL_TYPE_LABELS[g.type]}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <input
+                  type="number"
+                  value={editMalas}
+                  onChange={(e) => setEditMalas(e.target.value)}
+                  placeholder="Malas doel"
+                  min={1}
+                  className={cn(inputCls, "w-32")}
+                  required
+                />
+                <input
+                  type="number"
+                  value={editMinutes}
+                  onChange={(e) => setEditMinutes(e.target.value)}
+                  placeholder="Min. (optioneel)"
+                  min={1}
+                  className={cn(inputCls, "w-36")}
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={() => setEditingId(null)}
+                  className="text-theme-fg-secondary hover:text-theme-fg text-sm"
+                >
+                  Annuleren
+                </button>
+                <button
+                  onClick={() => handleSave(g.id)}
+                  disabled={saving}
+                  className="bg-theme-primary flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-white hover:opacity-90 disabled:opacity-50"
+                >
+                  {saving && <Loader2 className="h-3.5 w-3.5 animate-spin" />} Opslaan
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div
+              key={g.id}
+              className={cn(
+                "flex items-center gap-3 rounded-xl p-3",
+                g.active ? "bg-theme-surface" : "bg-theme-surface opacity-50"
+              )}
+            >
+              <div className="min-w-0 flex-1">
+                <div className="text-theme-fg text-sm font-medium">
+                  {GOAL_TYPE_LABELS[g.type]}: {g.target_malas} malas
+                  {g.target_minutes ? ` · ${g.target_minutes} min` : ""}
+                </div>
+                {!g.active && <div className="text-theme-fg-muted text-xs">Inactief</div>}
+              </div>
+              <div className="flex shrink-0 items-center gap-1">
+                <button
+                  onClick={() => startEdit(g)}
+                  className="text-theme-fg-muted hover:text-theme-primary rounded p-1.5 transition-colors"
+                  title="Bewerken"
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                </button>
+                <button
+                  onClick={() => handleToggle(g)}
+                  className="text-theme-fg-muted hover:text-theme-primary rounded p-1.5 transition-colors"
+                  title={g.active ? "Deactiveren" : "Activeren"}
+                >
+                  {g.active ? (
+                    <ToggleRight className="text-theme-primary h-4 w-4" />
+                  ) : (
+                    <ToggleLeft className="h-4 w-4" />
+                  )}
+                </button>
+                <button
+                  onClick={() => handleDelete(g.id)}
+                  className="text-theme-fg-muted hover:text-theme-error rounded p-1.5 transition-colors"
+                  title="Verwijderen"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+          )
+        )}
+      </div>
+    </div>
+  );
+}
+
+// =============================================================================
 // MAIN
 // =============================================================================
 
@@ -984,6 +1263,7 @@ export function SadhanaTracker() {
   const [calDays, setCalDays] = useState<CalendarDay[]>([]);
   const [sessions, setSessions] = useState<SessionData[]>([]);
   const [allPractices, setAllPractices] = useState<Practice[]>([]);
+  const [goals, setGoals] = useState<Goal[]>([]);
   const [showAddSession, setShowAddSession] = useState(false);
 
   const activePractices = allPractices.filter((p) => p.active);
@@ -995,13 +1275,14 @@ export function SadhanaTracker() {
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-      const [ts, st, ov, cal, sess, pracs] = await Promise.all([
+      const [ts, st, ov, cal, sess, pracs, gl] = await Promise.all([
         apiFetch<TodayStats>("/stats/today"),
         apiFetch<StreakStats>("/stats/streak"),
         apiFetch<OverviewStats>("/stats/overview"),
         apiFetch<CalendarDay[]>("/stats/calendar"),
         apiFetch<SessionData[]>(`/sessions?from=${localDateString(thirtyDaysAgo)}`),
         apiFetch<Practice[]>("/practices?active_only=false"),
+        apiFetch<Goal[]>("/goals"),
       ]);
 
       setTodayStats(ts);
@@ -1010,6 +1291,7 @@ export function SadhanaTracker() {
       setCalDays(cal);
       setSessions(sess);
       setAllPractices(pracs);
+      setGoals(gl);
     } catch {
       setError("Backend niet bereikbaar. Controleer of de Next.js server draait.");
     } finally {
@@ -1086,6 +1368,40 @@ export function SadhanaTracker() {
           sub={`${overview?.total_sessions_this_month ?? 0} sessies${overview?.total_minutes_this_month ? ` · ${formatDuration(overview.total_minutes_this_month)}` : ""}`}
         />
       </div>
+
+      {/* Per-practice vandaag */}
+      {todayStats && todayStats.practices.length > 0 && (
+        <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
+          <div className="mb-3 flex items-center gap-2">
+            <Sparkles className="text-theme-primary h-4 w-4" />
+            <h2 className="text-theme-fg text-sm font-semibold">
+              Vandaag per beoefening
+            </h2>
+          </div>
+          <div className="space-y-2">
+            {todayStats.practices.map((ps) => (
+              <div key={ps.practice_id} className="flex items-center gap-3">
+                <div className="text-theme-primary shrink-0">
+                  {ps.practice_type === "mantra_japa" ? (
+                    <Sparkles className="h-3.5 w-3.5" />
+                  ) : (
+                    <BookOpen className="h-3.5 w-3.5" />
+                  )}
+                </div>
+                <span className="text-theme-fg-secondary min-w-0 flex-1 truncate text-sm">
+                  {ps.practice_name}
+                </span>
+                <span className="text-theme-fg-muted shrink-0 text-xs tabular-nums">
+                  {ps.total_quantity} {ps.practice_type === "mantra_japa" ? "malas" : "×"}
+                  {ps.total_mantras
+                    ? ` · ${ps.total_mantras.toLocaleString("nl-NL")} mantras`
+                    : ""}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Heatmap */}
       <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
@@ -1168,8 +1484,11 @@ export function SadhanaTracker() {
         )}
       </div>
 
-      {/* Practices */}
-      <PracticesPanel practices={allPractices} onChanged={loadAll} />
+      {/* Goals + Practices naast elkaar */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <GoalPanel goals={goals} onChanged={loadAll} />
+        <PracticesPanel practices={allPractices} onChanged={loadAll} />
+      </div>
 
       {/* All-time overview */}
       {overview && (
@@ -1205,6 +1524,37 @@ export function SadhanaTracker() {
               </div>
             ))}
           </div>
+
+          {overview.practices.length > 0 && (
+            <div className="border-theme-border mt-5 border-t pt-4">
+              <div className="text-theme-fg-secondary mb-3 text-xs font-medium">
+                Per beoefening
+              </div>
+              <div className="space-y-2">
+                {overview.practices.map((ps) => (
+                  <div key={ps.practice_id} className="flex items-center gap-3">
+                    <div className="text-theme-primary shrink-0">
+                      {ps.practice_type === "mantra_japa" ? (
+                        <Sparkles className="h-3.5 w-3.5" />
+                      ) : (
+                        <BookOpen className="h-3.5 w-3.5" />
+                      )}
+                    </div>
+                    <span className="text-theme-fg-secondary min-w-0 flex-1 truncate text-sm">
+                      {ps.practice_name}
+                    </span>
+                    <span className="text-theme-fg-muted shrink-0 text-xs tabular-nums">
+                      {ps.total_quantity}{" "}
+                      {ps.practice_type === "mantra_japa" ? "malas" : "×"}
+                      {ps.total_mantras
+                        ? ` · ${ps.total_mantras.toLocaleString("nl-NL")} mantras`
+                        : ""}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
