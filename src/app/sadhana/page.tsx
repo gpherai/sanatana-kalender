@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "Sadhana" };
 
 export default function SadhanaPage() {
   return (
-    <PageLayout spacing>
+    <PageLayout>
       <SadhanaTracker />
     </PageLayout>
   );
