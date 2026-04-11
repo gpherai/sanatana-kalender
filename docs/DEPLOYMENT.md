@@ -1,7 +1,7 @@
 # 🚀 Dharma Calendar - Deployment Guide
 
-> **Versie:** 1.1  
-> **Laatst bijgewerkt:** 8 april 2026
+> **Versie:** 1.2  
+> **Laatst bijgewerkt:** 11 april 2026
 
 Dit document beschrijft hoe je Dharma Calendar deployt op een VPS met Docker.
 
@@ -54,15 +54,15 @@ cd dharma-calendar
 cp .env.example .env.production
 nano .env.production  # Edit with your settings
 
-# 3. Build and start (met productie-overrides)
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+# 3. Build and start
+docker compose up -d --build
 
 # 4. Check status
-docker-compose ps
-docker-compose logs -f app
+docker compose ps
+docker compose logs -f app
 ```
 
-De applicatie is nu beschikbaar op `http://your-server:3000`
+De applicatie is nu beschikbaar op `http://your-server:${APP_PORT}` (standaard 3000).
 
 ---
 
@@ -160,15 +160,23 @@ openssl rand -base64 32
 ```bash
 cd /opt/dharma-calendar
 
-# Build images en start met productie-overrides (resource limits, geen exposed DB port)
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.production up -d --build
+# Build images en start
+docker compose up -d --build
 
 # Check status
-docker-compose ps
+docker compose ps
 
 # View logs
-docker-compose logs -f
+docker compose logs -f
 ```
+
+> **Migraties:** De `migrate` service (`dharma-migrate`) draait automatisch vóór de app en past openstaande database-migraties toe.
+
+> **Prod-override (optioneel):** `docker-compose.prod.yml` sluit DB-poort 5432 extern af en voegt resource limits + log rotation toe:
+> ```bash
+> docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+> ```
+> ⚠️ **Security:** Docker's port binding bypassed UFW standaard via iptables. Als 5432 zichtbaar is in `docker compose ps`, is die poort bereikbaar van buiten — ook als UFW dat blokkeert. Gebruik de prod-override of beperk toegang via iptables.
 
 ### Seed Database (Eerste keer)
 
@@ -193,11 +201,11 @@ docker compose --env-file .env.production --profile seed run --rm seeder \
 ### Verify Deployment
 
 ```bash
-# Check health endpoint
-curl http://localhost:3000/api/health
+# Check health endpoint (vervang 3000 door jouw APP_PORT indien afwijkend)
+curl http://localhost:${APP_PORT:-3000}/api/health
 
 # Expected response:
-# {"status":"healthy","timestamp":"...","version":"0.5.0","checks":{"database":{"status":"up","latencyMs":5}}}
+# {"status":"ok"}
 ```
 
 ---
@@ -228,7 +236,7 @@ server {
 
     # Proxy settings
     location / {
-        proxy_pass http://127.0.0.1:3000;
+        proxy_pass http://127.0.0.1:53100;  # pas aan naar jouw APP_PORT
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -242,7 +250,7 @@ server {
 
     # Health check (for monitoring)
     location /api/health {
-        proxy_pass http://127.0.0.1:3000/api/health;
+        proxy_pass http://127.0.0.1:53100/api/health;  # pas aan naar jouw APP_PORT
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         access_log off;
@@ -287,7 +295,7 @@ sudo certbot renew --dry-run
 mkdir -p /opt/dharma-calendar/backups
 
 # Run backup manually
-docker-compose --profile backup run backup
+docker compose --profile backup run backup
 
 # Setup cron job for daily backups at 2 AM
 crontab -e
@@ -295,21 +303,21 @@ crontab -e
 
 Add to crontab:
 ```cron
-0 2 * * * cd /opt/dharma-calendar && docker-compose --env-file .env.production --profile backup run --rm backup
+0 2 * * * cd /opt/dharma-calendar && docker compose --env-file .env.production --profile backup run --rm backup
 ```
 
 ### Restore from Backup
 
 ```bash
 # Stop app
-docker-compose stop app
+docker compose stop app
 
 # Restore database
 gunzip -c backups/dharma_calendar_20251128_020000.sql.gz | \
-  docker-compose exec -T db psql -U dharma -d dharma_calendar
+  docker compose exec -T db psql -U dharma -d dharma_calendar
 
 # Start app
-docker-compose start app
+docker compose start app
 ```
 
 ### Backup Offsite
@@ -332,13 +340,13 @@ rclone sync /opt/dharma-calendar/backups/ remote:dharma-backups/
 #!/bin/bash
 # /opt/dharma-calendar/scripts/health-check.sh
 
-HEALTH_URL="http://localhost:3000/api/health"
+HEALTH_URL="http://localhost:${APP_PORT:-3000}/api/health"
 RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" $HEALTH_URL)
 
 if [ "$RESPONSE" != "200" ]; then
     echo "❌ Health check failed! Status: $RESPONSE"
     # Send alert (email, Slack, etc.)
-    # docker-compose restart app
+    # docker compose restart app
     exit 1
 fi
 
@@ -355,13 +363,13 @@ echo "✅ Health check passed"
 
 ```bash
 # View all logs
-docker-compose logs -f
+docker compose logs -f
 
 # View app logs only
-docker-compose logs -f app
+docker compose logs -f app
 
 # View last 100 lines
-docker-compose logs --tail=100 app
+docker compose logs --tail=100 app
 ```
 
 ---
@@ -377,15 +385,14 @@ cd /opt/dharma-calendar
 git pull origin main
 
 # 2. Backup database first!
-docker-compose --profile backup run --rm backup
+docker compose --profile backup run --rm backup
 
-# 3. Rebuild and restart
-docker-compose --env-file .env.production build
-docker-compose --env-file .env.production up -d
+# 3. Rebuild and restart (migraties draaien automatisch)
+docker compose up -d --build
 
 # 4. Verify
-docker-compose ps
-curl http://localhost:3000/api/health
+docker compose ps
+curl http://localhost:${APP_PORT:-3000}/api/health
 ```
 
 ### Rollback
@@ -393,8 +400,7 @@ curl http://localhost:3000/api/health
 ```bash
 # Rollback to previous version
 git checkout <previous-commit-hash>
-docker-compose --env-file .env.production build
-docker-compose --env-file .env.production up -d
+docker compose up -d --build
 ```
 
 ---
@@ -405,27 +411,27 @@ docker-compose --env-file .env.production up -d
 
 ```bash
 # Check container status
-docker-compose ps
+docker compose ps
 
 # View logs
-docker-compose logs app
-docker-compose logs db
+docker compose logs app
+docker compose logs db
 
 # Restart specific service
-docker-compose restart app
+docker compose restart app
 ```
 
 ### Database Connection Failed
 
 ```bash
 # Check if DB container is running
-docker-compose ps db
+docker compose ps db
 
 # Check DB logs
-docker-compose logs db
+docker compose logs db
 
 # Test connection from app container
-docker-compose exec app sh
+docker compose exec app sh
 nc -z db 5432 && echo "OK" || echo "FAIL"
 ```
 
@@ -444,8 +450,8 @@ sudo kill -9 <PID>
 
 ```bash
 # ⚠️ WARNING: This deletes all data!
-docker-compose down -v
-docker-compose --env-file .env.production up -d --build
+docker compose down -v
+docker compose --env-file .env.production up -d --build
 ```
 
 ### View Resource Usage
@@ -494,8 +500,8 @@ docker system df
 ## 📞 Support
 
 Bij problemen:
-1. Check de logs: `docker-compose logs -f`
-2. Controleer de health endpoint: `curl localhost:3000/api/health`
+1. Check de logs: `docker compose logs -f`
+2. Controleer de health endpoint: `curl localhost:${APP_PORT:-3000}/api/health`
 3. Bekijk TROUBLESHOOTING sectie hierboven
 4. Check ARCHITECTURE.md voor technische details
 
