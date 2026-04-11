@@ -47,7 +47,7 @@ RUN DATABASE_URL="postgresql://build:build@localhost:5432/build" npx prisma gene
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
-RUN npm run build
+RUN DATABASE_URL="postgresql://build:build@localhost:5432/build" npm run build
 
 # -----------------------------------------------------------------------------
 # Stage 3: Runner (Production)
