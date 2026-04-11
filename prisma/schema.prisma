@@ -353,19 +353,19 @@ enum SadhanaItemUnit {
 enum SadhanaGoalType {
   daily
   weekly
+  lifetime
 }
 
 model SadhanaPractice {
-  id            String               @id @default(cuid())
-  name          String
-  type          SadhanaPracticeType
-  notes         String?
-  active        Boolean              @default(true)
-  createdAt     DateTime             @default(now())
-  items         SadhanaSessionItem[]
-  routineItems  SadhanaRoutineItem[]
-  sadhanaGoal   SadhanaGoal?         @relation(fields: [sadhanaGoalId], references: [id])
-  sadhanaGoalId String?
+  id           String               @id @default(cuid())
+  name         String
+  type         SadhanaPracticeType
+  notes        String?
+  active       Boolean              @default(true)
+  createdAt    DateTime             @default(now())
+  items        SadhanaSessionItem[]
+  routineItems SadhanaRoutineItem[]
+  goals        SadhanaGoal[]
 
   @@map("sadhana_practices")
 }
