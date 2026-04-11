@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { PageLayout } from "@/components/layout";
-import { Star, TriangleAlert } from "lucide-react";
+import { Star, TriangleAlert, Grid2x2, Table2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import type { BirthChart, GrahaKey } from "@/server/panchanga/types";
+import { KundaliChart } from "./KundaliChart";
 
 // =============================================================================
 // GRAHA DISPLAY CONFIG
@@ -162,11 +164,14 @@ function GrahaRow({ grahaKey, chart }: { grahaKey: GrahaKey; chart: BirthChart }
 // MAIN PAGE
 // =============================================================================
 
+type ResultView = "chart" | "table";
+
 export default function KundaliPage() {
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [chart, setChart] = useState<BirthChart | null>(null);
+  const [resultView, setResultView] = useState<ResultView>("chart");
 
   const set = (field: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((f) => ({ ...f, [field]: e.target.value }));
@@ -346,78 +351,120 @@ export default function KundaliPage() {
       {/* Result */}
       {chart && (
         <div className="space-y-6">
-          {/* Lagna */}
-          <div className="bg-theme-surface-raised rounded-xl p-6 shadow">
-            <h2 className="text-theme-fg mb-4 text-base font-semibold">
-              Lagna (Ascendant)
-            </h2>
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <p className="text-theme-fg-muted text-xs font-semibold tracking-wide uppercase">
-                  Rashi
-                </p>
-                <p className="text-theme-fg mt-1 text-lg font-bold">
-                  {chart.lagna.rashi.name}
-                </p>
-                <p className="text-theme-fg-muted text-xs">
-                  {chart.lagna.degreeInRashi.toFixed(2)}°
-                </p>
+          {/* Lagna summary bar */}
+          <div className="bg-theme-surface-raised rounded-xl p-4 shadow">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div className="flex flex-wrap gap-6">
+                <div>
+                  <p className="text-theme-fg-muted text-xs font-semibold tracking-wide uppercase">
+                    Lagna
+                  </p>
+                  <p className="text-theme-fg mt-0.5 text-lg font-bold">
+                    {chart.lagna.rashi.name}
+                  </p>
+                  <p className="text-theme-fg-muted text-xs">
+                    {chart.lagna.degreeInRashi.toFixed(2)}°
+                  </p>
+                </div>
+                <div>
+                  <p className="text-theme-fg-muted text-xs font-semibold tracking-wide uppercase">
+                    Nakshatra
+                  </p>
+                  <p className="text-theme-fg mt-0.5 font-semibold">
+                    {chart.lagna.nakshatra.name}
+                  </p>
+                  <p className="text-theme-fg-muted text-xs">
+                    pada {chart.lagna.nakshatra.pada}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-theme-fg-muted text-xs font-semibold tracking-wide uppercase">
+                    Ayanamsa
+                  </p>
+                  <p className="text-theme-fg mt-0.5 font-semibold">
+                    {chart.ayanamsa.name}
+                  </p>
+                  <p className="text-theme-fg-muted text-xs">
+                    {chart.ayanamsa.degrees.toFixed(4)}°
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-theme-fg-muted text-xs font-semibold tracking-wide uppercase">
-                  Nakshatra
-                </p>
-                <p className="text-theme-fg mt-1 font-semibold">
-                  {chart.lagna.nakshatra.name}
-                </p>
-                <p className="text-theme-fg-muted text-xs">
-                  pada {chart.lagna.nakshatra.pada}
-                </p>
-              </div>
-              <div>
-                <p className="text-theme-fg-muted text-xs font-semibold tracking-wide uppercase">
-                  Ayanamsa
-                </p>
-                <p className="text-theme-fg mt-1 font-semibold">{chart.ayanamsa.name}</p>
-                <p className="text-theme-fg-muted text-xs">
-                  {chart.ayanamsa.degrees.toFixed(6)}°
-                </p>
+
+              {/* View toggle */}
+              <div className="bg-theme-surface border-theme-border flex items-center gap-1 rounded-lg border p-1">
+                <button
+                  onClick={() => setResultView("chart")}
+                  style={{ touchAction: "manipulation" }}
+                  title="Grafiek"
+                  className={cn(
+                    "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors",
+                    resultView === "chart"
+                      ? "bg-theme-primary-15 text-theme-primary"
+                      : "text-theme-fg-muted hover:text-theme-fg"
+                  )}
+                >
+                  <Grid2x2 className="h-3.5 w-3.5" />
+                  Grafiek
+                </button>
+                <button
+                  onClick={() => setResultView("table")}
+                  style={{ touchAction: "manipulation" }}
+                  title="Tabel"
+                  className={cn(
+                    "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors",
+                    resultView === "table"
+                      ? "bg-theme-primary-15 text-theme-primary"
+                      : "text-theme-fg-muted hover:text-theme-fg"
+                  )}
+                >
+                  <Table2 className="h-3.5 w-3.5" />
+                  Tabel
+                </button>
               </div>
             </div>
           </div>
 
-          {/* Grahas */}
-          <div className="bg-theme-surface-raised rounded-xl p-6 shadow">
-            <h2 className="text-theme-fg mb-4 text-base font-semibold">Navagrahas</h2>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-theme-border border-b">
-                    <th className="text-theme-fg-muted pr-4 pb-2 text-left text-xs font-semibold tracking-wide uppercase">
-                      Graha
-                    </th>
-                    <th className="text-theme-fg-muted pr-4 pb-2 text-left text-xs font-semibold tracking-wide uppercase">
-                      Rashi
-                    </th>
-                    <th className="text-theme-fg-muted pr-4 pb-2 text-left text-xs font-semibold tracking-wide uppercase">
-                      Nakshatra
-                    </th>
-                    <th className="text-theme-fg-muted pb-2 text-right text-xs font-semibold tracking-wide uppercase">
-                      Longitude
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {GRAHA_ORDER.map((key) => (
-                    <GrahaRow key={key} grahaKey={key} chart={chart} />
-                  ))}
-                </tbody>
-              </table>
+          {/* Chart view */}
+          {resultView === "chart" && (
+            <div className="mx-auto w-full max-w-lg">
+              <KundaliChart chart={chart} />
             </div>
-            <p className="text-theme-fg-muted mt-4 text-xs">
-              R = Retrograde · Mean Node voor Rahu/Ketu
-            </p>
-          </div>
+          )}
+
+          {/* Table view */}
+          {resultView === "table" && (
+            <div className="bg-theme-surface-raised rounded-xl p-6 shadow">
+              <h2 className="text-theme-fg mb-4 text-base font-semibold">Navagrahas</h2>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-theme-border border-b">
+                      <th className="text-theme-fg-muted pr-4 pb-2 text-left text-xs font-semibold tracking-wide uppercase">
+                        Graha
+                      </th>
+                      <th className="text-theme-fg-muted pr-4 pb-2 text-left text-xs font-semibold tracking-wide uppercase">
+                        Rashi
+                      </th>
+                      <th className="text-theme-fg-muted pr-4 pb-2 text-left text-xs font-semibold tracking-wide uppercase">
+                        Nakshatra
+                      </th>
+                      <th className="text-theme-fg-muted pb-2 text-right text-xs font-semibold tracking-wide uppercase">
+                        Longitude
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {GRAHA_ORDER.map((key) => (
+                      <GrahaRow key={key} grahaKey={key} chart={chart} />
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p className="text-theme-fg-muted mt-4 text-xs">
+                R = Retrograde · Mean Node voor Rahu/Ketu
+              </p>
+            </div>
+          )}
 
           {/* Technical metadata */}
           <details className="text-theme-fg-muted text-xs">
