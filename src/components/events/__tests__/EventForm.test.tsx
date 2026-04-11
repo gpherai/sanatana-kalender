@@ -155,7 +155,7 @@ describe("EventForm", () => {
     const fetchMock = vi.mocked(fetch);
     fetchMock.mockResolvedValue({
       ok: false,
-      json: async () => ({ error: "Server Error" }),
+      json: async () => ({ message: "Server Error" }),
     } as Response);
 
     render(
