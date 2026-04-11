@@ -42,13 +42,6 @@ fi
 echo "✅ Database is ready!"
 
 # -----------------------------------------------------------------------------
-# Run Prisma Migrations
-# -----------------------------------------------------------------------------
-echo "🗄️  Running database migrations..."
-node node_modules/prisma/build/index.js migrate deploy
-echo "✅ Migrations applied!"
-
-# -----------------------------------------------------------------------------
 # Start Application
 # -----------------------------------------------------------------------------
 echo ""
