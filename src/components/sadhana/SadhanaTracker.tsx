@@ -29,6 +29,7 @@ import {
   formatDuration,
 } from "./types";
 import { buildHeatmap, Heatmap } from "./Heatmap";
+import { MalasChart } from "./MalasChart";
 import { StatCard } from "./StatCard";
 import { SessionForm } from "./SessionForm";
 import { SessionCard } from "./SessionCard";
@@ -358,6 +359,17 @@ export function SadhanaTracker() {
         <div className="sm:hidden">
           <Heatmap weeks={heatmapMobile} cellSize={10} dayInfoMap={dayInfoMap} />
         </div>
+      </div>
+
+      {/* Maandgrafiek */}
+      <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
+        <div className="mb-1 flex items-center gap-2">
+          <TrendingUp className="text-theme-primary h-4 w-4" />
+          <h2 className="text-theme-fg text-sm font-semibold">
+            Per maand — laatste jaar
+          </h2>
+        </div>
+        <MalasChart calDays={calDays} />
       </div>
 
       {/* All-time overview */}

@@ -111,6 +111,7 @@ In `additionalCss` wordt `[[t]]` vervangen door `[data-theme="thema-naam"]` door
 - 4 StatCards: vandaag (met `X / Y malas` bij actief doel), deze week, deze maand, streak
 - Vandaag per beoefening — altijd zichtbaar, lege staat
 - Activiteitsheatmap — desktop 52 wkn / mobiel 22 wkn, gelabelde legende (0, 1–3, 4–7, 8–11, ≥12), tap-feedback op mobiel
+- Maandgrafiek (`MalasChart`) — staafgrafiek laatste 12 maanden, toggle malas/sessies, hover tooltip, geen externe library (pure div/CSS)
 - Sessieslijst met "Laad meer" (+30 dagen per klik), verborgen als alles geladen
 - All-time overzicht + per-practice breakdown + gem. min/sessie
 - GoalPanel + PracticesPanel naast elkaar (lg:grid-cols-2), goal type pills
@@ -127,8 +128,9 @@ In `additionalCss` wordt `[[t]]` vervangen door `[data-theme="thema-naam"]` door
 3. Sessieslijst + "Toevoegen" + Laad meer
 4. Vandaag per beoefening
 5. Activiteitsheatmap
-6. All-time overzicht
-7. Goals + Practices naast elkaar
+6. Maandgrafiek (MalasChart)
+7. All-time overzicht
+8. Goals + Practices naast elkaar
 
 ### Wat ontbreekt t.o.v. Python referentie-backend
 - `/sessions/{id}/items` sub-routes — **niet nodig**: UI doet hele-sessie replace
