@@ -33,7 +33,7 @@ describe("Events Pages", () => {
     render(ui);
     expect(screen.getByText("Nieuw Event")).toBeInTheDocument();
     expect(eventFormMock).toHaveBeenCalled();
-    const props = eventFormMock.mock.calls[0][0];
+    const props = eventFormMock.mock.calls[0]![0];
     expect(props.mode).toBe("create");
   });
 
@@ -101,7 +101,7 @@ describe("Events Pages", () => {
 
       expect(screen.getByText("Event Bewerken")).toBeInTheDocument();
       expect(eventFormMock).toHaveBeenCalled();
-      const props = eventFormMock.mock.calls.find((c: any) => c[0].mode === "edit")[0];
+      const props = eventFormMock.mock.calls.find((c: any) => c[0].mode === "edit")![0];
       expect(props.initialData.name).toBe("Edit Event");
       expect(props.initialData.notes).toBe("Some notes");
     });
