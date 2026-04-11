@@ -129,7 +129,7 @@ export function EventDetailModal({
 
   const handleEdit = () => {
     onClose();
-    router.push(`/events/${event.eventId}`);
+    router.push(`/events/${event.eventId}/edit`);
   };
 
   const handleDelete = async () => {

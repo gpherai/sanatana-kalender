@@ -82,10 +82,10 @@ describe("Kundali Page", () => {
       julianDay: 2447119.895833333,
     };
 
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
+    vi.mocked(global.fetch).mockResolvedValueOnce({
       ok: true,
       json: async () => mockChart,
-    });
+    } as Response);
 
     const { container } = render(<Kundali />);
 
@@ -127,10 +127,10 @@ describe("Kundali Page", () => {
   });
 
   it("displays an error message when the API fails", async () => {
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
+    vi.mocked(global.fetch).mockResolvedValueOnce({
       ok: false,
       json: async () => ({ error: "Calculation failed" }),
-    });
+    } as Response);
 
     const { container } = render(<Kundali />);
 
