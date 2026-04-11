@@ -12,6 +12,11 @@ test("navigation works via header links", async ({ page }) => {
   await page.getByRole("link", { name: "Events" }).click();
   await expect(page).toHaveURL(/.*events/);
 
+  // Navigate to Kundali
+  await page.getByRole("link", { name: "Kundali" }).click();
+  await expect(page).toHaveURL(/.*kundali/);
+  expect(await page.getByRole("heading", { name: "Kundali" }).isVisible()).toBeTruthy();
+
   // Navigate to Settings
   await page.getByRole("link", { name: "Instellingen" }).click();
   await expect(page).toHaveURL(/.*settings/);
