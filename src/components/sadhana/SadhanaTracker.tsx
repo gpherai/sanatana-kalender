@@ -101,20 +101,48 @@ export function SadhanaTracker() {
     if (!initialLoadDone.current) setLoading(true);
     try {
       setError(null);
+      const fromDate = new Date("2026-01-01T00:00:00");
+
       const yearAgo = new Date();
       yearAgo.setDate(yearAgo.getDate() - 364);
+      // Project mandate: only from 2026-01-01
+      const minDate = new Date("2026-01-01T00:00:00");
+      const effectiveStart = yearAgo < minDate ? minDate : yearAgo;
 
-      const [ts, st, ov, cal, sess, pracs, gl, rout, dim] = await Promise.all([
+      const results = await Promise.allSettled([
         apiFetch<TodayStats>("/stats/today"),
         apiFetch<StreakStats>("/stats/streak"),
         apiFetch<OverviewStats>("/stats/overview"),
         apiFetch<CalendarDay[]>("/stats/calendar"),
-        apiFetch<SessionData[]>("/sessions"),
+        apiFetch<SessionData[]>(`/sessions?from=${localDateString(fromDate)}`),
         apiFetch<Practice[]>("/practices?active_only=false"),
         apiFetch<Goal[]>("/goals"),
         apiFetch<Routine[]>("/routines"),
-        fetchDayInfoMap(localDateString(yearAgo), todayString()),
+        fetchDayInfoMap(localDateString(effectiveStart), todayString()),
       ]);
+
+      const failed = results.filter(
+        (r) => r.status === "rejected"
+      ) as PromiseRejectedResult[];
+      if (failed.length > 0) {
+        const errors = failed.map((f) => f.reason?.message || "Onbekende fout");
+        console.error("Sommige API calls zijn gefaald:", errors);
+        throw new Error(errors[0]);
+      }
+
+      const [ts, st, ov, cal, sess, pracs, gl, rout, dim] = results.map(
+        (r) => (r as PromiseFulfilledResult<unknown>).value
+      ) as [
+        TodayStats,
+        StreakStats,
+        OverviewStats,
+        CalendarDay[],
+        SessionData[],
+        Practice[],
+        Goal[],
+        Routine[],
+        DayInfoMap,
+      ];
 
       setTodayStats(ts);
       setStreak(st);
@@ -125,8 +153,13 @@ export function SadhanaTracker() {
       setGoals(gl);
       setRoutines(rout);
       setDayInfoMap(dim);
-    } catch {
-      setError("Backend niet bereikbaar. Controleer of de Next.js server draait.");
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error
+          ? err.message
+          : "Onbekende fout bij het laden van de gegevens.";
+      console.error("Sadhana load error:", err);
+      setError(msg);
     } finally {
       setLoading(false);
       initialLoadDone.current = true;

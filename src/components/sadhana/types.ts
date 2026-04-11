@@ -170,22 +170,48 @@ export async function apiFetch<T>(path: string, opts?: RequestInit): Promise<T> 
 }
 
 export async function fetchDayInfoMap(start: string, end: string): Promise<DayInfoMap> {
-  const res = await fetch(`/api/daily-info?start=${start}&end=${end}`);
-  if (!res.ok) return new Map();
-  const arr = (await res.json()) as Array<{
-    date: string;
-    tithi?: { name: string; paksha: "Shukla" | "Krishna" };
-    specialDay?: { name: string; emoji: string; type: string } | null;
-    moonPhaseEvent?: { type: "new" | "first_quarter" | "full" | "last_quarter" } | null;
-  }>;
   const map: DayInfoMap = new Map();
-  for (const d of arr) {
-    map.set(d.date.slice(0, 10), {
-      tithi: d.tithi,
-      specialDay: d.specialDay,
-      moonPhaseEvent: d.moonPhaseEvent,
-    });
+  const startDate = new Date(start + "T00:00:00");
+  const endDate = new Date(end + "T00:00:00");
+
+  let current = new Date(startDate);
+
+  while (current <= endDate) {
+    const chunkEnd = new Date(current);
+    chunkEnd.setDate(chunkEnd.getDate() + 85); // Safety margin (limit is 90)
+    const actualEnd = chunkEnd > endDate ? endDate : chunkEnd;
+
+    const sStr = localDateString(current);
+    const eStr = localDateString(actualEnd);
+
+    try {
+      const res = await fetch(`/api/daily-info?start=${sStr}&end=${eStr}`);
+      if (res.ok) {
+        const arr = (await res.json()) as Array<{
+          date: string;
+          tithi?: { name: string; paksha: "Shukla" | "Krishna" };
+          specialDay?: { name: string; emoji: string; type: string } | null;
+          moonPhaseEvent?: {
+            type: "new" | "first_quarter" | "full" | "last_quarter";
+          } | null;
+        }>;
+        for (const d of arr) {
+          map.set(d.date.slice(0, 10), {
+            tithi: d.tithi,
+            specialDay: d.specialDay,
+            moonPhaseEvent: d.moonPhaseEvent,
+          });
+        }
+      }
+    } catch (err) {
+      console.error("Chunk fetch failed:", sStr, eStr, err);
+    }
+
+    // Move to next chunk
+    current = new Date(actualEnd);
+    current.setDate(current.getDate() + 1);
   }
+
   return map;
 }
 
