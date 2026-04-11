@@ -85,6 +85,11 @@ export default async function Home() {
                   const category = occ.event.categories[0]?.category ?? null;
                   const eventDate = new Date(occ.date);
                   const crossesYear = eventDate.getFullYear() !== now.getFullYear();
+                  const typeLabel =
+                    occ.event.eventType !== "OTHER"
+                      ? occ.event.eventType.charAt(0) +
+                        occ.event.eventType.slice(1).toLowerCase()
+                      : null;
                   return (
                     <Link
                       key={occ.id}
@@ -97,12 +102,20 @@ export default async function Home() {
                         <div className="group-hover:text-theme-primary text-theme-fg truncate text-sm font-medium transition-colors">
                           {occ.event.name}
                         </div>
-                        <div className="text-theme-fg-muted text-xs">
-                          {eventDate.toLocaleDateString("nl-NL", {
-                            day: "numeric",
-                            month: "short",
-                            ...(crossesYear ? { year: "numeric" } : {}),
-                          })}
+                        <div className="text-theme-fg-muted flex items-center gap-1.5 text-xs">
+                          <span>
+                            {eventDate.toLocaleDateString("nl-NL", {
+                              day: "numeric",
+                              month: "short",
+                              ...(crossesYear ? { year: "numeric" } : {}),
+                            })}
+                          </span>
+                          {typeLabel && (
+                            <>
+                              <span className="text-theme-border">·</span>
+                              <span className="text-theme-fg-muted">{typeLabel}</span>
+                            </>
+                          )}
                         </div>
                       </div>
                       <ArrowRight className="group-hover:text-theme-primary text-theme-fg-muted h-4 w-4 transition-colors" />
@@ -121,20 +134,21 @@ export default async function Home() {
             </h2>
             <div className="grid grid-cols-2 gap-1.5">
               {categories.map((cat) => (
-                <div
+                <Link
                   key={cat.id}
-                  className="flex cursor-default items-center gap-2 rounded-r-lg border-l-[3px] px-2.5 py-1.5"
+                  href={`/events?categories=${cat.name}`}
+                  className="flex cursor-pointer items-center gap-2 rounded-r-lg border-l-[3px] px-2.5 py-1.5 transition-opacity hover:opacity-75 active:opacity-60"
                   style={{
                     borderLeftColor: cat.color,
                     background: `color-mix(in oklch, ${cat.color} 10%, transparent)`,
                   }}
-                  title={cat.displayName}
+                  title={`Filter op ${cat.displayName}`}
                 >
                   <span className="text-sm leading-none">{cat.icon}</span>
                   <span className="text-theme-fg-secondary truncate text-xs font-medium">
                     {cat.displayName}
                   </span>
-                </div>
+                </Link>
               ))}
             </div>
           </div>

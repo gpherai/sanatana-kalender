@@ -188,7 +188,16 @@ export default function KundaliPage() {
       setLoading(false);
       return;
     }
-    if (isNaN(d) || isNaN(m) || isNaN(y) || d < 1 || d > 31 || m < 1 || m > 12) {
+    // Validate using Date rollover: new Date(2023,1,31) → March, not Feb
+    const testDate = new Date(y, m - 1, d);
+    if (
+      isNaN(d) ||
+      isNaN(m) ||
+      isNaN(y) ||
+      testDate.getFullYear() !== y ||
+      testDate.getMonth() !== m - 1 ||
+      testDate.getDate() !== d
+    ) {
       setError("Ongeldige geboortedatum.");
       setLoading(false);
       return;
@@ -328,9 +337,9 @@ export default function KundaliPage() {
 
       {/* Error */}
       {error && (
-        <div className="flex items-start gap-3 rounded-xl border border-red-300 bg-red-50 p-4 dark:border-red-800 dark:bg-red-950">
-          <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
-          <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+        <div className="border-theme-error flex items-start gap-3 rounded-xl border bg-[var(--theme-error-bg)] p-4">
+          <TriangleAlert className="text-theme-error mt-0.5 h-4 w-4 shrink-0" />
+          <p className="text-sm text-[var(--theme-error-fg)]">{error}</p>
         </div>
       )}
 

@@ -12,7 +12,12 @@ import {
   DayDetailsPanel,
 } from "@/components/almanac";
 import type { MoonPhaseEvent } from "@/components/almanac";
-import { formatDateLocal, getMonthDays, getMonthStartPadding } from "@/lib/date-utils";
+import {
+  formatDateLocal,
+  getMonthDays,
+  getMonthStartPadding,
+  parseCalendarDate,
+} from "@/lib/date-utils";
 import type { DailyInfoResponse } from "@/types";
 import type { CalendarEvent, CalendarEventResponse } from "@/types/calendar";
 import { parseCalendarEvent } from "@/types/calendar";
@@ -35,7 +40,7 @@ function getMoonPhaseEvents(monthData: DailyInfoResponse[]): MoonPhaseEvent[] {
   return monthData
     .filter((d) => d.moonPhaseEvent)
     .map((d) => ({
-      date: new Date(d.date + "T12:00:00"),
+      date: parseCalendarDate(d.date.split("T")[0]!),
       type: d.moonPhaseEvent!.type,
       ...MOON_PHASE_META[d.moonPhaseEvent!.type],
     }))
@@ -126,7 +131,7 @@ export default function AlmanacPage() {
       (monthData ?? [])
         .filter((d) => d.specialDay)
         .map((d) => ({
-          date: new Date(d.date),
+          date: parseCalendarDate(d.date.split("T")[0]!),
           type: d.specialDay!.type,
           name: d.specialDay!.name,
           description: d.specialDay!.description,

@@ -146,10 +146,12 @@ export function DayDetailsPanel({
         <div className="space-y-4 px-4 pb-8 lg:px-0 lg:pb-0">
           {/* Selected Day Header */}
           <div
-            className="rounded-2xl p-4 text-white shadow-lg"
+            className="rounded-2xl p-4 text-white shadow-lg lg:cursor-default"
             style={{
               background: `var(--theme-almanac-day-header-bg)`,
             }}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
           >
             <div className="flex items-center gap-2 text-sm text-white/70">
               {selectedSanskritDay && (

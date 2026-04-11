@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import {
   Flame,
   Award,
@@ -12,7 +12,9 @@ import {
   Activity,
   TrendingUp,
   BookOpen,
+  ChevronRight,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import {
   type TodayStats,
   type StreakStats,
@@ -40,6 +42,38 @@ import { PracticesPanel } from "./PracticesPanel";
 import { GoalPanel } from "./GoalPanel";
 import { RoutinePanel } from "./RoutinePanel";
 
+const MONTHS_NL_FULL = [
+  "januari",
+  "februari",
+  "maart",
+  "april",
+  "mei",
+  "juni",
+  "juli",
+  "augustus",
+  "september",
+  "oktober",
+  "november",
+  "december",
+];
+
+function formatMonthLabel(ym: string) {
+  const parts = ym.split("-");
+  const y = parts[0]!;
+  const m = parts[1]!;
+  return `${MONTHS_NL_FULL[parseInt(m, 10) - 1]} ${y}`;
+}
+
+function getMonthTotals(monthSessions: SessionData[]) {
+  let malas = 0;
+  let minutes = 0;
+  for (const s of monthSessions) {
+    malas += s.total_malas;
+    minutes += s.duration_minutes ?? 0;
+  }
+  return { malas, minutes, count: monthSessions.length };
+}
+
 export function SadhanaTracker() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -52,15 +86,14 @@ export function SadhanaTracker() {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [routines, setRoutines] = useState<Routine[]>([]);
   const [showAddSession, setShowAddSession] = useState(false);
-  const [sessionDaysBack, setSessionDaysBack] = useState(30);
-  const sessionDaysRef = useRef(30);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [noMoreSessions, setNoMoreSessions] = useState(false);
-  const sessionsCountRef = useRef(0);
+  const [expandedMonths, setExpandedMonths] = useState<Set<string>>(
+    () => new Set([todayString().slice(0, 7)])
+  );
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [dayInfoMap, setDayInfoMap] = useState<DayInfoMap>(new Map());
   const initialLoadDone = useRef(false);
+  const prevGoalProgressRef = useRef<Map<string, number>>(new Map());
 
   const activePractices = allPractices.filter((p) => p.active);
 
@@ -68,9 +101,6 @@ export function SadhanaTracker() {
     if (!initialLoadDone.current) setLoading(true);
     try {
       setError(null);
-      const fromDate = new Date();
-      fromDate.setDate(fromDate.getDate() - sessionDaysRef.current);
-
       const yearAgo = new Date();
       yearAgo.setDate(yearAgo.getDate() - 364);
 
@@ -79,7 +109,7 @@ export function SadhanaTracker() {
         apiFetch<StreakStats>("/stats/streak"),
         apiFetch<OverviewStats>("/stats/overview"),
         apiFetch<CalendarDay[]>("/stats/calendar"),
-        apiFetch<SessionData[]>(`/sessions?from=${localDateString(fromDate)}`),
+        apiFetch<SessionData[]>("/sessions"),
         apiFetch<Practice[]>("/practices?active_only=false"),
         apiFetch<Goal[]>("/goals"),
         apiFetch<Routine[]>("/routines"),
@@ -91,8 +121,6 @@ export function SadhanaTracker() {
       setOverview(ov);
       setCalDays(cal);
       setSessions(sess);
-      sessionsCountRef.current = sess.length;
-      setNoMoreSessions(false);
       setAllPractices(pracs);
       setGoals(gl);
       setRoutines(rout);
@@ -109,30 +137,62 @@ export function SadhanaTracker() {
     loadAll();
   }, [loadAll]);
 
-  const handleLoadMore = useCallback(async () => {
-    const newDays = sessionDaysRef.current + 30;
-    sessionDaysRef.current = newDays;
-    setSessionDaysBack(newDays);
-    setLoadingMore(true);
-    try {
-      const fromDate = new Date();
-      fromDate.setDate(fromDate.getDate() - newDays);
-      const sess = await apiFetch<SessionData[]>(
-        `/sessions?from=${localDateString(fromDate)}`
-      );
-      if (sess.length === sessionsCountRef.current) setNoMoreSessions(true);
-      sessionsCountRef.current = sess.length;
-      setSessions(sess);
-    } finally {
-      setLoadingMore(false);
+  // Detect newly completed goals and toast once per transition
+  useEffect(() => {
+    if (goals.length === 0) return;
+    const isFirst = prevGoalProgressRef.current.size === 0;
+    let hasNewCompletion = false;
+    if (!isFirst) {
+      for (const g of goals) {
+        if (!g.active) continue;
+        const prev = prevGoalProgressRef.current.get(g.id);
+        const curr = (g.progress_malas || 0) / g.target_malas;
+        if (curr >= 1 && (prev === undefined || prev < 1)) {
+          hasNewCompletion = true;
+          break;
+        }
+      }
     }
-  }, []);
+    const newMap = new Map<string, number>();
+    for (const g of goals) {
+      newMap.set(g.id, (g.progress_malas || 0) / g.target_malas);
+    }
+    prevGoalProgressRef.current = newMap;
+    if (hasNewCompletion) {
+      setToast("Doel bereikt!");
+      if (toastTimer.current) clearTimeout(toastTimer.current);
+      toastTimer.current = setTimeout(() => setToast(null), 3000);
+    }
+  }, [goals]);
 
   const showToast = useCallback((msg: string) => {
     setToast(msg);
     if (toastTimer.current) clearTimeout(toastTimer.current);
     toastTimer.current = setTimeout(() => setToast(null), 2500);
   }, []);
+
+  const toggleMonth = useCallback((month: string) => {
+    setExpandedMonths((prev) => {
+      const next = new Set(prev);
+      if (next.has(month)) {
+        next.delete(month);
+      } else {
+        next.add(month);
+      }
+      return next;
+    });
+  }, []);
+
+  // Group sessions by YYYY-MM, sorted descending
+  const sessionsByMonth = useMemo(() => {
+    const map = new Map<string, SessionData[]>();
+    for (const s of sessions) {
+      const month = s.date.slice(0, 7);
+      if (!map.has(month)) map.set(month, []);
+      map.get(month)!.push(s);
+    }
+    return [...map.entries()].sort(([a], [b]) => b.localeCompare(a));
+  }, [sessions]);
 
   const heatmapFull = buildHeatmap(calDays, 364);
   const heatmapMobile = buildHeatmap(calDays, 154); // ~22 weken, past op 375px
@@ -212,12 +272,10 @@ export function SadhanaTracker() {
         />
       </div>
 
-      {/* Sessions */}
+      {/* Sessions — maandaccordeon */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-theme-fg font-semibold">
-            Sessies (laatste {sessionDaysBack} dagen)
-          </h2>
+          <h2 className="text-theme-fg font-semibold">Sessies</h2>
           <button
             onClick={() => setShowAddSession((v) => !v)}
             className="bg-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-white shadow hover:opacity-90"
@@ -270,80 +328,103 @@ export function SadhanaTracker() {
 
         {sessions.length === 0 ? (
           <div className="bg-theme-surface-raised rounded-2xl p-8 text-center shadow-lg">
-            <div className="text-theme-fg-muted text-sm">
-              Geen sessies in de afgelopen {sessionDaysBack} dagen.
-            </div>
+            <div className="text-theme-fg-muted text-sm">Geen sessies gevonden.</div>
           </div>
         ) : (
-          <div className="space-y-4">
-            {Object.entries(
-              sessions.reduce(
-                (acc, s) => {
-                  (acc[s.date] ??= []).push(s);
-                  return acc;
-                },
-                {} as Record<string, SessionData[]>
-              )
-            )
-              .sort(([a], [b]) => b.localeCompare(a))
-              .map(([date, daySessions]) => {
-                const info = dayInfoMap.get(date);
-                const context = dayContextLabel(info);
-                const isToday = date === todayString();
-                return (
-                  <div key={date} className="space-y-2">
-                    {/* Dag-header */}
-                    <div className="flex flex-wrap items-center gap-2 px-1">
-                      <span className="text-theme-fg-secondary text-xs font-semibold">
-                        {formatDate(date)}
-                      </span>
-                      {isToday && (
-                        <span className="bg-theme-primary/15 text-theme-primary rounded-full px-2 py-0.5 text-xs font-medium">
-                          Vandaag
-                        </span>
+          <div className="space-y-2">
+            {sessionsByMonth.map(([month, monthSessions]) => {
+              const isOpen = expandedMonths.has(month);
+              const { malas, minutes, count } = getMonthTotals(monthSessions);
+              return (
+                <div
+                  key={month}
+                  className="bg-theme-surface-raised overflow-hidden rounded-2xl shadow-lg"
+                >
+                  {/* Maand-header */}
+                  <button
+                    onClick={() => toggleMonth(month)}
+                    className="hover:bg-theme-hover flex w-full cursor-pointer items-center gap-3 px-4 py-3.5 transition-colors"
+                  >
+                    <ChevronRight
+                      className={cn(
+                        "text-theme-fg-muted h-4 w-4 shrink-0 transition-transform duration-200",
+                        isOpen && "rotate-90"
                       )}
-                      {context && (
-                        <span className="text-theme-fg-muted text-xs">{context}</span>
+                    />
+                    <span className="text-theme-fg flex-1 text-left font-semibold capitalize">
+                      {formatMonthLabel(month)}
+                    </span>
+                    <div className="text-theme-fg-muted flex items-center gap-2 text-xs">
+                      <span>{count} sessies</span>
+                      <span className="text-theme-border">·</span>
+                      <span>{Math.round(malas)} malas</span>
+                      {minutes > 0 && (
+                        <>
+                          <span className="text-theme-border">·</span>
+                          <span>{formatDuration(minutes)}</span>
+                        </>
                       )}
                     </div>
-                    {daySessions.map((s) => (
-                      <SessionCard
-                        key={s.id}
-                        session={s}
-                        practices={activePractices}
-                        onUpdated={() => {
-                          loadAll();
-                          showToast("Sessie opgeslagen");
-                        }}
-                        onDeleted={() => {
-                          loadAll();
-                          showToast("Sessie verwijderd");
-                        }}
-                      />
-                    ))}
-                  </div>
-                );
-              })}
-          </div>
-        )}
+                  </button>
 
-        {/* Laad meer */}
-        {!noMoreSessions && (
-          <div className="flex justify-center pt-1">
-            <button
-              onClick={handleLoadMore}
-              disabled={loadingMore}
-              className="text-theme-primary flex min-h-[44px] cursor-pointer items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium hover:opacity-70 disabled:opacity-50"
-            >
-              {loadingMore ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Laden…
-                </>
-              ) : (
-                <>Laad meer</>
-              )}
-            </button>
+                  {/* Dag-groepen */}
+                  {isOpen && (
+                    <div className="border-theme-border space-y-4 border-t px-4 pt-4 pb-4">
+                      {Object.entries(
+                        monthSessions.reduce(
+                          (acc, s) => {
+                            (acc[s.date] ??= []).push(s);
+                            return acc;
+                          },
+                          {} as Record<string, SessionData[]>
+                        )
+                      )
+                        .sort(([a], [b]) => b.localeCompare(a))
+                        .map(([date, daySessions]) => {
+                          const info = dayInfoMap.get(date);
+                          const context = dayContextLabel(info);
+                          const isToday = date === todayString();
+                          return (
+                            <div key={date} className="space-y-2">
+                              {/* Dag-header */}
+                              <div className="flex flex-wrap items-center gap-2 px-1">
+                                <span className="text-theme-fg-secondary text-xs font-semibold">
+                                  {formatDate(date)}
+                                </span>
+                                {isToday && (
+                                  <span className="bg-theme-primary/15 text-theme-primary rounded-full px-2 py-0.5 text-xs font-medium">
+                                    Vandaag
+                                  </span>
+                                )}
+                                {context && (
+                                  <span className="text-theme-fg-muted text-xs">
+                                    {context}
+                                  </span>
+                                )}
+                              </div>
+                              {daySessions.map((s) => (
+                                <SessionCard
+                                  key={s.id}
+                                  session={s}
+                                  practices={activePractices}
+                                  onUpdated={() => {
+                                    loadAll();
+                                    showToast("Sessie opgeslagen");
+                                  }}
+                                  onDeleted={() => {
+                                    loadAll();
+                                    showToast("Sessie verwijderd");
+                                  }}
+                                />
+                              ))}
+                            </div>
+                          );
+                        })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

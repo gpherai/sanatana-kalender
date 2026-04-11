@@ -63,9 +63,6 @@ export class BirthChartService {
    * - Whole Sign house system for lagna and bhava cusps
    */
   async compute(birth: BirthData): Promise<BirthChart> {
-    swisseph.swe_set_ephe_path(EPHE_PATH);
-    swisseph.swe_set_sid_mode(swisseph.SE_SIDM_LAHIRI, 0, 0);
-
     const altitude = birth.altitude ?? 0;
 
     // -------------------------------------------------------------------------

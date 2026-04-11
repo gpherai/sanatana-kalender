@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Header } from "@/components/ui/Header";
+import { ScrollToTop } from "@/components/ui/ScrollToTop";
 import { ToastProvider } from "@/components/ui/Toast";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import {
@@ -96,6 +97,7 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         <ThemeProvider>
           <ToastProvider>
+            <ScrollToTop />
             <Header />
             {children}
           </ToastProvider>

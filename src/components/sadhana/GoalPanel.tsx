@@ -9,6 +9,7 @@ import {
   ToggleLeft,
   ToggleRight,
   Target,
+  CheckCircle2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { type Goal, type GoalType, type Practice, apiFetch } from "./types";
@@ -269,8 +270,11 @@ export function GoalPanel({
         {visible.length === 0 && (
           <p className="text-theme-fg-muted text-sm">Geen doelen ingesteld.</p>
         )}
-        {visible.map((g) =>
-          editingId === g.id ? (
+        {visible.map((g) => {
+          const isCompleted =
+            (g.progress_malas || 0) >= g.target_malas &&
+            (!g.target_minutes || (g.progress_minutes || 0) >= g.target_minutes);
+          return editingId === g.id ? (
             <div key={g.id} className="bg-theme-surface space-y-2 rounded-xl p-3">
               <div className="text-theme-fg-secondary text-xs font-medium">
                 {GOAL_TYPE_LABELS[g.type]}
@@ -357,8 +361,9 @@ export function GoalPanel({
             <div
               key={g.id}
               className={cn(
-                "flex items-center gap-3 rounded-xl p-3",
-                g.active ? "bg-theme-surface" : "bg-theme-surface opacity-50"
+                "flex items-center gap-3 rounded-xl p-3 transition-shadow",
+                g.active ? "bg-theme-surface" : "bg-theme-surface opacity-50",
+                isCompleted && "ring-1 ring-[var(--theme-success)]"
               )}
             >
               <div className="min-w-0 flex-1">
@@ -370,7 +375,7 @@ export function GoalPanel({
                         ? "bg-theme-primary/15 text-theme-primary"
                         : g.type === "weekly"
                           ? "bg-theme-secondary/15 text-theme-secondary"
-                          : "bg-emerald-500/15 text-emerald-600"
+                          : "bg-[var(--theme-success-bg)] text-[var(--theme-success-fg)]"
                     )}
                   >
                     {GOAL_TYPE_LABELS[g.type]}
@@ -379,6 +384,9 @@ export function GoalPanel({
                     <span className="text-theme-fg truncate text-sm font-semibold">
                       {g.name}
                     </span>
+                  )}
+                  {isCompleted && (
+                    <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-[var(--theme-success)]" />
                   )}
                   {!g.active && (
                     <span className="text-theme-fg-muted text-xs">Inactief</span>
@@ -397,7 +405,7 @@ export function GoalPanel({
                           ? "bg-theme-primary"
                           : g.type === "weekly"
                             ? "bg-theme-secondary"
-                            : "bg-emerald-500"
+                            : "bg-[var(--theme-success)]"
                       )}
                       style={{
                         width: `${Math.min(100, Math.max(0, ((g.progress_malas || 0) / g.target_malas) * 100))}%`,
@@ -462,8 +470,8 @@ export function GoalPanel({
                 </button>
               </div>
             </div>
-          )
-        )}
+          );
+        })}
       </div>
     </div>
   );
