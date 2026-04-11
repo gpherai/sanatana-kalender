@@ -11,18 +11,21 @@ import {
   Target,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { type Goal, type GoalType, apiFetch } from "./types";
+import { type Goal, type GoalType, type Practice, apiFetch } from "./types";
 
 const GOAL_TYPE_LABELS: Record<GoalType, string> = {
   daily: "Dagdoel",
   weekly: "Weekdoel",
+  lifetime: "Totaal doel",
 };
 
 export function GoalPanel({
   goals,
+  practices,
   onChanged,
 }: {
   goals: Goal[];
+  practices: Practice[];
   onChanged: () => void;
 }) {
   const [showAdd, setShowAdd] = useState(false);
@@ -30,18 +33,24 @@ export function GoalPanel({
   const [showInactive, setShowInactive] = useState(false);
 
   const [newType, setNewType] = useState<GoalType>("daily");
+  const [newName, setNewName] = useState("");
   const [newMalas, setNewMalas] = useState("");
   const [newMinutes, setNewMinutes] = useState("");
+  const [newPracticeIds, setNewPracticeIds] = useState<string[]>([]);
   const [adding, setAdding] = useState(false);
 
+  const [editName, setEditName] = useState("");
   const [editMalas, setEditMalas] = useState("");
   const [editMinutes, setEditMinutes] = useState("");
+  const [editPracticeIds, setEditPracticeIds] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
 
   const startEdit = (g: Goal) => {
     setEditingId(g.id);
+    setEditName(g.name || "");
     setEditMalas(String(g.target_malas));
     setEditMinutes(g.target_minutes ? String(g.target_minutes) : "");
+    setEditPracticeIds(g.practices?.map((p) => p.id) || []);
   };
 
   const handleAdd = async (e: React.FormEvent) => {
@@ -53,12 +62,17 @@ export function GoalPanel({
         method: "POST",
         body: JSON.stringify({
           type: newType,
+          name: newType === "lifetime" ? newName : undefined,
           target_malas: parseInt(newMalas, 10),
           target_minutes: newMinutes ? parseInt(newMinutes, 10) : null,
+          practice_ids: newType === "lifetime" ? newPracticeIds : [],
         }),
       });
+      setNewType("daily");
+      setNewName("");
       setNewMalas("");
       setNewMinutes("");
+      setNewPracticeIds([]);
       setShowAdd(false);
       onChanged();
     } finally {
@@ -66,14 +80,16 @@ export function GoalPanel({
     }
   };
 
-  const handleSave = async (id: string) => {
+  const handleSave = async (g: Goal) => {
     setSaving(true);
     try {
-      await apiFetch(`/goals/${id}`, {
+      await apiFetch(`/goals/${g.id}`, {
         method: "PATCH",
         body: JSON.stringify({
+          name: g.type === "lifetime" ? editName : undefined,
           target_malas: parseInt(editMalas, 10),
           target_minutes: editMinutes ? parseInt(editMinutes, 10) : null,
+          practice_ids: g.type === "lifetime" ? editPracticeIds : [],
         }),
       });
       setEditingId(null);
@@ -94,6 +110,18 @@ export function GoalPanel({
   const handleDelete = async (id: string) => {
     await apiFetch(`/goals/${id}`, { method: "DELETE" });
     onChanged();
+  };
+
+  const togglePractice = (
+    id: string,
+    currentIds: string[],
+    setFn: (ids: string[]) => void
+  ) => {
+    if (currentIds.includes(id)) {
+      setFn(currentIds.filter((pid) => pid !== id));
+    } else {
+      setFn([...currentIds, id]);
+    }
   };
 
   const visible = goals.filter((g) => showInactive || g.active);
@@ -143,7 +171,20 @@ export function GoalPanel({
             >
               <option value="daily">Dagdoel</option>
               <option value="weekly">Weekdoel</option>
+              <option value="lifetime">Totaal doel</option>
             </select>
+
+            {newType === "lifetime" && (
+              <input
+                type="text"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                placeholder="Naam (bijv. Atharvashirsha 1000x)"
+                className={cn(inputCls, "w-full lg:w-48")}
+                required
+              />
+            )}
+
             <label htmlFor="ga-malas" className="sr-only">
               Malas doel
             </label>
@@ -153,7 +194,9 @@ export function GoalPanel({
               inputMode="numeric"
               value={newMalas}
               onChange={(e) => setNewMalas(e.target.value)}
-              placeholder="Malas doel"
+              placeholder={
+                newType === "lifetime" ? "Totaal aantal (malas)" : "Malas doel"
+              }
               min={1}
               className={cn(inputCls, "w-32")}
               required
@@ -172,6 +215,37 @@ export function GoalPanel({
               className={cn(inputCls, "w-36")}
             />
           </div>
+
+          {newType === "lifetime" && (
+            <div className="mt-2 space-y-1">
+              <label className="text-theme-fg-secondary text-xs font-medium">
+                Welke oefeningen tellen mee voor dit doel? (optioneel)
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {practices.map((p) => {
+                  const isSelected = newPracticeIds.includes(p.id);
+                  return (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onClick={() =>
+                        togglePractice(p.id, newPracticeIds, setNewPracticeIds)
+                      }
+                      className={cn(
+                        "cursor-pointer rounded-full px-3 py-1 text-xs font-medium transition-colors",
+                        isSelected
+                          ? "bg-theme-primary text-white"
+                          : "bg-theme-surface-raised text-theme-fg hover:bg-theme-border"
+                      )}
+                    >
+                      {p.name}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           <div className="flex justify-end gap-2">
             <button
               type="button"
@@ -202,6 +276,16 @@ export function GoalPanel({
                 {GOAL_TYPE_LABELS[g.type]}
               </div>
               <div className="flex flex-wrap gap-2">
+                {g.type === "lifetime" && (
+                  <input
+                    type="text"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    placeholder="Naam doel"
+                    className={cn(inputCls, "w-full")}
+                    required
+                  />
+                )}
                 <input
                   type="number"
                   inputMode="numeric"
@@ -222,7 +306,38 @@ export function GoalPanel({
                   className={cn(inputCls, "w-36")}
                 />
               </div>
-              <div className="flex justify-end gap-2">
+
+              {g.type === "lifetime" && (
+                <div className="mt-2 space-y-1">
+                  <label className="text-theme-fg-secondary text-xs font-medium">
+                    Gekoppelde oefeningen
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {practices.map((p) => {
+                      const isSelected = editPracticeIds.includes(p.id);
+                      return (
+                        <button
+                          key={p.id}
+                          type="button"
+                          onClick={() =>
+                            togglePractice(p.id, editPracticeIds, setEditPracticeIds)
+                          }
+                          className={cn(
+                            "cursor-pointer rounded-full px-3 py-1 text-xs font-medium transition-colors",
+                            isSelected
+                              ? "bg-theme-primary text-white"
+                              : "bg-theme-surface-raised text-theme-fg hover:bg-theme-border"
+                          )}
+                        >
+                          {p.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              <div className="mt-2 flex justify-end gap-2">
                 <button
                   onClick={() => setEditingId(null)}
                   className="text-theme-fg-secondary hover:text-theme-fg min-h-[44px] cursor-pointer text-sm"
@@ -230,7 +345,7 @@ export function GoalPanel({
                   Annuleren
                 </button>
                 <button
-                  onClick={() => handleSave(g.id)}
+                  onClick={() => handleSave(g)}
                   disabled={saving}
                   className="bg-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm text-white hover:opacity-90 disabled:opacity-50"
                 >
@@ -247,25 +362,62 @@ export function GoalPanel({
               )}
             >
               <div className="min-w-0 flex-1">
-                <div className="mb-1 flex items-center gap-2">
+                <div className="mb-1 flex flex-wrap items-center gap-2">
                   <span
                     className={cn(
-                      "rounded-full px-2 py-0.5 text-xs font-medium",
+                      "rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap",
                       g.type === "daily"
                         ? "bg-theme-primary/15 text-theme-primary"
-                        : "bg-theme-secondary/15 text-theme-secondary"
+                        : g.type === "weekly"
+                          ? "bg-theme-secondary/15 text-theme-secondary"
+                          : "bg-emerald-500/15 text-emerald-600"
                     )}
                   >
                     {GOAL_TYPE_LABELS[g.type]}
                   </span>
+                  {g.type === "lifetime" && g.name && (
+                    <span className="text-theme-fg truncate text-sm font-semibold">
+                      {g.name}
+                    </span>
+                  )}
                   {!g.active && (
                     <span className="text-theme-fg-muted text-xs">Inactief</span>
                   )}
                 </div>
-                <div className="text-theme-fg text-sm font-medium">
-                  {g.target_malas} malas
+
+                <div className="text-theme-fg flex items-center gap-2 text-sm font-medium">
+                  {g.type === "lifetime" ? (
+                    <>
+                      <span>
+                        {g.progress || 0} / {g.target_malas}
+                      </span>
+                      <div className="bg-theme-surface-raised h-2 w-24 overflow-hidden rounded-full">
+                        <div
+                          className="h-full rounded-full bg-emerald-500"
+                          style={{
+                            width: `${Math.min(100, Math.max(0, ((g.progress || 0) / g.target_malas) * 100))}%`,
+                          }}
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <span>{g.target_malas} malas</span>
+                  )}
                   {g.target_minutes ? ` · ${g.target_minutes} min` : ""}
                 </div>
+
+                {g.type === "lifetime" && g.practices && g.practices.length > 0 && (
+                  <div className="mt-1.5 flex flex-wrap gap-1">
+                    {g.practices.map((p) => (
+                      <span
+                        key={p.id}
+                        className="text-theme-fg-muted bg-theme-surface-raised rounded px-1.5 text-xs"
+                      >
+                        {p.name}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
               <div className="flex shrink-0 items-center gap-1">
                 <button

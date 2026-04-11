@@ -489,7 +489,7 @@ export function SadhanaTracker() {
       {/* Routines + Goals + Practices */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-start">
         <RoutinePanel routines={routines} practices={allPractices} onChanged={loadAll} />
-        <GoalPanel goals={goals} onChanged={loadAll} />
+        <GoalPanel goals={goals} practices={allPractices} onChanged={loadAll} />
       </div>
       <PracticesPanel practices={allPractices} onChanged={loadAll} />
 

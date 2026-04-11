@@ -11,10 +11,17 @@ export async function PATCH(
   const goal = await prisma.sadhanaGoal.update({
     where: { id },
     data: {
+      ...(body.name !== undefined && { name: body.name }),
       ...(body.target_malas !== undefined && { targetMalas: body.target_malas }),
       ...(body.target_minutes !== undefined && { targetMinutes: body.target_minutes }),
       ...(body.active !== undefined && { active: body.active }),
+      ...(body.practice_ids !== undefined && {
+        practices: {
+          set: body.practice_ids.map((pid: string) => ({ id: pid })),
+        },
+      }),
     },
+    include: { practices: true },
   });
   return NextResponse.json(formatGoal(goal));
 }

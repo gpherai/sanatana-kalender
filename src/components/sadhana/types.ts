@@ -10,7 +10,7 @@ export const API = "/api/sadhana";
 
 export type PracticeType = "mantra_japa" | "parayana" | "other";
 export type ItemUnit = "malas" | "count";
-export type GoalType = "daily" | "weekly";
+export type GoalType = "daily" | "weekly" | "lifetime";
 
 export interface Practice {
   id: string;
@@ -93,9 +93,12 @@ export interface OverviewStats {
 export interface Goal {
   id: string;
   type: GoalType;
+  name: string | null;
   target_malas: number;
   target_minutes: number | null;
   active: boolean;
+  practices?: { id: string; name: string }[];
+  progress?: number | null;
 }
 
 export interface RoutineItem {

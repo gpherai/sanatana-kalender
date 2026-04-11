@@ -97,14 +97,16 @@ export function todayStr(): string {
 // GOALS
 // =============================================================================
 
-export function formatGoal(g: SadhanaGoal) {
+export function formatGoal(g: SadhanaGoal & { practices?: SadhanaPractice[] }) {
   return {
     id: g.id,
     type: g.type,
+    name: g.name,
     target_malas: g.targetMalas,
     target_minutes: g.targetMinutes,
     active: g.active,
     created_at: g.createdAt.toISOString(),
+    practices: g.practices ? g.practices.map((p) => ({ id: p.id, name: p.name })) : [],
   };
 }
 
