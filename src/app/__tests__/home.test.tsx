@@ -21,6 +21,7 @@ describe("HomePage", () => {
         event: {
           id: "evt_1",
           name: "Test Event",
+          eventType: "PUJA",
           categories: [{ category: { icon: null } }], // trigger fallback 📅
         },
       },
@@ -31,6 +32,7 @@ describe("HomePage", () => {
 
     expect(screen.getByText("Ganesha")).toBeInTheDocument();
     expect(screen.getByText("Test Event")).toBeInTheDocument();
+    expect(screen.getByText("Puja")).toBeInTheDocument(); // Verifies charAt(0) + slice(1).toLowerCase()
     expect(screen.getByText("📅")).toBeInTheDocument();
   });
 

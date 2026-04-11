@@ -86,7 +86,7 @@ export default async function Home() {
                   const eventDate = new Date(occ.date);
                   const crossesYear = eventDate.getFullYear() !== now.getFullYear();
                   const typeLabel =
-                    occ.event.eventType !== "OTHER"
+                    occ.event.eventType && occ.event.eventType !== "OTHER"
                       ? occ.event.eventType.charAt(0) +
                         occ.event.eventType.slice(1).toLowerCase()
                       : null;
