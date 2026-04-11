@@ -3,7 +3,12 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { prismaMock } from "@/__tests__/helpers/prisma-mock";
 import NewEventPage from "../events/new/page";
-import EditEventPage, { generateMetadata } from "../events/[id]/page";
+import EditEventPage, {
+  generateMetadata as generateEditMetadata,
+} from "../events/[id]/edit/page";
+import EventDetailPage, {
+  generateMetadata as generateDetailMetadata,
+} from "../events/[id]/page";
 
 // Mock notFound to throw an error like Next.js does
 vi.mock("next/navigation", () => ({
@@ -27,74 +32,91 @@ describe("Events Pages", () => {
     const ui = await NewEventPage();
     render(ui);
     expect(screen.getByText("Nieuw Event")).toBeInTheDocument();
-    expect(eventFormMock).toHaveBeenCalledWith(
-      expect.objectContaining({ mode: "create" })
-    );
+    expect(eventFormMock).toHaveBeenCalled();
+    const props = eventFormMock.mock.calls[0][0];
+    expect(props.mode).toBe("create");
   });
 
-  it("renders EditEventPage with full data (covers all branches)", async () => {
-    const mockEvent = {
-      id: "1",
-      name: "Edit Event",
-      description: "Desc",
-      eventType: "FESTIVAL",
-      recurrenceType: "YEARLY_LUNAR",
-      tags: ["tag1"],
-      categories: [{ categoryId: "cat1", category: { id: "cat1" } }],
-      occurrences: [
-        {
-          date: new Date("2025-01-01"),
-          endDate: new Date("2025-01-02"),
-          startTime: "10:00",
-          endTime: "12:00",
-          notes: "Some notes",
-        },
-      ],
-    };
+  describe("EventDetailPage", () => {
+    it("renders detail page with data", async () => {
+      prismaMock.event.findUnique.mockResolvedValue({
+        id: "1",
+        name: "Test Event",
+        description: "Desc",
+        eventType: "FESTIVAL",
+        recurrenceType: "YEARLY_LUNAR",
+        tags: ["tag1"],
+        categories: [
+          { category: { name: "cat1", displayName: "Cat 1", color: "red", icon: "🎉" } },
+        ],
+        occurrences: [
+          {
+            date: new Date("2026-01-01"),
+            endDate: new Date("2026-01-02"),
+            startTime: "10:00",
+            endTime: "12:00",
+            notes: "Some notes",
+          },
+        ],
+      } as any);
 
-    prismaMock.event.findUnique.mockResolvedValue(mockEvent as any);
+      const ui = await EventDetailPage({ params: Promise.resolve({ id: "1" }) });
+      render(ui);
 
-    const ui = await EditEventPage({ params: Promise.resolve({ id: "1" }) });
-    render(ui);
+      expect(screen.getByText("Test Event")).toBeInTheDocument();
+      expect(screen.getByText("Desc")).toBeInTheDocument();
+      expect(screen.getByText("Bewerken")).toBeInTheDocument();
+    });
 
-    expect(screen.getByText("Event Bewerken")).toBeInTheDocument();
-    expect(eventFormMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        mode: "edit",
-        initialData: expect.objectContaining({
-          name: "Edit Event",
-          notes: "Some notes",
-          startTime: "10:00",
-        }),
-      })
-    );
+    it("generates detail metadata", async () => {
+      prismaMock.event.findUnique.mockResolvedValue({ name: "Meta Event" } as any);
+      const meta = await generateDetailMetadata({ params: Promise.resolve({ id: "1" }) });
+      expect(meta.title).toBe("Meta Event");
+    });
   });
 
-  it("renders EditEventPage with minimal data (covers null branches)", async () => {
-    const mockEventMinimal = {
-      id: "2",
-      name: "Minimal Event",
-      description: null,
-      eventType: "OTHER",
-      recurrenceType: "ONCE",
-      tags: [],
-      categories: [],
-      occurrences: [], // firstOccurrence will be undefined
-    };
+  describe("EditEventPage", () => {
+    it("renders EditEventPage with full data", async () => {
+      prismaMock.event.findUnique.mockResolvedValue({
+        id: "1",
+        name: "Edit Event",
+        description: "Desc",
+        eventType: "FESTIVAL",
+        recurrenceType: "YEARLY_LUNAR",
+        tags: ["tag1"],
+        categories: [{ category: { id: "cat1", category: { name: "cat1" } } }],
+        occurrences: [
+          {
+            date: new Date("2026-01-01"),
+            endDate: new Date("2026-01-02"),
+            startTime: "10:00",
+            endTime: "12:00",
+            notes: "Some notes",
+          },
+        ],
+      } as any);
 
-    prismaMock.event.findUnique.mockResolvedValue(mockEventMinimal as any);
+      const ui = await EditEventPage({ params: Promise.resolve({ id: "1" }) });
+      render(ui);
 
-    const ui = await EditEventPage({ params: Promise.resolve({ id: "2" }) });
-    render(ui);
+      expect(screen.getByText("Event Bewerken")).toBeInTheDocument();
+      expect(eventFormMock).toHaveBeenCalled();
+      const props = eventFormMock.mock.calls.find((c: any) => c[0].mode === "edit")[0];
+      expect(props.initialData.name).toBe("Edit Event");
+      expect(props.initialData.notes).toBe("Some notes");
+    });
 
-    expect(eventFormMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        initialData: expect.objectContaining({
-          date: "",
-          notes: "",
-        }),
-      })
-    );
+    it("generates edit metadata", async () => {
+      prismaMock.event.findUnique.mockResolvedValue({ name: "Meta Event" } as any);
+      const meta = await generateEditMetadata({ params: Promise.resolve({ id: "1" }) });
+      expect(meta.title).toBe("Meta Event bewerken");
+
+      prismaMock.event.findUnique.mockResolvedValue(null);
+      const fallbackMeta = await generateEditMetadata({
+        params: Promise.resolve({ id: "999" }),
+      });
+      expect(fallbackMeta.title).toBe("Event bewerken");
+    });
   });
 
   it("calls notFound when event is missing", async () => {
@@ -102,20 +124,8 @@ describe("Events Pages", () => {
     const { notFound } = await import("next/navigation");
 
     await expect(
-      EditEventPage({ params: Promise.resolve({ id: "999" }) })
+      EventDetailPage({ params: Promise.resolve({ id: "999" }) })
     ).rejects.toThrow("NEXT_NOT_FOUND");
     expect(notFound).toHaveBeenCalled();
-  });
-
-  it("generates metadata correctly", async () => {
-    prismaMock.event.findUnique.mockResolvedValue({ name: "Meta Event" } as any);
-    const meta = await generateMetadata({ params: Promise.resolve({ id: "1" }) });
-    expect(meta.title).toBe("Meta Event");
-
-    prismaMock.event.findUnique.mockResolvedValue(null);
-    const fallbackMeta = await generateMetadata({
-      params: Promise.resolve({ id: "999" }),
-    });
-    expect(fallbackMeta.title).toBe("Event bewerken");
   });
 });

@@ -93,7 +93,7 @@ describe("EventDetailModal", () => {
 
     fireEvent.click(screen.getByText("Bewerken"));
 
-    expect(mockPush).toHaveBeenCalledWith("/events/evt_1");
+    expect(mockPush).toHaveBeenCalledWith("/events/evt_1/edit");
   });
 
   it("handles delete flow", async () => {

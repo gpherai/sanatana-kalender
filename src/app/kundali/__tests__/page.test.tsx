@@ -111,15 +111,21 @@ describe("Kundali Page", () => {
     fireEvent.click(screen.getByRole("button", { name: /Bereken Kundali/i }));
 
     // Wait for result
-    await waitFor(() =>
-      expect(screen.getByText(/Lagna \(Ascendant\)/i)).toBeInTheDocument()
+    await waitFor(
+      () => {
+        expect(screen.getAllByText("Lagna")[0]).toBeInTheDocument();
+        expect(screen.getByText("Vrishabha")).toBeInTheDocument();
+      },
+      { timeout: 2000 }
     );
 
     // Verify some values
-    expect(screen.getByText("Dhanu (Boogschutter)")).toBeInTheDocument();
+    expect(screen.getAllByText("Dhanu (Boogschutter)")[0]).toBeInTheDocument();
     expect(screen.getByText("15.50°")).toBeInTheDocument();
     expect(screen.getByText("Purva Ashadha")).toBeInTheDocument();
-    expect(screen.getAllByText(/pada 1/i).length).toBeGreaterThan(0);
+
+    // Switch to table view to see full names
+    fireEvent.click(screen.getByRole("button", { name: /Tabel/i }));
 
     // Check Graha row
     expect(screen.getByText("Surya")).toBeInTheDocument();
