@@ -387,7 +387,7 @@ export function GoalPanel({
 
                 <div className="text-theme-fg flex items-center gap-2 text-sm font-medium">
                   <span className="whitespace-nowrap">
-                    {g.progress || 0} / {g.target_malas} malas
+                    {Math.round(g.progress_malas || 0)} / {g.target_malas} malas
                   </span>
                   <div className="bg-theme-surface-raised h-2 w-20 overflow-hidden rounded-full lg:w-32">
                     <div
@@ -400,14 +400,18 @@ export function GoalPanel({
                             : "bg-emerald-500"
                       )}
                       style={{
-                        width: `${Math.min(100, Math.max(0, ((g.progress || 0) / g.target_malas) * 100))}%`,
+                        width: `${Math.min(100, Math.max(0, ((g.progress_malas || 0) / g.target_malas) * 100))}%`,
                       }}
                     />
                   </div>
                   <span className="text-theme-fg-muted text-xs whitespace-nowrap">
-                    {(((g.progress || 0) / g.target_malas) * 100).toFixed(1)}%
+                    {(((g.progress_malas || 0) / g.target_malas) * 100).toFixed(1)}%
                   </span>
-                  {g.target_minutes ? ` · ${g.target_minutes} min` : ""}
+                  {g.target_minutes ? (
+                    <span className="text-theme-fg-muted text-xs whitespace-nowrap">
+                      · {g.progress_minutes || 0}/{g.target_minutes} min
+                    </span>
+                  ) : null}
                 </div>
 
                 {g.type === "lifetime" && g.practices && g.practices.length > 0 && (

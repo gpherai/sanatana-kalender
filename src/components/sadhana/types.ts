@@ -98,7 +98,8 @@ export interface Goal {
   target_minutes: number | null;
   active: boolean;
   practices?: { id: string; name: string }[];
-  progress?: number | null;
+  progress_malas?: number | null;
+  progress_minutes?: number | null;
 }
 
 export interface RoutineItem {

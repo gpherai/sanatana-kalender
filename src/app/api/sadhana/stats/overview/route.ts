@@ -13,8 +13,10 @@ function computeTotals(
   for (const s of sessions) {
     minutes += s.durationMinutes ?? 0;
     for (const item of s.items) {
-      if (item.practice.type === "mantra_japa" && item.unit === "malas") {
+      if (item.unit === "malas") {
         malas += item.quantity;
+      } else if (item.practice.type === "mantra_japa" && item.unit === "count") {
+        malas += item.quantity / 108;
       }
     }
   }

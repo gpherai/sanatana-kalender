@@ -23,7 +23,8 @@ export async function GET() {
   // For each goal, we compute the current progress based on its type and linked practices.
   const goalsWithProgress = await Promise.all(
     goals.map(async (goal) => {
-      let progress = 0;
+      let progressMalas = 0;
+      let progressMinutes = 0;
       const practiceIds = goal.practices.map((p) => p.id);
 
       let dateFilter = {};
@@ -44,16 +45,20 @@ export async function GET() {
       });
 
       for (const s of sessions) {
+        progressMinutes += s.durationMinutes ?? 0;
         for (const item of s.items) {
-          if (item.practice.type === "mantra_japa" && item.unit === "malas") {
-            progress += item.quantity;
+          if (item.unit === "malas") {
+            progressMalas += item.quantity;
+          } else if (item.practice.type === "mantra_japa" && item.unit === "count") {
+            progressMalas += item.quantity / 108;
           }
         }
       }
 
       return {
         ...formatGoal(goal),
-        progress,
+        progress_malas: progressMalas,
+        progress_minutes: progressMinutes,
       };
     })
   );
@@ -79,5 +84,8 @@ export async function POST(req: Request) {
     },
     include: { practices: true },
   });
-  return NextResponse.json({ ...formatGoal(goal), progress: 0 }, { status: 201 });
+  return NextResponse.json(
+    { ...formatGoal(goal), progress_malas: 0, progress_minutes: 0 },
+    { status: 201 }
+  );
 }
