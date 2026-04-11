@@ -10,7 +10,14 @@ import {
 import { logError } from "@/lib/utils";
 import { parseCalendarDate } from "@/lib/date-utils";
 import { Prisma } from "@prisma/client";
-import { EventType, RecurrenceType, Tithi, Nakshatra, Maas } from "@prisma/client";
+import {
+  EventType,
+  RecurrenceType,
+  Tithi,
+  Nakshatra,
+  Maas,
+  Sankranti,
+} from "@prisma/client";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -153,6 +160,9 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
             nakshatra: data.nakshatra as Nakshatra | null,
           }),
           ...(data.maas !== undefined && { maas: data.maas as Maas | null }),
+          ...(data.sankranti !== undefined && {
+            sankranti: data.sankranti as Sankranti | null,
+          }),
           ...(data.tags !== undefined && { tags: data.tags }),
         },
         include: {
@@ -175,19 +185,24 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         }
       }
 
-      // Update first occurrence if date data provided
+      // Update first occurrence whenever any occurrence field is provided
       const firstOccurrence = existingEvent.occurrences[0];
-      if (data.date !== undefined && firstOccurrence) {
-        await tx.eventOccurrence.update({
-          where: { id: firstOccurrence.id },
-          data: {
-            date: parseCalendarDate(data.date),
+      if (firstOccurrence) {
+        const occurrenceData = {
+          ...(data.date !== undefined && { date: parseCalendarDate(data.date) }),
+          ...(data.endDate !== undefined && {
             endDate: data.endDate ? parseCalendarDate(data.endDate) : null,
-            startTime: data.startTime ?? null,
-            endTime: data.endTime ?? null,
-            notes: data.notes ?? null,
-          },
-        });
+          }),
+          ...(data.startTime !== undefined && { startTime: data.startTime }),
+          ...(data.endTime !== undefined && { endTime: data.endTime }),
+          ...(data.notes !== undefined && { notes: data.notes }),
+        };
+        if (Object.keys(occurrenceData).length > 0) {
+          await tx.eventOccurrence.update({
+            where: { id: firstOccurrence.id },
+            data: occurrenceData,
+          });
+        }
       }
 
       return updatedEvent;

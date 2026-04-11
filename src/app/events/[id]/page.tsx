@@ -57,6 +57,7 @@ export default async function EditEventPage({ params }: PageProps) {
     tithi: event.tithi ?? "",
     nakshatra: event.nakshatra ?? "",
     maas: event.maas ?? "",
+    sankranti: event.sankranti ?? "",
     tags: event.tags.join(", "),
     notes: firstOccurrence?.notes ?? "",
   };

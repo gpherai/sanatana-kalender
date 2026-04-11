@@ -191,6 +191,7 @@ export const createEventSchema = z.object({
   tithi: tithiEnum.nullable().optional(),
   nakshatra: nakshatraEnum.nullable().optional(),
   maas: maasEnum.nullable().optional(),
+  sankranti: sankrantiEnum.nullable().optional(),
   tags: z.array(z.string()).default([]),
   date: dateStringSchema,
   endDate: z.string().regex(DATE_REGEX).nullable().optional(),

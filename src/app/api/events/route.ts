@@ -9,6 +9,7 @@ import {
   Tithi,
   Nakshatra,
   Maas,
+  Sankranti,
   EventType,
   RecurrenceType,
 } from "@prisma/client";
@@ -128,6 +129,7 @@ export async function POST(request: NextRequest) {
           tithi: (data.tithi as Tithi) ?? null,
           nakshatra: (data.nakshatra as Nakshatra) ?? null,
           maas: (data.maas as Maas) ?? null,
+          sankranti: (data.sankranti as Sankranti) ?? null,
           tags: data.tags ?? [],
         },
       });
