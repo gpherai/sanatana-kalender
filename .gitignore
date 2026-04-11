@@ -92,3 +92,17 @@ yarn-error.log*
 # Temporary development files in root
 /*.log
 /database-export.json
+
+# -----------------------------------------------------------------------------
+# Python (docs/reference en .claude/skills bevatten Python scripts)
+# -----------------------------------------------------------------------------
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Scratch / wegwerpbestanden in root
+/test-*.ts
+/check-*.ts
+/update_*.js
+/test-*.js
