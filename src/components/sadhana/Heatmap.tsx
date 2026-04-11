@@ -7,7 +7,7 @@ import {
   type DayInfoMap,
   localDateString,
   formatDate,
-  MOON_PHASE_EMOJI,
+  dayContextLabel,
 } from "./types";
 
 // =============================================================================
@@ -67,18 +67,6 @@ const DAY_LABELS = ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"];
 // HELPERS
 // =============================================================================
 
-function dayLabel(info: DayInfoMap extends Map<string, infer V> ? V : never): string {
-  const moonEmoji = info.moonPhaseEvent ? MOON_PHASE_EMOJI[info.moonPhaseEvent.type] : "";
-  if (info.specialDay) {
-    const tithi = info.tithi ? ` · ${info.tithi.paksha} ${info.tithi.name}` : "";
-    return `${info.specialDay.emoji} ${info.specialDay.name}${tithi}`;
-  }
-  if (info.tithi)
-    return `${moonEmoji ? moonEmoji + " " : ""}${info.tithi.paksha} ${info.tithi.name}`;
-  if (moonEmoji) return moonEmoji;
-  return "";
-}
-
 // =============================================================================
 // COMPONENT
 // =============================================================================
@@ -111,7 +99,7 @@ export function Heatmap({
   });
 
   const tappedInfo = tapped ? dayInfoMap?.get(tapped.date) : undefined;
-  const tappedLabel = tappedInfo ? dayLabel(tappedInfo) : null;
+  const tappedLabel = tappedInfo ? dayContextLabel(tappedInfo) : null;
 
   return (
     <div className="overflow-x-auto">
@@ -153,7 +141,7 @@ export function Heatmap({
                 }
                 const info = dayInfoMap?.get(cell.date);
                 const isSpecial = !!(info?.specialDay || info?.moonPhaseEvent);
-                const label = info ? dayLabel(info) : "";
+                const label = info ? dayContextLabel(info) : "";
                 return (
                   <div
                     key={di}

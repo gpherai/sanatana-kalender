@@ -123,6 +123,17 @@ export const MOON_PHASE_EMOJI: Record<
   last_quarter: "🌗",
 };
 
+export function dayContextLabel(info: DayInfo | undefined): string | null {
+  if (!info) return null;
+  if (info.specialDay) return `${info.specialDay.emoji} ${info.specialDay.name}`;
+  const moon = info.moonPhaseEvent
+    ? MOON_PHASE_EMOJI[info.moonPhaseEvent.type] + " "
+    : "";
+  if (info.tithi) return `${moon}${info.tithi.paksha} ${info.tithi.name}`;
+  if (info.moonPhaseEvent) return MOON_PHASE_EMOJI[info.moonPhaseEvent.type];
+  return null;
+}
+
 // =============================================================================
 // API
 // =============================================================================

@@ -26,7 +26,9 @@ import {
   fetchDayInfoMap,
   localDateString,
   todayString,
+  formatDate,
   formatDuration,
+  dayContextLabel,
 } from "./types";
 import { buildHeatmap, Heatmap } from "./Heatmap";
 import { MalasChart } from "./MalasChart";
@@ -265,23 +267,55 @@ export function SadhanaTracker() {
             </div>
           </div>
         ) : (
-          <div className="space-y-2">
-            {sessions.map((s) => (
-              <SessionCard
-                key={s.id}
-                session={s}
-                practices={activePractices}
-                dayInfo={dayInfoMap.get(s.date)}
-                onUpdated={() => {
-                  loadAll();
-                  showToast("Sessie opgeslagen");
-                }}
-                onDeleted={() => {
-                  loadAll();
-                  showToast("Sessie verwijderd");
-                }}
-              />
-            ))}
+          <div className="space-y-4">
+            {Object.entries(
+              sessions.reduce(
+                (acc, s) => {
+                  (acc[s.date] ??= []).push(s);
+                  return acc;
+                },
+                {} as Record<string, SessionData[]>
+              )
+            )
+              .sort(([a], [b]) => b.localeCompare(a))
+              .map(([date, daySessions]) => {
+                const info = dayInfoMap.get(date);
+                const context = dayContextLabel(info);
+                const isToday = date === todayString();
+                return (
+                  <div key={date} className="space-y-2">
+                    {/* Dag-header */}
+                    <div className="flex flex-wrap items-center gap-2 px-1">
+                      <span className="text-theme-fg-secondary text-xs font-semibold">
+                        {formatDate(date)}
+                      </span>
+                      {isToday && (
+                        <span className="bg-theme-primary/15 text-theme-primary rounded-full px-2 py-0.5 text-xs font-medium">
+                          Vandaag
+                        </span>
+                      )}
+                      {context && (
+                        <span className="text-theme-fg-muted text-xs">{context}</span>
+                      )}
+                    </div>
+                    {daySessions.map((s) => (
+                      <SessionCard
+                        key={s.id}
+                        session={s}
+                        practices={activePractices}
+                        onUpdated={() => {
+                          loadAll();
+                          showToast("Sessie opgeslagen");
+                        }}
+                        onDeleted={() => {
+                          loadAll();
+                          showToast("Sessie verwijderd");
+                        }}
+                      />
+                    ))}
+                  </div>
+                );
+              })}
           </div>
         )}
 

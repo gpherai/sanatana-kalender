@@ -17,27 +17,22 @@ import {
   type SessionData,
   type Practice,
   type FormItem,
-  type DayInfo,
   apiFetch,
   todayString,
-  formatDate,
   formatTime,
   isoToLocalTime,
   formatDuration,
-  MOON_PHASE_EMOJI,
 } from "./types";
 import { SessionForm } from "./SessionForm";
 
 export function SessionCard({
   session,
   practices,
-  dayInfo,
   onUpdated,
   onDeleted,
 }: {
   session: SessionData;
   practices: Practice[];
-  dayInfo?: DayInfo;
   onUpdated: () => void;
   onDeleted: () => void;
 }) {
@@ -128,15 +123,12 @@ export function SessionCard({
             {session.total_malas}
           </div>
           <div className="min-w-0 flex-1">
-            <div className="text-theme-fg flex flex-wrap items-center gap-1.5 text-sm font-semibold">
-              {formatDate(session.date)}
-              {isToday && (
-                <span className="bg-theme-primary/15 text-theme-primary rounded-full px-2 py-0.5 text-xs font-medium">
-                  Vandaag
-                </span>
-              )}
+            <div className="text-theme-fg-secondary text-sm font-medium">
+              {session.total_malas > 0
+                ? `${session.total_malas} malas`
+                : `${session.total_mantras.toLocaleString("nl-NL")} mantras`}
               {session.started_at && (
-                <span className="text-theme-fg-muted text-xs font-normal">
+                <span className="text-theme-fg-muted ml-1.5 text-xs font-normal">
                   {formatTime(session.started_at)}
                 </span>
               )}
@@ -147,29 +139,6 @@ export function SessionCard({
                 ? ` · ${formatDuration(session.duration_minutes)}`
                 : ""}
             </div>
-            {dayInfo?.specialDay ? (
-              <div className="text-theme-fg-muted mt-0.5 text-xs">
-                {dayInfo.specialDay.emoji} {dayInfo.specialDay.name}
-                {dayInfo.tithi && (
-                  <span className="ml-1 opacity-70">
-                    · {dayInfo.tithi.paksha} {dayInfo.tithi.name}
-                  </span>
-                )}
-              </div>
-            ) : dayInfo?.tithi ? (
-              <div className="text-theme-fg-muted mt-0.5 text-xs">
-                {dayInfo.moonPhaseEvent && (
-                  <span className="mr-1">
-                    {MOON_PHASE_EMOJI[dayInfo.moonPhaseEvent.type]}
-                  </span>
-                )}
-                {dayInfo.tithi.paksha} {dayInfo.tithi.name}
-              </div>
-            ) : dayInfo?.moonPhaseEvent ? (
-              <div className="text-theme-fg-muted mt-0.5 text-xs">
-                {MOON_PHASE_EMOJI[dayInfo.moonPhaseEvent.type]}
-              </div>
-            ) : null}
           </div>
           <div className="text-theme-fg-muted mt-0.5 shrink-0">
             {open ? (

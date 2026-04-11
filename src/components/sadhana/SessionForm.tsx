@@ -3,7 +3,18 @@
 import { useState } from "react";
 import { Plus, Trash2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { type Practice, type FormItem, type ItemUnit, todayString } from "./types";
+import {
+  type Practice,
+  type FormItem,
+  type ItemUnit,
+  type PracticeType,
+  todayString,
+} from "./types";
+
+function defaultUnit(type: PracticeType | undefined): ItemUnit {
+  if (type === "parayana") return "count";
+  return "malas"; // mantra_japa + other
+}
 
 export interface SessionFormProps {
   practices: Practice[];
@@ -35,7 +46,7 @@ export function SessionForm({
   const defaultItem: FormItem = {
     practice_id: practices[0]?.id ?? "",
     quantity: "",
-    unit: "malas",
+    unit: defaultUnit(practices[0]?.type),
   };
   const [date, setDate] = useState(initial?.date ?? todayString());
   const [startedAt, setStartedAt] = useState(initial?.startedAt ?? "");
@@ -124,9 +135,13 @@ export function SessionForm({
               <div className="flex items-center gap-2">
                 <select
                   value={item.practice_id}
-                  onChange={(e) =>
-                    updateItem(i, { practice_id: e.target.value, unit: "malas" })
-                  }
+                  onChange={(e) => {
+                    const p = practices.find((p) => p.id === e.target.value);
+                    updateItem(i, {
+                      practice_id: e.target.value,
+                      unit: defaultUnit(p?.type),
+                    });
+                  }}
                   className={cn(inputCls, "min-w-0 flex-1 cursor-pointer")}
                   required
                 >
@@ -158,16 +173,25 @@ export function SessionForm({
                   className={cn(inputCls, "w-24 shrink-0")}
                   required
                 />
-                <select
-                  value={item.unit}
-                  onChange={(e) => updateItem(i, { unit: e.target.value as ItemUnit })}
-                  className={cn(inputCls, "min-w-0 flex-1 cursor-pointer")}
-                >
-                  <option value="malas">malas</option>
-                  <option value="count">
-                    {practice?.type === "mantra_japa" ? "tellers" : "keer"}
-                  </option>
-                </select>
+                {practice?.type === "other" ? (
+                  <select
+                    value={item.unit}
+                    onChange={(e) => updateItem(i, { unit: e.target.value as ItemUnit })}
+                    className={cn(inputCls, "min-w-0 flex-1 cursor-pointer")}
+                  >
+                    <option value="malas">malas</option>
+                    <option value="count">keer</option>
+                  </select>
+                ) : (
+                  <div
+                    className={cn(
+                      inputCls,
+                      "text-theme-fg-muted min-w-0 flex-1 select-none"
+                    )}
+                  >
+                    {practice?.type === "parayana" ? "keer" : "malas"}
+                  </div>
+                )}
               </div>
             </div>
           );
