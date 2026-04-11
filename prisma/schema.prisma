@@ -362,7 +362,8 @@ model SadhanaPractice {
   notes     String?
   active    Boolean             @default(true)
   createdAt DateTime            @default(now())
-  items     SadhanaSessionItem[]
+  items        SadhanaSessionItem[]
+  routineItems SadhanaRoutineItem[]
 
   @@map("sadhana_practices")
 }
@@ -405,6 +406,32 @@ model SadhanaGoal {
   createdAt     DateTime        @default(now())
 
   @@map("sadhana_goals")
+}
+
+model SadhanaRoutine {
+  id        String               @id @default(cuid())
+  name      String
+  active    Boolean              @default(true)
+  sortOrder Int                  @default(0)
+  items     SadhanaRoutineItem[]
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+
+  @@map("sadhana_routines")
+}
+
+model SadhanaRoutineItem {
+  id         String             @id @default(cuid())
+  routine    SadhanaRoutine     @relation(fields: [routineId], references: [id], onDelete: Cascade)
+  routineId  String
+  practice   SadhanaPractice    @relation(fields: [practiceId], references: [id])
+  practiceId String
+  quantity   Int
+  unit       SadhanaItemUnit    @default(malas)
+  sortOrder  Int                @default(0)
+
+  @@index([routineId])
+  @@map("sadhana_routine_items")
 }
 
 /// Solar transitions between zodiac signs (Sankranti)

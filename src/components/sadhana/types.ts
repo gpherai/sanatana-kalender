@@ -98,6 +98,23 @@ export interface Goal {
   active: boolean;
 }
 
+export interface RoutineItem {
+  id: string;
+  practice_id: string;
+  practice_name: string;
+  practice_type: PracticeType;
+  quantity: number;
+  unit: ItemUnit;
+  sort_order: number;
+}
+
+export interface Routine {
+  id: string;
+  name: string;
+  active: boolean;
+  items: RoutineItem[];
+}
+
 export interface FormItem {
   practice_id: string;
   quantity: string;
@@ -190,12 +207,24 @@ export function formatDuration(minutes: number) {
   return rem ? `${h}u ${rem}m` : `${h}u`;
 }
 
+const MONTHS_NL = [
+  "jan",
+  "feb",
+  "mrt",
+  "apr",
+  "mei",
+  "jun",
+  "jul",
+  "aug",
+  "sep",
+  "okt",
+  "nov",
+  "dec",
+];
+
 export function formatDate(dateStr: string) {
-  return new Date(dateStr + "T00:00:00").toLocaleDateString("nl-NL", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
+  const d = new Date(dateStr + "T00:00:00");
+  return `${d.getDate()} ${MONTHS_NL[d.getMonth()]} ${d.getFullYear()}`;
 }
 
 export function formatTime(isoStr: string) {

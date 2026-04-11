@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Trash2, Loader2 } from "lucide-react";
+import { Plus, Trash2, Loader2, Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   type Practice,
   type FormItem,
   type ItemUnit,
   type PracticeType,
+  type Routine,
   todayString,
 } from "./types";
 
@@ -18,6 +19,7 @@ function defaultUnit(type: PracticeType | undefined): ItemUnit {
 
 export interface SessionFormProps {
   practices: Practice[];
+  routines?: Routine[];
   initial?: {
     date: string;
     startedAt: string;
@@ -38,6 +40,7 @@ export interface SessionFormProps {
 
 export function SessionForm({
   practices,
+  routines = [],
   initial,
   submitLabel,
   onSubmit,
@@ -123,6 +126,35 @@ export function SessionForm({
           />
         </div>
       </div>
+
+      {routines.length > 0 && (
+        <div>
+          <label className="text-theme-fg-secondary mb-2 flex items-center gap-1.5 text-xs font-medium">
+            <Layers className="h-3.5 w-3.5" />
+            Routine laden
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {routines.map((r) => (
+              <button
+                key={r.id}
+                type="button"
+                onClick={() =>
+                  setItems(
+                    r.items.map((i) => ({
+                      practice_id: i.practice_id,
+                      quantity: String(i.quantity),
+                      unit: i.unit,
+                    }))
+                  )
+                }
+                className="bg-theme-surface border-theme-border text-theme-fg hover:border-theme-primary hover:text-theme-primary min-h-[36px] cursor-pointer rounded-full border px-3 py-1 text-xs transition-colors"
+              >
+                {r.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="space-y-2">
         <label className="text-theme-fg-secondary text-xs font-medium">

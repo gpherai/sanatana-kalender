@@ -112,7 +112,10 @@ export function formatGoal(g: SadhanaGoal) {
 // PRACTICE STATS
 // =============================================================================
 
-export function computePracticeStats(sessions: SessionWithItems[]) {
+export function computePracticeStats(
+  sessions: SessionWithItems[],
+  opts: { insertionOrder?: boolean } = {}
+) {
   const map = new Map<
     string,
     { id: string; name: string; type: string; malas: number; countQty: number }
@@ -130,13 +133,14 @@ export function computePracticeStats(sessions: SessionWithItems[]) {
     }
   }
 
-  return [...map.values()]
-    .map((d) => ({
-      practice_id: d.id,
-      practice_name: d.name,
-      practice_type: d.type,
-      total_quantity: d.type === "mantra_japa" ? d.malas : d.countQty,
-      total_mantras: d.type === "mantra_japa" ? d.malas * 108 + d.countQty : null,
-    }))
-    .sort((a, b) => b.total_quantity - a.total_quantity);
+  const rows = [...map.values()].map((d) => ({
+    practice_id: d.id,
+    practice_name: d.name,
+    practice_type: d.type,
+    total_quantity: d.type === "mantra_japa" ? d.malas : d.countQty,
+    total_mantras: d.type === "mantra_japa" ? d.malas * 108 + d.countQty : null,
+  }));
+
+  if (opts.insertionOrder) return rows;
+  return rows.sort((a, b) => b.total_quantity - a.total_quantity);
 }

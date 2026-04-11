@@ -45,6 +45,6 @@ export async function GET() {
     goal_malas_progress: goal?.targetMalas ? totalMalas / goal.targetMalas : null,
     goal_minutes_target: goal?.targetMinutes ?? null,
     goal_minutes_progress: goal?.targetMinutes ? totalMinutes / goal.targetMinutes : null,
-    practices: computePracticeStats(sessions),
+    practices: computePracticeStats(sessions, { insertionOrder: true }),
   });
 }

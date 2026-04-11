@@ -21,6 +21,7 @@ import {
   type SessionData,
   type Practice,
   type Goal,
+  type Routine,
   type DayInfoMap,
   apiFetch,
   fetchDayInfoMap,
@@ -37,6 +38,7 @@ import { SessionForm } from "./SessionForm";
 import { SessionCard } from "./SessionCard";
 import { PracticesPanel } from "./PracticesPanel";
 import { GoalPanel } from "./GoalPanel";
+import { RoutinePanel } from "./RoutinePanel";
 
 export function SadhanaTracker() {
   const [loading, setLoading] = useState(true);
@@ -48,6 +50,7 @@ export function SadhanaTracker() {
   const [sessions, setSessions] = useState<SessionData[]>([]);
   const [allPractices, setAllPractices] = useState<Practice[]>([]);
   const [goals, setGoals] = useState<Goal[]>([]);
+  const [routines, setRoutines] = useState<Routine[]>([]);
   const [showAddSession, setShowAddSession] = useState(false);
   const [sessionDaysBack, setSessionDaysBack] = useState(30);
   const sessionDaysRef = useRef(30);
@@ -57,11 +60,12 @@ export function SadhanaTracker() {
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [dayInfoMap, setDayInfoMap] = useState<DayInfoMap>(new Map());
+  const initialLoadDone = useRef(false);
 
   const activePractices = allPractices.filter((p) => p.active);
 
   const loadAll = useCallback(async () => {
-    setLoading(true);
+    if (!initialLoadDone.current) setLoading(true);
     try {
       setError(null);
       const fromDate = new Date();
@@ -70,7 +74,7 @@ export function SadhanaTracker() {
       const yearAgo = new Date();
       yearAgo.setDate(yearAgo.getDate() - 364);
 
-      const [ts, st, ov, cal, sess, pracs, gl, dim] = await Promise.all([
+      const [ts, st, ov, cal, sess, pracs, gl, rout, dim] = await Promise.all([
         apiFetch<TodayStats>("/stats/today"),
         apiFetch<StreakStats>("/stats/streak"),
         apiFetch<OverviewStats>("/stats/overview"),
@@ -78,6 +82,7 @@ export function SadhanaTracker() {
         apiFetch<SessionData[]>(`/sessions?from=${localDateString(fromDate)}`),
         apiFetch<Practice[]>("/practices?active_only=false"),
         apiFetch<Goal[]>("/goals"),
+        apiFetch<Routine[]>("/routines"),
         fetchDayInfoMap(localDateString(yearAgo), todayString()),
       ]);
 
@@ -90,11 +95,13 @@ export function SadhanaTracker() {
       setNoMoreSessions(false);
       setAllPractices(pracs);
       setGoals(gl);
+      setRoutines(rout);
       setDayInfoMap(dim);
     } catch {
       setError("Backend niet bereikbaar. Controleer of de Next.js server draait.");
     } finally {
       setLoading(false);
+      initialLoadDone.current = true;
     }
   }, []);
 
@@ -230,6 +237,7 @@ export function SadhanaTracker() {
             ) : (
               <SessionForm
                 practices={activePractices}
+                routines={routines}
                 submitLabel="Opslaan"
                 onSubmit={async (data) => {
                   await apiFetch("/sessions", {
@@ -478,11 +486,12 @@ export function SadhanaTracker() {
         </div>
       )}
 
-      {/* Goals + Practices naast elkaar */}
+      {/* Routines + Goals + Practices */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-start">
+        <RoutinePanel routines={routines} practices={allPractices} onChanged={loadAll} />
         <GoalPanel goals={goals} onChanged={loadAll} />
-        <PracticesPanel practices={allPractices} onChanged={loadAll} />
       </div>
+      <PracticesPanel practices={allPractices} onChanged={loadAll} />
 
       {/* Toast */}
       {toast && (

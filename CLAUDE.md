@@ -102,19 +102,22 @@ In `additionalCss` wordt `[[t]]` vervangen door `[data-theme="thema-naam"]` door
 **Backend API** (`src/app/api/sadhana/`)
 - `GET/POST /practices`, `PATCH/DELETE /practices/[id]`
 - `GET/POST /sessions` (met `?from=` query param), `PATCH/DELETE /sessions/[id]`
-- `GET /stats/today` — incl. goal progress + per-practice stats
+- `GET /stats/today` — incl. goal progress + per-practice stats (insertion order)
 - `GET /stats/streak`, `GET /stats/calendar`, `GET /stats/overview`
 - `GET/POST /goals`, `PATCH/DELETE /goals/[id]`
+- `GET/POST /routines`, `PATCH/DELETE /routines/[id]`
 
 **UI** (`src/components/sadhana/SadhanaTracker.tsx`)
-- Volledige CRUD: sessies, beoefeningen, doelen
+- Volledige CRUD: sessies, beoefeningen, doelen, routines
 - 4 StatCards: vandaag (met `X / Y malas` bij actief doel), deze week, deze maand, streak
-- Vandaag per beoefening — altijd zichtbaar, lege staat
+- Vandaag per beoefening — in invulvolgorde (insertion order), niet gesorteerd op hoeveelheid
 - Activiteitsheatmap — desktop 52 wkn / mobiel 22 wkn, gelabelde legende (0, 1–3, 4–7, 8–11, ≥12), tap-feedback op mobiel
 - Maandgrafiek (`MalasChart`) — staafgrafiek laatste 12 maanden, toggle malas/sessies, hover tooltip, geen externe library (pure div/CSS)
-- Sessieslijst met "Laad meer" (+30 dagen per klik), verborgen als alles geladen
+- Sessieslijst — gegroepeerd per dag met dag-header (datum + tithi/maan), "Laad meer" (+30 dagen)
 - All-time overzicht + per-practice breakdown + gem. min/sessie
-- GoalPanel + PracticesPanel naast elkaar (lg:grid-cols-2), goal type pills
+- RoutinePanel + GoalPanel naast elkaar (lg:grid-cols-2), PracticesPanel eronder
+- SessionForm: routine-pills boven items-sectie om form voor te vullen
+- Eenheden per beoefentype: mantra_japa=malas (vast), parayana=keer (vast), other=keuze
 - Toast notificaties bij opslaan/verwijderen
 - WCAG touch targets (44×44px), aria-labels, htmlFor/id via useId(), inputMode numeric
 - `motion-safe:` prefix op alle transitions (prefers-reduced-motion)
@@ -130,7 +133,8 @@ In `additionalCss` wordt `[[t]]` vervangen door `[data-theme="thema-naam"]` door
 5. Activiteitsheatmap
 6. Maandgrafiek (MalasChart)
 7. All-time overzicht
-8. Goals + Practices naast elkaar
+8. Routines + Goals naast elkaar
+9. Practices
 
 ### Wat ontbreekt t.o.v. Python referentie-backend
 - `/sessions/{id}/items` sub-routes — **niet nodig**: UI doet hele-sessie replace
