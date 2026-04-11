@@ -27,12 +27,10 @@ git clone <repo-url>
 cd sanatana-kalender
 
 # Maak een .env bestand aan (zie Configuratie hieronder)
+# Voeg toe voor prod-overrides (resource limits, log rotation, gesloten DB-poort):
+#   COMPOSE_FILE=docker-compose.yml:docker-compose.prod.yml
 
-# Development
-docker-compose up -d --build
-
-# Production
-docker-compose -f docker-compose.prod.yml up -d --build
+docker compose up -d --build
 ```
 
 ### Optie 2: Lokale Development
@@ -232,4 +230,4 @@ Private project — Alle rechten voorbehouden.
 
 ---
 
-**Versie:** 0.11.0 | **Laatst bijgewerkt:** 8 april 2026
+**Versie:** 0.12.0 | **Laatst bijgewerkt:** 11 april 2026

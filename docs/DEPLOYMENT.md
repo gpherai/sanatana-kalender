@@ -137,11 +137,10 @@ POSTGRES_PASSWORD=<STRONG_PASSWORD_HERE>  # Genereer: openssl rand -base64 32
 POSTGRES_DB=dharma_calendar
 
 # Application
-NODE_ENV=production
-APP_PORT=3000
+APP_PORT=53100
 
-# Optional: Expose DB port (remove in production)
-# DB_PORT=5432
+# Prod-overrides: sluit DB-poort af, voegt resource limits + log rotation toe
+COMPOSE_FILE=docker-compose.yml:docker-compose.prod.yml
 ```
 
 ### Secrets Genereren
@@ -172,11 +171,11 @@ docker compose logs -f
 
 > **Migraties:** De `migrate` service (`dharma-migrate`) draait automatisch vóór de app en past openstaande database-migraties toe.
 
-> **Prod-override (optioneel):** `docker-compose.prod.yml` sluit DB-poort 5432 extern af en voegt resource limits + log rotation toe:
-> ```bash
-> docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+> **Prod-overrides:** `docker-compose.prod.yml` sluit DB-poort 5432 extern af en voegt resource limits + log rotation toe. Zorg dat `.env` de volgende regel bevat zodat beide bestanden automatisch worden geladen:
 > ```
-> ⚠️ **Security:** Docker's port binding bypassed UFW standaard via iptables. Als 5432 zichtbaar is in `docker compose ps`, is die poort bereikbaar van buiten — ook als UFW dat blokkeert. Gebruik de prod-override of beperk toegang via iptables.
+> COMPOSE_FILE=docker-compose.yml:docker-compose.prod.yml
+> ```
+> ⚠️ **Security:** Docker's port binding bypassed UFW standaard via iptables. Zonder de prod-override is poort 5432 bereikbaar van buiten — ook als UFW dat blokkeert.
 
 ### Seed Database (Eerste keer)
 
@@ -406,6 +405,20 @@ docker compose up -d --build
 ---
 
 ## 🔧 Troubleshooting
+
+### Migrate Service Faalt
+
+```bash
+# Bekijk de foutmelding
+docker logs dharma-migrate
+```
+
+**Fout `42710 type already exists` of `42P07 table already exists`:** De schema is eerder aangemaakt via `db push`. Markeer de migratie als toegepast zonder haar opnieuw te draaien:
+
+```bash
+docker compose run --rm migrate npx prisma migrate resolve --applied <migration_name>
+docker compose up -d
+```
 
 ### Container Start Issues
 

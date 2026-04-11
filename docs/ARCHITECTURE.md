@@ -1,7 +1,7 @@
 # 🗏️ Dharma Calendar - Architecture Document
 
-> **Versie:** 4.6
-> **Laatst bijgewerkt:** 10 april 2026 - Sadhana Tracker module (volledige CRUD, kalender-integratie, heatmap, doelen)
+> **Versie:** 4.7
+> **Laatst bijgewerkt:** 11 april 2026
 
 ---
 
@@ -186,9 +186,10 @@ dharma-calendar/
 │   ├── server/panchanga/      # Swiss Ephemeris serverlaag (server-only)
 │   │   ├── index.ts           # Barrel export
 │   │   ├── constants.ts       # Ephemeris flags, ayanamsa, lokale constanten
-│   │   ├── types.ts           # PanchangaResult, LocationConfig, ...
+│   │   ├── types.ts           # PanchangaResult, LocationConfig, BirthData, BirthChart, ...
 │   │   ├── services/
-│   │   │   └── panchanga-swiss-service.ts  # Low-level Swiss Ephemeris wrapper
+│   │   │   ├── panchanga-swiss-service.ts  # Low-level Swiss Ephemeris wrapper (panchanga)
+│   │   │   └── birth-chart-service.ts      # Jyotisha geboortehoroscoop (navagrahas, lagna)
 │   │   └── utils/
 │   │       └── astro.ts       # calculateSunriseSunset, findEventEnd, ...
 │   ├── services/              # Businesslogica (server-only)
@@ -487,7 +488,8 @@ Alle date operaties zijn gecentraliseerd in `src/lib/date-utils.ts` voor consist
 |-----------|----------|---------|
 | **Comparison** | `isSameDay()`, `isToday()`, `isWeekend()` | Date vergelijking (UTC-based) |
 | **Calendar** | `getMonthDays()`, `getMonthStartPadding()` | Kalender grid berekeningen |
-| **Formatting** | `formatDateISO()`, `formatDateNL()`, `formatTimeAgo()` | Datum/tijd display |
+| **Formatting** | `formatDateISO()`, `formatDateNL()`, `formatTimeAgo()`, `formatDateLocal()` | Datum/tijd display |
+| **Parsing** | `parseCalendarDate()`, `parseLocalDate()` | String → Date object |
 
 Maanfase functies staan in `src/lib/moon-phases.ts` (zie sectie hieronder).
 
@@ -562,6 +564,7 @@ sunrise: "06:30"  // Opgeslagen als string (HH:mm) + location context
 | Scenario | Type | Functie | Database Type |
 |----------|------|---------|---------------|
 | Event op datum | Calendar Date | `parseCalendarDate()` | `@db.Date` |
+| Lokale "vandaag" / API stats | Local Date | `parseLocalDate()` / `formatDateLocal()` | N/A |
 | Date comparison | UTC Date | `isSameDay()` uit date-utils | N/A |
 | Exact moment | Timestamp | ISO string | `DateTime` |
 | Display ISO | Format | `formatDateISO()` uit date-utils | N/A |
@@ -569,6 +572,8 @@ sunrise: "06:30"  // Opgeslagen als string (HH:mm) + location context
 | Seed data | Calendar Date | `calendarDate(y,m,d)` | `@db.Date` |
 
 **Vermijd:**
+- ❌ `new Date("YYYY-MM-DD")` in display-context — dit geeft UTC midnight, niet lokale dag
+- ❌ `new Date().toISOString().slice(0,10)` voor "vandaag" — geeft UTC datum, afwijkend bij tijdzone-offsets
 - ❌ Locale date functions in components (gebruik date-utils)
 
 ### 3.6 Date Library Strategy: Luxon vs date-fns
@@ -946,6 +951,7 @@ Zorg ervoor dat glassmorphism elementen voldoende contrast hebben met de achterg
 | `/api/sadhana/stats/streak` | GET | Huidige en langste streak |
 | `/api/sadhana/stats/calendar` | GET | Dagdata voor heatmap (datum, malas, minuten, sessies) |
 | `/api/sadhana/stats/overview` | GET | All-time statistieken + per-beoefening breakdown |
+| `/api/kundali` | POST | Jyotisha geboortehoroscoop: alle 9 navagrahas + lagna (Lahiri ayanamsa, Whole Sign huizen, topocentrische Maan) |
 
 ### 4.3 Service Layer
 
@@ -953,7 +959,8 @@ De service layer wordt alleen gebruikt voor complexe business logica. Alle servi
 
 | Service | Locatie | Verantwoordelijkheden |
 |---------|---------|----------------------|
-| `PanchangaSwissService` | `/server/panchanga/` | Swiss Ephemeris integratie voor Vedische astronomie (Tithi, Nakshatra, Yoga, Karana met exacte eindtijden) + astronomische berekeningen (sunrise/sunset, moonrise/moonset) |
+| `PanchangaSwissService` | `/server/panchanga/services/panchanga-swiss-service.ts` | Swiss Ephemeris integratie voor Vedische astronomie (Tithi, Nakshatra, Yoga, Karana met exacte eindtijden) + astronomische berekeningen (sunrise/sunset, moonrise/moonset) |
+| `BirthChartService` | `/server/panchanga/services/birth-chart-service.ts` | Jyotisha geboortehoroscoop: alle 9 navagrahas (geocentrisch) + topocentrische Maan (SEFLG_TOPOCTR, parallax tot ~57'), lagna via Whole Sign huizen, Lahiri ayanamsa, Mean Node voor Rahu/Ketu |
 | `panchangaService` | `/services/panchanga.service.ts` | Wrapper voor PanchangaSwissService, exposeert high-level API voor daily info calculations, LRU caching (365 dagen, 24h TTL) |
 | `recurrenceService` | `/services/recurrence.service.ts` | Event recurrence generation via strategy registry (YEARLY_*, MONTHLY_*) + rule-based dispatch (SOLAR, TITHI, NAKSHATRA, TITHI_NAKSHATRA, WEEKDAY_TITHI, PRADOSH). |
 | `/api/weer` route | `/src/app/api/weer/route.ts` | Stateless route: haalt current + hourly + daily weerdata + luchtkwaliteit op via OpenWeatherMap API v2.5 (geen aparte service-laag nodig). Next.js `revalidate: 600` voor server-side caching. |
@@ -1168,6 +1175,7 @@ export async function calculateMoonriseMoonset(
 - ✅ Moonrise/Moonset: Exact tot op de seconde (topocentric calculation)
 - ✅ Tithi/Nakshatra eindtijden: Bracket + Binary search (20 iteraties, ~second-level accuracy)
 - ✅ Maanfase percentage: 0-100% met 1 decimaal precisie
+- ✅ Kundali Maan: topocentrisch (`SEFLG_TOPOCTR`) — parallax-correctie tot ~57 boogminuten. Alle overige graha's geocentrisch (parallax verwaarloosbaar voor planeten)
 
 **Performance:**
 
@@ -1187,6 +1195,7 @@ export async function calculateMoonriseMoonset(
 /events                 → Events overzicht (card grid + filters)
 /events/new             → Nieuw event aanmaken
 /events/[id]            → Event bewerken + verwijderen
+/kundali                → Jyotisha geboortehoroscoop (invoer geboortedatum/-tijd/-locatie)
 /sadhana                → Sadhana Tracker (sessies, stats, heatmap, doelen, beoefeningen)
 /settings               → Instellingen (theme, locatie, voorkeuren)
 /weer                   → Weerdetails (OpenWeatherMap — current, uurlijks, dagelijks, luchtkwaliteit)
@@ -1216,6 +1225,7 @@ Per route:
 | `/events` | `title: "Events"` | `Events \| Dharma Calendar` |
 | `/events/new` | — (via events layout) | `Events \| Dharma Calendar` |
 | `/events/[id]` | `generateMetadata` → eventnaam | `<naam> \| Dharma Calendar` |
+| `/kundali` | `title: "Kundali"` | `Kundali \| Dharma Calendar` |
 | `/sadhana` | `title: "Sadhana"` | `Sadhana \| Dharma Calendar` |
 | `/settings` | `title: "Instellingen"` | `Instellingen \| Dharma Calendar` |
 | `/weer` | `title: "Weer"` | `Weer \| Dharma Calendar` |
@@ -1268,6 +1278,10 @@ RootLayout
     │   ├── CalendarSection (standaard kalenderweergave)
     │   └── LocationSection (preset + handmatig + zon/maan preview)
     │
+    ├── KundaliPage (medium width)
+    │   └── Formulier (datum, tijd, tijdzone, locatie) → BirthChartService
+    │       └── Grahaposities: 9 navagrahas + lagna (rashi, nakshatra, pada, retrograde)
+    │
     ├── SadhanaPage (full width, geen spacing prop)
     │   └── SadhanaTracker (client component)
     │       ├── StatCards (vandaag malas/mantras/minuten, streak, week totaal)
@@ -1275,7 +1289,7 @@ RootLayout
     │       ├── Heatmap (desktop 52 wkn / mobiel 22 wkn, DayInfo markers)
     │       ├── SessionCard[] (expand/edit/delete, Tithi/specialDay badge)
     │       ├── All-time overzicht (OverviewStats + PracticeStat breakdown)
-    │       ├── GoalPanel (CRUD, dagelijks/wekelijks, type pills)
+    │       ├── GoalPanel (CRUD, dagelijks/wekelijks/lifetime, progress_malas + progress_minutes)
     │       └── PracticesPanel (CRUD, mantra_japa / parayana / other)
     │
     └── WeerPage (full width)
@@ -1472,7 +1486,11 @@ for (let i = 0; i < 35; i++) {
 }
 
 // Vikrama/Shaka Samvat jaren
-const vikramaYear = gregorianYear + 57 - (isBeforeNewYear ? 1 : 0);
+// Nieuwjaar = Chaitra Shukla Pratipada (niet: eerste dag van maand 4)
+// isNewYearOpen = de nieuwjaarstithi is al gepasseerd dit Gregoriaans jaar
+const isNewYearOpen = maasIdx !== 11 && !(maasIdx === 0 && isAdhika);
+const vikramaYear = gregorianYear + 57 - (isNewYearOpen ? 0 : 1);
+const shakaYear = gregorianYear - 78 - (isNewYearOpen ? 0 : 1);
 const samvatsaraIdx = (vikramaYear - 1) % 60;
 const samvatsaraName = SAMVATSARA_NAMES[samvatsaraIdx];
 ```
@@ -1667,7 +1685,22 @@ export interface DayInfo {
 export type DayInfoMap = Map<string, DayInfo>;
 ```
 
-#### 5.6.4 Pagina Volgorde
+#### 5.6.4 Goal Types
+
+GoalPanel ondersteunt drie typen:
+
+| Type | Bereik | Progress |
+|------|--------|---------|
+| `daily` | Vandaag | `progress_malas` + `progress_minutes` uit `/api/sadhana/stats/today` |
+| `weekly` | Ma–zo | `progress_malas` + `progress_minutes` uit `/api/sadhana/goals` |
+| `lifetime` | Alle tijd | `progress_malas` + `progress_minutes` uit `/api/sadhana/goals` |
+
+Progress omvat alle practice types:
+- `malas`-eenheid: telt mee voor alle practice types
+- `count`-eenheid voor `mantra_japa`: omgerekend naar malas (÷ 108)
+- `durationMinutes` van de sessie: telt altijd mee voor `progress_minutes`
+
+#### 5.6.5 Pagina Volgorde
 
 1. StatCards (vandaag + streak + week)
 2. Vandaag per beoefening
