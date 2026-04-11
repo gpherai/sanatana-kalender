@@ -386,23 +386,27 @@ export function GoalPanel({
                 </div>
 
                 <div className="text-theme-fg flex items-center gap-2 text-sm font-medium">
-                  {g.type === "lifetime" ? (
-                    <>
-                      <span>
-                        {g.progress || 0} / {g.target_malas}
-                      </span>
-                      <div className="bg-theme-surface-raised h-2 w-24 overflow-hidden rounded-full">
-                        <div
-                          className="h-full rounded-full bg-emerald-500"
-                          style={{
-                            width: `${Math.min(100, Math.max(0, ((g.progress || 0) / g.target_malas) * 100))}%`,
-                          }}
-                        />
-                      </div>
-                    </>
-                  ) : (
-                    <span>{g.target_malas} malas</span>
-                  )}
+                  <span className="whitespace-nowrap">
+                    {g.progress || 0} / {g.target_malas} malas
+                  </span>
+                  <div className="bg-theme-surface-raised h-2 w-20 overflow-hidden rounded-full lg:w-32">
+                    <div
+                      className={cn(
+                        "h-full rounded-full transition-all duration-500",
+                        g.type === "daily"
+                          ? "bg-theme-primary"
+                          : g.type === "weekly"
+                            ? "bg-theme-secondary"
+                            : "bg-emerald-500"
+                      )}
+                      style={{
+                        width: `${Math.min(100, Math.max(0, ((g.progress || 0) / g.target_malas) * 100))}%`,
+                      }}
+                    />
+                  </div>
+                  <span className="text-theme-fg-muted text-xs whitespace-nowrap">
+                    {(((g.progress || 0) / g.target_malas) * 100).toFixed(1)}%
+                  </span>
                   {g.target_minutes ? ` · ${g.target_minutes} min` : ""}
                 </div>
 
