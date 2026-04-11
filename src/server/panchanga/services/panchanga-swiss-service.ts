@@ -361,35 +361,8 @@ export class PanchangaSwissService {
     const daysSinceSankranti =
       Math.floor(astro.sunriseTime.diff(lastSankrantiDate, "days").days) + 1;
 
-    // -------------------------------------------------------------------------
-    // SAMVAT YEARS & SAMVATSARA NAMES (60-year cycle)
-    // -------------------------------------------------------------------------
-    // Vikrama Samvat: Starts at Chaitra Shukla Pratipada (Hindu New Year)
-    // Shaka Samvat: Same boundary, different offset
-
-    // Simplified approach: Use Gregorian year + offset
-    // TODO: Refine to use exact Chaitra Shukla Pratipada boundary
     const sunriseDate = DateTime.fromISO(dateStr, { zone: location.tz });
     const gregorianYear = sunriseDate.year;
-
-    // Approximate Hindu New Year (late March/early April)
-    // If before April, we're in previous Hindu year
-    const isBeforeNewYear = sunriseDate.month < 4;
-
-    const vikramaYear = gregorianYear + 57 - (isBeforeNewYear ? 1 : 0);
-    const shakaYear = gregorianYear - 78 - (isBeforeNewYear ? 1 : 0);
-
-    // Map to 60-year Samvatsara cycle using traditional offsets
-    // These offsets are standard in Vedic calendar tradition
-    // Reference: Drik Panchang verification (2082 Vikrama = Kalayukta, 1947 Shaka = Vishvavasu)
-    const VIKRAMA_SAMVATSARA_OFFSET = 9; // (year + 9) % 60 gives correct cycle position
-    const SHAKA_SAMVATSARA_OFFSET = 11; // (year + 11) % 60 gives correct cycle position
-
-    const vikramaSamvatsaraIdx = (vikramaYear + VIKRAMA_SAMVATSARA_OFFSET) % 60;
-    const shakaSamvatsaraIdx = (shakaYear + SHAKA_SAMVATSARA_OFFSET) % 60;
-
-    const vikramaSamvatsaraName = SAMVATSARA_NAMES[vikramaSamvatsaraIdx] ?? "Unknown";
-    const shakaSamvatsaraName = SAMVATSARA_NAMES[shakaSamvatsaraIdx] ?? "Unknown";
 
     // -------------------------------------------------------------------------
     // MAAS (Lunar Month) - Purnimanta System
@@ -442,6 +415,28 @@ export class PanchangaSwissService {
     const prevRashi = rashiAtPrevAmavasya;
     const nextRashi = rashiAtNextAmavasya;
     const isAdhika = prevRashi !== null && nextRashi !== null && prevRashi === nextRashi;
+
+    // -------------------------------------------------------------------------
+    // SAMVAT YEARS & SAMVATSARA NAMES (60-year cycle)
+    // -------------------------------------------------------------------------
+    // Vikrama Samvat begins at Nija Chaitra Shukla Pratipada (Hindu New Year).
+    // Phalguna (maasIdx 11) is the last lunar month; Adhika Chaitra does NOT
+    // trigger the year change — only Nija Chaitra does.
+    // This replaces the old month < 4 approximation which was wrong for late March.
+    const isNewYearOpen = maasIdx !== 11 && !(maasIdx === 0 && isAdhika);
+    const vikramaYear = gregorianYear + 57 - (isNewYearOpen ? 0 : 1);
+    const shakaYear = gregorianYear - 78 - (isNewYearOpen ? 0 : 1);
+
+    // Map to 60-year Samvatsara cycle using traditional offsets
+    // Reference: Drik Panchang verification (2082 Vikrama = Kalayukta, 1947 Shaka = Vishvavasu)
+    const VIKRAMA_SAMVATSARA_OFFSET = 9; // (year + 9) % 60 gives correct cycle position
+    const SHAKA_SAMVATSARA_OFFSET = 11; // (year + 11) % 60 gives correct cycle position
+
+    const vikramaSamvatsaraIdx = (vikramaYear + VIKRAMA_SAMVATSARA_OFFSET) % 60;
+    const shakaSamvatsaraIdx = (shakaYear + SHAKA_SAMVATSARA_OFFSET) % 60;
+
+    const vikramaSamvatsaraName = SAMVATSARA_NAMES[vikramaSamvatsaraIdx] ?? "Unknown";
+    const shakaSamvatsaraName = SAMVATSARA_NAMES[shakaSamvatsaraIdx] ?? "Unknown";
 
     // Step 4: Detect Sankranti (solar transition) - reuse already-computed astro data
     const sankrantiData = await this.detectSankranti(astro.sunriseJD, location.tz);

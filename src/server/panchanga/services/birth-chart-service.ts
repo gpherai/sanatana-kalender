@@ -111,8 +111,10 @@ export class BirthChartService {
     const grahas: Record<string, GrahaPosition> = {};
 
     for (const def of GRAHA_DEFINITIONS) {
-      // Use geocentric for all, as is standard in most Jyotisha software
-      const flags = baseFlags;
+      // Apply topocentric correction to Chandra only (Moon parallax up to ~57')
+      // All other grahas use geocentric — parallax is negligible for planets
+      const flags =
+        def.ipl === swisseph.SE_MOON ? baseFlags | swisseph.SEFLG_TOPOCTR : baseFlags;
       const pos = await swe_calc_ut(jd, def.ipl, flags);
       const lon = norm360(pos.longitude);
 
