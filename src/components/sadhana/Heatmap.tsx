@@ -7,6 +7,7 @@ import {
   type DayInfoMap,
   localDateString,
   formatDate,
+  MOON_PHASE_EMOJI,
 } from "./types";
 
 // =============================================================================
@@ -67,8 +68,14 @@ const DAY_LABELS = ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"];
 // =============================================================================
 
 function dayLabel(info: DayInfoMap extends Map<string, infer V> ? V : never): string {
-  if (info.specialDay) return `${info.specialDay.emoji} ${info.specialDay.name}`;
-  if (info.tithi) return `${info.tithi.paksha} ${info.tithi.name}`;
+  const moonEmoji = info.moonPhaseEvent ? MOON_PHASE_EMOJI[info.moonPhaseEvent.type] : "";
+  if (info.specialDay) {
+    const tithi = info.tithi ? ` · ${info.tithi.paksha} ${info.tithi.name}` : "";
+    return `${info.specialDay.emoji} ${info.specialDay.name}${tithi}`;
+  }
+  if (info.tithi)
+    return `${moonEmoji ? moonEmoji + " " : ""}${info.tithi.paksha} ${info.tithi.name}`;
+  if (moonEmoji) return moonEmoji;
   return "";
 }
 

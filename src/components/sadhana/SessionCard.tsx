@@ -24,6 +24,7 @@ import {
   formatTime,
   isoToLocalTime,
   formatDuration,
+  MOON_PHASE_EMOJI,
 } from "./types";
 import { SessionForm } from "./SessionForm";
 
@@ -149,10 +150,24 @@ export function SessionCard({
             {dayInfo?.specialDay ? (
               <div className="text-theme-fg-muted mt-0.5 text-xs">
                 {dayInfo.specialDay.emoji} {dayInfo.specialDay.name}
+                {dayInfo.tithi && (
+                  <span className="ml-1 opacity-70">
+                    · {dayInfo.tithi.paksha} {dayInfo.tithi.name}
+                  </span>
+                )}
               </div>
             ) : dayInfo?.tithi ? (
               <div className="text-theme-fg-muted mt-0.5 text-xs">
+                {dayInfo.moonPhaseEvent && (
+                  <span className="mr-1">
+                    {MOON_PHASE_EMOJI[dayInfo.moonPhaseEvent.type]}
+                  </span>
+                )}
                 {dayInfo.tithi.paksha} {dayInfo.tithi.name}
+              </div>
+            ) : dayInfo?.moonPhaseEvent ? (
+              <div className="text-theme-fg-muted mt-0.5 text-xs">
+                {MOON_PHASE_EMOJI[dayInfo.moonPhaseEvent.type]}
               </div>
             ) : null}
           </div>

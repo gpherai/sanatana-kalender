@@ -113,6 +113,16 @@ export interface DayInfo {
 }
 export type DayInfoMap = Map<string, DayInfo>;
 
+export const MOON_PHASE_EMOJI: Record<
+  NonNullable<DayInfo["moonPhaseEvent"]>["type"],
+  string
+> = {
+  new: "🌑",
+  first_quarter: "🌓",
+  full: "🌕",
+  last_quarter: "🌗",
+};
+
 // =============================================================================
 // API
 // =============================================================================
