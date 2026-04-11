@@ -19,7 +19,9 @@ export async function GET() {
 
   const dates = rows.map((r) => dateStr(r.date as Date));
   const today = todayStr();
-  const yesterday = dateStr(new Date(Date.now() - 86_400_000));
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  const yesterday = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
   // Current streak
   let currentStreak = 0;

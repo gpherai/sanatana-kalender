@@ -14,6 +14,7 @@ import {
   CalendarEventResponse,
   parseCalendarEvent,
 } from "@/types/calendar";
+import { parseLocalDate } from "@/lib/date-utils";
 import { cn } from "@/lib/utils";
 
 type ViewMode = "grid" | "list";
@@ -393,10 +394,10 @@ function EventsContent() {
                       id={event.eventId}
                       name={event.title}
                       description={event.resource.description}
-                      date={new Date(event.start)}
+                      date={parseLocalDate(event.start)}
                       endDate={
                         event.resource.originalEndDate
-                          ? new Date(event.resource.originalEndDate)
+                          ? parseLocalDate(event.resource.originalEndDate)
                           : null
                       }
                       startTime={event.resource.startTime}

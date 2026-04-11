@@ -141,6 +141,22 @@ export function formatDateLocal(date: Date | string | null | undefined): string 
 // =============================================================================
 
 /**
+ * Parse a YYYY-MM-DD date string as LOCAL midnight.
+ *
+ * Use this when displaying dates to the user — unlike `new Date("YYYY-MM-DD")`
+ * which creates UTC midnight (and shifts the date for timezones behind UTC),
+ * this creates a Date at local midnight so `toLocaleDateString` always shows
+ * the correct day regardless of the user's timezone.
+ *
+ * @param dateString - Date in YYYY-MM-DD format
+ * @returns Date object at local midnight
+ */
+export function parseLocalDate(dateString: string): Date {
+  const [year, month, day] = dateString.split("-").map(Number);
+  return new Date(year!, month! - 1, day!);
+}
+
+/**
  * Parse a date string (YYYY-MM-DD) as a calendar date at UTC midnight.
  *
  * BEST PRACTICE: For calendar events that occur on a specific DAY regardless

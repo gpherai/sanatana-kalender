@@ -4,6 +4,7 @@ import type {
   SadhanaSessionItem,
   SadhanaGoal,
 } from "@prisma/client";
+import { formatDateLocal } from "@/lib/date-utils";
 
 // =============================================================================
 // TYPES
@@ -88,9 +89,9 @@ export function dateStr(d: Date): string {
   return d.toISOString().split("T")[0]!;
 }
 
-/** Today as YYYY-MM-DD (UTC) */
+/** Today as YYYY-MM-DD (local time) */
 export function todayStr(): string {
-  return dateStr(new Date());
+  return formatDateLocal(new Date());
 }
 
 // =============================================================================
