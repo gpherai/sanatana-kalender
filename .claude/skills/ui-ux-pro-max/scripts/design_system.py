@@ -526,7 +526,13 @@ def persist_design_system(design_system: dict, page: str = None, output_dir: str
     
     # If page is specified, create page override file with intelligent content
     if page:
-        page_file = pages_dir / f"{page.lower().replace(' ', '-')}.md"
+        import re
+        safe_page = re.sub(r"[^a-zA-Z0-9_-]", "-", page.lower())
+        if not safe_page:
+            raise ValueError(f"Invalid page name: {page!r}")
+        page_file = (pages_dir / f"{safe_page}.md").resolve()
+        if not str(page_file).startswith(str(pages_dir.resolve())):
+            raise ValueError(f"Page path escapes pages directory: {page!r}")
         page_content = format_page_override_md(design_system, page, page_query)
         with open(page_file, 'w', encoding='utf-8') as f:
             f.write(page_content)
