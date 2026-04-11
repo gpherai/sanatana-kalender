@@ -134,7 +134,7 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || "Er is iets misgegaan");
+        throw new Error(data.message || "Er is iets misgegaan");
       }
 
       success(mode === "create" ? "Event aangemaakt!" : "Event bijgewerkt!");
