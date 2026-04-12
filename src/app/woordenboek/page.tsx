@@ -1,29 +1,32 @@
-import { Book, Info, MoonStar, Clock, Sparkles, Users } from "lucide-react";
+import { Book, Info, MoonStar, Clock, Sparkles, Users, Sun } from "lucide-react";
 import { PageLayout } from "@/components/layout";
 import { Section } from "@/components/ui/Section";
-import { DICTIONARY_TERMS } from "@/lib/dictionary";
+import { getAllTerms, EncyclopediaTerm } from "@/lib/encyclopedia";
+import Link from "next/link";
 
 export const metadata = {
-  title: "Woordenboek",
-  description: "Definities van Sanskriet termen gebruikt in de Dharma Calendar.",
+  title: "Encyclopedie",
+  description:
+    "Uitgebreide definities van Sanskriet termen gebruikt in de Dharma Calendar.",
 };
 
 export default function DictionaryPage() {
+  const allTerms = getAllTerms();
+  // Only show top-level terms on the main page (filter out child terms)
+  const terms = allTerms.filter((term) => !term.parent);
+
   // Group terms by category and sort them alphabetically within each category
-  const groupedTerms = DICTIONARY_TERMS.reduce<Record<string, typeof DICTIONARY_TERMS>>(
-    (acc, term) => {
-      if (!acc[term.category]) {
-        acc[term.category] = [];
-      }
-      acc[term.category]!.push(term);
-      return acc;
-    },
-    {}
-  );
+  const groupedTerms = terms.reduce<Record<string, EncyclopediaTerm[]>>((acc, term) => {
+    if (!acc[term.category]) {
+      acc[term.category] = [];
+    }
+    acc[term.category]!.push(term);
+    return acc;
+  }, {});
 
   // Sort terms within each category
   Object.keys(groupedTerms).forEach((key) => {
-    groupedTerms[key]!.sort((a, b) => a.term.localeCompare(b.term));
+    groupedTerms[key]!.sort((a, b) => a.title.localeCompare(b.title));
   });
 
   // Get categories and sort them alphabetically
@@ -56,11 +59,12 @@ export default function DictionaryPage() {
           </div>
 
           <h1 className="text-theme-fg mb-6 text-4xl font-black tracking-tight drop-shadow-sm md:text-6xl">
-            Sanskriet <span className="text-theme-primary">Woordenboek</span>
+            Sanskriet <span className="text-theme-primary">Encyclopedie</span>
           </h1>
           <p className="max-max-w-2xl text-theme-fg-secondary text-center text-lg leading-relaxed font-medium md:text-xl">
-            Verdiep je kennis van de Vedische tijdrekening en spirituele concepten met dit
-            overzicht van essentiële termen.
+            Een diepgaande gids door de spirituele en astronomische wijsheid van Sanātana
+            Dharma. Ontdek de betekenis van godheden, kosmische principes en de heilige
+            ritmes van de tijd.
           </p>
         </div>
       </div>
@@ -83,7 +87,20 @@ export default function DictionaryPage() {
           } else if (category === "Devatās") {
             categoryIcon = Users;
             categoryColor = "muted";
+          } else if (category === "Navagraha") {
+            categoryIcon = Sun;
+            categoryColor = "secondary";
           }
+
+          // Special logic for categories:
+          // - Navagraha: show all members directly
+          // - Others: filter out terms with a parent
+          const itemsToShow =
+            category === "Navagraha"
+              ? groupedTerms[category]
+              : groupedTerms[category]?.filter((term) => !term.parent);
+
+          if (!itemsToShow || itemsToShow.length === 0) return null;
 
           return (
             <Section
@@ -94,32 +111,30 @@ export default function DictionaryPage() {
               className="border-theme-border-subtle overflow-hidden rounded-3xl border shadow-xl"
             >
               <div className="grid gap-6 pt-4 md:grid-cols-2 xl:grid-cols-3">
-                {groupedTerms[category]?.map((item) => {
-                  // Extract Sanskrit part if present for special styling
-                  const parts = item.term.split(" (");
-                  const mainTerm = parts[0];
-                  const sanskritPart = parts[1] ? ` (${parts[1]}` : "";
+                {itemsToShow.map((item) => {
+                  const sanskritPart = item.sanskrit ? ` (${item.sanskrit})` : "";
 
                   return (
-                    <div
-                      key={item.term}
-                      className="group border-theme-border bg-theme-bg-subtle/50 hover:border-theme-primary-30 relative flex flex-col rounded-2xl border p-6 transition-all duration-500 hover:-translate-y-1 hover:shadow-lg"
+                    <Link
+                      href={`/woordenboek/${item.slug}`}
+                      key={item.slug}
+                      className="group border-theme-border bg-theme-surface hover:border-theme-primary-30 focus:ring-theme-primary focus:ring-offset-theme-bg relative flex flex-col rounded-2xl border p-6 transition-all duration-500 hover:-translate-y-1 hover:shadow-lg focus:ring-2 focus:ring-offset-2 focus:outline-none"
                     >
                       {/* Decorative accent - Standard color, slightly stronger on hover */}
                       <div className="bg-theme-primary-20 group-hover:bg-theme-primary-40 absolute top-0 left-0 h-1.5 w-full transition-colors duration-300" />
 
                       <div className="space-y-3">
                         <h3 className="text-theme-fg text-xl font-bold tracking-tight transition-colors duration-300">
-                          {mainTerm}
+                          {item.title}
                           <span className="text-theme-fg-muted ml-1 text-sm font-normal opacity-80">
                             {sanskritPart}
                           </span>
                         </h3>
-                        <p className="text-theme-fg-secondary text-[0.9375rem] leading-relaxed transition-colors duration-300">
-                          {item.definition}
+                        <p className="text-theme-fg-secondary line-clamp-3 text-[0.9375rem] leading-relaxed transition-colors duration-300">
+                          {item.shortDescription}
                         </p>
                       </div>
-                    </div>
+                    </Link>
                   );
                 })}
               </div>
