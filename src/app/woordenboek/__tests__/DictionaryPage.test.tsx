@@ -22,7 +22,7 @@ describe("DictionaryPage", () => {
     render(<DictionaryPage />);
 
     expect(
-      screen.getByRole("heading", { name: /Sanskriet Woordenboek/i, level: 1 })
+      screen.getByRole("heading", { name: /Sanskriet Encyclopedie/i, level: 1 })
     ).toBeInTheDocument();
 
     // Check for some known categories from DICTIONARY_TERMS

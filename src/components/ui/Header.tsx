@@ -35,7 +35,7 @@ const navItems = [
   { href: "/kundali", label: "Kundali", icon: Star },
   { href: "/weer", label: "Weer", icon: CloudSun },
   { href: "/sadhana", label: "Sadhana", icon: Sparkles },
-  { href: "/woordenboek", label: "Woordenboek", icon: BookMarked },
+  { href: "/woordenboek", label: "Encyclopedie", icon: BookMarked },
   { href: "/settings", label: "Instellingen", icon: Settings },
 ] as const;
 
