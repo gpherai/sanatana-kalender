@@ -118,13 +118,23 @@ export default async function TermPage({
     group,
     members: allTerms
       .filter((t) => t.parent === group.slug)
-      .sort((a, b) => a.title.localeCompare(b.title)),
+      .sort((a, b) => {
+        if ((a.priority || 99) !== (b.priority || 99)) {
+          return (a.priority || 99) - (b.priority || 99);
+        }
+        return a.title.localeCompare(b.title);
+      }),
   }));
 
   // 3. Identify direct standalone manifestations
   const standaloneManifestations = allTerms
     .filter((t) => t.parent === term.slug && !t.isGroup)
-    .sort((a, b) => a.title.localeCompare(b.title));
+    .sort((a, b) => {
+      if ((a.priority || 99) !== (b.priority || 99)) {
+        return (a.priority || 99) - (b.priority || 99);
+      }
+      return a.title.localeCompare(b.title);
+    });
 
   // 4. Identify other related terms
   const otherRelated = allTerms

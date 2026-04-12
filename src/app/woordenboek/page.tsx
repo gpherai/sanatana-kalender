@@ -27,7 +27,14 @@ export default function DictionaryPage() {
 
   // Sort terms within each category
   Object.keys(groupedTerms).forEach((key) => {
-    groupedTerms[key]!.sort((a, b) => a.title.localeCompare(b.title));
+    groupedTerms[key]!.sort((a, b) => {
+      // First sort by priority (lower is earlier)
+      if ((a.priority || 99) !== (b.priority || 99)) {
+        return (a.priority || 99) - (b.priority || 99);
+      }
+      // Then alphabetically by title
+      return a.title.localeCompare(b.title);
+    });
   });
 
   // Get categories and sort them alphabetically
