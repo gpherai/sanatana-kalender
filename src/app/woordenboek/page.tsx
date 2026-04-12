@@ -12,17 +12,18 @@ export const metadata = {
 
 export default function DictionaryPage() {
   const allTerms = getAllTerms();
-  // Only show top-level terms on the main page (filter out child terms)
-  const terms = allTerms.filter((term) => !term.parent);
 
-  // Group terms by category and sort them alphabetically within each category
-  const groupedTerms = terms.reduce<Record<string, EncyclopediaTerm[]>>((acc, term) => {
-    if (!acc[term.category]) {
-      acc[term.category] = [];
-    }
-    acc[term.category]!.push(term);
-    return acc;
-  }, {});
+  // Group ALL terms by category first (so we don't lose children like Navagraha members)
+  const groupedTerms = allTerms.reduce<Record<string, EncyclopediaTerm[]>>(
+    (acc, term) => {
+      if (!acc[term.category]) {
+        acc[term.category] = [];
+      }
+      acc[term.category]!.push(term);
+      return acc;
+    },
+    {}
+  );
 
   // Sort terms within each category
   Object.keys(groupedTerms).forEach((key) => {
