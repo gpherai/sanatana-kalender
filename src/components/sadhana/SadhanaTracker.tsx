@@ -262,14 +262,6 @@ export function SadhanaTracker() {
             Mantra japa &amp; beoefening tracker
           </p>
         </div>
-        <button
-          onClick={loadAll}
-          className="text-theme-fg-muted hover:text-theme-fg flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-lg transition-colors"
-          aria-label="Pagina verversen"
-          title="Verversen"
-        >
-          <RefreshCw className="h-4 w-4" />
-        </button>
       </div>
 
       {/* Stats */}
