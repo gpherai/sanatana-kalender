@@ -194,13 +194,15 @@ export default async function TermPage({
           </div>
         </article>
 
-        {/* 1. Standalone Manifestations Section (First) */}
+        {/* 1. Standalone Manifestations / Group Members Section (First) */}
         {standaloneManifestations.length > 0 && (
           <div className="mt-16">
             <h2 className="text-theme-fg mb-8 text-3xl font-black tracking-tight">
-              {groupedManifestations.length > 0
-                ? "Directe Manifestaties"
-                : "Manifestaties & Vormen"}
+              {term.isGroup
+                ? `Leden van de ${term.title}`
+                : groupedManifestations.length > 0
+                  ? "Directe Manifestaties"
+                  : "Manifestaties & Vormen"}
             </h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {standaloneManifestations.map((child) => (
