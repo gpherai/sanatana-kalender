@@ -426,7 +426,7 @@ export default function KundaliPage() {
 
           {/* Chart view */}
           {resultView === "chart" && (
-            <div className="mx-auto w-full max-w-lg">
+            <div className="mx-auto w-full max-w-2xl">
               <KundaliChart chart={chart} />
             </div>
           )}

@@ -138,7 +138,7 @@ function RashiCell({ rashiNum, grahas, isLagna, style }: RashiCellProps) {
   return (
     <div
       className={cn(
-        "border-theme-border relative flex flex-col overflow-hidden border p-1",
+        "border-theme-border relative flex flex-col overflow-hidden border p-2.5",
         "transition-colors duration-150"
       )}
       style={{
@@ -154,12 +154,12 @@ function RashiCell({ rashiNum, grahas, isLagna, style }: RashiCellProps) {
     >
       {/* Rashi number + Asc marker */}
       <div className="flex items-start justify-between">
-        <span className="text-theme-fg-muted font-mono text-[9px] leading-tight">
+        <span className="text-theme-fg-muted font-mono text-xs leading-tight">
           {rashiNum}
         </span>
         {isLagna && (
           <span
-            className="text-[8px] leading-tight font-bold"
+            className="text-[10px] leading-tight font-bold"
             style={{ color: "var(--theme-primary)" }}
           >
             Asc
@@ -168,37 +168,34 @@ function RashiCell({ rashiNum, grahas, isLagna, style }: RashiCellProps) {
       </div>
 
       {/* Rashi name */}
-      <span className="text-theme-fg-muted mb-0.5 truncate text-[8px] leading-tight">
+      <span className="text-theme-fg-muted mb-1 truncate text-[11px] leading-tight">
         {RASHI_NAMES[rashiNum]}
       </span>
 
       {/* Grahas */}
-      <div className="flex min-h-0 flex-1 flex-col gap-px">
+      <div className="flex min-h-0 flex-1 flex-col gap-0.5">
         {sorted.map(({ key, retrograde }) => {
           const isTraditional = TRADITIONAL.has(key);
           return (
             <div
               key={key}
               className={cn(
-                "flex items-baseline gap-px leading-tight",
+                "flex items-baseline gap-0.5 leading-snug",
                 !isTraditional && "opacity-40"
               )}
               style={{ color: GRAHA_COLOR[key] }}
             >
-              <span className={isTraditional ? "text-[11px]" : "text-[9px]"}>
+              <span className={isTraditional ? "text-sm" : "text-[11px]"}>
                 {GRAHA_SYMBOL[key]}
               </span>
               <span
-                className={cn(
-                  "font-medium",
-                  isTraditional ? "text-[10px]" : "text-[9px]"
-                )}
+                className={cn("font-medium", isTraditional ? "text-xs" : "text-[11px]")}
               >
                 {GRAHA_SHORT[key]}
               </span>
               {retrograde && (
                 <span
-                  className="text-[8px] opacity-70"
+                  className="text-[10px] opacity-70"
                   style={{ color: "var(--theme-fg-muted)" }}
                   title="Retrograde"
                 >
@@ -270,21 +267,24 @@ export function KundaliChart({ chart }: KundaliChartProps) {
         style={{ gridRow: "2/4", gridColumn: "2/4" }}
       >
         <span
-          className="text-[9px] font-semibold tracking-widest uppercase"
+          className="text-[10px] font-semibold tracking-widest uppercase"
           style={{ color: "var(--theme-fg-muted)" }}
         >
           Kundali
         </span>
         <span
-          className="mt-1 text-center text-sm leading-tight font-bold"
+          className="mt-1.5 text-center text-base leading-tight font-bold"
           style={{ color: "var(--theme-fg)" }}
         >
           {chart.lagna.rashi.name}
         </span>
-        <span className="text-[9px]" style={{ color: "var(--theme-fg-muted)" }}>
+        <span className="mt-0.5 text-xs" style={{ color: "var(--theme-fg-muted)" }}>
           Lagna
         </span>
-        <span className="mt-1.5 text-[9px]" style={{ color: "var(--theme-fg-subtle)" }}>
+        <span
+          className="mt-2 font-mono text-xs"
+          style={{ color: "var(--theme-fg-subtle)" }}
+        >
           {chart.lagna.degreeInRashi.toFixed(1)}°
         </span>
       </div>
