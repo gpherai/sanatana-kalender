@@ -131,7 +131,7 @@ export function MalasChart({ calDays }: { calDays: CalendarDay[] }) {
                 style={{ height: BAR_H }}
               >
                 <div
-                  className={`w-full rounded-t-md motion-safe:transition-all motion-safe:duration-150${m.isCurrentMonth && val > 0 && !isHovered ? "bg-theme-gradient" : ""}`}
+                  className={`w-full rounded-t-md motion-safe:transition-all motion-safe:duration-150 ${m.isCurrentMonth && val > 0 && !isHovered ? "bg-theme-gradient" : ""}`}
                   style={{
                     height: barH,
                     background:
