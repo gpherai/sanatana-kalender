@@ -63,7 +63,7 @@ export function MalasChart({ calDays }: { calDays: CalendarDay[] }) {
   const values = data.map((m) => (metric === "malas" ? m.malas : m.sessions));
   const maxVal = Math.max(...values, 1);
 
-  const BAR_H = 72; // px — max bar height
+  const BAR_H = 96; // px — max bar height
 
   return (
     <div>
@@ -105,8 +105,13 @@ export function MalasChart({ calDays }: { calDays: CalendarDay[] }) {
               {/* Tooltip */}
               {isHovered && (
                 <div
-                  className="bg-theme-surface-raised border-theme-border text-theme-fg pointer-events-none absolute z-10 -translate-x-1/2 rounded-lg border px-2.5 py-1.5 text-center shadow-lg"
-                  style={{ bottom: BAR_H + 10, left: "50%" }}
+                  className="border-theme-border text-theme-fg pointer-events-none absolute z-10 -translate-x-1/2 rounded-lg border px-2.5 py-1.5 text-center shadow-lg backdrop-blur-sm"
+                  style={{
+                    bottom: BAR_H + 10,
+                    left: "50%",
+                    background: "var(--theme-glass-bg)",
+                    borderColor: "var(--theme-glass-border)",
+                  }}
                 >
                   <div className="text-theme-fg-muted mb-0.5 text-[10px] whitespace-nowrap">
                     {m.fullLabel}
@@ -126,7 +131,7 @@ export function MalasChart({ calDays }: { calDays: CalendarDay[] }) {
                 style={{ height: BAR_H }}
               >
                 <div
-                  className="w-full rounded-t-sm motion-safe:transition-all motion-safe:duration-150"
+                  className={`w-full rounded-t-md motion-safe:transition-all motion-safe:duration-150${m.isCurrentMonth && val > 0 && !isHovered ? "bg-theme-gradient" : ""}`}
                   style={{
                     height: barH,
                     background:
@@ -135,7 +140,7 @@ export function MalasChart({ calDays }: { calDays: CalendarDay[] }) {
                         : isHovered
                           ? "color-mix(in oklch, var(--theme-primary) 75%, white)"
                           : m.isCurrentMonth
-                            ? "color-mix(in oklch, var(--theme-primary) 85%, white)"
+                            ? undefined
                             : "var(--theme-primary)",
                   }}
                 />

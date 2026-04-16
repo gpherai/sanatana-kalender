@@ -584,6 +584,8 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
         "--theme-calendar-border": "oklch(0.88 0.06 280)",
         "--theme-calendar-border-subtle": "oklch(0.91 0.04 280)",
         "--theme-calendar-weekend-bg": "oklch(0.96 0.010 280)",
+        "--theme-stat-value": "var(--theme-fg)", // Wit in dark mode — indigo primary blends in, accent is voor streak
+        "--theme-heatmap-4": "var(--theme-accent)", // Meest intensieve dagd branden in ember-goud
       },
       moon: {
         surface: {
@@ -857,6 +859,12 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
 .dark[[t]],
 [[t]].dark {
   --theme-almanac-moon-timeline-bg: linear-gradient(to right, oklch(0.20 0.14 275), oklch(0.18 0.10 285), oklch(0.22 0.06 300));
+
+  /* Heatmap: donkere indigo void → shmashana vuur progressie */
+  --theme-heatmap-empty: oklch(0.20 0.06 278);
+  --theme-heatmap-1:     oklch(0.28 0.10 48 / 0.80);
+  --theme-heatmap-2:     oklch(0.38 0.14 46);
+  --theme-heatmap-3:     oklch(0.52 0.18 44);
 }
 
 /* Hero: restore white text on date — heading gradient applies wrong context here */
@@ -901,6 +909,8 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
         "--ganesha-gold": "oklch(0.78 0.14 85)",
         "--ganesha-durva": "oklch(0.55 0.18 145)",
         "--ganesha-mooladhara": "oklch(0.45 0.22 25)",
+        "--theme-stat-value": "var(--theme-fg)",
+        "--theme-heatmap-4": "var(--theme-accent)", // Meest intensieve dagen in divine gold
       },
       moon: {
         surface: {
@@ -1147,6 +1157,8 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
         "--theme-almanac-moon-icon": "oklch(0.52 0.18 45)",
         "--theme-almanac-moon-badge-bg": "oklch(0.91 0.08 55)",
         "--theme-almanac-moon-badge-fg": "oklch(0.38 0.16 42)",
+        "--theme-stat-value": "var(--theme-fg)",
+        "--theme-heatmap-4": "var(--theme-accent)", // Meest intensieve dagen in sacred flame
       },
       moon: {
         surface: {

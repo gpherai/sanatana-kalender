@@ -144,6 +144,7 @@ function generateRootVariables(): string {
   --theme-active: oklch(0.91 0.008 60);             /* Active/pressed */
   --theme-disabled: oklch(0.920 0.004 286);         /* Disabled elements */
   --theme-ring: var(--theme-primary);               /* Focus ring color */
+  --theme-stat-value: var(--theme-primary);         /* Stat/emphasis numbers — may override per theme */
 
   /* Status colors (extended for Fase 2) */
   --theme-success: oklch(0.65 0.15 145);
@@ -286,6 +287,13 @@ function generateRootVariables(): string {
   --theme-panchanga-yoga-label: oklch(0.40 0.14 278);
   --theme-panchanga-karana-bg: oklch(0.91 0.04 295);
   --theme-panchanga-karana-label: oklch(0.42 0.12 290);
+
+  /* Sadhana tracker — heatmap cell intensity levels */
+  --theme-heatmap-empty:   color-mix(in oklch, var(--theme-fg) 10%, transparent);
+  --theme-heatmap-1:       color-mix(in oklch, var(--theme-primary) 28%, transparent);
+  --theme-heatmap-2:       color-mix(in oklch, var(--theme-primary) 52%, transparent);
+  --theme-heatmap-3:       color-mix(in oklch, var(--theme-primary) 75%, transparent);
+  --theme-heatmap-4:       var(--theme-primary);
 
   /* Legacy aliases (for compatibility) */
   --color-success: var(--theme-success);

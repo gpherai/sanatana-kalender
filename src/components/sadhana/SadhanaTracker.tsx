@@ -294,6 +294,7 @@ export function SadhanaTracker() {
           label="Streak"
           value={`${streak?.current_streak ?? 0} dagen`}
           sub={`Langste: ${streak?.longest_streak ?? 0} dagen`}
+          accent
         />
       </div>
 
@@ -303,7 +304,7 @@ export function SadhanaTracker() {
           <h2 className="text-theme-fg font-semibold">Sessies</h2>
           <button
             onClick={() => setShowAddSession((v) => !v)}
-            className="bg-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-white shadow hover:opacity-90"
+            className="bg-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-white shadow hover:opacity-90 active:scale-[0.98]"
           >
             <Plus className="h-4 w-4" />
             Toevoegen
@@ -458,7 +459,9 @@ export function SadhanaTracker() {
       {todayStats && (
         <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
           <div className="mb-3 flex items-center gap-2">
-            <Sparkles className="text-theme-primary h-4 w-4" />
+            <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
+              <Sparkles className="h-4 w-4" />
+            </div>
             <h2 className="text-theme-fg text-sm font-semibold">
               Vandaag per beoefening
             </h2>
@@ -496,7 +499,9 @@ export function SadhanaTracker() {
       {/* Heatmap */}
       <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
         <div className="mb-4 flex items-center gap-2">
-          <Calendar className="text-theme-primary h-4 w-4" />
+          <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
+            <Calendar className="h-4 w-4" />
+          </div>
           <h2 className="text-theme-fg text-sm font-semibold">
             Activiteit — laatste jaar
           </h2>
@@ -512,7 +517,9 @@ export function SadhanaTracker() {
       {/* Maandgrafiek */}
       <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
         <div className="mb-1 flex items-center gap-2">
-          <TrendingUp className="text-theme-primary h-4 w-4" />
+          <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
+            <TrendingUp className="h-4 w-4" />
+          </div>
           <h2 className="text-theme-fg text-sm font-semibold">
             Per maand — laatste jaar
           </h2>
@@ -524,7 +531,9 @@ export function SadhanaTracker() {
       {overview && (
         <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
           <div className="mb-4 flex items-center gap-2">
-            <Award className="text-theme-primary h-4 w-4" />
+            <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
+              <Award className="h-4 w-4" />
+            </div>
             <h2 className="text-theme-fg text-sm font-semibold">All-time overzicht</h2>
           </div>
           <div className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-3 lg:grid-cols-5">
@@ -552,7 +561,10 @@ export function SadhanaTracker() {
             ].map(({ label, value }) => (
               <div key={label}>
                 <div className="text-theme-fg-muted text-xs">{label}</div>
-                <div className="text-theme-fg mt-0.5 text-2xl font-bold tabular-nums">
+                <div
+                  className="mt-0.5 text-2xl font-bold tabular-nums"
+                  style={{ color: "var(--theme-stat-value)" }}
+                >
                   {value}
                 </div>
               </div>

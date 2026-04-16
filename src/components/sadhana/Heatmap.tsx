@@ -41,10 +41,10 @@ export function buildHeatmap(calendarDays: CalendarDay[], days = 364): HeatmapCe
 }
 
 function heatColor(malas: number): string {
-  if (malas < 4) return "color-mix(in oklch, var(--theme-primary) 28%, transparent)";
-  if (malas < 8) return "color-mix(in oklch, var(--theme-primary) 52%, transparent)";
-  if (malas < 12) return "color-mix(in oklch, var(--theme-primary) 75%, transparent)";
-  return "var(--theme-primary)";
+  if (malas < 4) return "var(--theme-heatmap-1)";
+  if (malas < 8) return "var(--theme-heatmap-2)";
+  if (malas < 12) return "var(--theme-heatmap-3)";
+  return "var(--theme-heatmap-4)";
 }
 
 const MONTH_LABELS = [
@@ -145,13 +145,13 @@ export function Heatmap({
                 return (
                   <div
                     key={di}
-                    className="relative cursor-pointer rounded-sm motion-safe:transition-colors"
+                    className="relative cursor-pointer rounded motion-safe:transition-colors"
                     style={{
                       width: cellSize,
                       height: cellSize,
                       background:
                         cell.malas === 0
-                          ? "color-mix(in oklch, var(--theme-fg) 10%, transparent)"
+                          ? "var(--theme-heatmap-empty)"
                           : heatColor(cell.malas),
                     }}
                     title={`${formatDate(cell.date)}: ${cell.malas} malas${label ? ` · ${label}` : ""}`}
@@ -192,14 +192,11 @@ export function Heatmap({
           ].map(({ m, label }) => (
             <div key={label} className="flex items-center gap-1">
               <div
-                className="rounded-sm"
+                className="rounded"
                 style={{
                   width: cellSize,
                   height: cellSize,
-                  background:
-                    m === 0
-                      ? "color-mix(in oklch, var(--theme-fg) 10%, transparent)"
-                      : heatColor(m),
+                  background: m === 0 ? "var(--theme-heatmap-empty)" : heatColor(m),
                 }}
               />
               <span>{label}</span>

@@ -110,7 +110,7 @@ export function SessionCard({
     <div
       className={cn(
         "bg-theme-surface-raised rounded-2xl p-4 shadow",
-        isToday && "ring-1 ring-[var(--theme-primary)]"
+        isToday && "shadow-theme-primary ring-2 ring-[var(--theme-primary)]"
       )}
     >
       <div className="flex items-start gap-3">
@@ -119,7 +119,7 @@ export function SessionCard({
           className="flex flex-1 items-start gap-3 text-left"
           onClick={() => setOpen((v) => !v)}
         >
-          <div className="bg-theme-primary-15 text-theme-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-sm font-bold tabular-nums">
+          <div className="bg-theme-primary-15 text-theme-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold tabular-nums">
             {session.total_malas}
           </div>
           <div className="min-w-0 flex-1">
