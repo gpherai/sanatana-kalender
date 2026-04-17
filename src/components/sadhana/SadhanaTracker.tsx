@@ -1,25 +1,16 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Flame,
-  Award,
   Calendar,
-  Plus,
   Loader2,
   RefreshCw,
   Sparkles,
   Activity,
   TrendingUp,
   BookOpen,
-  ChevronRight,
-  Sun,
-  Coffee,
-  Sunset,
-  Moon,
-  Clock,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import {
   type TodayStats,
   type StreakStats,
@@ -34,156 +25,17 @@ import {
   fetchDayInfoMap,
   localDateString,
   todayString,
-  formatDate,
   formatDuration,
-  dayContextLabel,
 } from "./types";
 import { buildHeatmap, Heatmap } from "./Heatmap";
 import { MalasChart } from "./MalasChart";
 import { StatCard } from "./StatCard";
-import { SessionForm } from "./SessionForm";
-import { SessionCard } from "./SessionCard";
+import { SessionsSection } from "./SessionsSection";
+import { AllTimeOverview } from "./AllTimeOverview";
+import { WeekdayPattern, ConsistencyRing } from "./AnalyticsWidgets";
 import { PracticesPanel } from "./PracticesPanel";
 import { GoalPanel } from "./GoalPanel";
 import { RoutinePanel } from "./RoutinePanel";
-
-const MONTHS_NL_FULL = [
-  "januari",
-  "februari",
-  "maart",
-  "april",
-  "mei",
-  "juni",
-  "juli",
-  "augustus",
-  "september",
-  "oktober",
-  "november",
-  "december",
-];
-
-function formatMonthLabel(ym: string) {
-  const parts = ym.split("-");
-  const y = parts[0]!;
-  const m = parts[1]!;
-  return `${MONTHS_NL_FULL[parseInt(m, 10) - 1]} ${y}`;
-}
-
-function getMonthTotals(monthSessions: SessionData[]) {
-  let malas = 0;
-  let minutes = 0;
-  for (const s of monthSessions) {
-    malas += s.total_malas;
-    minutes += s.duration_minutes ?? 0;
-  }
-  return { malas, minutes, count: monthSessions.length };
-}
-
-// =============================================================================
-// BESTE BEOEFENTIJD
-// =============================================================================
-
-const TIME_SLOTS = [
-  {
-    key: "ochtend",
-    label: "Ochtend",
-    range: "5–12u",
-    Icon: Sun,
-    hours: [5, 6, 7, 8, 9, 10, 11],
-  },
-  {
-    key: "middag",
-    label: "Middag",
-    range: "12–17u",
-    Icon: Coffee,
-    hours: [12, 13, 14, 15, 16],
-  },
-  {
-    key: "avond",
-    label: "Avond",
-    range: "17–22u",
-    Icon: Sunset,
-    hours: [17, 18, 19, 20, 21],
-  },
-  {
-    key: "nacht",
-    label: "Nacht",
-    range: "22–5u",
-    Icon: Moon,
-    hours: [22, 23, 0, 1, 2, 3, 4],
-  },
-] as const;
-
-function BestPracticeTime({ sessions }: { sessions: SessionData[] }) {
-  const withTime = sessions.filter((s) => s.started_at !== null);
-  if (withTime.length === 0) return null;
-
-  const counts = { ochtend: 0, middag: 0, avond: 0, nacht: 0 } as Record<string, number>;
-  for (const s of withTime) {
-    const hour = new Date(s.started_at!).getHours();
-    const slot = TIME_SLOTS.find((ts) => (ts.hours as readonly number[]).includes(hour));
-    if (slot) counts[slot.key] = (counts[slot.key] ?? 0) + 1;
-  }
-
-  const maxCount = Math.max(...Object.values(counts), 1);
-  const bestKey = Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0];
-
-  return (
-    <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
-      <div className="mb-4 flex items-center gap-2">
-        <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
-          <Clock className="h-4 w-4" />
-        </div>
-        <h2 className="text-theme-fg text-sm font-semibold">Beste beoefentijd</h2>
-        <span className="text-theme-fg-muted ml-auto text-xs tabular-nums">
-          {withTime.length} sessies met tijdstip
-        </span>
-      </div>
-      <div className="grid grid-cols-4 gap-3">
-        {TIME_SLOTS.map(({ key, label, range, Icon }) => {
-          const count = counts[key] ?? 0;
-          const isBest = key === bestKey && count > 0;
-          const barPct = Math.round((count / maxCount) * 100);
-          return (
-            <div key={key} className="flex flex-col items-center gap-1.5">
-              <div
-                className={`flex h-8 w-8 items-center justify-center rounded-xl transition-colors ${
-                  isBest
-                    ? "bg-theme-primary text-white"
-                    : "bg-theme-primary-10 text-theme-primary"
-                }`}
-              >
-                <Icon className="h-4 w-4" />
-              </div>
-              {/* Mini bar */}
-              <div className="bg-theme-border h-12 w-full overflow-hidden rounded-md">
-                <div
-                  className="mt-auto w-full rounded-md transition-all duration-300"
-                  style={{
-                    height: `${barPct}%`,
-                    background: isBest
-                      ? "var(--theme-primary)"
-                      : "color-mix(in oklch, var(--theme-primary) 40%, transparent)",
-                    marginTop: `${100 - barPct}%`,
-                  }}
-                />
-              </div>
-              <span
-                className={`text-[10px] font-medium ${isBest ? "text-theme-primary" : "text-theme-fg-muted"}`}
-              >
-                {label}
-              </span>
-              <span className="text-theme-fg-muted text-[9px]">{range}</span>
-              <span className="text-theme-fg text-xs font-semibold tabular-nums">
-                {count}
-              </span>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
 
 export function SadhanaTracker() {
   const [loading, setLoading] = useState(true);
@@ -213,10 +65,8 @@ export function SadhanaTracker() {
     try {
       setError(null);
       const fromDate = new Date("2026-01-01T00:00:00");
-
       const yearAgo = new Date();
       yearAgo.setDate(yearAgo.getDate() - 364);
-      // Project mandate: only from 2026-01-01
       const minDate = new Date("2026-01-01T00:00:00");
       const effectiveStart = yearAgo < minDate ? minDate : yearAgo;
 
@@ -318,28 +168,14 @@ export function SadhanaTracker() {
   const toggleMonth = useCallback((month: string) => {
     setExpandedMonths((prev) => {
       const next = new Set(prev);
-      if (next.has(month)) {
-        next.delete(month);
-      } else {
-        next.add(month);
-      }
+      if (next.has(month)) next.delete(month);
+      else next.add(month);
       return next;
     });
   }, []);
 
-  // Group sessions by YYYY-MM, sorted descending
-  const sessionsByMonth = useMemo(() => {
-    const map = new Map<string, SessionData[]>();
-    for (const s of sessions) {
-      const month = s.date.slice(0, 7);
-      if (!map.has(month)) map.set(month, []);
-      map.get(month)!.push(s);
-    }
-    return [...map.entries()].sort(([a], [b]) => b.localeCompare(a));
-  }, [sessions]);
-
   const heatmapFull = buildHeatmap(calDays, 364);
-  const heatmapMobile = buildHeatmap(calDays, 154); // ~22 weken, past op 375px
+  const heatmapMobile = buildHeatmap(calDays, 154);
 
   if (loading) {
     return (
@@ -409,7 +245,7 @@ export function SadhanaTracker() {
         />
       </div>
 
-      {/* Per-practice vandaag */}
+      {/* Vandaag per beoefening */}
       {todayStats && (
         <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
           <div className="mb-3 flex items-center gap-2">
@@ -450,162 +286,19 @@ export function SadhanaTracker() {
         </div>
       )}
 
-      {/* Sessions — maandaccordeon */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-theme-fg font-semibold">Sessies</h2>
-          <button
-            onClick={() => setShowAddSession((v) => !v)}
-            className="bg-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-white shadow hover:opacity-90 active:scale-[0.98]"
-          >
-            <Plus className="h-4 w-4" />
-            Toevoegen
-          </button>
-        </div>
-
-        {showAddSession && (
-          <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
-            <h3 className="text-theme-fg mb-4 font-semibold">Sessie toevoegen</h3>
-            {activePractices.length === 0 ? (
-              <p className="text-theme-warning text-sm">
-                Voeg eerst een actieve beoefening toe onderaan de pagina.
-              </p>
-            ) : (
-              <SessionForm
-                practices={activePractices}
-                routines={routines}
-                submitLabel="Opslaan"
-                onSubmit={async (data) => {
-                  await apiFetch("/sessions", {
-                    method: "POST",
-                    body: JSON.stringify({
-                      date: data.date,
-                      started_at: data.startedAt
-                        ? new Date(`${data.date}T${data.startedAt}`).toISOString()
-                        : null,
-                      duration_minutes: data.duration
-                        ? parseInt(data.duration, 10)
-                        : null,
-                      notes: data.notes.trim() || null,
-                      items: data.items.map((it) => ({
-                        practice_id: it.practice_id,
-                        quantity: parseInt(it.quantity, 10),
-                        unit: it.unit,
-                      })),
-                    }),
-                  });
-                  setShowAddSession(false);
-                  loadAll();
-                  showToast("Sessie opgeslagen");
-                }}
-                onCancel={() => setShowAddSession(false)}
-              />
-            )}
-          </div>
-        )}
-
-        {sessions.length === 0 ? (
-          <div className="bg-theme-surface-raised rounded-2xl p-8 text-center shadow-lg">
-            <div className="text-theme-fg-muted text-sm">Geen sessies gevonden.</div>
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {sessionsByMonth.map(([month, monthSessions]) => {
-              const isOpen = expandedMonths.has(month);
-              const { malas, minutes, count } = getMonthTotals(monthSessions);
-              return (
-                <div
-                  key={month}
-                  className="bg-theme-surface-raised overflow-hidden rounded-2xl shadow-lg"
-                >
-                  {/* Maand-header */}
-                  <button
-                    onClick={() => toggleMonth(month)}
-                    className="hover:bg-theme-hover flex w-full cursor-pointer items-center gap-3 px-4 py-3.5 transition-colors"
-                  >
-                    <ChevronRight
-                      className={cn(
-                        "text-theme-fg-muted h-4 w-4 shrink-0 transition-transform duration-200",
-                        isOpen && "rotate-90"
-                      )}
-                    />
-                    <span className="text-theme-fg flex-1 text-left font-semibold capitalize">
-                      {formatMonthLabel(month)}
-                    </span>
-                    <div className="text-theme-fg-muted flex items-center gap-2 text-xs">
-                      <span>{count} sessies</span>
-                      <span className="text-theme-border">·</span>
-                      <span>{Math.round(malas)} malas</span>
-                      {minutes > 0 && (
-                        <>
-                          <span className="text-theme-border">·</span>
-                          <span>{formatDuration(minutes)}</span>
-                        </>
-                      )}
-                    </div>
-                  </button>
-
-                  {/* Dag-groepen */}
-                  {isOpen && (
-                    <div className="border-theme-border space-y-4 border-t px-4 pt-4 pb-4">
-                      {Object.entries(
-                        monthSessions.reduce(
-                          (acc, s) => {
-                            (acc[s.date] ??= []).push(s);
-                            return acc;
-                          },
-                          {} as Record<string, SessionData[]>
-                        )
-                      )
-                        .sort(([a], [b]) => b.localeCompare(a))
-                        .map(([date, daySessions]) => {
-                          const info = dayInfoMap.get(date);
-                          const context = dayContextLabel(info);
-                          const isToday = date === todayString();
-                          return (
-                            <div key={date} className="space-y-2">
-                              {/* Dag-header */}
-                              <div className="flex flex-wrap items-center gap-2 px-1">
-                                <span className="text-theme-fg-secondary text-xs font-semibold">
-                                  {formatDate(date)}
-                                </span>
-                                {isToday && (
-                                  <span className="bg-theme-primary/15 text-theme-primary rounded-full px-2 py-0.5 text-xs font-medium">
-                                    Vandaag
-                                  </span>
-                                )}
-                                {context && (
-                                  <span className="text-theme-fg-muted text-xs">
-                                    {context}
-                                  </span>
-                                )}
-                              </div>
-                              {daySessions.map((s) => (
-                                <SessionCard
-                                  key={s.id}
-                                  session={s}
-                                  practices={activePractices}
-                                  onUpdated={() => {
-                                    loadAll();
-                                    showToast("Sessie opgeslagen");
-                                  }}
-                                  onDeleted={() => {
-                                    loadAll();
-                                    showToast("Sessie verwijderd");
-                                  }}
-                                />
-                              ))}
-                            </div>
-                          );
-                        })}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
+      {/* Sessies */}
+      <SessionsSection
+        sessions={sessions}
+        expandedMonths={expandedMonths}
+        toggleMonth={toggleMonth}
+        showAddSession={showAddSession}
+        setShowAddSession={setShowAddSession}
+        dayInfoMap={dayInfoMap}
+        activePractices={activePractices}
+        routines={routines}
+        loadAll={loadAll}
+        showToast={showToast}
+      />
 
       {/* Heatmap */}
       <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
@@ -638,85 +331,14 @@ export function SadhanaTracker() {
         <MalasChart calDays={calDays} sessions={sessions} />
       </div>
 
-      {/* All-time overview */}
-      {overview && (
-        <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
-          <div className="mb-4 flex items-center gap-2">
-            <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
-              <Award className="h-4 w-4" />
-            </div>
-            <h2 className="text-theme-fg text-sm font-semibold">All-time overzicht</h2>
-          </div>
-          <div className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-3 lg:grid-cols-5">
-            {[
-              {
-                label: "Sessies",
-                value: overview.total_sessions.toLocaleString("nl-NL"),
-              },
-              {
-                label: "Malas totaal",
-                value: overview.total_malas_all_time.toLocaleString("nl-NL"),
-              },
-              {
-                label: "Minuten totaal",
-                value: overview.total_minutes_all_time.toLocaleString("nl-NL"),
-              },
-              {
-                label: "Gem. malas/sessie",
-                value: overview.avg_malas_per_session.toFixed(1),
-              },
-              {
-                label: "Gem. min/sessie",
-                value: overview.avg_minutes_per_session.toFixed(1),
-              },
-            ].map(({ label, value }) => (
-              <div key={label}>
-                <div className="text-theme-fg-muted text-xs">{label}</div>
-                <div
-                  className="mt-0.5 text-2xl font-bold tabular-nums"
-                  style={{ color: "var(--theme-stat-value)" }}
-                >
-                  {value}
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* All-time overzicht */}
+      {overview && <AllTimeOverview overview={overview} />}
 
-          {overview.practices.length > 0 && (
-            <div className="border-theme-border mt-5 border-t pt-4">
-              <div className="text-theme-fg-secondary mb-3 text-xs font-medium">
-                Per beoefening
-              </div>
-              <div className="space-y-2">
-                {overview.practices.map((ps) => (
-                  <div key={ps.practice_id} className="flex items-center gap-3">
-                    <div className="text-theme-primary shrink-0">
-                      {ps.practice_type === "mantra_japa" ? (
-                        <Sparkles className="h-3.5 w-3.5" />
-                      ) : (
-                        <BookOpen className="h-3.5 w-3.5" />
-                      )}
-                    </div>
-                    <span className="text-theme-fg-secondary min-w-0 flex-1 truncate text-sm">
-                      {ps.practice_name}
-                    </span>
-                    <span className="text-theme-fg-muted shrink-0 text-xs tabular-nums">
-                      {ps.total_quantity}{" "}
-                      {ps.practice_type === "mantra_japa" ? "malas" : "×"}
-                      {ps.total_mantras
-                        ? ` · ${ps.total_mantras.toLocaleString("nl-NL")} mantras`
-                        : ""}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Beste beoefentijd */}
-      <BestPracticeTime sessions={sessions} />
+      {/* Weekpatroon + Consistentie */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <WeekdayPattern sessions={sessions} />
+        <ConsistencyRing calDays={calDays} />
+      </div>
 
       {/* Routines + Goals + Practices */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-start">
