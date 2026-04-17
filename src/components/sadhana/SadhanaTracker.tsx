@@ -13,6 +13,11 @@ import {
   TrendingUp,
   BookOpen,
   ChevronRight,
+  Sun,
+  Coffee,
+  Sunset,
+  Moon,
+  Clock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -72,6 +77,112 @@ function getMonthTotals(monthSessions: SessionData[]) {
     minutes += s.duration_minutes ?? 0;
   }
   return { malas, minutes, count: monthSessions.length };
+}
+
+// =============================================================================
+// BESTE BEOEFENTIJD
+// =============================================================================
+
+const TIME_SLOTS = [
+  {
+    key: "ochtend",
+    label: "Ochtend",
+    range: "5–12u",
+    Icon: Sun,
+    hours: [5, 6, 7, 8, 9, 10, 11],
+  },
+  {
+    key: "middag",
+    label: "Middag",
+    range: "12–17u",
+    Icon: Coffee,
+    hours: [12, 13, 14, 15, 16],
+  },
+  {
+    key: "avond",
+    label: "Avond",
+    range: "17–22u",
+    Icon: Sunset,
+    hours: [17, 18, 19, 20, 21],
+  },
+  {
+    key: "nacht",
+    label: "Nacht",
+    range: "22–5u",
+    Icon: Moon,
+    hours: [22, 23, 0, 1, 2, 3, 4],
+  },
+] as const;
+
+function BestPracticeTime({ sessions }: { sessions: SessionData[] }) {
+  const withTime = sessions.filter((s) => s.started_at !== null);
+  if (withTime.length === 0) return null;
+
+  const counts = { ochtend: 0, middag: 0, avond: 0, nacht: 0 } as Record<string, number>;
+  for (const s of withTime) {
+    const hour = new Date(s.started_at!).getHours();
+    const slot = TIME_SLOTS.find((ts) => (ts.hours as readonly number[]).includes(hour));
+    if (slot) counts[slot.key] = (counts[slot.key] ?? 0) + 1;
+  }
+
+  const maxCount = Math.max(...Object.values(counts), 1);
+  const bestKey = Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0];
+
+  return (
+    <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
+      <div className="mb-4 flex items-center gap-2">
+        <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
+          <Clock className="h-4 w-4" />
+        </div>
+        <h2 className="text-theme-fg text-sm font-semibold">Beste beoefentijd</h2>
+        <span className="text-theme-fg-muted ml-auto text-xs tabular-nums">
+          {withTime.length} sessies met tijdstip
+        </span>
+      </div>
+      <div className="grid grid-cols-4 gap-3">
+        {TIME_SLOTS.map(({ key, label, range, Icon }) => {
+          const count = counts[key] ?? 0;
+          const isBest = key === bestKey && count > 0;
+          const barPct = Math.round((count / maxCount) * 100);
+          return (
+            <div key={key} className="flex flex-col items-center gap-1.5">
+              <div
+                className={`flex h-8 w-8 items-center justify-center rounded-xl transition-colors ${
+                  isBest
+                    ? "bg-theme-primary text-white"
+                    : "bg-theme-primary-10 text-theme-primary"
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+              </div>
+              {/* Mini bar */}
+              <div className="bg-theme-border h-12 w-full overflow-hidden rounded-md">
+                <div
+                  className="mt-auto w-full rounded-md transition-all duration-300"
+                  style={{
+                    height: `${barPct}%`,
+                    background: isBest
+                      ? "var(--theme-primary)"
+                      : "color-mix(in oklch, var(--theme-primary) 40%, transparent)",
+                    marginTop: `${100 - barPct}%`,
+                  }}
+                />
+              </div>
+              <span
+                className={`text-[10px] font-medium ${isBest ? "text-theme-primary" : "text-theme-fg-muted"}`}
+              >
+                {label}
+              </span>
+              <span className="text-theme-fg-muted text-[9px]">{range}</span>
+              <span className="text-theme-fg text-xs font-semibold tabular-nums">
+                {count}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
 }
 
 export function SadhanaTracker() {
@@ -524,7 +635,7 @@ export function SadhanaTracker() {
             Per maand — laatste jaar
           </h2>
         </div>
-        <MalasChart calDays={calDays} />
+        <MalasChart calDays={calDays} sessions={sessions} />
       </div>
 
       {/* All-time overview */}
@@ -603,6 +714,9 @@ export function SadhanaTracker() {
           )}
         </div>
       )}
+
+      {/* Beste beoefentijd */}
+      <BestPracticeTime sessions={sessions} />
 
       {/* Routines + Goals + Practices */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-start">

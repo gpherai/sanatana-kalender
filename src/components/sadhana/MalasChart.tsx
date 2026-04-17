@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { type CalendarDay } from "./types";
+import { type CalendarDay, type SessionData } from "./types";
 
 // =============================================================================
 // HELPERS
@@ -22,6 +22,12 @@ const MONTH_LABELS = [
   "Dec",
 ];
 
+interface PracticeMonthTotal {
+  practice_id: string;
+  practice_name: string;
+  malas: number;
+}
+
 interface MonthData {
   key: string; // YYYY-MM
   label: string;
@@ -29,14 +35,44 @@ interface MonthData {
   malas: number;
   sessions: number;
   isCurrentMonth: boolean;
+  practices: PracticeMonthTotal[];
 }
 
-function buildMonthlyData(calDays: CalendarDay[]): MonthData[] {
+function buildMonthlyData(
+  calDays: CalendarDay[],
+  sessionData: SessionData[]
+): MonthData[] {
   const today = new Date();
   return Array.from({ length: 12 }, (_, i) => {
     const d = new Date(today.getFullYear(), today.getMonth() - 11 + i, 1);
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
     const days = calDays.filter((cd) => cd.date.startsWith(key));
+
+    // Per-practice totals from session items
+    const practiceMap = new Map<string, PracticeMonthTotal>();
+    for (const s of sessionData) {
+      if (!s.date.startsWith(key)) continue;
+      for (const item of s.items) {
+        const malas =
+          item.unit === "malas"
+            ? item.quantity
+            : item.practice_type === "mantra_japa"
+              ? item.quantity / 108
+              : 0;
+        if (malas === 0) continue;
+        const existing = practiceMap.get(item.practice_id);
+        if (existing) {
+          existing.malas += malas;
+        } else {
+          practiceMap.set(item.practice_id, {
+            practice_id: item.practice_id,
+            practice_name: item.practice_name,
+            malas,
+          });
+        }
+      }
+    }
+
     return {
       key,
       label: MONTH_LABELS[d.getMonth()] ?? "",
@@ -45,6 +81,7 @@ function buildMonthlyData(calDays: CalendarDay[]): MonthData[] {
       sessions: days.reduce((s, cd) => s + cd.session_count, 0),
       isCurrentMonth:
         d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear(),
+      practices: Array.from(practiceMap.values()).sort((a, b) => b.malas - a.malas),
     };
   });
 }
@@ -55,11 +92,17 @@ function buildMonthlyData(calDays: CalendarDay[]): MonthData[] {
 
 type Metric = "malas" | "sessions";
 
-export function MalasChart({ calDays }: { calDays: CalendarDay[] }) {
+export function MalasChart({
+  calDays,
+  sessions = [],
+}: {
+  calDays: CalendarDay[];
+  sessions?: SessionData[];
+}) {
   const [hovered, setHovered] = useState<number | null>(null);
   const [metric, setMetric] = useState<Metric>("malas");
 
-  const data = buildMonthlyData(calDays);
+  const data = buildMonthlyData(calDays, sessions);
   const values = data.map((m) => (metric === "malas" ? m.malas : m.sessions));
   const maxVal = Math.max(...values, 1);
 
@@ -122,6 +165,28 @@ export function MalasChart({ calDays }: { calDays: CalendarDay[] }) {
                       {metric === "malas" ? "malas" : "sessies"}
                     </span>
                   </div>
+                  {/* Per-practice breakdown — only for malas metric */}
+                  {metric === "malas" && m.practices.length > 1 && (
+                    <div className="border-theme-border mt-1.5 border-t pt-1.5 text-left">
+                      {m.practices.map((p) => (
+                        <div
+                          key={p.practice_id}
+                          className="flex items-center justify-between gap-3 whitespace-nowrap"
+                        >
+                          <span className="text-theme-fg-muted max-w-[100px] truncate text-[10px]">
+                            {p.practice_name}
+                          </span>
+                          <span className="text-theme-fg text-[10px] font-medium tabular-nums">
+                            {p.malas % 1 === 0
+                              ? p.malas.toLocaleString("nl-NL")
+                              : p.malas.toLocaleString("nl-NL", {
+                                  maximumFractionDigits: 1,
+                                })}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 

@@ -1,28 +1,36 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { formatPractice } from "../../_helpers";
 
 type Params = { params: Promise<{ id: string }> };
 
+const patchPracticeSchema = z.object({
+  name: z.string().min(1).max(100).optional(),
+  type: z.enum(["mantra_japa", "parayana", "other"]).optional(),
+  notes: z.string().max(500).nullable().optional(),
+  active: z.boolean().optional(),
+});
+
 export async function PATCH(req: NextRequest, { params }: Params) {
   const { id } = await params;
-  const body = await req.json();
+  const parsed = patchPracticeSchema.safeParse(await req.json());
+  if (!parsed.success)
+    return NextResponse.json({ error: "Invalid input" }, { status: 400 });
 
   const practice = await prisma.sadhanaPractice.findUnique({ where: { id } });
-  if (!practice) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
+  if (!practice) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
+  const { name, type, notes, active } = parsed.data;
   const updated = await prisma.sadhanaPractice.update({
     where: { id },
     data: {
-      ...(body.name !== undefined && { name: body.name }),
-      ...(body.type !== undefined && { type: body.type }),
-      ...(body.notes !== undefined && { notes: body.notes ?? null }),
-      ...(body.active !== undefined && { active: body.active }),
+      ...(name !== undefined && { name }),
+      ...(type !== undefined && { type }),
+      ...(notes !== undefined && { notes: notes ?? null }),
+      ...(active !== undefined && { active }),
     },
   });
-
   return NextResponse.json(formatPractice(updated));
 }
 

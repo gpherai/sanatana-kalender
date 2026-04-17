@@ -1,6 +1,15 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { formatGoal, todayStr, utcDate } from "../_helpers";
+
+const createGoalSchema = z.object({
+  type: z.enum(["daily", "weekly", "lifetime"]),
+  name: z.string().min(1).max(100).optional(),
+  target_malas: z.number().int().positive(),
+  target_minutes: z.number().int().positive().nullable().optional(),
+  practice_ids: z.array(z.string().min(1)).optional(),
+});
 
 export async function GET() {
   const goals = await prisma.sadhanaGoal.findMany({
@@ -67,19 +76,21 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const body = await req.json();
+  const parsed = createGoalSchema.safeParse(await req.json());
+  if (!parsed.success)
+    return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+
+  const { type, name, target_malas, target_minutes, practice_ids } = parsed.data;
   const goal = await prisma.sadhanaGoal.create({
     data: {
-      type: body.type,
-      name: body.name || null,
-      targetMalas: body.target_malas,
-      targetMinutes: body.target_minutes ?? null,
+      type,
+      name: name ?? null,
+      targetMalas: target_malas,
+      targetMinutes: target_minutes ?? null,
       active: true,
-      ...(body.practice_ids &&
-        body.practice_ids.length > 0 && {
-          practices: {
-            connect: body.practice_ids.map((id: string) => ({ id })),
-          },
+      ...(practice_ids &&
+        practice_ids.length > 0 && {
+          practices: { connect: practice_ids.map((id) => ({ id })) },
         }),
     },
     include: { practices: true },

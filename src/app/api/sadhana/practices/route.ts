@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { formatPractice } from "../_helpers";
+
+const createPracticeSchema = z.object({
+  name: z.string().min(1).max(100),
+  type: z.enum(["mantra_japa", "parayana", "other"]),
+  notes: z.string().max(500).nullable().optional(),
+});
 
 export async function GET(req: NextRequest) {
   const activeOnly = req.nextUrl.searchParams.get("active_only") !== "false";
@@ -12,12 +19,13 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
-  if (!body.name || !body.type) {
-    return NextResponse.json({ error: "name and type required" }, { status: 422 });
-  }
+  const parsed = createPracticeSchema.safeParse(await req.json());
+  if (!parsed.success)
+    return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+
+  const { name, type, notes } = parsed.data;
   const practice = await prisma.sadhanaPractice.create({
-    data: { name: body.name, type: body.type, notes: body.notes ?? null },
+    data: { name, type, notes: notes ?? null },
   });
   return NextResponse.json(formatPractice(practice), { status: 201 });
 }

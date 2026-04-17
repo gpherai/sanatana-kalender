@@ -1,6 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { formatSession, utcDate } from "../../_helpers";
+
+const patchSessionItemSchema = z.object({
+  practice_id: z.string().min(1),
+  quantity: z.number().int().positive(),
+  unit: z.enum(["malas", "count"]).optional(),
+  duration_minutes: z.number().int().positive().nullable().optional(),
+  notes: z.string().max(500).nullable().optional(),
+});
+
+const patchSessionSchema = z.object({
+  date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
+  started_at: z.string().nullable().optional(),
+  duration_minutes: z.number().int().positive().nullable().optional(),
+  notes: z.string().max(1000).nullable().optional(),
+  items: z.array(patchSessionItemSchema).min(1).optional(),
+});
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -13,32 +33,35 @@ const INCLUDE_ITEMS = {
 
 export async function PATCH(req: NextRequest, { params }: Params) {
   const { id } = await params;
-  const body = await req.json();
+  const parsed = patchSessionSchema.safeParse(await req.json());
+  if (!parsed.success)
+    return NextResponse.json({ error: "Invalid input" }, { status: 400 });
 
   const existing = await prisma.sadhanaSession.findUnique({ where: { id } });
   if (!existing) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
+  const { date, started_at, duration_minutes, notes, items } = parsed.data;
+
   const session = await prisma.$transaction(async (tx) => {
     await tx.sadhanaSession.update({
       where: { id },
       data: {
-        ...(body.date !== undefined && { date: utcDate(body.date) }),
-        ...(body.started_at !== undefined && {
-          startedAt: body.started_at ? new Date(body.started_at) : null,
+        ...(date !== undefined && { date: utcDate(date) }),
+        ...(started_at !== undefined && {
+          startedAt: started_at ? new Date(started_at) : null,
         }),
-        ...(body.duration_minutes !== undefined && {
-          durationMinutes: body.duration_minutes ?? null,
+        ...(duration_minutes !== undefined && {
+          durationMinutes: duration_minutes ?? null,
         }),
-        ...(body.notes !== undefined && { notes: body.notes ?? null }),
+        ...(notes !== undefined && { notes: notes ?? null }),
       },
     });
 
-    // If items are provided, replace all items
-    if (Array.isArray(body.items)) {
+    if (items !== undefined) {
       await tx.sadhanaSessionItem.deleteMany({ where: { sessionId: id } });
-      for (const item of body.items) {
+      for (const item of items) {
         const practice = await tx.sadhanaPractice.findUnique({
           where: { id: item.practice_id },
         });
