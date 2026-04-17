@@ -12,7 +12,7 @@ import type { BirthChart, GrahaKey } from "@/server/panchanga/types";
  * Top row starts at Meena (12), moves clockwise.
  * [row, col] — 1-indexed, matching CSS grid-row / grid-column.
  */
-const SOUTH_INDIAN_POS: Record<number, [number, number]> = {
+export const SOUTH_INDIAN_POS: Record<number, [number, number]> = {
   12: [1, 1],
   1: [1, 2],
   2: [1, 3],
@@ -27,7 +27,7 @@ const SOUTH_INDIAN_POS: Record<number, [number, number]> = {
   6: [4, 4],
 };
 
-const RASHI_NAMES: Record<number, string> = {
+export const RASHI_NAMES: Record<number, string> = {
   1: "Mesha",
   2: "Vrishabha",
   3: "Mithuna",
@@ -42,7 +42,7 @@ const RASHI_NAMES: Record<number, string> = {
   12: "Meena",
 };
 
-const GRAHA_SYMBOL: Record<GrahaKey, string> = {
+export const GRAHA_SYMBOL: Record<GrahaKey, string> = {
   surya: "☉",
   chandra: "☽",
   mangala: "♂",
@@ -57,7 +57,7 @@ const GRAHA_SYMBOL: Record<GrahaKey, string> = {
   pluto: "♇",
 };
 
-const GRAHA_SHORT: Record<GrahaKey, string> = {
+export const GRAHA_SHORT: Record<GrahaKey, string> = {
   surya: "Su",
   chandra: "Ch",
   mangala: "Ma",
@@ -72,7 +72,7 @@ const GRAHA_SHORT: Record<GrahaKey, string> = {
   pluto: "Pl",
 };
 
-const GRAHA_COLOR: Record<GrahaKey, string> = {
+export const GRAHA_COLOR: Record<GrahaKey, string> = {
   surya: "var(--theme-almanac-planet-sun)",
   chandra: "var(--theme-almanac-planet-moon)",
   mangala: "var(--theme-almanac-planet-mars)",
@@ -88,7 +88,7 @@ const GRAHA_COLOR: Record<GrahaKey, string> = {
 };
 
 /** Canonical display order within a cell (by tradition) */
-const GRAHA_ORDER: GrahaKey[] = [
+export const GRAHA_ORDER: GrahaKey[] = [
   "surya",
   "chandra",
   "mangala",
@@ -103,7 +103,7 @@ const GRAHA_ORDER: GrahaKey[] = [
   "pluto",
 ];
 
-const TRADITIONAL = new Set<GrahaKey>([
+export const TRADITIONAL = new Set<GrahaKey>([
   "surya",
   "chandra",
   "mangala",
@@ -119,7 +119,7 @@ const TRADITIONAL = new Set<GrahaKey>([
 // RASHI CELL
 // =============================================================================
 
-interface CellGraha {
+export interface CellGraha {
   key: GrahaKey;
   retrograde: boolean;
   degreeInRashi: number;
@@ -132,7 +132,7 @@ interface RashiCellProps {
   style: React.CSSProperties;
 }
 
-function RashiCell({ rashiNum, grahas, isLagna, style }: RashiCellProps) {
+export function RashiCell({ rashiNum, grahas, isLagna, style }: RashiCellProps) {
   const sorted = [...grahas].sort((a, b) => a.degreeInRashi - b.degreeInRashi);
 
   return (
@@ -168,7 +168,10 @@ function RashiCell({ rashiNum, grahas, isLagna, style }: RashiCellProps) {
       </div>
 
       {/* Rashi name */}
-      <span className="text-theme-fg-muted mb-1 truncate text-[11px] leading-tight">
+      <span
+        className="text-theme-fg-muted mb-1 text-[11px] leading-tight"
+        title={RASHI_NAMES[rashiNum]}
+      >
         {RASHI_NAMES[rashiNum]}
       </span>
 

@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { PageLayout } from "@/components/layout";
-import { Star, TriangleAlert, Grid2x2, Table2 } from "lucide-react";
+import { Star, TriangleAlert, Grid2x2, Table2, Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { BirthChart, GrahaKey } from "@/server/panchanga/types";
 import { KundaliChart } from "./KundaliChart";
+import { NavamshaChart } from "./NavamshaChart";
+import { VimshottariDasha } from "./VimshottariDasha";
 
 // =============================================================================
 // GRAHA DISPLAY CONFIG
@@ -151,9 +153,20 @@ function GrahaRow({ grahaKey, chart }: { grahaKey: GrahaKey; chart: BirthChart }
         <span className="text-theme-fg">{g.nakshatra.name}</span>
         <span className="text-theme-fg-muted ml-1 text-xs">pada {g.nakshatra.pada}</span>
       </td>
-      <td className="py-3 text-right">
+      <td className="py-3 pr-4 text-right">
         <span className="text-theme-fg-muted font-mono text-xs">
           {formatLon(g.longitude)}
+        </span>
+      </td>
+      <td className="py-3 text-right">
+        <span
+          className={cn(
+            "font-mono text-xs",
+            g.retrograde ? "text-theme-error" : "text-theme-fg-muted"
+          )}
+        >
+          {g.speed >= 0 ? "+" : ""}
+          {g.speed.toFixed(3)}°/d
         </span>
       </td>
     </tr>
@@ -164,7 +177,7 @@ function GrahaRow({ grahaKey, chart }: { grahaKey: GrahaKey; chart: BirthChart }
 // MAIN PAGE
 // =============================================================================
 
-type ResultView = "chart" | "table";
+type ResultView = "chart" | "table" | "d9";
 
 export default function KundaliPage() {
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
@@ -395,7 +408,7 @@ export default function KundaliPage() {
                 <button
                   onClick={() => setResultView("chart")}
                   style={{ touchAction: "manipulation" }}
-                  title="Grafiek"
+                  title="D1 Grafiek"
                   className={cn(
                     "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors",
                     resultView === "chart"
@@ -404,7 +417,7 @@ export default function KundaliPage() {
                   )}
                 >
                   <Grid2x2 className="h-3.5 w-3.5" />
-                  Grafiek
+                  D1
                 </button>
                 <button
                   onClick={() => setResultView("table")}
@@ -420,6 +433,20 @@ export default function KundaliPage() {
                   <Table2 className="h-3.5 w-3.5" />
                   Tabel
                 </button>
+                <button
+                  onClick={() => setResultView("d9")}
+                  style={{ touchAction: "manipulation" }}
+                  title="D9 Navamsha"
+                  className={cn(
+                    "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors",
+                    resultView === "d9"
+                      ? "bg-theme-primary-15 text-theme-primary"
+                      : "text-theme-fg-muted hover:text-theme-fg"
+                  )}
+                >
+                  <Layers className="h-3.5 w-3.5" />
+                  D9
+                </button>
               </div>
             </div>
           </div>
@@ -428,6 +455,13 @@ export default function KundaliPage() {
           {resultView === "chart" && (
             <div className="mx-auto w-full max-w-2xl">
               <KundaliChart chart={chart} />
+            </div>
+          )}
+
+          {/* D9 Navamsha view */}
+          {resultView === "d9" && (
+            <div className="mx-auto w-full max-w-2xl">
+              <NavamshaChart chart={chart} />
             </div>
           )}
 
@@ -448,8 +482,11 @@ export default function KundaliPage() {
                       <th className="text-theme-fg-muted pr-4 pb-2 text-left text-xs font-semibold tracking-wide uppercase">
                         Nakshatra
                       </th>
-                      <th className="text-theme-fg-muted pb-2 text-right text-xs font-semibold tracking-wide uppercase">
+                      <th className="text-theme-fg-muted pr-4 pb-2 text-right text-xs font-semibold tracking-wide uppercase">
                         Longitude
+                      </th>
+                      <th className="text-theme-fg-muted pb-2 text-right text-xs font-semibold tracking-wide uppercase">
+                        Snelheid
                       </th>
                     </tr>
                   </thead>
@@ -465,6 +502,9 @@ export default function KundaliPage() {
               </p>
             </div>
           )}
+
+          {/* Vimshottari Dasha */}
+          <VimshottariDasha chart={chart} />
 
           {/* Technical metadata */}
           <details className="text-theme-fg-muted text-xs">
