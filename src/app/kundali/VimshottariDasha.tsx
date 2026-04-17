@@ -1,6 +1,7 @@
 "use client";
 
-import { Clock } from "lucide-react";
+import { useState } from "react";
+import { Clock, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { BirthChart } from "@/server/panchanga/types";
 import {
@@ -37,6 +38,19 @@ export function VimshottariDasha({ chart }: { chart: BirthChart }) {
   const periods = calcVimshottari(moon, birthDate);
   const currentIdx = periods.findIndex((p) => p.start <= today && today < p.end);
 
+  const [expanded, setExpanded] = useState<Set<number>>(
+    () => new Set(currentIdx >= 0 ? [currentIdx] : [])
+  );
+
+  function toggle(idx: number) {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(idx)) next.delete(idx);
+      else next.add(idx);
+      return next;
+    });
+  }
+
   return (
     <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
       <div className="mb-4 flex items-center gap-2">
@@ -55,21 +69,31 @@ export function VimshottariDasha({ chart }: { chart: BirthChart }) {
         {periods.map((period, idx) => {
           const isPast = period.end <= today;
           const isCurrent = idx === currentIdx;
-          const antars = isCurrent ? calcAntardasha(period) : [];
-          const currentAntarIdx = isCurrent
-            ? antars.findIndex((a) => a.start <= today && today < a.end)
-            : -1;
+          const isOpen = expanded.has(idx);
+          const antars = isOpen ? calcAntardasha(period) : [];
+          const currentAntarIdx =
+            isCurrent && isOpen
+              ? antars.findIndex((a) => a.start <= today && today < a.end)
+              : -1;
 
           return (
             <div key={period.lord + String(idx)}>
-              {/* Mahadasha row */}
-              <div
+              {/* Mahadasha row — clickable */}
+              <button
+                onClick={() => toggle(idx)}
                 className={cn(
-                  "flex items-center gap-2 rounded-lg px-3 py-2 text-sm",
+                  "flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors",
                   isCurrent && "bg-theme-primary-10",
+                  !isCurrent && "hover:bg-theme-hover",
                   isPast && "opacity-50"
                 )}
               >
+                <ChevronRight
+                  className={cn(
+                    "text-theme-fg-muted h-3.5 w-3.5 shrink-0 transition-transform duration-150",
+                    isOpen && "rotate-90"
+                  )}
+                />
                 <span
                   className="w-4 shrink-0 text-center text-base leading-none"
                   style={{
@@ -80,7 +104,7 @@ export function VimshottariDasha({ chart }: { chart: BirthChart }) {
                 </span>
                 <span
                   className={cn(
-                    "min-w-[4.5rem] font-semibold",
+                    "min-w-[4.5rem] text-left font-semibold",
                     isCurrent ? "text-theme-primary" : "text-theme-fg"
                   )}
                 >
@@ -99,11 +123,11 @@ export function VimshottariDasha({ chart }: { chart: BirthChart }) {
                   )}{" "}
                   jr
                 </span>
-              </div>
+              </button>
 
-              {/* Antardashas (current dasha only) */}
-              {isCurrent && antars.length > 0 && (
-                <div className="mt-1 mb-2 ml-9 space-y-0.5">
+              {/* Antardashas */}
+              {isOpen && antars.length > 0 && (
+                <div className="mt-1 mb-2 ml-10 space-y-0.5">
                   {antars.map((antar, ai) => {
                     const isCurrentAntar = ai === currentAntarIdx;
                     const isAntarPast = antar.end <= today;
