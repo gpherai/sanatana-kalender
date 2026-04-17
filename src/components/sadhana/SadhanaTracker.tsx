@@ -621,7 +621,7 @@ export function SadhanaTracker() {
           <Heatmap weeks={heatmapFull} dayInfoMap={dayInfoMap} />
         </div>
         <div className="sm:hidden">
-          <Heatmap weeks={heatmapMobile} cellSize={10} dayInfoMap={dayInfoMap} />
+          <Heatmap weeks={heatmapMobile} cellSize={11} dayInfoMap={dayInfoMap} />
         </div>
       </div>
 

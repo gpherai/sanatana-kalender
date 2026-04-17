@@ -69,18 +69,19 @@ const DAY_LABELS = ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"];
 
 export function Heatmap({
   weeks,
-  cellSize = 12,
+  cellSize,
   dayInfoMap,
 }: {
   weeks: HeatmapCell[][];
-  cellSize?: number;
+  cellSize?: number; // if omitted → fill container width
   dayInfoMap?: DayInfoMap;
 }) {
   const [tapped, setTapped] = useState<{ date: string; malas: number } | null>(null);
-  const colWidth = cellSize + 2; // cell + gap-0.5 (2px)
-  const labelWidth = cellSize === 10 ? 20 : 26;
-  const labelFontSize = cellSize === 10 ? 9 : 10;
-  const dotSize = cellSize <= 10 ? 2 : 3;
+
+  const fill = cellSize === undefined;
+  const cs = cellSize ?? 12; // used only for legend + dot sizing when fill=false
+  const dotSize = cs <= 10 ? 2 : 3;
+  const labelW = cs === 10 ? 20 : 26;
 
   const monthPositions: { month: number; col: number }[] = [];
   let lastMonth = -1;
@@ -97,10 +98,130 @@ export function Heatmap({
   const tappedInfo = tapped ? dayInfoMap?.get(tapped.date) : undefined;
   const tappedLabel = tappedInfo ? dayContextLabel(tappedInfo) : null;
 
+  if (fill) {
+    // Responsive fill mode — cells grow to fill available width
+    const LABEL_W = 28; // px, fixed column for day labels
+    return (
+      <div className="w-full">
+        {/* Month labels row */}
+        <div className="mb-1 flex" style={{ paddingLeft: LABEL_W + 4 }}>
+          {weeks.map((_, i) => {
+            const mp = monthPositions.find((p) => p.col === i);
+            return (
+              <div key={i} className="min-w-0 flex-1">
+                {mp && (
+                  <span className="text-theme-fg-muted text-[10px] whitespace-nowrap">
+                    {MONTH_LABELS[mp.month]}
+                  </span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Grid: day labels + week columns */}
+        <div className="flex gap-0.5">
+          {/* Day labels */}
+          <div
+            className="flex shrink-0 flex-col gap-0.5"
+            style={{ width: LABEL_W, marginRight: 4 }}
+          >
+            {DAY_LABELS.map((d) => (
+              <div
+                key={d}
+                className="text-theme-fg-muted flex items-center justify-end text-[9px]"
+                style={{ aspectRatio: "1 / 1" }}
+              >
+                {d}
+              </div>
+            ))}
+          </div>
+
+          {/* Week columns */}
+          {weeks.map((week, wi) => (
+            <div key={wi} className="flex min-w-0 flex-1 flex-col gap-0.5">
+              {week.map((cell, di) => {
+                if (cell === null) {
+                  return (
+                    <div key={di} className="w-full" style={{ aspectRatio: "1 / 1" }} />
+                  );
+                }
+                const info = dayInfoMap?.get(cell.date);
+                const isSpecial = !!(info?.specialDay || info?.moonPhaseEvent);
+                const label = info ? dayContextLabel(info) : "";
+                return (
+                  <div
+                    key={di}
+                    className="relative w-full cursor-pointer rounded motion-safe:transition-colors"
+                    style={{
+                      aspectRatio: "1 / 1",
+                      background:
+                        cell.malas === 0
+                          ? "var(--theme-heatmap-empty)"
+                          : heatColor(cell.malas),
+                    }}
+                    title={`${formatDate(cell.date)}: ${cell.malas} malas${label ? ` · ${label}` : ""}`}
+                    onClick={() =>
+                      setTapped((prev) =>
+                        prev?.date === cell.date
+                          ? null
+                          : { date: cell.date, malas: cell.malas }
+                      )
+                    }
+                  >
+                    {isSpecial && (
+                      <span
+                        className="absolute rounded-full bg-white/70"
+                        style={{ width: 3, height: 3, bottom: 1, right: 1 }}
+                      />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+
+        {tapped && (
+          <div className="text-theme-fg-secondary mt-2 text-xs">
+            {formatDate(tapped.date)}:{" "}
+            <span className="text-theme-fg font-medium">{tapped.malas} malas</span>
+            {tappedLabel && <span className="text-theme-fg-muted"> · {tappedLabel}</span>}
+          </div>
+        )}
+
+        {/* Legend */}
+        <div className="text-theme-fg-muted mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+          {[
+            { m: 0, label: "0" },
+            { m: 2, label: "1–3" },
+            { m: 5, label: "4–7" },
+            { m: 9, label: "8–11" },
+            { m: 14, label: "≥12" },
+          ].map(({ m, label }) => (
+            <div key={label} className="flex items-center gap-1">
+              <div
+                className="rounded"
+                style={{
+                  width: 12,
+                  height: 12,
+                  background: m === 0 ? "var(--theme-heatmap-empty)" : heatColor(m),
+                }}
+              />
+              <span>{label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Fixed cell-size mode (legacy / mobile explicit size)
+  const colWidth = cs + 2;
   return (
     <div className="overflow-x-auto">
       <div style={{ display: "inline-block" }}>
-        <div className="mb-1 flex" style={{ paddingLeft: labelWidth + 4 }}>
+        <div className="mb-1 flex" style={{ paddingLeft: labelW + 4 }}>
           {weeks.map((_, i) => {
             const mp = monthPositions.find((p) => p.col === i);
             return (
@@ -108,7 +229,7 @@ export function Heatmap({
                 {mp && (
                   <span
                     className="text-theme-fg-muted"
-                    style={{ fontSize: labelFontSize, whiteSpace: "nowrap" }}
+                    style={{ fontSize: 10, whiteSpace: "nowrap" }}
                   >
                     {MONTH_LABELS[mp.month]}
                   </span>
@@ -123,7 +244,7 @@ export function Heatmap({
               <div
                 key={d}
                 className="text-theme-fg-muted flex items-center justify-end"
-                style={{ height: cellSize, width: labelWidth, fontSize: 9 }}
+                style={{ height: cs, width: labelW, fontSize: 9 }}
               >
                 {d}
               </div>
@@ -133,7 +254,7 @@ export function Heatmap({
             <div key={wi} className="flex flex-col gap-0.5">
               {week.map((cell, di) => {
                 if (cell === null) {
-                  return <div key={di} style={{ width: cellSize, height: cellSize }} />;
+                  return <div key={di} style={{ width: cs, height: cs }} />;
                 }
                 const info = dayInfoMap?.get(cell.date);
                 const isSpecial = !!(info?.specialDay || info?.moonPhaseEvent);
@@ -143,8 +264,8 @@ export function Heatmap({
                     key={di}
                     className="relative cursor-pointer rounded motion-safe:transition-colors"
                     style={{
-                      width: cellSize,
-                      height: cellSize,
+                      width: cs,
+                      height: cs,
                       background:
                         cell.malas === 0
                           ? "var(--theme-heatmap-empty)"
@@ -190,8 +311,8 @@ export function Heatmap({
               <div
                 className="rounded"
                 style={{
-                  width: cellSize,
-                  height: cellSize,
+                  width: cs,
+                  height: cs,
                   background: m === 0 ? "var(--theme-heatmap-empty)" : heatColor(m),
                 }}
               />
