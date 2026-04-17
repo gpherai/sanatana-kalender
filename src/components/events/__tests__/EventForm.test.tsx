@@ -45,6 +45,7 @@ const CATEGORIES: Category[] = [
     displayName: "Ganesha",
     icon: "🐘",
     color: "#fff",
+    colorDark: null,
     description: null,
     sortOrder: 1,
   },

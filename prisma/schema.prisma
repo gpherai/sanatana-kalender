@@ -24,6 +24,7 @@ model Category {
   displayName     String
   icon            String
   color           String
+  colorDark       String?
   description     String?
   sortOrder       Int             @default(0)
   createdAt       DateTime        @default(now())

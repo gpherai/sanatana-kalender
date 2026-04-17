@@ -29,6 +29,7 @@ export interface Category {
   displayName: string;
   icon: string;
   color: string;
+  colorDark: string | null;
   description: string | null;
   sortOrder: number;
 }

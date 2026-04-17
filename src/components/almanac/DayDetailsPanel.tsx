@@ -3,7 +3,8 @@
 import { useEffect, useRef, useCallback } from "react";
 import { Sun, Moon, Sparkles, Star, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { FALLBACK_CATEGORY_COLOR } from "@/lib/category-styles";
+import { FALLBACK_CATEGORY_COLOR, resolveCategoryColor } from "@/lib/category-styles";
+import { useTheme } from "@/components/theme/ThemeProvider";
 import { MoonPhase } from "@/components/ui/MoonPhase";
 import { isToday, formatDateLocal, formatLongDate } from "@/lib/date-utils";
 import type { SpecialDay } from "@/lib/panchanga-helpers";
@@ -85,6 +86,8 @@ export function DayDetailsPanel({
   isOpen = false,
   onClose,
 }: DayDetailsPanelProps) {
+  const { resolvedColorMode } = useTheme();
+  const isDark = resolvedColorMode === "dark";
   const selectedSanskritDay = selectedDayInfo?.vara?.name
     ? SANSKRIT_DAYS.find((d) => d.name === selectedDayInfo.vara!.name)
     : undefined;
@@ -374,8 +377,10 @@ export function DayDetailsPanel({
                       event.resource.originalEndDate !== null &&
                       event.resource.originalEndDate !== eventStartKey;
 
-                    const categoryColor =
-                      event.resource.categories[0]?.color ?? FALLBACK_CATEGORY_COLOR;
+                    const cat = event.resource.categories[0];
+                    const categoryColor = cat
+                      ? resolveCategoryColor(cat.color, cat.colorDark, isDark)
+                      : FALLBACK_CATEGORY_COLOR;
 
                     return (
                       <button

@@ -15,6 +15,7 @@ describe("GET /api/categories", () => {
         displayName: "Ganesha",
         icon: "🐘",
         color: "#fff",
+        colorDark: null,
         description: null,
         sortOrder: 1,
         createdAt: new Date(),

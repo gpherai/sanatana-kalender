@@ -4,7 +4,14 @@
 # Pre-commit Hook
 # =============================================================================
 # Runs lint-staged to format and lint only staged files.
-# This keeps commits clean without slowing down the entire codebase check.
+# If themes.ts or categories.ts is staged, regenerates globals.css and
+# adds it to the commit automatically.
 # =============================================================================
 
 npx lint-staged
+
+if git diff --cached --name-only | grep -qE "src/config/(themes|categories)\.ts$"; then
+  echo "themes/categories changed — regenerating CSS..."
+  npm run generate:css
+  git add src/app/globals.css
+fi

@@ -28,7 +28,8 @@ import {
 } from "@/types/calendar";
 import { getEventType } from "@/lib/domain";
 import { logError } from "@/lib/utils";
-import { FALLBACK_CATEGORY_COLOR } from "@/lib/category-styles";
+import { FALLBACK_CATEGORY_COLOR, resolveCategoryColor } from "@/lib/category-styles";
+import { useTheme } from "@/components/theme/ThemeProvider";
 import { formatDateLocal } from "@/lib/date-utils";
 import type { DailyInfoResponse } from "@/types";
 import { EventDetailModal } from "./EventDetailModal";
@@ -83,6 +84,8 @@ export function DharmaCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<View>("month");
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
+  const { resolvedColorMode } = useTheme();
+  const isDark = resolvedColorMode === "dark";
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: SSR hydration guard
@@ -148,23 +151,29 @@ export function DharmaCalendar() {
 
   // Custom event styling based on category
   // Category is now a full object, not a string
-  const eventStyleGetter = useCallback((event: CalendarEvent) => {
-    const categoryData = event.resource.categories[0] ?? null;
+  const eventStyleGetter = useCallback(
+    (event: CalendarEvent) => {
+      const categoryData = event.resource.categories[0] ?? null;
+      const backgroundColor = categoryData
+        ? resolveCategoryColor(categoryData.color, categoryData.colorDark, isDark)
+        : FALLBACK_CATEGORY_COLOR;
 
-    // Base style
-    const style: React.CSSProperties = {
-      backgroundColor: categoryData?.color ?? FALLBACK_CATEGORY_COLOR,
-      borderRadius: "999px",
-      opacity: 1,
-      color: "white",
-      border: "none",
-      display: "block",
-      fontSize: "0.75rem",
-      padding: "2px 4px",
-    };
+      // Base style
+      const style: React.CSSProperties = {
+        backgroundColor,
+        borderRadius: "999px",
+        opacity: 1,
+        color: "white",
+        border: "none",
+        display: "block",
+        fontSize: "0.75rem",
+        padding: "2px 4px",
+      };
 
-    return { style };
-  }, []);
+      return { style };
+    },
+    [isDark]
+  );
 
   // Custom day cell styling for weekends
   // Note: Special moon days (Purnima, Amavasya, etc.) are now detected

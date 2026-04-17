@@ -708,6 +708,19 @@ ${formatCssBlock(theme.specialStyles.decorations.dark)}
 ${scoped}`);
   }
 
+  // Reduced-motion: auto-generated for every special theme.
+  // Uses 0.01ms duration (not "none") so animationend events still fire for JS hooks.
+  // Scoped to [data-theme] so it never bleeds into other themes.
+  parts.push(`
+/* Reduced Motion — auto-generated, do not add manual @media blocks in additionalCss */
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="${n}"] * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}`);
+
   return parts.join("\n");
 }
 
@@ -930,6 +943,15 @@ function generateAnimations(): string {
 .slide-in-from-right-5 { animation-name: slide-in-from-right; }
 .fade-in { animation-name: fade-in; }
 .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-in,
+  .animate-pulse-glow {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
 `;
 }
 

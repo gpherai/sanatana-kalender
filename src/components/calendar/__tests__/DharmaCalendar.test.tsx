@@ -85,6 +85,7 @@ describe("DharmaCalendar", () => {
             name: "ganesha",
             displayName: "Ganesha",
             color: "#ff0000",
+            colorDark: null,
             icon: "🐘",
             description: null,
             sortOrder: 1,

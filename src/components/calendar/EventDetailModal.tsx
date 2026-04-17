@@ -29,6 +29,8 @@ import { getEventType, getTithi, getNakshatra, getMaas } from "@/lib/domain";
 import { cn, logError } from "@/lib/utils";
 import { useToast } from "@/components/ui/Toast";
 import { MoonPhase } from "@/components/ui/MoonPhase";
+import { resolveCategoryColor } from "@/lib/category-styles";
+import { useTheme } from "@/components/theme/ThemeProvider";
 // Note: Inline color-mix styles used here for edge cases (gradients, mixing with white)
 
 interface EventDetailModalProps {
@@ -53,6 +55,8 @@ export function EventDetailModal({
   const modalRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { error: showError } = useToast();
+  const { resolvedColorMode } = useTheme();
+  const isDark = resolvedColorMode === "dark";
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -158,6 +162,9 @@ export function EventDetailModal({
 
   // Category is now a full object, not a string
   const category = event.resource.categories[0] ?? null;
+  const categoryColor = category
+    ? resolveCategoryColor(category.color, category.colorDark, isDark)
+    : null;
   const eventType = getEventType(event.resource.eventType);
   const tithi = event.resource.tithi ? getTithi(event.resource.tithi) : null;
   const nakshatra = event.resource.nakshatra
@@ -230,8 +237,8 @@ export function EventDetailModal({
             className="relative overflow-hidden p-6 pb-5"
             style={{
               // Keep as inline: gradient with non-standard opacity levels (25%, 10%)
-              background: category?.color
-                ? `linear-gradient(135deg, color-mix(in oklch, ${category.color} 25%, transparent) 0%, color-mix(in oklch, ${category.color} 10%, transparent) 100%)`
+              background: categoryColor
+                ? `linear-gradient(135deg, color-mix(in oklch, ${categoryColor} 25%, transparent) 0%, color-mix(in oklch, ${categoryColor} 10%, transparent) 100%)`
                 : "linear-gradient(135deg, oklch(0.97 0.02 60) 0%, oklch(0.98 0.01 60) 100%)",
             }}
           >
@@ -261,8 +268,8 @@ export function EventDetailModal({
                   className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium backdrop-blur-sm"
                   style={{
                     // Keep as inline: mixing with white instead of transparent
-                    backgroundColor: `color-mix(in oklch, ${category.color} 30%, white)`,
-                    color: category.color,
+                    backgroundColor: `color-mix(in oklch, ${categoryColor} 30%, white)`,
+                    color: categoryColor ?? undefined,
                   }}
                 >
                   <span className="text-base">{category.icon}</span>

@@ -119,3 +119,21 @@ export function getCategoryDynamicStyle(
 export function getDynamicCategoryClass(opacity: OpacityLevel): string {
   return `bg-category-dynamic-${opacity}`;
 }
+
+/**
+ * Resolve the correct category color for the current color mode.
+ * Use this for inline styles where CSS-class dark-mode overrides aren't possible
+ * (e.g. React Big Calendar eventStyleGetter, dynamic gradients).
+ *
+ * @param color - Light-mode oklch color from DB
+ * @param colorDark - Dark-mode oklch color from DB (nullable)
+ * @param isDark - Whether dark mode is currently active
+ * @returns The resolved oklch color string
+ */
+export function resolveCategoryColor(
+  color: string,
+  colorDark: string | null | undefined,
+  isDark: boolean
+): string {
+  return isDark && colorDark ? colorDark : color;
+}

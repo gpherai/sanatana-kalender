@@ -15,5 +15,12 @@
 - Node gepind op `24.14.1-alpine` — niet upgraden zonder recompilatie te budgetteren (swisseph native ~300s)
 - Floating tags (`node:24-alpine`) invalideren de deps-laag bij elke Docker Hub update
 
+## Theme system
+- Single source of truth: `src/config/themes.ts` → `npm run generate:css` → `src/app/globals.css`
+- Pre-commit hook regenereert CSS automatisch als `themes.ts` of `categories.ts` gestaged is
+- Special themes: animaties worden volledig gedekt door auto-gegenereerde `prefers-reduced-motion` blok in de generator — gebruik NOOIT handmatige `@media (prefers-reduced-motion)` blokken in `additionalCss`
+- Pattern: `animation-duration: 0.01ms + iteration-count: 1` (niet `none`) zodat `animationend` events blijven werken
+- Categorieën met donkere kleur (L < 0.55) krijgen verplicht `colorDark` voor dark mode zichtbaarheid
+
 ## Migrate troubleshooting
 - Fout `42710 type already exists` of `42P07 table already exists`: schema bestaat al via `db push`. Fix: `docker compose run --rm migrate npx prisma migrate resolve --applied <migration_name>`, daarna `docker compose up -d`

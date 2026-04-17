@@ -847,14 +847,6 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
   --theme-calendar-popup-bg: oklch(0.16 0.06 278);
 }
 
-/* Respect reduced motion preference */
-@media (prefers-reduced-motion: reduce) {
-  [[t]] header a:first-child span:first-child,
-  [[t]] .text-theme-primary {
-    animation: none;
-  }
-}
-
 /* MoonPhasesTimeline dark mode — override var for void background */
 .dark[[t]],
 [[t]].dark {
@@ -1386,13 +1378,6 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
   background: linear-gradient(to right, oklch(0.22 0.10 58 / 0.5), oklch(0.18 0.12 45 / 0.5), oklch(0.16 0.10 36 / 0.5)) !important;
 }
 
-/* Respect reduced motion preference */
-@media (prefers-reduced-motion: reduce) {
-  [[t]] header a:first-child span:first-child,
-  [[t]] .text-theme-primary {
-    animation: none;
-  }
-}
 `,
     },
   },

@@ -20,6 +20,7 @@ const CATEGORY: Category = {
   displayName: "Ganesha",
   icon: "G",
   color: "#fff",
+  colorDark: null,
   description: null,
   sortOrder: 1,
 };
