@@ -1,7 +1,7 @@
 # 🗏️ Dharma Calendar - Architecture Document
 
-> **Versie:** 4.7
-> **Laatst bijgewerkt:** 11 april 2026
+> **Versie:** 4.8
+> **Laatst bijgewerkt:** 17 april 2026
 
 ---
 
@@ -19,6 +19,7 @@ Dharma Calendar is een persoonlijke web applicatie voor het bijhouden van Sanata
 - Panchang Almanac met speciale lunaire dagen
 - Eenvoudig events beheren (toevoegen, bewerken, verwijderen)
 - Sadhana tracker voor mantra japa, parayana en meditatie sessies
+- Encyclopedie van Sanatana Dharma met MDX-artikelen en zoekmogelijkheid
 - Meerdere visuele thema's voor persoonlijke voorkeur
 
 ### 1.3 Scope & Beperkingen
@@ -125,8 +126,8 @@ dharma-calendar/
 │   │   ├── events/            # Events routes (overview / new / [id])
 │   │   ├── sadhana/           # Sadhana tracker route (layout + page)
 │   │   ├── settings/          # Settings route (layout + page, auto-save)
-│   │   ├── weer/              # Weer dashboard route (layout + page)
-│   │   └── woordenboek/       # Sanskrit woordenboek route (page, geen layout)
+│   │   ├── encyclopedie/      # Encyclopedie route (page + [slug] dynamische artikelen)
+│   │   └── weer/              # Weer dashboard route (layout + page)
 │   ├── components/            # React componenten
 │   │   │   ├── almanac/           # AlmanacFilters, AlmanacHeader, DayDetailsPanel,
 │   │   │   │                  #   MonthGrid, MoonPhasesTimeline + index.ts barrel
@@ -165,7 +166,7 @@ dharma-calendar/
 │   │   ├── category-styles.ts # Kleur/icoon mapping voor categorieën
 │   │   ├── date-utils.ts      # isSameDay, formatDateNL, parseCalendarDate, ...
 │   │   ├── db.ts              # Prisma client singleton
-│   │   ├── dictionary.ts      # Sanskrit woordenboek data
+│   │   ├── encyclopedia.ts     # Encyclopedie: deity-entries, groepen, MDX artikelen
 │   │   ├── domain.ts          # Single source of truth voor UI-domeinconstanten
 │   │   ├── env.ts             # Zod environment validatie
 │   │   ├── moon-phases.ts     # getMoonPhaseEmoji, getMoonPhaseName, ...
@@ -1192,14 +1193,16 @@ export async function calculateMoonriseMoonset(
 ```
 /                       → Homepage (kalender + sidebar + TodayHero)
 /almanac                → Panchang Almanac (split-view maandkalender)
+/encyclopedie           → Encyclopedie overzicht (zoeken, groepen, artikelen)
+/encyclopedie/[slug]    → Individueel encyclopedie-artikel (MDX)
 /events                 → Events overzicht (card grid + filters)
 /events/new             → Nieuw event aanmaken
-/events/[id]            → Event bewerken + verwijderen
+/events/[id]            → Event detail/weergave (read-only)
+/events/[id]/edit       → Event bewerken + verwijderen
 /kundali                → Jyotisha geboortehoroscoop (invoer geboortedatum/-tijd/-locatie)
 /sadhana                → Sadhana Tracker (sessies, stats, heatmap, doelen, beoefeningen)
 /settings               → Instellingen (theme, locatie, voorkeuren)
 /weer                   → Weerdetails (OpenWeatherMap — current, uurlijks, dagelijks, luchtkwaliteit)
-/woordenboek            → Sanskrit woordenboek
 ```
 
 ### 5.1.1 Pagina Metadata
@@ -1222,15 +1225,18 @@ Per route:
 |-------|-----------|------------|
 | `/` | root layout (default) | `Dharma Calendar` |
 | `/almanac` | `title: "Almanak"` | `Almanak \| Dharma Calendar` |
+| `/encyclopedie` | `title: "Encyclopedie"` | `Encyclopedie \| Dharma Calendar` |
+| `/encyclopedie/[slug]` | `generateMetadata` → artikelnaam | `<naam> \| Dharma Calendar` |
 | `/events` | `title: "Events"` | `Events \| Dharma Calendar` |
 | `/events/new` | — (via events layout) | `Events \| Dharma Calendar` |
 | `/events/[id]` | `generateMetadata` → eventnaam | `<naam> \| Dharma Calendar` |
+| `/events/[id]/edit` | — (via events/[id] layout) | `<naam> \| Dharma Calendar` |
 | `/kundali` | `title: "Kundali"` | `Kundali \| Dharma Calendar` |
 | `/sadhana` | `title: "Sadhana"` | `Sadhana \| Dharma Calendar` |
 | `/settings` | `title: "Instellingen"` | `Instellingen \| Dharma Calendar` |
 | `/weer` | `title: "Weer"` | `Weer \| Dharma Calendar` |
 
-`/events/[id]/page.tsx` gebruikt `generateMetadata` om de eventnaam dynamisch uit de database op te halen.
+`/events/[id]/page.tsx` en `/encyclopedie/[slug]/page.tsx` gebruiken `generateMetadata` om namen dynamisch op te halen.
 
 ### 5.2 Component Hierarchy
 
@@ -1269,8 +1275,23 @@ RootLayout
     │   ├── FilterSidebar (zoeken, filters, sortering)
     │   └── EventCard[] (klikbaar → modal of bewerken)
     │
-    ├── EventFormPage (narrow width)
+    ├── EventFormPage (narrow width) — /events/new
     │   └── EventForm (formulier met lunar dropdowns)
+    │
+    ├── EventViewPage (narrow width) — /events/[id]
+    │   └── Read-only event weergave (naam, type, datum, categories, series)
+    │       └── Link naar /events/[id]/edit
+    │
+    ├── EventEditPage (narrow width) — /events/[id]/edit
+    │   └── EventForm (bewerken + verwijderen)
+    │
+    ├── EncyclopediePage (full width) — /encyclopedie
+    │   ├── Zoekbalk (client-side filter op naam/beschrijving)
+    │   ├── Groepen overzicht (hiërarchische deity-groepen)
+    │   └── Artikel-kaarten met link naar [slug]
+    │
+    ├── EncyclopedieArticlePage (medium width) — /encyclopedie/[slug]
+    │   └── MDX artikel (uitgebreide beschrijving, attributen, iconografie)
     │
     ├── SettingsPage (medium width, met loading state)
     │   ├── ThemeSection (thema-kiezer grid met preview)
@@ -1279,8 +1300,10 @@ RootLayout
     │   └── LocationSection (preset + handmatig + zon/maan preview)
     │
     ├── KundaliPage (medium width)
-    │   └── Formulier (datum, tijd, tijdzone, locatie) → BirthChartService
-    │       └── Grahaposities: 9 navagrahas + lagna (rashi, nakshatra, pada, retrograde)
+    │   ├── Formulier (datum, tijd, tijdzone, locatie) → BirthChartService
+    │   └── Resultaat (view toggle: tabel ↔ Zuid-Indiaas 4×4 chart)
+    │       ├── Tabelweergave: 9 navagrahas + lagna (rashi, nakshatra, pada, retrograde)
+    │       └── KundaliChart: Zuid-Indiaas 4×4 grid, graha-kleuren per planeet
     │
     ├── SadhanaPage (full width, geen spacing prop)
     │   └── SadhanaTracker (client component)
@@ -1297,6 +1320,7 @@ RootLayout
         ├── Uurlijkse verwachting (24 uur)
         ├── Dagelijkse verwachting (7 dagen)
         └── Luchtkwaliteitsindex (AQI + componenten)
+
 ```
 
 #### 5.2.1 PageLayout Component
@@ -1705,7 +1729,7 @@ Progress omvat alle practice types:
 1. StatCards (vandaag + streak + week)
 2. Vandaag per beoefening
 3. Activiteitsheatmap
-4. Sessieslijst (met "Laad meer" +30 dagen)
+4. Sessieslijst — gegroepeerd per maand in uitklapbare accordeons (met "Laad meer" +30 dagen)
 5. All-time overzicht
 6. GoalPanel + PracticesPanel (naast elkaar op lg:)
 
@@ -1716,6 +1740,49 @@ Progress omvat alle practice types:
 - **Heatmap mobiel**: 22 weken (~154 dagen) i.p.v. 52 weken — past op 375px
 - **inputMode="numeric"**: Op alle number inputs voor mobiel numeriek toetsenbord
 - **motion-safe**: `motion-safe:transition-*` op progress bar en heatmap cellen
+
+### 5.7 Encyclopedie Module
+
+De Encyclopedie is een statische, client-side doorzoekbare kennisbank over Sanatana Dharma. Ze vervangt het eerdere Sanskrit woordenboek (woordenboek → encyclopedie) en biedt uitgebreide MDX-artikelen per deity, groep en concept.
+
+#### 5.7.1 Architectuur
+
+```
+src/lib/encyclopedia.ts         # Alle artikeldata + groepshiërarchie
+src/app/encyclopedie/page.tsx   # Overzichtspagina (zoeken, groepen)
+src/app/encyclopedie/[slug]/page.tsx  # Individueel artikel (MDX rendering)
+```
+
+**Datamodel (in `encyclopedia.ts`):**
+
+```typescript
+export interface EncyclopediaEntry {
+  slug: string;          // URL-friendly ID
+  name: string;          // Weergavenaam (bijv. "Gaṇeśa")
+  group: string;         // Groep-ID (bijv. "ganesha")
+  summary: string;       // Korte beschrijving (voor zoeken en overzicht)
+  content: string;       // MDX-inhoud (volledig artikel)
+  icon?: string;         // Optioneel emoji of SVG-naam
+}
+```
+
+**Groepen (hiërarchisch):**
+- Top-level groepen: Ganesha & 32 Gaṇapati, Shiva & Shiva-families, Vishnu & Avatars, Dasha Mahavidya, 64 Bhairavas, Navagraha, en meer
+- Elke groep heeft leader-artikelen en sub-member artikelen
+- Groepen zijn los gedefinieerd naast entries — geen separate DB-tabel
+
+#### 5.7.2 Zoekfunctionaliteit
+
+Client-side zoeken op naam en beschrijving. Geen backend-query nodig; de volledige dataset is klein genoeg voor in-memory filtering.
+
+#### 5.7.3 MDX Artikelen
+
+Elk artikel is geschreven in MDX (Markdown + JSX). Ze bevatten:
+- Uitgebreide mythologische beschrijving
+- Iconografie en attributen
+- Verwante graha's, mantras, festivals
+
+**Schaal (april 2026):** 200+ artikelen covering Ganesha (32 Gaṇapati), Dasha Mahavidya (10 artikelen), 64 Bhairavas, Ekādaśa Rudra, Vishnu-avatars, Navagraha, en meer.
 
 ### 5.8 Request Deduplication
 
@@ -2004,14 +2071,46 @@ additionalCss: `
 2. Kies `category: "classic"` of `"revamped"`
 3. Voor revamped: voeg `background: { light: "...", dark: "..." }` toe (body gradient)
 4. Optioneel: `glass: { ... }` voor custom glassmorphism waarden
-5. Draai `npm run generate:css`
+5. Draai `npm run generate:css` (of commit — pre-commit hook doet dit automatisch)
 
 **Special theme:**
 1. Voeg entry toe met `isSpecial: true, category: "special"`
 2. Voeg `background`, `glass` en `specialStyles` toe
 3. Gebruik `SPECIAL_THEME_COMPONENT_MAP` als referentie voor beschikbare keys
 4. Gebruik `[[t]]` als placeholder in `additionalCss`
-5. Draai `npm run generate:css`
+5. Draai `npm run generate:css` (of commit — pre-commit hook doet dit automatisch)
+
+**Belangrijk: Geen handmatige `@media (prefers-reduced-motion)` in `additionalCss`**
+
+De generator voegt automatisch een volledig `prefers-reduced-motion: reduce` blok toe voor elk special theme. Dit blok gebruikt het `0.01ms / iteration-count: 1` patroon zodat `animationend` events blijven vuren. Voeg **nooit** zelf `@media (prefers-reduced-motion)` blokken toe in `additionalCss` — die worden obsoleet en kunnen conflicteren.
+
+### 6.9 Pre-commit Hook: Automatische CSS-regeneratie
+
+De pre-commit hook (`.husky/pre-commit`) detecteert automatisch of `themes.ts` of `categories.ts` gestagd is, en draait dan `npm run generate:css` gevolgd door `git add src/app/globals.css`. Je hoeft `generate:css` dus nooit handmatig te draaien bij theme-wijzigingen als onderdeel van een commit — de hook regelt het.
+
+### 6.10 Category `colorDark` — Dark Mode Colors
+
+Categorieën met een donkere basiskleur (lightness L < 0.55 in oklch) krijgen verplicht een `colorDark` veld voor dark mode zichtbaarheid. Dit is gedefinieerd in:
+
+- **`src/config/categories.ts`**: `colorDark` per categorie (de bron)
+- **`prisma/schema.prisma`**: `colorDark String?` op het `Category` model
+- **`src/scripts/seed.ts`**: Wordt opgeslagen bij `db:seed`
+- **`src/types/calendar.ts`**: `colorDark: string | null` in de `Category` interface
+
+**Gebruik in components:**
+
+```typescript
+import { resolveCategoryColor } from "@/lib/category-styles";
+import { useTheme } from "@/components/theme/ThemeProvider";
+
+const { resolvedColorMode } = useTheme();
+const isDark = resolvedColorMode === "dark";
+
+const color = resolveCategoryColor(category.color, category.colorDark, isDark);
+// → geeft colorDark terug als isDark && colorDark bestaat, anders color
+```
+
+Dit patroon is verplicht in alle componenten die category-kleuren als inline style renderen (bijv. `eventStyleGetter` in `DharmaCalendar`, `DayDetailsPanel`, `EventDetailModal`). Voor CSS-class-gebaseerde kleur (utility classes) regelt Tailwind's `.dark` variant dit automatisch.
 
 ---
 
@@ -2106,7 +2205,7 @@ const optionalTimeStringSchema = z.string()...  // string | null
 |-------|--------------|
 | **Event** | Event-definitie (naam, type, recurrence, ruleType/ruleConfig, timing, tags, maas/tithi/nakshatra/sankranti, series-relaties) |
 | **EventOccurrence** | Concrete event-instanties op datum (eventId + date uniek), optionele tijden/notities |
-| **Category** | Categoriecatalogus met icon/color/sortering |
+| **Category** | Categoriecatalogus met icon/color/colorDark/sortering |
 | **EventCategory** | M:N join tussen event en categorie (met `sortOrder`, waarbij `0` primary category is) |
 | **EventSeriesEntry** | Parent-child serie-relaties tussen events (optioneel `dayNumber`) |
 | **DailyInfo** | Astronomische dagdata (Swiss Ephemeris) + uitgebreide Vedische velden (maas, samvat, rashi, sankranti/next transitions) |
@@ -2141,7 +2240,7 @@ const optionalTimeStringSchema = z.string()...  // string | null
 
 ### 9.1 Pre-commit Hooks
 
-Via Husky + lint-staged:
+Via Husky + lint-staged, aangevuld met een eigen hook voor theme CSS:
 
 ```json
 {
@@ -2153,6 +2252,18 @@ Via Husky + lint-staged:
   }
 }
 ```
+
+**Theme CSS auto-regeneratie (`.husky/pre-commit`):**
+
+```sh
+# Als themes.ts of categories.ts gestagd is → regenereer globals.css automatisch
+if git diff --cached --name-only | grep -qE "src/config/(themes|categories)\.ts$"; then
+  npm run generate:css
+  git add src/app/globals.css
+fi
+```
+
+Dit garandeert dat `globals.css` altijd gesynchroniseerd is met de config. Je hoeft `generate:css` niet handmatig te draaien bij een commit.
 
 ### 9.2 Validation Command
 
@@ -2286,6 +2397,9 @@ npm run db:reset           # Reset + seed (convenience script)
 4. **Clean Slate Migrations:** Bij schema drift door `db push`, reset en maak comprehensive init migratie
 5. **Server-Only Code:** Native Node.js addons (swisseph) en Prisma code worden gescheiden in `/server/` directory
 6. **Pragmatic Over Pure:** Architectuur dient de code - YAGNI principle over dogmatische layering
+7. **Split View/Edit Pages:** `/events/[id]` is read-only weergave; `/events/[id]/edit` is het bewerkformulier. Scheiding voorkomt onbedoeld muteren bij navigatie naar een event-detail.
+8. **colorDark als DB-veld:** Categorie dark-mode kleuren staan in de database (niet alleen in CATEGORY_CATALOG), zodat elk component dat inline styles gebruikt dezelfde `colorDark` kan ophalen. Gebruik altijd `resolveCategoryColor(color, colorDark, isDark)` voor inline category-kleuren.
+9. **Auto-generated reduced-motion:** Gebruik nooit handmatige `@media (prefers-reduced-motion)` in theme `additionalCss`. De CSS-generator voegt dit volledig en correct toe voor elk special theme. Het `0.01ms / iteration-count: 1` patroon garandeert dat `animationend` events blijven vuren.
 
 ### 11.2 UI/UX Patterns
 
