@@ -9,6 +9,8 @@ import {
   ToggleLeft,
   ToggleRight,
   Sparkles,
+  Check,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -28,6 +30,7 @@ export function PracticesPanel({
   const [showAdd, setShowAdd] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showInactive, setShowInactive] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const [newName, setNewName] = useState("");
   const [newType, setNewType] = useState<PracticeType>("mantra_japa");
@@ -97,6 +100,7 @@ export function PracticesPanel({
 
   const handleDelete = async (id: string) => {
     await apiFetch(`/practices/${id}`, { method: "DELETE" });
+    setConfirmDeleteId(null);
     onChanged();
   };
 
@@ -276,14 +280,34 @@ export function PracticesPanel({
                     <ToggleLeft className="h-4 w-4" />
                   )}
                 </button>
-                <button
-                  onClick={() => handleDelete(p.id)}
-                  className="text-theme-fg-muted hover:text-theme-error flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors"
-                  aria-label={`${p.name} verwijderen`}
-                  title="Verwijderen"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
+                {confirmDeleteId === p.id ? (
+                  <>
+                    <button
+                      onClick={() => handleDelete(p.id)}
+                      className="text-theme-error flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors hover:opacity-70"
+                      aria-label="Verwijderen bevestigen"
+                      title="Bevestig verwijderen"
+                    >
+                      <Check className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      onClick={() => setConfirmDeleteId(null)}
+                      className="text-theme-fg-muted hover:text-theme-fg flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors"
+                      aria-label="Annuleren"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => setConfirmDeleteId(p.id)}
+                    className="text-theme-fg-muted hover:text-theme-error flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors"
+                    aria-label={`${p.name} verwijderen`}
+                    title="Verwijderen"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                )}
               </div>
             </div>
           )

@@ -11,6 +11,8 @@ type IconColor = "primary" | "secondary" | "accent" | "muted";
 interface SectionProps {
   /** Section title */
   title: string;
+  /** Optional count badge shown next to title */
+  count?: number;
   /** Section description (optional) */
   description?: string;
   /** Lucide icon component */
@@ -70,6 +72,7 @@ const ICON_COLOR_CLASSES: Record<IconColor, { bg: string; text: string }> = {
  */
 export function Section({
   title,
+  count,
   description,
   icon: Icon,
   iconColor = "primary",
@@ -86,7 +89,14 @@ export function Section({
           <Icon className={cn("h-5 w-5", colors.text)} />
         </div>
         <div>
-          <h2 className="text-theme-fg text-lg font-semibold">{title}</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-theme-fg text-lg font-semibold">{title}</h2>
+            {count !== undefined && (
+              <span className="bg-theme-surface-hover text-theme-fg-muted rounded-full px-2 py-0.5 text-xs font-medium tabular-nums">
+                {count}
+              </span>
+            )}
+          </div>
           {description && <p className="text-theme-fg-muted text-sm">{description}</p>}
         </div>
       </div>

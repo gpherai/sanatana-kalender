@@ -156,7 +156,7 @@ export default async function TermPage({
       <div className="mx-auto max-w-5xl">
         <div className="text-theme-fg-muted mb-8 flex flex-wrap items-center gap-2 text-sm font-medium">
           <Link
-            href="/woordenboek"
+            href="/encyclopedie"
             className="hover:text-theme-primary flex items-center gap-1 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -166,7 +166,7 @@ export default async function TermPage({
             <>
               <span>/</span>
               <Link
-                href={`/woordenboek/${parentTerm.slug}`}
+                href={`/encyclopedie/${parentTerm.slug}`}
                 className="hover:text-theme-primary transition-colors"
               >
                 {parentTerm.title}
@@ -217,7 +217,7 @@ export default async function TermPage({
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {standaloneManifestations.map((child) => (
                 <Link
-                  href={`/woordenboek/${child.slug}`}
+                  href={`/encyclopedie/${child.slug}`}
                   key={child.slug}
                   className="group border-theme-border bg-theme-surface hover:border-theme-primary-30 focus:ring-theme-primary focus:ring-offset-theme-bg relative flex flex-col rounded-2xl border p-6 transition-all duration-500 hover:-translate-y-1 hover:shadow-lg focus:ring-2 focus:ring-offset-2 focus:outline-none"
                 >
@@ -244,7 +244,7 @@ export default async function TermPage({
                     {group.title}
                   </h2>
                   <Link
-                    href={`/woordenboek/${group.slug}`}
+                    href={`/encyclopedie/${group.slug}`}
                     className="text-theme-primary text-sm font-semibold hover:underline"
                   >
                     Bekijk volledige groep &rarr;
@@ -253,7 +253,7 @@ export default async function TermPage({
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                   {members.map((member) => (
                     <Link
-                      href={`/woordenboek/${member.slug}`}
+                      href={`/encyclopedie/${member.slug}`}
                       key={member.slug}
                       className="group border-theme-border bg-theme-surface hover:border-theme-primary-30 focus:ring-theme-primary focus:ring-offset-theme-bg relative flex flex-col rounded-2xl border p-6 transition-all duration-500 hover:-translate-y-1 hover:shadow-lg focus:ring-2 focus:ring-offset-2 focus:outline-none"
                     >
@@ -280,7 +280,7 @@ export default async function TermPage({
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {otherRelated.map((related) => (
                 <Link
-                  href={`/woordenboek/${related.slug}`}
+                  href={`/encyclopedie/${related.slug}`}
                   key={related.slug}
                   className="group border-theme-border bg-theme-bg-subtle/30 hover:border-theme-primary-30 focus:ring-theme-primary focus:ring-offset-theme-bg relative flex flex-col rounded-2xl border p-6 transition-all duration-500 hover:-translate-y-1 hover:shadow-lg focus:ring-2 focus:ring-offset-2 focus:outline-none"
                 >

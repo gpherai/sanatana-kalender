@@ -1,7 +1,16 @@
 "use client";
 
 import { useState, useId } from "react";
-import { Plus, Loader2, Pencil, Trash2, Layers, GripVertical, X } from "lucide-react";
+import {
+  Plus,
+  Loader2,
+  Pencil,
+  Trash2,
+  Layers,
+  GripVertical,
+  X,
+  Check,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   type Routine,
@@ -213,6 +222,7 @@ export function RoutinePanel({
 }) {
   const [showAdd, setShowAdd] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const activePractices = practices.filter((p) => p.active);
 
@@ -255,6 +265,7 @@ export function RoutinePanel({
 
   const handleDelete = async (id: string) => {
     await apiFetch(`/routines/${id}`, { method: "DELETE" });
+    setConfirmDeleteId(null);
     onChanged();
   };
 
@@ -333,14 +344,34 @@ export function RoutinePanel({
                 >
                   <Pencil className="h-3.5 w-3.5" />
                 </button>
-                <button
-                  onClick={() => handleDelete(r.id)}
-                  className="text-theme-fg-muted hover:text-theme-error flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors"
-                  aria-label={`${r.name} verwijderen`}
-                  title="Verwijderen"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
+                {confirmDeleteId === r.id ? (
+                  <>
+                    <button
+                      onClick={() => handleDelete(r.id)}
+                      className="text-theme-error flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors hover:opacity-70"
+                      aria-label="Verwijderen bevestigen"
+                      title="Bevestig verwijderen"
+                    >
+                      <Check className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      onClick={() => setConfirmDeleteId(null)}
+                      className="text-theme-fg-muted hover:text-theme-fg flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors"
+                      aria-label="Annuleren"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => setConfirmDeleteId(r.id)}
+                    className="text-theme-fg-muted hover:text-theme-error flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors"
+                    aria-label={`${r.name} verwijderen`}
+                    title="Verwijderen"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                )}
               </div>
             </div>
           )

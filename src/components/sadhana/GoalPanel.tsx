@@ -10,6 +10,8 @@ import {
   ToggleRight,
   Target,
   CheckCircle2,
+  Check,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { type Goal, type GoalType, type Practice, apiFetch } from "./types";
@@ -32,6 +34,7 @@ export function GoalPanel({
   const [showAdd, setShowAdd] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showInactive, setShowInactive] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const [newType, setNewType] = useState<GoalType>("daily");
   const [newName, setNewName] = useState("");
@@ -110,6 +113,7 @@ export function GoalPanel({
 
   const handleDelete = async (id: string) => {
     await apiFetch(`/goals/${id}`, { method: "DELETE" });
+    setConfirmDeleteId(null);
     onChanged();
   };
 
@@ -462,14 +466,34 @@ export function GoalPanel({
                     <ToggleLeft className="h-4 w-4" />
                   )}
                 </button>
-                <button
-                  onClick={() => handleDelete(g.id)}
-                  className="text-theme-fg-muted hover:text-theme-error flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors"
-                  aria-label={`${GOAL_TYPE_LABELS[g.type]} verwijderen`}
-                  title="Verwijderen"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
+                {confirmDeleteId === g.id ? (
+                  <>
+                    <button
+                      onClick={() => handleDelete(g.id)}
+                      className="text-theme-error flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors hover:opacity-70"
+                      aria-label="Verwijderen bevestigen"
+                      title="Bevestig verwijderen"
+                    >
+                      <Check className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      onClick={() => setConfirmDeleteId(null)}
+                      className="text-theme-fg-muted hover:text-theme-fg flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors"
+                      aria-label="Annuleren"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => setConfirmDeleteId(g.id)}
+                    className="text-theme-fg-muted hover:text-theme-error flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors"
+                    aria-label={`${GOAL_TYPE_LABELS[g.type]} verwijderen`}
+                    title="Verwijderen"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                )}
               </div>
             </div>
           );

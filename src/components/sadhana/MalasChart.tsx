@@ -131,13 +131,13 @@ export function MalasChart({ calDays }: { calDays: CalendarDay[] }) {
                 style={{ height: BAR_H }}
               >
                 <div
-                  className={`w-full rounded-t-md motion-safe:transition-all motion-safe:duration-150 ${m.isCurrentMonth && val > 0 && !isHovered ? "bg-theme-gradient" : ""}`}
+                  className={`w-full rounded-t-md motion-safe:transition-all motion-safe:duration-150 ${m.isCurrentMonth && val > 0 ? "bg-theme-gradient" : ""} ${m.isCurrentMonth && val > 0 && isHovered ? "opacity-80" : ""}`}
                   style={{
                     height: barH,
                     background:
                       val === 0
                         ? "color-mix(in oklch, var(--theme-fg) 8%, transparent)"
-                        : isHovered
+                        : isHovered && !m.isCurrentMonth
                           ? "color-mix(in oklch, var(--theme-primary) 75%, white)"
                           : m.isCurrentMonth
                             ? undefined
