@@ -5,8 +5,8 @@ import { PageLayout } from "@/components/layout";
 import { Star, TriangleAlert, Grid2x2, Table2, Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { BirthChart, GrahaKey } from "@/server/panchanga/types";
-import { KundaliChart } from "./KundaliChart";
-import { NavamshaChart } from "./NavamshaChart";
+import { KundaliChart, RASHI_NAMES } from "./KundaliChart";
+import { NavamshaChart, navamshaRashi } from "./NavamshaChart";
 import { VimshottariDasha } from "./VimshottariDasha";
 
 // =============================================================================
@@ -177,14 +177,14 @@ function GrahaRow({ grahaKey, chart }: { grahaKey: GrahaKey; chart: BirthChart }
 // MAIN PAGE
 // =============================================================================
 
-type ResultView = "chart" | "table" | "d9";
+type ResultView = "d1-chart" | "d1-table" | "d9-chart" | "d9-table";
 
 export default function KundaliPage() {
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [chart, setChart] = useState<BirthChart | null>(null);
-  const [resultView, setResultView] = useState<ResultView>("chart");
+  const [resultView, setResultView] = useState<ResultView>("d1-chart");
 
   const set = (field: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((f) => ({ ...f, [field]: e.target.value }));
@@ -406,12 +406,12 @@ export default function KundaliPage() {
               {/* View toggle */}
               <div className="bg-theme-surface border-theme-border flex items-center gap-1 rounded-lg border p-1">
                 <button
-                  onClick={() => setResultView("chart")}
+                  onClick={() => setResultView("d1-chart")}
                   style={{ touchAction: "manipulation" }}
                   title="D1 Grafiek"
                   className={cn(
-                    "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors",
-                    resultView === "chart"
+                    "flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
+                    resultView === "d1-chart"
                       ? "bg-theme-primary-15 text-theme-primary"
                       : "text-theme-fg-muted hover:text-theme-fg"
                   )}
@@ -420,26 +420,26 @@ export default function KundaliPage() {
                   D1
                 </button>
                 <button
-                  onClick={() => setResultView("table")}
+                  onClick={() => setResultView("d1-table")}
                   style={{ touchAction: "manipulation" }}
-                  title="Tabel"
+                  title="D1 Tabel"
                   className={cn(
-                    "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors",
-                    resultView === "table"
+                    "flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
+                    resultView === "d1-table"
                       ? "bg-theme-primary-15 text-theme-primary"
                       : "text-theme-fg-muted hover:text-theme-fg"
                   )}
                 >
                   <Table2 className="h-3.5 w-3.5" />
-                  Tabel
                 </button>
+                <div className="bg-theme-border mx-0.5 h-4 w-px shrink-0" />
                 <button
-                  onClick={() => setResultView("d9")}
+                  onClick={() => setResultView("d9-chart")}
                   style={{ touchAction: "manipulation" }}
-                  title="D9 Navamsha"
+                  title="D9 Grafiek"
                   className={cn(
-                    "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors",
-                    resultView === "d9"
+                    "flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
+                    resultView === "d9-chart"
                       ? "bg-theme-primary-15 text-theme-primary"
                       : "text-theme-fg-muted hover:text-theme-fg"
                   )}
@@ -447,28 +447,36 @@ export default function KundaliPage() {
                   <Layers className="h-3.5 w-3.5" />
                   D9
                 </button>
+                <button
+                  onClick={() => setResultView("d9-table")}
+                  style={{ touchAction: "manipulation" }}
+                  title="D9 Tabel"
+                  className={cn(
+                    "flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
+                    resultView === "d9-table"
+                      ? "bg-theme-primary-15 text-theme-primary"
+                      : "text-theme-fg-muted hover:text-theme-fg"
+                  )}
+                >
+                  <Table2 className="h-3.5 w-3.5" />
+                </button>
               </div>
             </div>
           </div>
 
-          {/* Chart view */}
-          {resultView === "chart" && (
+          {/* D1 chart */}
+          {resultView === "d1-chart" && (
             <div className="mx-auto w-full max-w-2xl">
               <KundaliChart chart={chart} />
             </div>
           )}
 
-          {/* D9 Navamsha view */}
-          {resultView === "d9" && (
-            <div className="mx-auto w-full max-w-2xl">
-              <NavamshaChart chart={chart} />
-            </div>
-          )}
-
-          {/* Table view */}
-          {resultView === "table" && (
+          {/* D1 table */}
+          {resultView === "d1-table" && (
             <div className="bg-theme-surface-raised rounded-xl p-6 shadow">
-              <h2 className="text-theme-fg mb-4 text-base font-semibold">Navagrahas</h2>
+              <h2 className="text-theme-fg mb-4 text-base font-semibold">
+                Navagrahas — D1
+              </h2>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
@@ -494,6 +502,88 @@ export default function KundaliPage() {
                     {GRAHA_ORDER.map((key) => (
                       <GrahaRow key={key} grahaKey={key} chart={chart} />
                     ))}
+                  </tbody>
+                </table>
+              </div>
+              <p className="text-theme-fg-muted mt-4 text-xs">
+                R = Retrograde · Mean Node voor Rahu/Ketu
+              </p>
+            </div>
+          )}
+
+          {/* D9 chart */}
+          {resultView === "d9-chart" && (
+            <div className="mx-auto w-full max-w-2xl">
+              <NavamshaChart chart={chart} />
+            </div>
+          )}
+
+          {/* D9 table */}
+          {resultView === "d9-table" && (
+            <div className="bg-theme-surface-raised rounded-xl p-6 shadow">
+              <h2 className="text-theme-fg mb-4 text-base font-semibold">
+                Navagrahas — D9 Navamsha
+              </h2>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-theme-border border-b">
+                      <th className="text-theme-fg-muted pr-4 pb-2 text-left text-xs font-semibold tracking-wide uppercase">
+                        Graha
+                      </th>
+                      <th className="text-theme-fg-muted pr-4 pb-2 text-left text-xs font-semibold tracking-wide uppercase">
+                        D1 Rashi
+                      </th>
+                      <th className="text-theme-fg-muted pr-4 pb-2 text-left text-xs font-semibold tracking-wide uppercase">
+                        D9 Rashi
+                      </th>
+                      <th className="text-theme-fg-muted pb-2 text-right text-xs font-semibold tracking-wide uppercase">
+                        D9 Graad
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {GRAHA_ORDER.map((key) => {
+                      const g = chart.grahas[key];
+                      if (!g) return null;
+                      const d9Rashi = navamshaRashi(g.longitude);
+                      const d9Deg = (g.degreeInRashi % (30 / 9)) * 9;
+                      return (
+                        <tr
+                          key={key}
+                          className="border-theme-border border-b last:border-0"
+                        >
+                          <td className="py-3 pr-4">
+                            <div className="flex items-center gap-2">
+                              <span className="text-theme-primary w-5 text-center text-base">
+                                {GRAHA_SYMBOL[key]}
+                              </span>
+                              <span className="text-theme-fg font-semibold">
+                                {g.name}
+                              </span>
+                              {g.retrograde && (
+                                <span className="text-theme-fg-muted rounded border border-current px-1 text-[10px]">
+                                  R
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="py-3 pr-4">
+                            <span className="text-theme-fg-muted">{g.rashi.name}</span>
+                          </td>
+                          <td className="py-3 pr-4">
+                            <span className="text-theme-fg font-medium">
+                              {RASHI_NAMES[d9Rashi]}
+                            </span>
+                          </td>
+                          <td className="py-3 text-right">
+                            <span className="text-theme-fg-muted font-mono text-xs">
+                              {d9Deg.toFixed(2)}°
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

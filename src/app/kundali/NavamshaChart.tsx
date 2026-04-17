@@ -9,7 +9,7 @@ import {
   RashiCell,
 } from "./KundaliChart";
 
-function navamshaRashi(longitude: number): number {
+export function navamshaRashi(longitude: number): number {
   const rashi = Math.floor(longitude / 30) + 1; // 1-12
   const degInRashi = longitude % 30;
   const pada = Math.floor(degInRashi / (30 / 9)); // 0-8

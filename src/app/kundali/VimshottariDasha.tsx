@@ -9,7 +9,6 @@ import {
   DASHA_NAMES,
   DASHA_SYMBOL,
   DASHA_COLOR,
-  DASHA_YEARS,
 } from "./dasha-utils";
 
 const NL_MONTHS = [
@@ -94,7 +93,11 @@ export function VimshottariDasha({ chart }: { chart: BirthChart }) {
                   {fmt(period.start)} → {fmt(period.end)}
                 </span>
                 <span className="text-theme-fg-muted w-10 shrink-0 text-right text-xs tabular-nums">
-                  {DASHA_YEARS[period.lord]} jr
+                  {Math.round(
+                    (period.end.getTime() - period.start.getTime()) /
+                      (365.25 * 24 * 3600 * 1000)
+                  )}{" "}
+                  jr
                 </span>
               </div>
 
