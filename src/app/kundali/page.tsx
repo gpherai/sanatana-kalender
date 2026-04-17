@@ -8,6 +8,7 @@ import type { BirthChart, GrahaKey } from "@/server/panchanga/types";
 import { KundaliChart, RASHI_NAMES } from "./KundaliChart";
 import { NavamshaChart, navamshaRashi } from "./NavamshaChart";
 import { VimshottariDasha } from "./VimshottariDasha";
+import { getGrahaDignity, DIGNITY_LABEL, type Dignity } from "./graha-dignity";
 
 // =============================================================================
 // GRAHA DISPLAY CONFIG
@@ -121,9 +122,18 @@ function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
   );
 }
 
+const DIGNITY_STYLE: Record<NonNullable<Dignity>, string> = {
+  uchcha: "bg-amber-500/15 text-amber-600 dark:text-amber-400",
+  neecha: "bg-red-500/15 text-red-600 dark:text-red-400",
+  moolatrikona: "bg-theme-primary-10 text-theme-primary",
+  swarashi: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
+};
+
 function GrahaRow({ grahaKey, chart }: { grahaKey: GrahaKey; chart: BirthChart }) {
   const g = chart.grahas[grahaKey];
   if (!g) return null;
+
+  const dignity = getGrahaDignity(grahaKey, g.rashi.number, g.degreeInRashi);
 
   return (
     <tr className="border-theme-border border-b last:border-0">
@@ -144,10 +154,22 @@ function GrahaRow({ grahaKey, chart }: { grahaKey: GrahaKey; chart: BirthChart }
         </div>
       </td>
       <td className="py-3 pr-4">
-        <span className="text-theme-fg font-medium">{g.rashi.name}</span>
-        <span className="text-theme-fg-muted ml-1 text-xs">
-          {g.degreeInRashi.toFixed(2)}°
-        </span>
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="text-theme-fg font-medium">{g.rashi.name}</span>
+          <span className="text-theme-fg-muted text-xs">
+            {g.degreeInRashi.toFixed(2)}°
+          </span>
+          {dignity && (
+            <span
+              className={cn(
+                "rounded px-1.5 py-0.5 text-[10px] font-semibold",
+                DIGNITY_STYLE[dignity]
+              )}
+            >
+              {DIGNITY_LABEL[dignity]}
+            </span>
+          )}
+        </div>
       </td>
       <td className="py-3 pr-4">
         <span className="text-theme-fg">{g.nakshatra.name}</span>
@@ -506,7 +528,13 @@ export default function KundaliPage() {
                 </table>
               </div>
               <p className="text-theme-fg-muted mt-4 text-xs">
-                R = Retrograde · Mean Node voor Rahu/Ketu
+                R = Retrograde · Mean Node voor Rahu/Ketu ·{" "}
+                <span className="text-amber-600 dark:text-amber-400">Uchcha</span> =
+                verheven · <span className="text-red-600 dark:text-red-400">Neecha</span>{" "}
+                = verzwakt · <span className="text-theme-primary">Mūlatrik.</span> =
+                moolatrikona ·{" "}
+                <span className="text-emerald-600 dark:text-emerald-400">Swarashi</span> =
+                eigen teken
               </p>
             </div>
           )}
