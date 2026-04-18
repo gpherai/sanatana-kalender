@@ -37,8 +37,9 @@ interface MonthEntry {
 function buildData(sessions: SessionData[]) {
   const today = new Date();
 
-  const months: MonthEntry[] = Array.from({ length: 12 }, (_, i) => {
-    const d = new Date(today.getFullYear(), today.getMonth() - 11 + i, 1);
+  const monthCount = today.getMonth() + 1;
+  const months: MonthEntry[] = Array.from({ length: monthCount }, (_, i) => {
+    const d = new Date(today.getFullYear(), i, 1);
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
     const fullLabel = d.toLocaleDateString("nl-NL", { month: "long", year: "numeric" });
 
@@ -201,11 +202,8 @@ export function StackedPracticeChart({ sessions }: { sessions: SessionData[] }) 
                   </div>
                 ) : (
                   <div
-                    className="w-full rounded-t-md"
-                    style={{
-                      height: 2,
-                      background: "color-mix(in oklch, var(--theme-fg) 8%, transparent)",
-                    }}
+                    className="bg-theme-fg-8 w-full rounded-t-md"
+                    style={{ height: 2 }}
                   />
                 )}
               </div>

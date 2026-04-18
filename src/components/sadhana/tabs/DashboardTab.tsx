@@ -31,22 +31,42 @@ export function DashboardTab({
   heatmapEventsByDate,
   onHeatmapEventClick,
 }: DashboardTabProps) {
-  const heatmapFull = buildHeatmap(calDays, 364);
-  const heatmapMobile = buildHeatmap(calDays, 154);
+  const today = new Date();
+  const jan1 = new Date(today.getFullYear(), 0, 1);
+  const daysThisYear = Math.floor((today.getTime() - jan1.getTime()) / 86400000) + 1;
+
+  const heatmapFull = buildHeatmap(calDays, daysThisYear);
+  const heatmapMobile = buildHeatmap(calDays, Math.min(daysThisYear, 154));
 
   return (
     <div className="space-y-6">
-      {/* KPI strip — 4 hero cijfers */}
+      {/* Maand — KPI strip */}
       <DashboardKPIs streak={streak} overview={overview} calDays={calDays} />
 
-      {/* Heatmap — full width */}
+      {/* Jaar — maandgrafiek */}
+      <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
+        <div className="mb-4 flex items-center gap-2">
+          <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
+            <TrendingUp className="h-4 w-4" />
+          </div>
+          <h2 className="text-theme-fg text-sm font-semibold">
+            Per maand — {today.getFullYear()}
+          </h2>
+        </div>
+        <MalasChart calDays={calDays} sessions={sessions} />
+      </div>
+
+      {/* Jaar — stacked beoefening grafiek */}
+      <StackedPracticeChart sessions={sessions} />
+
+      {/* Jaar — heatmap */}
       <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
         <div className="mb-4 flex items-center gap-2">
           <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
             <Calendar className="h-4 w-4" />
           </div>
           <h2 className="text-theme-fg text-sm font-semibold">
-            Activiteit — laatste jaar
+            Activiteit — {today.getFullYear()}
           </h2>
         </div>
         <div className="hidden sm:block">
@@ -68,25 +88,8 @@ export function DashboardTab({
         </div>
       </div>
 
-      {/* Maandgrafiek + All-time — naast elkaar op desktop */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_340px] lg:items-start">
-        <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
-          <div className="mb-4 flex items-center gap-2">
-            <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
-              <TrendingUp className="h-4 w-4" />
-            </div>
-            <h2 className="text-theme-fg text-sm font-semibold">
-              Per maand — laatste jaar
-            </h2>
-          </div>
-          <MalasChart calDays={calDays} sessions={sessions} />
-        </div>
-
-        {overview && <AllTimeOverview overview={overview} />}
-      </div>
-
-      {/* Stacked beoefening grafiek — alleen zichtbaar als er 2+ beoefeningen zijn */}
-      <StackedPracticeChart sessions={sessions} />
+      {/* All-time overzicht */}
+      {overview && <AllTimeOverview overview={overview} />}
     </div>
   );
 }

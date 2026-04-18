@@ -815,6 +815,9 @@ function generateUtilityClasses(): string {
 .bg-theme-accent-15 { background-color: color-mix(in oklch, var(--theme-accent) 15%, transparent); }
 .bg-theme-accent-20 { background-color: color-mix(in oklch, var(--theme-accent) 20%, transparent); }
 
+.bg-theme-fg-4 { background-color: color-mix(in oklch, var(--theme-fg) 4%, transparent); }
+.bg-theme-fg-8 { background-color: color-mix(in oklch, var(--theme-fg) 8%, transparent); }
+
 /* === TEXT COLORS === */
 .text-theme-primary { color: var(--theme-primary); }
 .text-theme-secondary { color: var(--theme-secondary); }

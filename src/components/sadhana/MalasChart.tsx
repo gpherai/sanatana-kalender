@@ -43,8 +43,9 @@ function buildMonthlyData(
   sessionData: SessionData[]
 ): MonthData[] {
   const today = new Date();
-  return Array.from({ length: 12 }, (_, i) => {
-    const d = new Date(today.getFullYear(), today.getMonth() - 11 + i, 1);
+  const monthCount = today.getMonth() + 1; // jan=0, dus +1 = aantal maanden dit jaar
+  return Array.from({ length: monthCount }, (_, i) => {
+    const d = new Date(today.getFullYear(), i, 1);
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
     const days = calDays.filter((cd) => cd.date.startsWith(key));
 
@@ -132,11 +133,8 @@ export function MalasChart({
       {/* Lege staat */}
       {isEmpty && (
         <div
-          className="flex items-center justify-center rounded-xl text-center"
-          style={{
-            height: BAR_H + 28,
-            background: "color-mix(in oklch, var(--theme-fg) 4%, transparent)",
-          }}
+          className="bg-theme-fg-4 flex items-center justify-center rounded-xl text-center"
+          style={{ height: BAR_H + 28 }}
         >
           <p className="text-theme-fg-muted text-sm">Nog geen sessies geregistreerd.</p>
         </div>
@@ -211,12 +209,17 @@ export function MalasChart({
                   style={{ height: BAR_H }}
                 >
                   <div
-                    className={`w-full rounded-t-md motion-safe:transition-all motion-safe:duration-150 ${m.isCurrentMonth && val > 0 ? "bg-theme-gradient" : ""} ${m.isCurrentMonth && val > 0 && isHovered ? "opacity-80" : ""}`}
+                    className={[
+                      "w-full rounded-t-md motion-safe:transition-all motion-safe:duration-150",
+                      val === 0 ? "bg-theme-fg-8" : "",
+                      m.isCurrentMonth && val > 0 ? "bg-theme-gradient" : "",
+                      m.isCurrentMonth && val > 0 && isHovered ? "opacity-80" : "",
+                    ].join(" ")}
                     style={{
                       height: barH,
                       background:
                         val === 0
-                          ? "color-mix(in oklch, var(--theme-fg) 8%, transparent)"
+                          ? undefined
                           : isHovered && !m.isCurrentMonth
                             ? "color-mix(in oklch, var(--theme-primary) 75%, white)"
                             : m.isCurrentMonth

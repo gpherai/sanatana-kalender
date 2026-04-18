@@ -44,7 +44,11 @@ fi
 
 echo ""
 echo "📥  Importeren..."
-docker compose exec -T db psql -U "$DB_USER" "$DB_NAME" < "$DUMP_FILE"
+if command -v docker &>/dev/null && docker compose ps db &>/dev/null 2>&1; then
+  docker compose exec -T db psql -U "$DB_USER" "$DB_NAME" < "$DUMP_FILE"
+else
+  psql -h localhost -U "$DB_USER" "$DB_NAME" < "$DUMP_FILE"
+fi
 
 echo ""
 echo "✅  Import klaar!"

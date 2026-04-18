@@ -328,7 +328,7 @@ export function SadhanaTracker() {
       )}
 
       {activeTab === "analytics" && (
-        <AnalyticsTab sessions={sessions} calDays={calDays} />
+        <AnalyticsTab sessions={sessions} calDays={calDays} overview={overview} />
       )}
 
       {activeTab === "instellingen" && (

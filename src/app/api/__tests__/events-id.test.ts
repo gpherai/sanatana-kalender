@@ -75,8 +75,8 @@ describe("API Events by ID", () => {
   it("returns event details when found with series mapping", async () => {
     prismaMock.event.findUnique.mockResolvedValue({
       ...MOCK_EVENT,
-      seriesParentEntries: [{ parent: { id: "p1", name: "Parent 1" } }],
-      seriesChildEntries: [{ child: { id: "c1", name: "Child 1" }, dayNumber: 1 }],
+      seriesParentEntries: [{ child: { id: "c1", name: "Child 1" }, dayNumber: 1 }],
+      seriesChildEntries: [{ parent: { id: "p1", name: "Parent 1" } }],
     } as never);
 
     const response = await GET(new NextRequest("http://localhost/api/events/test"), {
