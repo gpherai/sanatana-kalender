@@ -37,7 +37,7 @@ function FilterSection({
     <div className="border-theme-border mb-4 border-b pb-4 last:mb-0 last:border-0 last:pb-0">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="hover:text-theme-primary text-theme-fg-secondary mb-2 flex w-full items-center justify-between text-left font-medium transition-colors"
+        className="hover:text-theme-primary text-theme-fg-secondary mb-2 flex w-full cursor-pointer items-center justify-between text-left font-medium transition-colors"
       >
         <span className="flex items-center gap-2">
           <span>{icon}</span>

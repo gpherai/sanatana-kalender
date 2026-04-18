@@ -47,16 +47,14 @@ export function EventCard({
   onClick,
   className,
 }: EventCardProps) {
-  // Category is now a full object, no need to look up
-  const categoryData = category;
   const eventTypeData = getEventType(eventType);
 
-  const categoryColor = categoryData?.color ?? FALLBACK_CATEGORY_COLOR;
-  const categoryBgClass = categoryData ? getCategoryBgClass(categoryData.name, 15) : "";
-  const categoryBgStyle = !categoryData
+  const categoryColor = category?.color ?? FALLBACK_CATEGORY_COLOR;
+  const categoryBgClass = category ? getCategoryBgClass(category.name, 15) : "";
+  const categoryBgStyle = !category
     ? getCategoryDynamicStyle(FALLBACK_CATEGORY_COLOR, 15)
     : undefined;
-  const categoryTextClass = categoryData ? getCategoryTextClass(categoryData.name) : "";
+  const categoryTextClass = category ? getCategoryTextClass(category.name) : "";
 
   // Calculate duration for multi-day events
   const durationDays = endDate
@@ -117,7 +115,7 @@ export function EventCard({
             )}
             style={categoryBgStyle}
           >
-            {categoryData?.icon ?? eventTypeData?.icon ?? "📅"}
+            {category?.icon ?? eventTypeData?.icon ?? "📅"}
           </div>
 
           {/* Title + Category */}
@@ -134,7 +132,7 @@ export function EventCard({
                 )}
                 style={categoryBgStyle}
               >
-                {categoryData?.displayName ?? "Algemeen"}
+                {category?.displayName ?? "Algemeen"}
               </span>
               <span className="text-theme-fg-muted text-xs">{eventTypeData?.label}</span>
             </div>
@@ -194,7 +192,7 @@ export function EventCard({
             {tags.slice(0, 4).map((tag) => (
               <span
                 key={tag}
-                className="bg-theme-surface-raised text-theme-fg-secondary dark:text-theme-fg-subtle rounded-md px-2 py-0.5 text-xs"
+                className="bg-theme-surface-raised text-theme-fg-secondary rounded-md px-2 py-0.5 text-xs"
               >
                 {tag}
               </span>
@@ -263,10 +261,9 @@ export function EventCardCompact({
   EventCardProps,
   "id" | "name" | "date" | "category" | "eventType" | "onClick" | "className"
 >) {
-  const categoryData = category;
   const eventTypeData = getEventType(eventType);
-  const categoryBgClass = categoryData ? getCategoryBgClass(categoryData.name, 15) : "";
-  const categoryBgStyle = !categoryData
+  const categoryBgClass = category ? getCategoryBgClass(category.name, 15) : "";
+  const categoryBgStyle = !category
     ? getCategoryDynamicStyle(FALLBACK_CATEGORY_COLOR, 15)
     : undefined;
 
@@ -286,7 +283,7 @@ export function EventCardCompact({
         )}
         style={categoryBgStyle}
       >
-        {categoryData?.icon ?? eventTypeData?.icon ?? "📅"}
+        {category?.icon ?? eventTypeData?.icon ?? "📅"}
       </div>
 
       <div className="min-w-0 flex-1">

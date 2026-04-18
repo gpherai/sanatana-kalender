@@ -329,7 +329,7 @@ function EventsContent() {
               <p className="text-theme-fg-muted mx-auto mb-6 max-w-md text-sm">{error}</p>
               <button
                 onClick={refetch}
-                className="bg-theme-primary shadow-theme-primary rounded-xl px-6 py-2.5 font-medium text-white shadow-lg transition-colors hover:opacity-90"
+                className="bg-theme-primary shadow-theme-primary cursor-pointer rounded-xl px-6 py-2.5 font-medium text-white shadow-lg transition-colors hover:opacity-90"
               >
                 Opnieuw proberen
               </button>
@@ -353,7 +353,7 @@ function EventsContent() {
               {activeFilterCount > 0 ? (
                 <button
                   onClick={clearFilters}
-                  className="border-theme-primary text-theme-primary hover:bg-theme-primary-10 rounded-xl border-2 px-6 py-2.5 font-medium transition-colors"
+                  className="border-theme-primary text-theme-primary hover:bg-theme-primary-10 cursor-pointer rounded-xl border-2 px-6 py-2.5 font-medium transition-colors"
                 >
                   Filters wissen
                 </button>

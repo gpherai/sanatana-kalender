@@ -267,8 +267,7 @@ export function EventDetailModal({
                 <span
                   className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium backdrop-blur-sm"
                   style={{
-                    // Keep as inline: mixing with white instead of transparent
-                    backgroundColor: `color-mix(in oklch, ${categoryColor} 30%, white)`,
+                    backgroundColor: `color-mix(in oklch, ${categoryColor} 25%, transparent)`,
                     color: categoryColor ?? undefined,
                   }}
                 >
@@ -497,7 +496,7 @@ export function EventDetailModal({
           <div className="border-theme-border bg-theme-bg-subtle border-t p-5 pt-4">
             {showDeleteConfirm ? (
               <div className="space-y-3">
-                <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
+                <div className="flex items-center gap-2 text-[var(--theme-error-fg)]">
                   <Trash2 className="h-4 w-4" />
                   <span className="text-sm font-medium">
                     Weet je zeker dat je &ldquo;{event.title}&rdquo; wilt verwijderen?
