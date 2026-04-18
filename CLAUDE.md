@@ -21,6 +21,22 @@
 - Special themes: animaties worden volledig gedekt door auto-gegenereerde `prefers-reduced-motion` blok in de generator — gebruik NOOIT handmatige `@media (prefers-reduced-motion)` blokken in `additionalCss`
 - Pattern: `animation-duration: 0.01ms + iteration-count: 1` (niet `none`) zodat `animationend` events blijven werken
 - Categorieën met donkere kleur (L < 0.55) krijgen verplicht `colorDark` voor dark mode zichtbaarheid
+- Nieuwe utility classes toevoegen aan `src/scripts/generate-theme-css.ts`, daarna `npm run generate:css` — globals.css nooit handmatig editen
+- SVG stroke/fill kleuren ALTIJD als inline `stroke="var(--theme-xxx)"` — CSS classes werken niet op SVG attributen
+- `color-mix()` mag in SVG strokes; div/span backgrounds moeten theme classes gebruiken (`bg-theme-primary-30` etc.)
+- Beschikbare tint classes: `bg-theme-primary-{10,15,20,30,50}`, `bg-theme-accent-{10,15,20}`, `bg-theme-fg-{4,8}`, `text-theme-stat-value`
+
+## Dev-AI omgeving (dev-ai VM)
+- Geen Docker — PostgreSQL draait native; gebruik `psql -h localhost` (niet via docker compose exec)
+- VPS bereikbaar via WireGuard VPN: `gerald@10.0.0.30` poort `53001`, app in `/opt/dharma-calendar`
+- DB op VPS: user `dharma`, database `dharma_calendar`
+- `npm run db:pull-prod` — dump van VPS; `npm run db:import-dump` — importeer lokaal
+
+## Sadhana pagina (`src/app/sadhana/`)
+- 4 tabs via URL param `?tab=tracker|dashboard|analytics|instellingen` — state via `useSearchParams` + `router.push`
+- Tab componenten in `src/components/sadhana/tabs/` — data wordt eenmalig geladen in `SadhanaTracker` en als props doorgegeven
+- Heatmap `buildHeatmap(calDays, days, fromDate?)` — met `fromDate=jan1` toont het volledig kalenderjaar (toekomstige datums = null)
+- Charts tonen huidig kalenderjaar (jan t/m huidige maand), niet rolling 12 maanden
 
 ## Migrate troubleshooting
 - Fout `42710 type already exists` of `42P07 table already exists`: schema bestaat al via `db push`. Fix: `docker compose run --rm migrate npx prisma migrate resolve --applied <migration_name>`, daarna `docker compose up -d`
