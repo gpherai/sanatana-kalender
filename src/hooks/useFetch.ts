@@ -17,7 +17,7 @@
  * ```
  */
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useLayoutEffect, useCallback, useRef } from "react";
 
 // =============================================================================
 // TYPES
@@ -70,8 +70,10 @@ export function useFetch<T = unknown>(
   // Stable refs for callbacks — callers don't need to memoize them
   const onSuccessRef = useRef(onSuccess);
   const onErrorRef = useRef(onError);
-  onSuccessRef.current = onSuccess;
-  onErrorRef.current = onError;
+  useLayoutEffect(() => {
+    onSuccessRef.current = onSuccess;
+    onErrorRef.current = onError;
+  });
 
   // Manual refetch function
   const refetch = useCallback(() => {
@@ -81,6 +83,7 @@ export function useFetch<T = unknown>(
   useEffect(() => {
     // Skip if disabled or no URL
     if (skip || !url) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: reset loading when skipped
       setLoading(false);
       return;
     }

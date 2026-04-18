@@ -20,6 +20,8 @@ const eslintConfig = defineConfig([
     "prisma/**",
     // Root config files (not app code)
     "*.config.{ts,mjs,js,cjs}",
+    // Root utility scripts
+    "*.js",
   ]),
   {
     rules: {

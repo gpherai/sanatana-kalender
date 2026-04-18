@@ -99,7 +99,6 @@ function useAutoSave<T>(
       clearTimeout(timeoutRef.current);
     }
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- Intentional: immediate feedback before debounced save
     setStatus("saving");
 
     // Debounced save

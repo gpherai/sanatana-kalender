@@ -369,6 +369,7 @@ export default function WeerPage() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetchWeather updates state; standard data-fetching pattern
     void fetchWeather();
   }, [fetchWeather]);
 
@@ -405,6 +406,7 @@ export default function WeerPage() {
     air_quality: aq,
   } = weather;
   const today = daily[0];
+  // eslint-disable-next-line react-hooks/purity -- Date.now() is stable enough for time-of-day bucketing
   const nowKey = dayKey(Math.floor(Date.now() / 1000), tz);
   const todayHourly = hourly.filter((h) => dayKey(h.dt, tz) === nowKey);
   const futureHourly = hourly.filter((h) => dayKey(h.dt, tz) !== nowKey);
