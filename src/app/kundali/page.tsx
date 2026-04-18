@@ -9,6 +9,7 @@ import { KundaliChart, RASHI_NAMES } from "./KundaliChart";
 import { NavamshaChart, navamshaRashi } from "./NavamshaChart";
 import { VimshottariDasha } from "./VimshottariDasha";
 import { getGrahaDignity, DIGNITY_LABEL, type Dignity } from "./graha-dignity";
+import { GrahaAspects } from "./GrahaAspects";
 
 // =============================================================================
 // GRAHA DISPLAY CONFIG
@@ -633,6 +634,9 @@ export default function KundaliPage() {
               </p>
             </div>
           )}
+
+          {/* Graha Aspecten */}
+          <GrahaAspects chart={chart} />
 
           {/* Vimshottari Dasha */}
           <VimshottariDasha chart={chart} />
