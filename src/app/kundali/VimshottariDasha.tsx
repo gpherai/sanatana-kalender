@@ -76,13 +76,26 @@ export function VimshottariDasha({ chart }: { chart: BirthChart }) {
               ? antars.findIndex((a) => a.start <= today && today < a.end)
               : -1;
 
+          const pct = isCurrent
+            ? Math.min(
+                100,
+                Math.max(
+                  0,
+                  ((today.getTime() - period.start.getTime()) /
+                    (period.end.getTime() - period.start.getTime())) *
+                    100
+                )
+              )
+            : 0;
+
           return (
             <div key={period.lord + String(idx)}>
               {/* Mahadasha row — clickable */}
               <button
+                aria-expanded={isOpen}
                 onClick={() => toggle(idx)}
                 className={cn(
-                  "flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors",
+                  "relative flex w-full cursor-pointer items-center gap-2 overflow-hidden rounded-lg px-3 py-2 text-sm transition-colors",
                   isCurrent && "bg-theme-primary-10",
                   !isCurrent && "hover:bg-theme-hover",
                   isPast && "opacity-50"
@@ -111,7 +124,14 @@ export function VimshottariDasha({ chart }: { chart: BirthChart }) {
                   {DASHA_NAMES[period.lord]}
                 </span>
                 {isCurrent && (
-                  <span className="text-theme-primary text-xs opacity-70">◀ huidig</span>
+                  <span className="text-theme-primary text-xs opacity-70">
+                    ◀ nog{" "}
+                    {(
+                      (period.end.getTime() - today.getTime()) /
+                      (365.25 * 24 * 3600 * 1000)
+                    ).toFixed(1)}{" "}
+                    jr
+                  </span>
                 )}
                 <span className="text-theme-fg-muted ml-auto text-xs tabular-nums">
                   {fmt(period.start)} → {fmt(period.end)}
@@ -123,6 +143,13 @@ export function VimshottariDasha({ chart }: { chart: BirthChart }) {
                   )}{" "}
                   jr
                 </span>
+                {isCurrent && (
+                  <span
+                    aria-hidden="true"
+                    className="bg-theme-primary absolute bottom-0 left-0 h-0.5 opacity-40"
+                    style={{ width: `${pct}%` }}
+                  />
+                )}
               </button>
 
               {/* Antardashas */}

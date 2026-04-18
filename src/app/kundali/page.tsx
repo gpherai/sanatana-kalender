@@ -94,14 +94,19 @@ function FormField({
   label,
   children,
   hint,
+  id,
 }: {
   label: string;
   children: React.ReactNode;
   hint?: string;
+  id?: string;
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <label className="text-theme-fg-muted text-xs font-semibold tracking-wide uppercase">
+      <label
+        htmlFor={id}
+        className="text-theme-fg-muted text-xs font-semibold tracking-wide uppercase"
+      >
         {label}
       </label>
       {children}
@@ -285,9 +290,10 @@ export default function KundaliPage() {
       >
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <FormField label="Geboortedatum">
-            <div className="flex gap-2">
+            <div className="flex gap-2" role="group" aria-label="Geboortedatum">
               <Input
                 type="number"
+                inputMode="numeric"
                 required
                 min="1"
                 max="31"
@@ -298,6 +304,7 @@ export default function KundaliPage() {
               />
               <Input
                 type="number"
+                inputMode="numeric"
                 required
                 min="1"
                 max="12"
@@ -308,6 +315,7 @@ export default function KundaliPage() {
               />
               <Input
                 type="number"
+                inputMode="numeric"
                 required
                 min="1800"
                 max="2100"
@@ -319,8 +327,13 @@ export default function KundaliPage() {
             </div>
           </FormField>
 
-          <FormField label="Geboortetijd" hint="24-uurs notatie (lokale tijd)">
+          <FormField
+            label="Geboortetijd"
+            hint="24-uurs notatie (lokale tijd)"
+            id="birth-time"
+          >
             <Input
+              id="birth-time"
               type="time"
               required
               step="60"
@@ -330,9 +343,15 @@ export default function KundaliPage() {
             />
           </FormField>
 
-          <FormField label="Breedtegraad (lat)" hint="Bijv. 52.0893 voor Den Haag">
+          <FormField
+            label="Breedtegraad (lat)"
+            hint="Bijv. 52.0893 voor Den Haag"
+            id="birth-lat"
+          >
             <Input
+              id="birth-lat"
               type="number"
+              inputMode="decimal"
               required
               step="any"
               min="-90"
@@ -343,9 +362,15 @@ export default function KundaliPage() {
             />
           </FormField>
 
-          <FormField label="Lengtegraad (lon)" hint="Bijv. 4.3683 voor Den Haag">
+          <FormField
+            label="Lengtegraad (lon)"
+            hint="Bijv. 4.3683 voor Den Haag"
+            id="birth-lon"
+          >
             <Input
+              id="birth-lon"
               type="number"
+              inputMode="decimal"
               required
               step="any"
               min="-180"
@@ -356,8 +381,13 @@ export default function KundaliPage() {
             />
           </FormField>
 
-          <FormField label="Tijdzone" hint="IANA naam, bijv. Europe/Amsterdam">
+          <FormField
+            label="Tijdzone"
+            hint="IANA naam, bijv. Europe/Amsterdam"
+            id="birth-tz"
+          >
             <Input
+              id="birth-tz"
               type="text"
               required
               placeholder="Europe/Amsterdam"
@@ -424,6 +454,17 @@ export default function KundaliPage() {
                     {chart.ayanamsa.degrees.toFixed(4)}°
                   </p>
                 </div>
+                {(resultView === "d9-chart" || resultView === "d9-table") && (
+                  <div>
+                    <p className="text-theme-fg-muted text-xs font-semibold tracking-wide uppercase">
+                      D9 Lagna
+                    </p>
+                    <p className="text-theme-fg mt-0.5 text-lg font-bold">
+                      {RASHI_NAMES[navamshaRashi(chart.lagna.longitude)]}
+                    </p>
+                    <p className="text-theme-fg-muted text-xs">Navamsha</p>
+                  </div>
+                )}
               </div>
 
               {/* View toggle */}
@@ -432,8 +473,9 @@ export default function KundaliPage() {
                   onClick={() => setResultView("d1-chart")}
                   style={{ touchAction: "manipulation" }}
                   title="D1 Grafiek"
+                  aria-label="D1 Grafiek"
                   className={cn(
-                    "flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
+                    "flex cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
                     resultView === "d1-chart"
                       ? "bg-theme-primary-15 text-theme-primary"
                       : "text-theme-fg-muted hover:text-theme-fg"
@@ -446,8 +488,9 @@ export default function KundaliPage() {
                   onClick={() => setResultView("d1-table")}
                   style={{ touchAction: "manipulation" }}
                   title="D1 Tabel"
+                  aria-label="D1 Tabel"
                   className={cn(
-                    "flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
+                    "flex cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
                     resultView === "d1-table"
                       ? "bg-theme-primary-15 text-theme-primary"
                       : "text-theme-fg-muted hover:text-theme-fg"
@@ -460,8 +503,9 @@ export default function KundaliPage() {
                   onClick={() => setResultView("d9-chart")}
                   style={{ touchAction: "manipulation" }}
                   title="D9 Grafiek"
+                  aria-label="D9 Grafiek"
                   className={cn(
-                    "flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
+                    "flex cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
                     resultView === "d9-chart"
                       ? "bg-theme-primary-15 text-theme-primary"
                       : "text-theme-fg-muted hover:text-theme-fg"
@@ -474,8 +518,9 @@ export default function KundaliPage() {
                   onClick={() => setResultView("d9-table")}
                   style={{ touchAction: "manipulation" }}
                   title="D9 Tabel"
+                  aria-label="D9 Tabel"
                   className={cn(
-                    "flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
+                    "flex cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
                     resultView === "d9-table"
                       ? "bg-theme-primary-15 text-theme-primary"
                       : "text-theme-fg-muted hover:text-theme-fg"
