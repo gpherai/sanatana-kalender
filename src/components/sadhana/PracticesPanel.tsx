@@ -34,11 +34,13 @@ export function PracticesPanel({
 
   const [newName, setNewName] = useState("");
   const [newType, setNewType] = useState<PracticeType>("mantra_japa");
+  const [newMantraText, setNewMantraText] = useState("");
   const [newNotes, setNewNotes] = useState("");
   const [adding, setAdding] = useState(false);
 
   const [editName, setEditName] = useState("");
   const [editType, setEditType] = useState<PracticeType>("mantra_japa");
+  const [editMantraText, setEditMantraText] = useState("");
   const [editNotes, setEditNotes] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -46,6 +48,7 @@ export function PracticesPanel({
     setEditingId(p.id);
     setEditName(p.name);
     setEditType(p.type);
+    setEditMantraText(p.mantra_text ?? "");
     setEditNotes(p.notes ?? "");
   };
 
@@ -59,11 +62,13 @@ export function PracticesPanel({
         body: JSON.stringify({
           name: newName.trim(),
           type: newType,
+          mantra_text: newType === "mantra_japa" ? newMantraText.trim() || null : null,
           notes: newNotes.trim() || null,
         }),
       });
       setNewName("");
       setNewType("mantra_japa");
+      setNewMantraText("");
       setNewNotes("");
       setShowAdd(false);
       onChanged();
@@ -80,6 +85,7 @@ export function PracticesPanel({
         body: JSON.stringify({
           name: editName.trim(),
           type: editType,
+          mantra_text: editType === "mantra_japa" ? editMantraText.trim() || null : null,
           notes: editNotes.trim() || null,
         }),
       });
@@ -169,6 +175,21 @@ export function PracticesPanel({
               <option value="other">Overig</option>
             </select>
           </div>
+          {newType === "mantra_japa" && (
+            <>
+              <label htmlFor="pa-mantra" className="sr-only">
+                Mantra tekst
+              </label>
+              <textarea
+                id="pa-mantra"
+                value={newMantraText}
+                onChange={(e) => setNewMantraText(e.target.value)}
+                placeholder="Mantra tekst (optioneel) — bijv. Om Gam Ganapataye Namaha"
+                rows={2}
+                className={cn(inputCls, "w-full resize-none")}
+              />
+            </>
+          )}
           <label htmlFor="pa-notes" className="sr-only">
             Notities
           </label>
@@ -222,6 +243,15 @@ export function PracticesPanel({
                   <option value="other">Overig</option>
                 </select>
               </div>
+              {editType === "mantra_japa" && (
+                <textarea
+                  value={editMantraText}
+                  onChange={(e) => setEditMantraText(e.target.value)}
+                  placeholder="Mantra tekst (optioneel)"
+                  rows={2}
+                  className={cn(inputCls, "w-full resize-none")}
+                />
+              )}
               <input
                 value={editNotes}
                 onChange={(e) => setEditNotes(e.target.value)}
@@ -254,6 +284,11 @@ export function PracticesPanel({
             >
               <div className="min-w-0 flex-1">
                 <div className="text-theme-fg text-sm font-medium">{p.name}</div>
+                {p.mantra_text && (
+                  <div className="text-theme-fg-secondary mt-0.5 truncate text-xs italic">
+                    {p.mantra_text}
+                  </div>
+                )}
                 <div className="text-theme-fg-muted text-xs">
                   {PRACTICE_TYPE_LABELS[p.type]}
                   {p.notes ? ` · ${p.notes}` : ""}

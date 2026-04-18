@@ -361,6 +361,7 @@ model SadhanaPractice {
   id           String               @id @default(cuid())
   name         String
   type         SadhanaPracticeType
+  mantraText   String?
   notes        String?
   active       Boolean              @default(true)
   createdAt    DateTime             @default(now())

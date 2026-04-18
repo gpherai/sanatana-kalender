@@ -16,6 +16,7 @@ export interface Practice {
   id: string;
   name: string;
   type: PracticeType;
+  mantra_text: string | null;
   notes: string | null;
   active: boolean;
 }

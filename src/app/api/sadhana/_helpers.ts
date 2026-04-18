@@ -23,6 +23,7 @@ export function formatPractice(p: SadhanaPractice) {
     id: p.id,
     name: p.name,
     type: p.type,
+    mantra_text: p.mantraText ?? null,
     notes: p.notes,
     active: p.active,
     created_at: p.createdAt.toISOString(),
