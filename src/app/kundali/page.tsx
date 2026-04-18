@@ -576,6 +576,7 @@ export default function KundaliPage() {
                       if (!g) return null;
                       const d9Rashi = navamshaRashi(g.longitude);
                       const d9Deg = (g.degreeInRashi % (30 / 9)) * 9;
+                      const d9Dignity = getGrahaDignity(key, d9Rashi, d9Deg);
                       return (
                         <tr
                           key={key}
@@ -600,9 +601,21 @@ export default function KundaliPage() {
                             <span className="text-theme-fg-muted">{g.rashi.name}</span>
                           </td>
                           <td className="py-3 pr-4">
-                            <span className="text-theme-fg font-medium">
-                              {RASHI_NAMES[d9Rashi]}
-                            </span>
+                            <div className="flex flex-wrap items-center gap-1.5">
+                              <span className="text-theme-fg font-medium">
+                                {RASHI_NAMES[d9Rashi]}
+                              </span>
+                              {d9Dignity && (
+                                <span
+                                  className={cn(
+                                    "rounded px-1.5 py-0.5 text-[10px] font-semibold",
+                                    DIGNITY_STYLE[d9Dignity]
+                                  )}
+                                >
+                                  {DIGNITY_LABEL[d9Dignity]}
+                                </span>
+                              )}
+                            </div>
                           </td>
                           <td className="py-3 text-right">
                             <span className="text-theme-fg-muted font-mono text-xs">
