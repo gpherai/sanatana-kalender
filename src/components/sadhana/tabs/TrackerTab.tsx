@@ -51,9 +51,8 @@ function SidebarStat({
       <div
         className={cn(
           "text-lg leading-tight font-bold tabular-nums",
-          accent ? "text-theme-accent" : ""
+          accent ? "text-theme-accent" : "text-theme-stat-value"
         )}
-        style={accent ? undefined : { color: "var(--theme-stat-value)" }}
       >
         {value}
       </div>

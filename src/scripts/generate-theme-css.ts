@@ -817,6 +817,7 @@ function generateUtilityClasses(): string {
 
 .bg-theme-fg-4 { background-color: color-mix(in oklch, var(--theme-fg) 4%, transparent); }
 .bg-theme-fg-8 { background-color: color-mix(in oklch, var(--theme-fg) 8%, transparent); }
+.text-theme-stat-value { color: var(--theme-stat-value); }
 
 /* === TEXT COLORS === */
 .text-theme-primary { color: var(--theme-primary); }

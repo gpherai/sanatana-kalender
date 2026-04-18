@@ -212,19 +212,15 @@ export function MalasChart({
                     className={[
                       "w-full rounded-t-md motion-safe:transition-all motion-safe:duration-150",
                       val === 0 ? "bg-theme-fg-8" : "",
-                      m.isCurrentMonth && val > 0 ? "bg-theme-gradient" : "",
-                      m.isCurrentMonth && val > 0 && isHovered ? "opacity-80" : "",
+                      m.isCurrentMonth && val > 0 ? "bg-theme-accent" : "",
+                      isHovered && val > 0 ? "opacity-80" : "",
                     ].join(" ")}
                     style={{
                       height: barH,
                       background:
-                        val === 0
+                        val === 0 || m.isCurrentMonth
                           ? undefined
-                          : isHovered && !m.isCurrentMonth
-                            ? "color-mix(in oklch, var(--theme-primary) 75%, white)"
-                            : m.isCurrentMonth
-                              ? undefined
-                              : "var(--theme-primary)",
+                          : "var(--theme-primary)",
                     }}
                   />
                 </div>

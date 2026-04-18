@@ -14,20 +14,36 @@ import {
 // HELPERS
 // =============================================================================
 
-export function buildHeatmap(calendarDays: CalendarDay[], days = 364): HeatmapCell[][] {
+export function buildHeatmap(
+  calendarDays: CalendarDay[],
+  days = 364,
+  fromDate?: Date
+): HeatmapCell[][] {
   const map = new Map(calendarDays.map((d) => [d.date, d.total_malas]));
   const todayDate = new Date();
   todayDate.setHours(0, 0, 0, 0);
-  const start = new Date(todayDate);
-  start.setDate(start.getDate() - days);
+
+  // When fromDate is given, show full calendar year from fromDate to Dec 31
+  const endDate = fromDate ? new Date(fromDate.getFullYear(), 11, 31) : todayDate;
+
+  const start = fromDate
+    ? new Date(fromDate)
+    : (() => {
+        const s = new Date(todayDate);
+        s.setDate(s.getDate() - days);
+        return s;
+      })();
+
+  // Align start to Monday
   const dow = start.getDay();
   start.setDate(start.getDate() - (dow === 0 ? 6 : dow - 1));
+
   const weeks: HeatmapCell[][] = [];
   const cur = new Date(start);
-  while (cur <= todayDate) {
+  while (cur <= endDate) {
     const week: HeatmapCell[] = [];
     for (let d = 0; d < 7; d++) {
-      if (cur > todayDate) {
+      if (cur > endDate || cur > todayDate || (fromDate && cur < fromDate)) {
         week.push(null);
       } else {
         const ds = localDateString(cur);
@@ -138,8 +154,7 @@ export function Heatmap({
             {DAY_LABELS.map((d) => (
               <div
                 key={d}
-                className="text-theme-fg-muted flex items-center justify-end text-[9px]"
-                style={{ aspectRatio: "1 / 1" }}
+                className="text-theme-fg-muted flex flex-1 items-center justify-end text-[9px]"
               >
                 {d}
               </div>

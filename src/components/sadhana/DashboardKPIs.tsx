@@ -79,10 +79,7 @@ export function DashboardKPIs({ streak, overview, calDays }: DashboardKPIsProps)
             Malas deze maand
           </span>
         </div>
-        <div
-          className="text-2xl leading-none font-bold tabular-nums"
-          style={{ color: "var(--theme-stat-value)" }}
-        >
+        <div className="text-theme-stat-value text-2xl leading-none font-bold tabular-nums">
           {thisMonthMalas.toLocaleString("nl-NL")}
         </div>
         <div className="mt-1.5 text-[10px]">
@@ -99,10 +96,7 @@ export function DashboardKPIs({ streak, overview, calDays }: DashboardKPIsProps)
           <span className="text-theme-fg-muted text-xs font-medium">Actieve dagen</span>
         </div>
         <div className="flex items-baseline gap-1">
-          <span
-            className="text-2xl leading-none font-bold tabular-nums"
-            style={{ color: "var(--theme-stat-value)" }}
-          >
+          <span className="text-theme-stat-value text-2xl leading-none font-bold tabular-nums">
             {active}
           </span>
           <span className="text-theme-fg-muted text-xs">/ {daysPassed} d</span>
@@ -124,10 +118,7 @@ export function DashboardKPIs({ streak, overview, calDays }: DashboardKPIsProps)
           <span className="text-theme-fg-muted text-xs font-medium">Gem. per dag</span>
         </div>
         <div className="flex items-baseline gap-1">
-          <span
-            className="text-2xl leading-none font-bold tabular-nums"
-            style={{ color: "var(--theme-stat-value)" }}
-          >
+          <span className="text-theme-stat-value text-2xl leading-none font-bold tabular-nums">
             {avgPerActiveDay.toLocaleString("nl-NL")}
           </span>
           <span className="text-theme-fg-muted text-xs">malas</span>

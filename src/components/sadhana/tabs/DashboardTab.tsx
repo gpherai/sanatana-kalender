@@ -33,10 +33,10 @@ export function DashboardTab({
 }: DashboardTabProps) {
   const today = new Date();
   const jan1 = new Date(today.getFullYear(), 0, 1);
-  const daysThisYear = Math.floor((today.getTime() - jan1.getTime()) / 86400000) + 1;
 
-  const heatmapFull = buildHeatmap(calDays, daysThisYear);
-  const heatmapMobile = buildHeatmap(calDays, Math.min(daysThisYear, 154));
+  // Full calendar year: jan1 → dec31, toekomstige datums = null (leeg)
+  const heatmapFull = buildHeatmap(calDays, 364, jan1);
+  const heatmapMobile = buildHeatmap(calDays, 154);
 
   return (
     <div className="space-y-6">

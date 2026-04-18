@@ -2,42 +2,12 @@
 
 import { Award } from "lucide-react";
 import { type OverviewStats } from "./types";
-import { PracticeDonut } from "./AnalyticsWidgets";
 
 function formatHours(minutes: number): string {
-  const hours = Math.round(minutes / 60);
-  return hours.toLocaleString("nl-NL");
+  return Math.round(minutes / 60).toLocaleString("nl-NL");
 }
 
 export function AllTimeOverview({ overview }: { overview: OverviewStats }) {
-  const stats = [
-    {
-      label: "Sessies",
-      value: overview.total_sessions.toLocaleString("nl-NL"),
-      unit: "",
-    },
-    {
-      label: "Malas",
-      value: overview.total_malas_all_time.toLocaleString("nl-NL"),
-      unit: "",
-    },
-    {
-      label: "Uren",
-      value: formatHours(overview.total_minutes_all_time),
-      unit: "",
-    },
-    {
-      label: "Gem. malas",
-      value: overview.avg_malas_per_session.toFixed(1),
-      unit: "/ sessie",
-    },
-    {
-      label: "Gem. tijd",
-      value: Math.round(overview.avg_minutes_per_session).toString(),
-      unit: "min / sessie",
-    },
-  ];
-
   return (
     <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
       <div className="mb-4 flex items-center gap-2">
@@ -47,22 +17,45 @@ export function AllTimeOverview({ overview }: { overview: OverviewStats }) {
         <h2 className="text-theme-fg text-sm font-semibold">All-time</h2>
       </div>
 
-      <div className="grid grid-cols-2 gap-x-4 gap-y-5">
-        {stats.map(({ label, value, unit }) => (
+      {/* Totalen */}
+      <div className="grid grid-cols-3 gap-x-4 gap-y-5">
+        {[
+          { label: "Sessies", value: overview.total_sessions.toLocaleString("nl-NL") },
+          {
+            label: "Malas",
+            value: overview.total_malas_all_time.toLocaleString("nl-NL"),
+          },
+          { label: "Uren", value: formatHours(overview.total_minutes_all_time) },
+        ].map(({ label, value }) => (
           <div key={label}>
             <div className="text-theme-fg-muted text-xs">{label}</div>
-            <div
-              className="mt-0.5 text-2xl leading-tight font-bold tabular-nums"
-              style={{ color: "var(--theme-stat-value)" }}
-            >
+            <div className="text-theme-stat-value mt-0.5 text-2xl leading-tight font-bold tabular-nums">
               {value}
             </div>
-            {unit && <div className="text-theme-fg-muted mt-0.5 text-[10px]">{unit}</div>}
           </div>
         ))}
       </div>
 
-      <PracticeDonut practices={overview.practices} />
+      {/* Gemiddelden */}
+      <div className="border-theme-border mt-4 grid grid-cols-2 gap-x-4 gap-y-3 border-t pt-4">
+        {[
+          {
+            label: "Gem. malas / sessie",
+            value: overview.avg_malas_per_session.toFixed(1),
+          },
+          {
+            label: "Gem. tijd / sessie",
+            value: `${Math.round(overview.avg_minutes_per_session)} min`,
+          },
+        ].map(({ label, value }) => (
+          <div key={label}>
+            <div className="text-theme-fg-muted text-xs">{label}</div>
+            <div className="text-theme-fg mt-0.5 text-lg font-semibold tabular-nums">
+              {value}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

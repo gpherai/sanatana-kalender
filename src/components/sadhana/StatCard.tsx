@@ -37,8 +37,7 @@ export function StatCard({
         <span className="text-theme-fg-secondary text-sm font-medium">{label}</span>
       </div>
       <div
-        className="text-xl font-bold tabular-nums sm:text-3xl"
-        style={{ color: accent ? "var(--theme-accent)" : "var(--theme-stat-value)" }}
+        className={`text-xl font-bold tabular-nums sm:text-3xl ${accent ? "text-theme-accent" : "text-theme-stat-value"}`}
       >
         {value}
       </div>
