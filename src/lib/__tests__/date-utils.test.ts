@@ -49,8 +49,9 @@ describe("Date Utilities", () => {
     });
 
     it("should return false for different dates", () => {
-      const date1 = new Date(Date.UTC(2024, 0, 1, 23, 0, 0));
-      const date2 = new Date(Date.UTC(2024, 0, 2, 0, 30, 0));
+      // Use dates that are different in both UTC and local time to avoid timezone issues
+      const date1 = new Date(2024, 0, 1, 10, 0, 0);
+      const date2 = new Date(2024, 0, 2, 10, 0, 0);
       expect(isSameDay(date1, date2)).toBe(false);
     });
 

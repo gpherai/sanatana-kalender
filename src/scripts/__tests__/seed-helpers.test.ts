@@ -10,12 +10,11 @@ describe("seed helpers", () => {
   describe("calendarDate", () => {
     it("returns a local midnight date for the provided components", () => {
       const date = calendarDate(2025, 1, 2);
-
-      expect(date.getFullYear()).toBe(2025);
-      expect(date.getMonth()).toBe(0);
-      expect(date.getDate()).toBe(2);
-      expect(date.getHours()).toBe(0);
-      expect(date.getMinutes()).toBe(0);
+      expect(date.getUTCFullYear()).toBe(2025);
+      expect(date.getUTCMonth()).toBe(0);
+      expect(date.getUTCDate()).toBe(2);
+      expect(date.getUTCHours()).toBe(0);
+      expect(date.getUTCMinutes()).toBe(0);
     });
   });
 

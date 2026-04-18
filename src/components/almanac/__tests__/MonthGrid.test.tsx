@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MonthGrid } from "../MonthGrid";
-import { formatDateISO } from "@/lib/date-utils";
+import { formatDateLocal } from "@/lib/date-utils";
 import type { CalendarEventResponse } from "@/types/calendar";
 import type { DailyInfoResponse } from "@/types";
 import type { SpecialDay } from "@/lib/panchanga-helpers";
@@ -66,7 +66,7 @@ describe("MonthGrid", () => {
   it("renders event count and handles date selection", async () => {
     const onSelectDate = vi.fn();
     const date = new Date(2025, 0, 2);
-    const dateKey = formatDateISO(date);
+    const dateKey = formatDateLocal(date);
     const event: CalendarEventResponse = makeEvent();
 
     render(
@@ -127,7 +127,7 @@ describe("MonthGrid", () => {
   });
 
   it("applies major event cell background when a MAJOR event is shown", () => {
-    const dateKey = formatDateISO(DAY);
+    const dateKey = formatDateLocal(DAY);
 
     render(
       <MonthGrid
@@ -152,7 +152,7 @@ describe("MonthGrid", () => {
   });
 
   it("does not apply major event styling when showEvents=false", () => {
-    const dateKey = formatDateISO(DAY);
+    const dateKey = formatDateLocal(DAY);
 
     render(
       <MonthGrid
@@ -177,7 +177,7 @@ describe("MonthGrid", () => {
   });
 
   it("applies moon phase cell background when a moon phase is present", () => {
-    const dateKey = formatDateISO(DAY);
+    const dateKey = formatDateLocal(DAY);
     const moonPhase = {
       date: DAY,
       type: "full" as const,
@@ -208,7 +208,7 @@ describe("MonthGrid", () => {
   });
 
   it("applies special day cell background when a special day is present", () => {
-    const dateKey = formatDateISO(DAY);
+    const dateKey = formatDateLocal(DAY);
     const special: SpecialDay = {
       date: DAY,
       type: "ekadashi",
@@ -240,7 +240,7 @@ describe("MonthGrid", () => {
   });
 
   it("shows sun and moon times when dailyInfo is present", () => {
-    const dateKey = formatDateISO(DAY);
+    const dateKey = formatDateLocal(DAY);
 
     render(
       <MonthGrid
@@ -267,7 +267,7 @@ describe("MonthGrid", () => {
   });
 
   it("shows '—' for moonrise and moonset when they are null", () => {
-    const dateKey = formatDateISO(DAY);
+    const dateKey = formatDateLocal(DAY);
 
     render(
       <MonthGrid
@@ -292,7 +292,7 @@ describe("MonthGrid", () => {
   });
 
   it("does not render event badge when showEvents=false", () => {
-    const dateKey = formatDateISO(DAY);
+    const dateKey = formatDateLocal(DAY);
 
     render(
       <MonthGrid
@@ -342,7 +342,7 @@ describe("MonthGrid", () => {
   });
 
   it("applies white badge styling on the selected day", () => {
-    const dateKey = formatDateISO(DAY);
+    const dateKey = formatDateLocal(DAY);
 
     render(
       <MonthGrid

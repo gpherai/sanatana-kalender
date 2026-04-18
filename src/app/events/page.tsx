@@ -199,7 +199,7 @@ function EventsContent() {
               onClick={() => setViewMode("grid")}
               style={{ touchAction: "manipulation" }}
               className={cn(
-                "flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md transition-colors",
+                "flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-md transition-colors",
                 viewMode === "grid"
                   ? "bg-theme-primary-15 text-theme-primary"
                   : "text-theme-fg-muted hover:text-theme-fg"
@@ -212,7 +212,7 @@ function EventsContent() {
               onClick={() => setViewMode("list")}
               style={{ touchAction: "manipulation" }}
               className={cn(
-                "flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md transition-colors",
+                "flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-md transition-colors",
                 viewMode === "list"
                   ? "bg-theme-primary-15 text-theme-primary"
                   : "text-theme-fg-muted hover:text-theme-fg"
@@ -227,7 +227,7 @@ function EventsContent() {
           <button
             onClick={() => setShowFilters(!showFilters)}
             className={cn(
-              "flex items-center gap-2 rounded-lg px-3 py-2 transition-colors lg:hidden",
+              "flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 transition-colors lg:hidden",
               showFilters
                 ? "bg-theme-primary-15 text-theme-primary"
                 : "bg-theme-surface-raised text-theme-fg-muted"
@@ -265,7 +265,7 @@ function EventsContent() {
       <div
         className={cn(
           "fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-y-auto overscroll-contain rounded-t-2xl transition-transform duration-300 ease-out lg:hidden",
-          "bg-[var(--theme-surface)]",
+          "bg-theme-surface",
           showFilters ? "translate-y-0" : "translate-y-full"
         )}
       >
@@ -320,7 +320,7 @@ function EventsContent() {
           {/* Error State */}
           {error && !loading && (
             <div className="py-24 text-center">
-              <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/20">
+              <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-[var(--theme-error-bg)]">
                 <span className="text-4xl">😕</span>
               </div>
               <h2 className="text-theme-fg mb-2 text-xl font-semibold">

@@ -125,10 +125,10 @@ describe("Kundali Page", () => {
     expect(screen.getByText("Purva Ashadha")).toBeInTheDocument();
 
     // Switch to table view to see full names
-    fireEvent.click(screen.getByRole("button", { name: /Tabel/i }));
+    fireEvent.click(screen.getByRole("button", { name: /D1 Tabel/i }));
 
     // Check Graha row
-    expect(screen.getByText("Surya")).toBeInTheDocument();
+    expect(screen.getAllByText("Surya")[0]).toBeInTheDocument();
     expect(screen.getAllByText("Rashi").length).toBeGreaterThan(0);
   });
 

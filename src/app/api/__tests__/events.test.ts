@@ -150,7 +150,7 @@ describe("API Events", () => {
       expect.objectContaining({
         data: expect.objectContaining({
           eventId: "evt_1",
-          date: new Date(2025, 0, 1),
+          date: new Date(Date.UTC(2025, 0, 1)),
         }),
       })
     );
