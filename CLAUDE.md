@@ -38,6 +38,13 @@
 - Heatmap `buildHeatmap(calDays, days, fromDate?)` — met `fromDate=jan1` toont het volledig kalenderjaar (toekomstige datums = null)
 - Charts tonen huidig kalenderjaar (jan t/m huidige maand), niet rolling 12 maanden
 
+## Encyclopedie (`src/content/encyclopedia/`)
+- Entries zijn MDX-bestanden met YAML-frontmatter: `title`, `sanskrit`, `category`, `shortDescription`, optioneel `parent`, `isGroup`, `priority`, `devanagari`
+- Categorieën: `"Speciale dagen"` | `"Devatās"` | `"Tijd"` | `"Astronomie"` | `"Navagraha"` | `"Algemeen"`
+- Content is **Nederlands**; Sanskriet-termen in cursief (_Japa_), koppen in Sentence case
+- Interne links: `[Tithi](/encyclopedie/tithi)` — slug = bestandsnaam zonder `.mdx`
+- Workflow Drik Panchang-verrijking: gebruiker plakt ruwe Engelse tekst; Claude schrijft Nederlandse MDX-entry aan de hand van die data + bestaande codebase-context. Nieuw bestand aanmaken als slug ontbreekt, bestaand bestand aanvullen als slug al bestaat.
+
 ## Migrate troubleshooting
 - Fout `42710 type already exists` of `42P07 table already exists`: schema bestaat al via `db push`. Fix: `docker compose run --rm migrate npx prisma migrate resolve --applied <migration_name>`, daarna `docker compose up -d`
 
