@@ -1,13 +1,22 @@
 import { Calendar, TrendingUp } from "lucide-react";
-import type { CalendarDay, SessionData, OverviewStats, DayInfoMap } from "../types";
+import type {
+  CalendarDay,
+  SessionData,
+  OverviewStats,
+  DayInfoMap,
+  StreakStats,
+} from "../types";
 import { buildHeatmap, Heatmap } from "../Heatmap";
 import { MalasChart } from "../MalasChart";
 import { AllTimeOverview } from "../AllTimeOverview";
+import { DashboardKPIs } from "../DashboardKPIs";
+import { StackedPracticeChart } from "../StackedPracticeChart";
 
 interface DashboardTabProps {
   calDays: CalendarDay[];
   sessions: SessionData[];
   overview: OverviewStats | null;
+  streak: StreakStats | null;
   dayInfoMap: DayInfoMap;
   heatmapEventsByDate: Map<string, Array<{ id: string; title: string }>>;
   onHeatmapEventClick: (id: string) => void;
@@ -17,6 +26,7 @@ export function DashboardTab({
   calDays,
   sessions,
   overview,
+  streak,
   dayInfoMap,
   heatmapEventsByDate,
   onHeatmapEventClick,
@@ -26,7 +36,10 @@ export function DashboardTab({
 
   return (
     <div className="space-y-6">
-      {/* Heatmap */}
+      {/* KPI strip — 4 hero cijfers */}
+      <DashboardKPIs streak={streak} overview={overview} calDays={calDays} />
+
+      {/* Heatmap — full width */}
       <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
         <div className="mb-4 flex items-center gap-2">
           <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
@@ -55,21 +68,25 @@ export function DashboardTab({
         </div>
       </div>
 
-      {/* Maandgrafiek */}
-      <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
-        <div className="mb-1 flex items-center gap-2">
-          <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
-            <TrendingUp className="h-4 w-4" />
+      {/* Maandgrafiek + All-time — naast elkaar op desktop */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_340px] lg:items-start">
+        <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
+          <div className="mb-4 flex items-center gap-2">
+            <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
+              <TrendingUp className="h-4 w-4" />
+            </div>
+            <h2 className="text-theme-fg text-sm font-semibold">
+              Per maand — laatste jaar
+            </h2>
           </div>
-          <h2 className="text-theme-fg text-sm font-semibold">
-            Per maand — laatste jaar
-          </h2>
+          <MalasChart calDays={calDays} sessions={sessions} />
         </div>
-        <MalasChart calDays={calDays} sessions={sessions} />
+
+        {overview && <AllTimeOverview overview={overview} />}
       </div>
 
-      {/* All-time overzicht */}
-      {overview && <AllTimeOverview overview={overview} />}
+      {/* Stacked beoefening grafiek — alleen zichtbaar als er 2+ beoefeningen zijn */}
+      <StackedPracticeChart sessions={sessions} />
     </div>
   );
 }

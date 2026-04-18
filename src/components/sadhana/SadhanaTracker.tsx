@@ -320,6 +320,7 @@ export function SadhanaTracker() {
           calDays={calDays}
           sessions={sessions}
           overview={overview}
+          streak={streak}
           dayInfoMap={dayInfoMap}
           heatmapEventsByDate={heatmapEventsByDate}
           onHeatmapEventClick={handleHeatmapEventClick}

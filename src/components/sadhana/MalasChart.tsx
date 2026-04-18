@@ -106,7 +106,8 @@ export function MalasChart({
   const values = data.map((m) => (metric === "malas" ? m.malas : m.sessions));
   const maxVal = Math.max(...values, 1);
 
-  const BAR_H = 96; // px — max bar height
+  const BAR_H = 120; // px — max bar height
+  const isEmpty = values.every((v) => v === 0);
 
   return (
     <div>
@@ -128,102 +129,119 @@ export function MalasChart({
         ))}
       </div>
 
+      {/* Lege staat */}
+      {isEmpty && (
+        <div
+          className="flex items-center justify-center rounded-xl text-center"
+          style={{
+            height: BAR_H + 28,
+            background: "color-mix(in oklch, var(--theme-fg) 4%, transparent)",
+          }}
+        >
+          <p className="text-theme-fg-muted text-sm">Nog geen sessies geregistreerd.</p>
+        </div>
+      )}
+
       {/* Bar chart */}
-      <div
-        className="flex items-end gap-1"
-        style={{ height: BAR_H + 28 }} /* bars + label row */
-      >
-        {data.map((m, i) => {
-          const val = metric === "malas" ? m.malas : m.sessions;
-          const barH = val > 0 ? Math.max(4, Math.round((val / maxVal) * BAR_H)) : 2;
-          const isHovered = hovered === i;
+      {!isEmpty && (
+        <div
+          className="flex items-end gap-1"
+          style={{ height: BAR_H + 28 }} /* bars + label row */
+        >
+          {data.map((m, i) => {
+            const val = metric === "malas" ? m.malas : m.sessions;
+            const barH = val > 0 ? Math.max(4, Math.round((val / maxVal) * BAR_H)) : 2;
+            const isHovered = hovered === i;
 
-          return (
-            <div
-              key={m.key}
-              className="relative flex flex-1 flex-col items-center"
-              onMouseEnter={() => setHovered(i)}
-              onMouseLeave={() => setHovered(null)}
-            >
-              {/* Tooltip */}
-              {isHovered && (
-                <div
-                  className="border-theme-border text-theme-fg pointer-events-none absolute z-10 -translate-x-1/2 rounded-lg border px-2.5 py-1.5 text-center shadow-lg backdrop-blur-sm"
-                  style={{
-                    bottom: BAR_H + 10,
-                    left: "50%",
-                    background: "var(--theme-glass-bg)",
-                    borderColor: "var(--theme-glass-border)",
-                  }}
-                >
-                  <div className="text-theme-fg-muted mb-0.5 text-[10px] whitespace-nowrap">
-                    {m.fullLabel}
-                  </div>
-                  <div className="text-theme-fg text-sm font-semibold tabular-nums">
-                    {val.toLocaleString("nl-NL")}
-                    <span className="text-theme-fg-muted ml-1 text-xs font-normal">
-                      {metric === "malas" ? "malas" : "sessies"}
-                    </span>
-                  </div>
-                  {/* Per-practice breakdown — only for malas metric */}
-                  {metric === "malas" && m.practices.length > 1 && (
-                    <div className="border-theme-border mt-1.5 border-t pt-1.5 text-left">
-                      {m.practices.map((p) => (
-                        <div
-                          key={p.practice_id}
-                          className="flex items-center justify-between gap-3 whitespace-nowrap"
-                        >
-                          <span className="text-theme-fg-muted max-w-[100px] truncate text-[10px]">
-                            {p.practice_name}
-                          </span>
-                          <span className="text-theme-fg text-[10px] font-medium tabular-nums">
-                            {p.malas % 1 === 0
-                              ? p.malas.toLocaleString("nl-NL")
-                              : p.malas.toLocaleString("nl-NL", {
-                                  maximumFractionDigits: 1,
-                                })}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Bar area */}
+            return (
               <div
-                className="flex w-full items-end justify-center"
-                style={{ height: BAR_H }}
+                key={m.key}
+                className="relative flex flex-1 flex-col items-center"
+                onMouseEnter={() => setHovered(i)}
+                onMouseLeave={() => setHovered(null)}
               >
-                <div
-                  className={`w-full rounded-t-md motion-safe:transition-all motion-safe:duration-150 ${m.isCurrentMonth && val > 0 ? "bg-theme-gradient" : ""} ${m.isCurrentMonth && val > 0 && isHovered ? "opacity-80" : ""}`}
-                  style={{
-                    height: barH,
-                    background:
-                      val === 0
-                        ? "color-mix(in oklch, var(--theme-fg) 8%, transparent)"
-                        : isHovered && !m.isCurrentMonth
-                          ? "color-mix(in oklch, var(--theme-primary) 75%, white)"
-                          : m.isCurrentMonth
-                            ? undefined
-                            : "var(--theme-primary)",
-                  }}
-                />
-              </div>
+                {/* Tooltip */}
+                {isHovered && (
+                  <div
+                    className="border-theme-border text-theme-fg pointer-events-none absolute z-10 -translate-x-1/2 rounded-lg border px-2.5 py-1.5 text-center shadow-lg backdrop-blur-sm"
+                    style={{
+                      bottom: BAR_H + 10,
+                      left: "50%",
+                      background: "var(--theme-glass-bg)",
+                      borderColor: "var(--theme-glass-border)",
+                    }}
+                  >
+                    <div className="text-theme-fg-muted mb-0.5 text-[10px] whitespace-nowrap">
+                      {m.fullLabel}
+                    </div>
+                    <div className="text-theme-fg text-sm font-semibold tabular-nums">
+                      {val.toLocaleString("nl-NL")}
+                      <span className="text-theme-fg-muted ml-1 text-xs font-normal">
+                        {metric === "malas" ? "malas" : "sessies"}
+                      </span>
+                    </div>
+                    {/* Per-practice breakdown — only for malas metric */}
+                    {metric === "malas" && m.practices.length > 1 && (
+                      <div className="border-theme-border mt-1.5 border-t pt-1.5 text-left">
+                        {m.practices.map((p) => (
+                          <div
+                            key={p.practice_id}
+                            className="flex items-center justify-between gap-3 whitespace-nowrap"
+                          >
+                            <span className="text-theme-fg-muted max-w-[100px] truncate text-[10px]">
+                              {p.practice_name}
+                            </span>
+                            <span className="text-theme-fg text-[10px] font-medium tabular-nums">
+                              {p.malas % 1 === 0
+                                ? p.malas.toLocaleString("nl-NL")
+                                : p.malas.toLocaleString("nl-NL", {
+                                    maximumFractionDigits: 1,
+                                  })}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
 
-              {/* Month label */}
-              <span className="text-theme-fg-muted mt-1.5 text-[9px] select-none sm:text-[10px]">
-                {m.label}
-              </span>
-            </div>
-          );
-        })}
-      </div>
+                {/* Bar area */}
+                <div
+                  className="flex w-full items-end justify-center"
+                  style={{ height: BAR_H }}
+                >
+                  <div
+                    className={`w-full rounded-t-md motion-safe:transition-all motion-safe:duration-150 ${m.isCurrentMonth && val > 0 ? "bg-theme-gradient" : ""} ${m.isCurrentMonth && val > 0 && isHovered ? "opacity-80" : ""}`}
+                    style={{
+                      height: barH,
+                      background:
+                        val === 0
+                          ? "color-mix(in oklch, var(--theme-fg) 8%, transparent)"
+                          : isHovered && !m.isCurrentMonth
+                            ? "color-mix(in oklch, var(--theme-primary) 75%, white)"
+                            : m.isCurrentMonth
+                              ? undefined
+                              : "var(--theme-primary)",
+                    }}
+                  />
+                </div>
+
+                {/* Month label */}
+                <span className="text-theme-fg-muted mt-1.5 text-[9px] select-none sm:text-[10px]">
+                  {m.label}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Y-axis annotation */}
-      <div className="text-theme-fg-muted mt-1 text-right text-xs tabular-nums">
-        max {maxVal.toLocaleString("nl-NL")} {metric === "malas" ? "malas" : "sessies"}
-      </div>
+      {!isEmpty && (
+        <div className="text-theme-fg-muted mt-1 text-right text-xs tabular-nums">
+          max {maxVal.toLocaleString("nl-NL")} {metric === "malas" ? "malas" : "sessies"}
+        </div>
+      )}
     </div>
   );
 }

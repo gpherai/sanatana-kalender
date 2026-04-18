@@ -31,6 +31,8 @@
     "db:reset": "prisma migrate reset --force && npm run db:setup",
     "backup": "bash scripts/backup.sh",
     "backup:windows": "powershell -ExecutionPolicy Bypass -File scripts/backup.ps1",
+    "db:pull-prod": "bash scripts/db-pull-prod.sh",
+    "db:import-dump": "bash scripts/db-import-dump.sh",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
