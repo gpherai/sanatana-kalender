@@ -23,16 +23,14 @@ function getLastMonthMalas(calDays: CalendarDay[]): number {
 }
 
 function DeltaBadge({ current, previous }: { current: number; previous: number }) {
-  if (current === 0 && previous === 0) return null;
-  if (previous === 0)
-    return <span className="text-theme-success text-[10px] font-medium">Nieuw ↑</span>;
+  if (previous === 0) return null;
   const pct = Math.round(((current - previous) / previous) * 100);
   const up = pct >= 0;
   return (
     <span
       className={`text-[10px] font-medium tabular-nums ${up ? "text-theme-success" : "text-theme-fg-muted"}`}
     >
-      {up ? "↑" : "↓"} {Math.abs(pct)}% vs vorige maand
+      {Math.abs(pct)}% {up ? "meer" : "minder"} dan vorige maand
     </span>
   );
 }
