@@ -35,40 +35,37 @@ function SidebarStat({
 }) {
   return (
     <div
-      className="flex flex-col gap-1 rounded-xl p-3"
-      style={{
-        background: accent
-          ? "color-mix(in oklch, var(--theme-accent) 8%, var(--theme-surface))"
-          : "var(--theme-surface)",
-      }}
+      className={cn(
+        "flex flex-col gap-1 rounded-xl p-3",
+        accent ? "bg-theme-accent-10" : "bg-theme-surface"
+      )}
     >
       <div className="flex items-center gap-1.5">
         <span
-          className={cn("shrink-0", accent ? "" : "text-theme-primary")}
-          style={accent ? { color: "var(--theme-accent)" } : undefined}
+          className={cn("shrink-0", accent ? "text-theme-accent" : "text-theme-primary")}
         >
           {icon}
         </span>
         <span className="text-theme-fg-muted text-xs font-medium">{label}</span>
       </div>
       <div
-        className="text-lg leading-tight font-bold tabular-nums"
-        style={{ color: accent ? "var(--theme-accent)" : "var(--theme-stat-value)" }}
+        className={cn(
+          "text-lg leading-tight font-bold tabular-nums",
+          accent ? "text-theme-accent" : ""
+        )}
+        style={accent ? undefined : { color: "var(--theme-stat-value)" }}
       >
         {value}
       </div>
       {sub && <div className="text-theme-fg-muted text-xs">{sub}</div>}
       {progress !== undefined && (
-        <div
-          className="mt-1 h-1.5 overflow-hidden rounded-full"
-          style={{ background: "color-mix(in oklch, var(--theme-fg) 10%, transparent)" }}
-        >
+        <div className="bg-theme-hover mt-1 h-1.5 overflow-hidden rounded-full">
           <div
-            className="h-full rounded-full motion-safe:transition-all motion-safe:duration-500"
-            style={{
-              width: `${Math.min(100, Math.round(progress * 100))}%`,
-              background: accent ? "var(--theme-accent)" : "var(--theme-primary)",
-            }}
+            className={cn(
+              "h-full rounded-full motion-safe:transition-all motion-safe:duration-500",
+              accent ? "bg-theme-accent" : "bg-theme-primary"
+            )}
+            style={{ width: `${Math.min(100, Math.round(progress * 100))}%` }}
           />
         </div>
       )}
@@ -112,8 +109,24 @@ export function TrackerTab({
   onGoToSettings,
 }: TrackerTabProps) {
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-[320px_1fr]">
-      {/* ── Sidebar ────────────────────────────────────────────────────── */}
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px] lg:items-start">
+      {/* ── Sessies (hoofdkolom links) ────────────────────────────────── */}
+      <div className="min-w-0">
+        <SessionsSection
+          sessions={sessions}
+          expandedMonths={expandedMonths}
+          toggleMonth={toggleMonth}
+          showAddSession={showAddSession}
+          setShowAddSession={setShowAddSession}
+          dayInfoMap={dayInfoMap}
+          activePractices={activePractices}
+          routines={routines}
+          loadAll={loadAll}
+          showToast={showToast}
+        />
+      </div>
+
+      {/* ── Sidebar (rechts) ──────────────────────────────────────────── */}
       <div className="space-y-4">
         {/* Doelen */}
         <GoalProgressWidget goals={goals} onGoToSettings={onGoToSettings} />
@@ -202,22 +215,6 @@ export function TrackerTab({
 
         {/* Aankomende festivals */}
         <UpcomingEventsPanel />
-      </div>
-
-      {/* ── Sessies (hoofdkolom) ──────────────────────────────────────── */}
-      <div className="min-w-0">
-        <SessionsSection
-          sessions={sessions}
-          expandedMonths={expandedMonths}
-          toggleMonth={toggleMonth}
-          showAddSession={showAddSession}
-          setShowAddSession={setShowAddSession}
-          dayInfoMap={dayInfoMap}
-          activePractices={activePractices}
-          routines={routines}
-          loadAll={loadAll}
-          showToast={showToast}
-        />
       </div>
     </div>
   );

@@ -47,14 +47,14 @@ export function GoalProgressWidget({
               <div className="mb-1 flex items-center justify-between gap-2">
                 <div className="flex min-w-0 items-center gap-1.5">
                   {done ? (
-                    <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-[var(--theme-success)]" />
+                    <CheckCircle2 className="text-theme-success h-3.5 w-3.5 shrink-0" />
                   ) : (
                     <Target className="text-theme-fg-muted h-3.5 w-3.5 shrink-0" />
                   )}
                   <span
                     className={cn(
                       "min-w-0 truncate text-sm font-medium",
-                      done ? "text-[var(--theme-success)]" : "text-theme-fg"
+                      done ? "text-theme-success" : "text-theme-fg"
                     )}
                   >
                     {g.name ?? GOAL_TYPE_LABELS[g.type]}
@@ -66,7 +66,7 @@ export function GoalProgressWidget({
                 <span
                   className={cn(
                     "shrink-0 text-xs font-medium tabular-nums",
-                    done ? "text-[var(--theme-success)]" : "text-theme-fg-muted"
+                    done ? "text-theme-success" : "text-theme-fg-muted"
                   )}
                 >
                   {g.progress_malas ?? 0} / {g.target_malas} malas
@@ -74,18 +74,10 @@ export function GoalProgressWidget({
               </div>
 
               {/* Progress bar */}
-              <div
-                className="h-1.5 overflow-hidden rounded-full"
-                style={{
-                  background: "color-mix(in oklch, var(--theme-fg) 10%, transparent)",
-                }}
-              >
+              <div className="bg-theme-hover h-1.5 overflow-hidden rounded-full">
                 <div
-                  className="h-full rounded-full motion-safe:transition-all motion-safe:duration-500"
-                  style={{
-                    width: `${pct}%`,
-                    background: done ? "var(--theme-success)" : "var(--theme-primary)",
-                  }}
+                  className={`h-full rounded-full motion-safe:transition-all motion-safe:duration-500 ${done ? "bg-theme-success" : "bg-theme-primary"}`}
+                  style={{ width: `${pct}%` }}
                 />
               </div>
             </div>

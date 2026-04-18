@@ -58,6 +58,7 @@ interface SessionsSectionProps {
   routines: Routine[];
   loadAll: () => void;
   showToast: (msg: string) => void;
+  hideHeader?: boolean;
 }
 
 export function SessionsSection({
@@ -71,6 +72,7 @@ export function SessionsSection({
   routines,
   loadAll,
   showToast,
+  hideHeader = false,
 }: SessionsSectionProps) {
   const sessionsByMonth = useMemo(() => {
     const map = new Map<string, SessionData[]>();
@@ -84,16 +86,18 @@ export function SessionsSection({
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h2 className="text-theme-fg font-semibold">Sessies</h2>
-        <button
-          onClick={() => setShowAddSession(!showAddSession)}
-          className="bg-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-white shadow hover:opacity-90 active:scale-[0.98]"
-        >
-          <Plus className="h-4 w-4" />
-          Toevoegen
-        </button>
-      </div>
+      {!hideHeader && (
+        <div className="flex items-center justify-between">
+          <h2 className="text-theme-fg font-semibold">Sessies</h2>
+          <button
+            onClick={() => setShowAddSession(!showAddSession)}
+            className="bg-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-white shadow hover:opacity-90 active:scale-[0.98]"
+          >
+            <Plus className="h-4 w-4" />
+            Toevoegen
+          </button>
+        </div>
+      )}
 
       {showAddSession && (
         <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">

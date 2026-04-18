@@ -121,7 +121,7 @@ export function MalasChart({
               "cursor-pointer rounded-full px-3 py-1 text-xs font-medium transition-colors",
               metric === m
                 ? "bg-theme-primary text-white"
-                : "text-theme-fg-muted hover:text-theme-fg bg-transparent",
+                : "text-theme-fg-muted hover:text-theme-fg hover:bg-theme-hover bg-transparent",
             ].join(" ")}
           >
             {m === "malas" ? "Malas" : "Sessies"}
