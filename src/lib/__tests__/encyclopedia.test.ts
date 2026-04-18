@@ -16,10 +16,8 @@ describe("encyclopedia helper", () => {
 
     it("returns terms from mdx files", () => {
       vi.spyOn(fs, "existsSync").mockReturnValue(true);
-      vi.spyOn(fs, "readdirSync").mockReturnValue([
-        "test.mdx",
-        "invalid.txt",
-      ] as string[]);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      vi.spyOn(fs, "readdirSync").mockReturnValue(["test.mdx", "invalid.txt"] as any);
       vi.spyOn(fs, "readFileSync").mockReturnValue(`---
 title: Test Title
 sanskrit: Test Sanskrit
@@ -42,7 +40,8 @@ Content here`);
 
     it("uses default values for optional fields", () => {
       vi.spyOn(fs, "existsSync").mockReturnValue(true);
-      vi.spyOn(fs, "readdirSync").mockReturnValue(["minimal.mdx"] as string[]);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      vi.spyOn(fs, "readdirSync").mockReturnValue(["minimal.mdx"] as any);
       vi.spyOn(fs, "readFileSync").mockReturnValue(`---
 title: Minimal
 category: Tijd

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import AlmanacPage from "../page";
 import { useFetch } from "@/hooks/useFetch";
@@ -38,7 +38,7 @@ describe("Almanac Page", () => {
       data: [],
       loading: false,
       error: null,
-      mutate: vi.fn(),
+      refetch: vi.fn(),
     });
   });
 
@@ -125,10 +125,10 @@ describe("Almanac Page", () => {
     ];
 
     vi.mocked(useFetch).mockImplementation((url) => {
-      if (url.includes("/api/events")) {
-        return { data: mockEvents, loading: false, error: null, mutate: vi.fn() };
+      if (url?.includes("/api/events")) {
+        return { data: mockEvents, loading: false, error: null, refetch: vi.fn() };
       }
-      return { data: [], loading: false, error: null, mutate: vi.fn() };
+      return { data: [], loading: false, error: null, refetch: vi.fn() };
     });
 
     render(<AlmanacPage />);
@@ -159,10 +159,10 @@ describe("Almanac Page", () => {
     ];
 
     vi.mocked(useFetch).mockImplementation((url) => {
-      if (url.includes("/api/events")) {
-        return { data: multiDayEvent, loading: false, error: null, mutate: vi.fn() };
+      if (url?.includes("/api/events")) {
+        return { data: multiDayEvent, loading: false, error: null, refetch: vi.fn() };
       }
-      return { data: [], loading: false, error: null, mutate: vi.fn() };
+      return { data: [], loading: false, error: null, refetch: vi.fn() };
     });
 
     render(<AlmanacPage />);

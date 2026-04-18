@@ -200,10 +200,10 @@ describe("DayDetailsPanel", () => {
   it("renders event spanning badge and notes", () => {
     const spanningEvent = [
       {
-        ...MOCK_EVENTS[0],
+        ...MOCK_EVENTS[0]!,
         start: "2024-12-31",
         resource: {
-          ...MOCK_EVENTS[0].resource,
+          ...MOCK_EVENTS[0]!.resource,
           originalEndDate: "2025-01-02",
           notes: "Special Note",
         },
