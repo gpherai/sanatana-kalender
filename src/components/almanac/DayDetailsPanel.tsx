@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useCallback } from "react";
-import { Sun, Moon, Sparkles, Star, ChevronRight } from "lucide-react";
+import { Sun, Sunrise, Sunset, Moon, Sparkles, Star, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FALLBACK_CATEGORY_COLOR, resolveCategoryColor } from "@/lib/category-styles";
 import { useTheme } from "@/components/theme/ThemeProvider";
@@ -21,6 +21,8 @@ interface DayDetailsPanelProps {
   showSpecialDays: boolean;
   isOpen?: boolean;
   onClose?: () => void;
+  yogaStartTime?: string | null;
+  karanaStartTime?: string | null;
 }
 
 const SANSKRIT_DAYS = [
@@ -85,6 +87,8 @@ export function DayDetailsPanel({
   showSpecialDays,
   isOpen = false,
   onClose,
+  yogaStartTime,
+  karanaStartTime,
 }: DayDetailsPanelProps) {
   const { resolvedColorMode } = useTheme();
   const isDark = resolvedColorMode === "dark";
@@ -206,25 +210,25 @@ export function DayDetailsPanel({
             <div className="grid grid-cols-2 gap-3">
               {/* Sun */}
               <div
-                className="rounded-xl p-3 shadow"
+                className="rounded-xl p-4 shadow"
                 style={{
                   background: `linear-gradient(135deg, var(--theme-almanac-sun-card-from), var(--theme-almanac-sun-card-to))`,
                 }}
               >
-                <div className="mb-2 flex items-center gap-2">
+                <div className="mb-3 flex items-center gap-2">
                   <Sun className="h-4 w-4 text-[var(--theme-almanac-sun-icon)]" />
                   <span className="text-theme-fg text-xs font-semibold">Zon</span>
                 </div>
-                <div className="space-y-1 text-xs">
-                  <div className="flex justify-between">
-                    <span className="text-theme-fg-muted">Opkomst</span>
-                    <span className="text-theme-fg font-semibold">
+                <div className="space-y-2.5">
+                  <div className="flex items-center gap-2" title="Opkomst">
+                    <Sunrise className="h-3.5 w-3.5 shrink-0 text-[var(--theme-almanac-sun-rise-icon)]" />
+                    <span className="text-theme-fg text-sm font-semibold tabular-nums">
                       {selectedDayInfo.sunrise || "—"}
                     </span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-theme-fg-muted">Ondergang</span>
-                    <span className="text-theme-fg font-semibold">
+                  <div className="flex items-center gap-2" title="Ondergang">
+                    <Sunset className="h-3.5 w-3.5 shrink-0 text-[var(--theme-almanac-sun-set-icon)]" />
+                    <span className="text-theme-fg text-sm font-semibold tabular-nums">
                       {selectedDayInfo.sunset || "—"}
                     </span>
                   </div>
@@ -233,25 +237,25 @@ export function DayDetailsPanel({
 
               {/* Moon */}
               <div
-                className="rounded-xl p-3 shadow"
+                className="rounded-xl p-4 shadow"
                 style={{
                   background: `linear-gradient(135deg, var(--theme-almanac-moon-card-from), var(--theme-almanac-moon-card-to))`,
                 }}
               >
-                <div className="mb-2 flex items-center gap-2">
+                <div className="mb-3 flex items-center gap-2">
                   <Moon className="h-4 w-4 text-[var(--theme-almanac-moon-icon)]" />
                   <span className="text-theme-fg text-xs font-semibold">Maan</span>
                 </div>
-                <div className="space-y-1 text-xs">
-                  <div className="flex justify-between">
-                    <span className="text-theme-fg-muted">Opkomst</span>
-                    <span className="text-theme-fg font-semibold">
+                <div className="space-y-2.5">
+                  <div className="flex items-center gap-2" title="Opkomst">
+                    <Sunrise className="h-3.5 w-3.5 shrink-0 text-[var(--theme-almanac-moon-rise-icon)]" />
+                    <span className="text-theme-fg text-sm font-semibold tabular-nums">
                       {selectedDayInfo.moonrise || "—"}
                     </span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-theme-fg-muted">Ondergang</span>
-                    <span className="text-theme-fg font-semibold">
+                  <div className="flex items-center gap-2" title="Ondergang">
+                    <Sunset className="h-3.5 w-3.5 shrink-0 text-[var(--theme-almanac-moon-set-icon)]" />
+                    <span className="text-theme-fg text-sm font-semibold tabular-nums">
                       {selectedDayInfo.moonset || "—"}
                     </span>
                   </div>
@@ -322,11 +326,12 @@ export function DayDetailsPanel({
                       <p className="text-theme-fg text-sm font-medium">
                         {selectedDayInfo.yoga.name}
                       </p>
-                      {selectedDayInfo.yoga.endTime && (
-                        <p className="text-theme-fg-muted mt-1 text-xs">
-                          Eindigt om {selectedDayInfo.yoga.endTime}
-                        </p>
-                      )}
+                      <div className="text-theme-fg-muted mt-1 space-y-0.5 text-xs">
+                        {yogaStartTime && <p>Begint om {yogaStartTime}</p>}
+                        {selectedDayInfo.yoga.endTime && (
+                          <p>Eindigt om {selectedDayInfo.yoga.endTime}</p>
+                        )}
+                      </div>
                     </div>
                   )}
 
@@ -338,11 +343,12 @@ export function DayDetailsPanel({
                       <p className="text-theme-fg text-sm font-medium">
                         {selectedDayInfo.karana.name} ({selectedDayInfo.karana.type})
                       </p>
-                      {selectedDayInfo.karana.endTime && (
-                        <p className="text-theme-fg-muted mt-1 text-xs">
-                          Eindigt om {selectedDayInfo.karana.endTime}
-                        </p>
-                      )}
+                      <div className="text-theme-fg-muted mt-1 space-y-0.5 text-xs">
+                        {karanaStartTime && <p>Begint om {karanaStartTime}</p>}
+                        {selectedDayInfo.karana.endTime && (
+                          <p>Eindigt om {selectedDayInfo.karana.endTime}</p>
+                        )}
+                      </div>
                     </div>
                   )}
 
@@ -371,7 +377,7 @@ export function DayDetailsPanel({
               {selectedDayEvents.length > 0 ? (
                 <div className="space-y-2">
                   {selectedDayEvents.map((event) => {
-                    const eventStartKey = event.start.split("T")[0]!;
+                    const eventStartKey = event.start.slice(0, 10);
                     const isStartDay = eventStartKey === selectedDateStr;
                     const isSpanning =
                       event.resource.originalEndDate !== null &&
@@ -411,18 +417,17 @@ export function DayDetailsPanel({
                             isSpanning ||
                             event.resource.notes) && (
                             <div className="mt-1.5 flex flex-wrap items-center gap-1 text-xs">
-                              {event.resource.startTime && (
+                              {event.resource.startTime && isStartDay && (
                                 <span className="rounded bg-[var(--theme-almanac-event-time-start-bg)] px-2 py-0.5 text-[var(--theme-almanac-event-time-start-fg)]">
-                                  {isStartDay ? "Begint " : ""}
-                                  {event.resource.startTime}
+                                  Begint om {event.resource.startTime}
                                 </span>
                               )}
                               {event.resource.endTime && (
                                 <span className="rounded bg-[var(--theme-almanac-event-time-end-bg)] px-2 py-0.5 text-[var(--theme-almanac-event-time-end-fg)]">
-                                  Eindigt {event.resource.endTime}
+                                  Eindigt om {event.resource.endTime}
                                 </span>
                               )}
-                              {isSpanning && isStartDay && !event.resource.endTime && (
+                              {isSpanning && !event.resource.endTime && (
                                 <span className="rounded bg-[var(--theme-almanac-event-time-end-bg)] px-2 py-0.5 text-[var(--theme-almanac-event-time-end-fg)]">
                                   Loopt door
                                 </span>

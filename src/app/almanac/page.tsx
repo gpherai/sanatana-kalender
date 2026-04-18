@@ -48,6 +48,13 @@ function getMoonPhaseEvents(monthData: DailyInfoResponse[]): MoonPhaseEvent[] {
 }
 
 // =============================================================================
+// SESSION CACHE (module-level — survives re-renders, reset on page reload)
+// =============================================================================
+
+const monthDataCache = new Map<string, DailyInfoResponse[]>();
+const eventsDataCache = new Map<string, CalendarEventResponse[]>();
+
+// =============================================================================
 // MAIN COMPONENT
 // =============================================================================
 
@@ -82,13 +89,21 @@ export default function AlmanacPage() {
   const lastDay = new Date(year, month + 1, 0);
   const start = formatDateLocal(firstDay);
   const end = formatDateLocal(lastDay);
+  const cacheKey = `${year}-${month}`;
+  const cachedDailyInfo = monthDataCache.get(cacheKey) ?? null;
+  const cachedEvents = eventsDataCache.get(cacheKey) ?? null;
 
-  const { data: monthData, loading: dailyLoading } = useFetch<DailyInfoResponse[]>(
-    `/api/daily-info?start=${start}&end=${end}`
+  const { data: fetchedMonthData, loading: dailyLoading } = useFetch<DailyInfoResponse[]>(
+    `/api/daily-info?start=${start}&end=${end}`,
+    { skip: !!cachedDailyInfo }
   );
-  const { data: monthEvents, loading: eventsLoading } = useFetch<CalendarEventResponse[]>(
-    `/api/events?start=${start}T00:00:00.000Z&end=${end}T23:59:59.999Z`
-  );
+  const { data: fetchedMonthEvents, loading: eventsLoading } = useFetch<
+    CalendarEventResponse[]
+  >(`/api/events?start=${start}T00:00:00.000Z&end=${end}T23:59:59.999Z`, {
+    skip: !!cachedEvents,
+  });
+  const monthData = cachedDailyInfo ?? fetchedMonthData;
+  const monthEvents = cachedEvents ?? fetchedMonthEvents;
   const loading = dailyLoading || eventsLoading;
   const location = monthData?.[0]?.locationName ?? "Den Haag";
 
@@ -99,7 +114,6 @@ export default function AlmanacPage() {
       return;
     }
 
-    // Save scroll position before state update (in next tick)
     const timer = requestAnimationFrame(() => {
       if (scrollPositionRef.current > 0) {
         window.scrollTo({ top: scrollPositionRef.current, behavior: "instant" });
@@ -108,6 +122,49 @@ export default function AlmanacPage() {
 
     return () => cancelAnimationFrame(timer);
   }, [selectedDate]);
+
+  // Store fetched results in session cache once loaded
+  useEffect(() => {
+    if (fetchedMonthData) monthDataCache.set(cacheKey, fetchedMonthData);
+  }, [cacheKey, fetchedMonthData]);
+
+  useEffect(() => {
+    if (fetchedMonthEvents) eventsDataCache.set(cacheKey, fetchedMonthEvents);
+  }, [cacheKey, fetchedMonthEvents]);
+
+  // Prefetch prev and next month in the background after current month loads
+  useEffect(() => {
+    if (!monthData || !monthEvents) return;
+    const prefetch = (y: number, m: number) => {
+      const key = `${y}-${m}`;
+      const fd = new Date(y, m, 1);
+      const ld = new Date(y, m + 1, 0);
+      const s = formatDateLocal(fd);
+      const e = formatDateLocal(ld);
+      if (!monthDataCache.has(key)) {
+        fetch(`/api/daily-info?start=${s}&end=${e}`)
+          .then<DailyInfoResponse[]>((r) => r.json())
+          .then((data) => {
+            monthDataCache.set(key, data);
+          })
+          .catch(() => {});
+      }
+      if (!eventsDataCache.has(key)) {
+        fetch(`/api/events?start=${s}T00:00:00.000Z&end=${e}T23:59:59.999Z`)
+          .then<CalendarEventResponse[]>((r) => r.json())
+          .then((data) => {
+            eventsDataCache.set(key, data);
+          })
+          .catch(() => {});
+      }
+    };
+    const prevY = month === 0 ? year - 1 : year;
+    const prevM = month === 0 ? 11 : month - 1;
+    const nextY = month === 11 ? year + 1 : year;
+    const nextM = month === 11 ? 0 : month + 1;
+    prefetch(prevY, prevM);
+    prefetch(nextY, nextM);
+  }, [year, month, monthData, monthEvents]);
 
   const [mobilePanelOpen, setMobilePanelOpen] = useState(false);
 
@@ -119,6 +176,25 @@ export default function AlmanacPage() {
   }, []);
 
   const handleCloseMobilePanel = useCallback(() => setMobilePanelOpen(false), []);
+
+  // Month/year navigation: atomically select dag 1 and close mobile panel
+  const handleYearChange = useCallback(
+    (y: number) => {
+      setYear(y);
+      setSelectedDate(new Date(y, month, 1));
+      setMobilePanelOpen(false);
+    },
+    [month]
+  );
+
+  const handleMonthChange = useCallback(
+    (m: number) => {
+      setMonth(m);
+      setSelectedDate(new Date(year, m, 1));
+      setMobilePanelOpen(false);
+    },
+    [year]
+  );
 
   // Derived data
   const days = useMemo(() => getMonthDays(year, month), [year, month]);
@@ -188,6 +264,19 @@ export default function AlmanacPage() {
     return map;
   }, [moonPhases]);
 
+  // Yoga and karana start times: the start of today's element = end of yesterday's element
+  const yogaStartTime = useMemo(() => {
+    const prev = new Date(selectedDate);
+    prev.setDate(prev.getDate() - 1);
+    return dailyInfoMap.get(formatDateLocal(prev))?.yoga?.endTime ?? null;
+  }, [selectedDate, dailyInfoMap]);
+
+  const karanaStartTime = useMemo(() => {
+    const prev = new Date(selectedDate);
+    prev.setDate(prev.getDate() - 1);
+    return dailyInfoMap.get(formatDateLocal(prev))?.karana?.endTime ?? null;
+  }, [selectedDate, dailyInfoMap]);
+
   // Selected day data
   const selectedDateStr = formatDateLocal(selectedDate);
   const selectedDayInfo = dailyInfoMap.get(selectedDateStr);
@@ -237,8 +326,8 @@ export default function AlmanacPage() {
         showMoonPhases={showMoonPhases}
         showSpecialDays={showSpecialDays}
         showEvents={showEvents}
-        onYearChange={setYear}
-        onMonthChange={setMonth}
+        onYearChange={handleYearChange}
+        onMonthChange={handleMonthChange}
         onToggleFilter={handleToggleFilter}
       />
 
@@ -290,6 +379,8 @@ export default function AlmanacPage() {
             showSpecialDays={showSpecialDays}
             isOpen={mobilePanelOpen}
             onClose={handleCloseMobilePanel}
+            yogaStartTime={yogaStartTime}
+            karanaStartTime={karanaStartTime}
           />
         </div>
       )}
