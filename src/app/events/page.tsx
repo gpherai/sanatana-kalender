@@ -3,7 +3,15 @@
 import { useState, Suspense, useMemo, useEffect, useCallback, useRef } from "react";
 import { useFetch } from "@/hooks/useFetch";
 import Link from "next/link";
-import { Plus, LayoutGrid, List, SlidersHorizontal } from "lucide-react";
+import {
+  Plus,
+  LayoutGrid,
+  List,
+  SlidersHorizontal,
+  AlertCircle,
+  CalendarOff,
+  Calendar,
+} from "lucide-react";
 import { FilterSidebar } from "@/components/filters";
 import { EventDetailModal } from "@/components/calendar/EventDetailModal";
 import { EventCard } from "@/components/events/EventCard";
@@ -321,7 +329,7 @@ function EventsContent() {
           {error && !loading && (
             <div className="py-24 text-center">
               <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-[var(--theme-error-bg)]">
-                <span className="text-4xl">😕</span>
+                <AlertCircle className="h-9 w-9 text-[var(--theme-error-fg)]" />
               </div>
               <h2 className="text-theme-fg mb-2 text-xl font-semibold">
                 Oeps, er ging iets mis
@@ -340,7 +348,11 @@ function EventsContent() {
           {!loading && !error && events.length === 0 && (
             <div className="py-24 text-center">
               <div className="bg-theme-gradient-subtle mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full">
-                <span className="text-5xl">📅</span>
+                {activeFilterCount > 0 ? (
+                  <CalendarOff className="text-theme-fg-muted h-11 w-11" />
+                ) : (
+                  <Calendar className="text-theme-primary h-11 w-11" />
+                )}
               </div>
               <h2 className="text-theme-fg mb-2 text-xl font-semibold">
                 {activeFilterCount > 0 ? "Geen events gevonden" : "Nog geen events"}

@@ -49,14 +49,14 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
         },
         seriesParentEntries: {
           include: {
-            parent: { select: { id: true, name: true } },
-          },
-        },
-        seriesChildEntries: {
-          include: {
             child: { select: { id: true, name: true } },
           },
           orderBy: { sortOrder: "asc" },
+        },
+        seriesChildEntries: {
+          include: {
+            parent: { select: { id: true, name: true } },
+          },
         },
       },
     });
@@ -67,18 +67,20 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
 
     // Transform junction table entries to flat arrays, deduplicating by event id
     const { seriesParentEntries, seriesChildEntries, ...rest } = eventRaw;
-    const parentEventMap = new Map<string, { id: string; name: string }>();
-    for (const e of seriesParentEntries) {
-      parentEventMap.set(e.parent.id, e.parent);
-    }
+    // seriesParentEntries = entries where this event IS the parent → gives child events
     const childEventMap = new Map<
       string,
       { id: string; name: string; dayNumber: number | null }
     >();
-    for (const e of seriesChildEntries) {
+    for (const e of seriesParentEntries) {
       if (!childEventMap.has(e.child.id)) {
         childEventMap.set(e.child.id, { ...e.child, dayNumber: e.dayNumber });
       }
+    }
+    // seriesChildEntries = entries where this event IS a child → gives parent events
+    const parentEventMap = new Map<string, { id: string; name: string }>();
+    for (const e of seriesChildEntries) {
+      parentEventMap.set(e.parent.id, e.parent);
     }
     const event = {
       ...rest,

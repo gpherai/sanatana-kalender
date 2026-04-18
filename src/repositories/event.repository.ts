@@ -94,10 +94,10 @@ export async function findEventOccurrences(params: EventQueryParams) {
             include: { category: true },
             orderBy: { sortOrder: "asc" as const },
           },
-          seriesParentEntries: {
+          seriesChildEntries: {
             select: { parentEventId: true, dayNumber: true, sortOrder: true },
           },
-          seriesChildEntries: {
+          seriesParentEntries: {
             select: { childEventId: true },
           },
         },

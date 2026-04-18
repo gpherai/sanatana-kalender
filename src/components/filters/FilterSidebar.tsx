@@ -1,7 +1,18 @@
 "use client";
 
 import { useState, useRef, useCallback, useMemo } from "react";
-import { Search, X, Filter, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  Search,
+  X,
+  Filter,
+  ChevronDown,
+  ChevronUp,
+  CalendarDays,
+  Tag,
+  List,
+  Moon,
+  ArrowUpDown,
+} from "lucide-react";
 import { CATEGORIES, EVENT_TYPES, SPECIAL_TITHIS } from "@/lib/domain";
 import type { FilterState } from "@/hooks/useFilters";
 import { cn } from "@/lib/utils";
@@ -20,7 +31,7 @@ interface FilterSidebarProps {
 
 interface FilterSectionProps {
   title: string;
-  icon: string;
+  icon: React.ReactNode;
   children: React.ReactNode;
   defaultOpen?: boolean;
 }
@@ -40,7 +51,9 @@ function FilterSection({
         className="hover:text-theme-primary text-theme-fg-secondary mb-2 flex w-full cursor-pointer items-center justify-between text-left font-medium transition-colors"
       >
         <span className="flex items-center gap-2">
-          <span>{icon}</span>
+          <span className="text-theme-fg-muted flex h-4 w-4 items-center justify-center">
+            {icon}
+          </span>
           {title}
         </span>
         {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -277,7 +290,11 @@ export function FilterSidebar({
       </div>
 
       {/* Periode */}
-      <FilterSection title="Periode" icon="📆" defaultOpen={false}>
+      <FilterSection
+        title="Periode"
+        icon={<CalendarDays className="h-4 w-4" />}
+        defaultOpen={false}
+      >
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-1.5">
             <DateInput
@@ -308,7 +325,7 @@ export function FilterSidebar({
       </FilterSection>
 
       {/* Godheden */}
-      <FilterSection title="Godheden" icon="🏷️">
+      <FilterSection title="Godheden" icon={<Tag className="h-4 w-4" />}>
         <div className="space-y-0.5">
           {CATEGORIES.map((cat) => (
             <CheckboxItem
@@ -324,7 +341,7 @@ export function FilterSidebar({
       </FilterSection>
 
       {/* Soort evenement */}
-      <FilterSection title="Soort evenement" icon="📋">
+      <FilterSection title="Soort evenement" icon={<List className="h-4 w-4" />}>
         <div className="space-y-0.5">
           {EVENT_TYPES.map((type) => (
             <CheckboxItem
@@ -339,7 +356,11 @@ export function FilterSidebar({
       </FilterSection>
 
       {/* Speciale Dagen */}
-      <FilterSection title="Speciale dagen" icon="🌙" defaultOpen={false}>
+      <FilterSection
+        title="Speciale dagen"
+        icon={<Moon className="h-4 w-4" />}
+        defaultOpen={false}
+      >
         <div className="space-y-0.5">
           {SPECIAL_TITHIS.map((tithi) => (
             <CheckboxItem
@@ -354,7 +375,11 @@ export function FilterSidebar({
       </FilterSection>
 
       {/* Sortering */}
-      <FilterSection title="Sortering" icon="↕️" defaultOpen={false}>
+      <FilterSection
+        title="Sortering"
+        icon={<ArrowUpDown className="h-4 w-4" />}
+        defaultOpen={false}
+      >
         <div className="space-y-2">
           <div>
             <label htmlFor="sort-by" className="text-theme-fg-muted mb-1 block text-xs">

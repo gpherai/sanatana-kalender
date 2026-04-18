@@ -184,6 +184,40 @@ async function generateEventsFromNaming() {
 
   // Second pass: create EventSeriesEntry records for parent-child relations
   console.log(`\n🔗 Linking child events to parents via EventSeriesEntry...`);
+
+  // Build the set of valid (parentId, childId) pairs from the current catalog
+  const validPairs = new Set<string>();
+  for (const naming of EVENT_NAMING_CATALOG) {
+    if (!naming.parentKeys || naming.parentKeys.length === 0) continue;
+    const childEvent = await prisma.event.findUnique({
+      where: { namingKey: naming.key },
+    });
+    if (!childEvent) continue;
+    for (const parentKey of naming.parentKeys) {
+      const parentEvent = await prisma.event.findUnique({
+        where: { namingKey: parentKey },
+      });
+      if (!parentEvent) continue;
+      validPairs.add(`${parentEvent.id}:${childEvent.id}`);
+    }
+  }
+
+  // Remove stale entries: self-references and pairs no longer in the catalog
+  const allEntries = await prisma.eventSeriesEntry.findMany({
+    select: { id: true, parentEventId: true, childEventId: true },
+  });
+  const stale = allEntries.filter(
+    (e) =>
+      e.parentEventId === e.childEventId ||
+      !validPairs.has(`${e.parentEventId}:${e.childEventId}`)
+  );
+  if (stale.length > 0) {
+    await prisma.eventSeriesEntry.deleteMany({
+      where: { id: { in: stale.map((e) => e.id) } },
+    });
+    console.log(`   🧹 Verwijderd: ${stale.length} verouderde/ongeldige series-entries`);
+  }
+
   let linked = 0;
   let linkFailed = 0;
 

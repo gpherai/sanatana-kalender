@@ -15,6 +15,8 @@ import {
   Sparkles,
   ExternalLink,
   ChevronRight,
+  FileText,
+  Layers,
 } from "lucide-react";
 import type { CalendarEvent } from "@/types/calendar";
 import type { DailyInfoResponse } from "@/types";
@@ -433,7 +435,7 @@ export function EventDetailModal({
             {event.resource.notes && (
               <div className="rounded-2xl bg-[var(--theme-info-bg)] p-4">
                 <div className="mb-2 flex items-center gap-2">
-                  <span className="text-lg">📝</span>
+                  <FileText className="h-4 w-4 text-[var(--theme-info-fg)]" />
                   <span className="font-medium text-[var(--theme-info-fg)]">
                     Notities
                   </span>
@@ -467,7 +469,7 @@ export function EventDetailModal({
             {eventRelations?.childEvents && eventRelations.childEvents.length > 0 && (
               <div className="bg-theme-surface-raised rounded-2xl p-4">
                 <div className="mb-3 flex items-center gap-2">
-                  <span className="text-base">🌸</span>
+                  <Layers className="text-theme-fg-muted h-4 w-4" />
                   <span className="text-theme-fg-muted text-sm font-medium">
                     {eventRelations.childEvents.length} dagen
                   </span>

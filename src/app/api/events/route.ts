@@ -76,9 +76,9 @@ export async function GET(request: NextRequest) {
           startTime: occ.startTime,
           endTime: occ.endTime,
           originalEndDate: occ.endDate ? formatDateLocal(occ.endDate) : null,
-          seriesParentEventIds: occ.event.seriesParentEntries.map((e) => e.parentEventId),
-          seriesDayNumber: occ.event.seriesParentEntries[0]?.dayNumber ?? null,
-          hasSeriesChildren: occ.event.seriesChildEntries.length > 0,
+          seriesParentEventIds: occ.event.seriesChildEntries.map((e) => e.parentEventId),
+          seriesDayNumber: occ.event.seriesChildEntries[0]?.dayNumber ?? null,
+          hasSeriesChildren: occ.event.seriesParentEntries.length > 0,
         },
       };
     });
