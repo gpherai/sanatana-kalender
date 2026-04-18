@@ -4,6 +4,7 @@ import {
   groupConsecutiveDays,
   selectFirstPerYear,
   isPredecessorEndsAfterSunrise,
+  isNishitakalDateShiftNeeded,
   computeTithiOccurrence,
 } from "../tithi-helpers";
 import type { PrevDayInfo } from "../types";
@@ -83,6 +84,15 @@ describe("tithi-helpers", () => {
       expect(res[0]?.maas).toBe("Chaitra");
       expect(res[1]?.maas).toBe("Vaisakha");
     });
+
+    it("handles missing maas when isMultiMaas is true", () => {
+      const rows = [
+        { date: new Date(Date.UTC(2025, 0, 1)), maas: null },
+        { date: new Date(Date.UTC(2025, 0, 15)), maas: null },
+      ];
+      const res = selectFirstPerYear(rows, null, true);
+      expect(res).toHaveLength(1);
+    });
   });
 
   describe("isPredecessorEndsAfterSunrise", () => {
@@ -106,6 +116,60 @@ describe("tithi-helpers", () => {
       expect(
         isPredecessorEndsAfterSunrise({ tithiEndTime: "invalid", sunrise: "06:00" })
       ).toBe(false);
+    });
+  });
+
+  describe("isNishitakalDateShiftNeeded", () => {
+    it("returns false if any required data is missing", () => {
+      const prev: PrevDayInfo = {
+        tithiEndTime: "20:00",
+        sunrise: "06:00",
+        sunset: "18:00",
+      };
+      expect(isNishitakalDateShiftNeeded(prev, null)).toBe(false);
+      expect(isNishitakalDateShiftNeeded({ ...prev, tithiEndTime: null }, "06:00")).toBe(
+        false
+      );
+      expect(isNishitakalDateShiftNeeded({ ...prev, sunrise: null }, "06:00")).toBe(
+        false
+      );
+      expect(isNishitakalDateShiftNeeded({ ...prev, sunset: null }, "06:00")).toBe(false);
+    });
+
+    it("returns false if tithi started BEFORE sunrise on previous day", () => {
+      const prev: PrevDayInfo = {
+        tithiEndTime: "05:00",
+        sunrise: "06:00",
+        sunset: "18:00",
+      };
+      expect(isNishitakalDateShiftNeeded(prev, "06:00")).toBe(false);
+    });
+
+    it("returns true when tithi starts at least one muhurta before Nishitakal", () => {
+      const prev: PrevDayInfo = {
+        tithiEndTime: "22:00",
+        sunrise: "06:00",
+        sunset: "18:00",
+      };
+      expect(isNishitakalDateShiftNeeded(prev, "06:00")).toBe(true);
+    });
+
+    it("returns false when tithi starts less than one muhurta before Nishitakal", () => {
+      const prev: PrevDayInfo = {
+        tithiEndTime: "23:00",
+        sunrise: "06:00",
+        sunset: "18:00",
+      };
+      expect(isNishitakalDateShiftNeeded(prev, "06:00")).toBe(false);
+    });
+
+    it("handles invalid time strings gracefully", () => {
+      const prev: PrevDayInfo = {
+        tithiEndTime: "invalid",
+        sunrise: "06:00",
+        sunset: "18:00",
+      };
+      expect(isNishitakalDateShiftNeeded(prev, "06:00")).toBe(false);
     });
   });
 

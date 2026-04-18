@@ -9,6 +9,10 @@ vi.mock("@/components/ui/MoonPhase", () => ({
   MoonPhase: () => <div data-testid="moon-phase">MoonPhase</div>,
 }));
 
+vi.mock("@/components/theme/ThemeProvider", () => ({
+  useTheme: () => ({ resolvedColorMode: "dark" }),
+}));
+
 const MOCK_DATE = new Date("2025-01-01");
 
 const MOCK_INFO = {
@@ -130,5 +134,95 @@ describe("DayDetailsPanel", () => {
     );
     expect(screen.queryByText("Test Event")).toBeNull();
     expect(screen.queryByText(/Panchanga Details/i)).toBeNull();
+  });
+
+  it("handles swipe down to dismiss", () => {
+    const onClose = vi.fn();
+    render(
+      <DayDetailsPanel
+        selectedDate={MOCK_DATE}
+        selectedDayInfo={MOCK_INFO}
+        selectedDayEvents={[]}
+        selectedDaySpecial={[]}
+        onEventClick={vi.fn()}
+        showEvents={true}
+        showSpecialDays={true}
+        onClose={onClose}
+        isOpen={true}
+      />
+    );
+
+    const dragHandle = screen.getByTestId("swipe-handle");
+    fireEvent.touchStart(dragHandle, { touches: [{ clientY: 100 }] });
+    fireEvent.touchEnd(dragHandle, { changedTouches: [{ clientY: 200 }] });
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it("handles popstate to close the panel", () => {
+    const onClose = vi.fn();
+    render(
+      <DayDetailsPanel
+        selectedDate={MOCK_DATE}
+        selectedDayInfo={MOCK_INFO}
+        selectedDayEvents={[]}
+        selectedDaySpecial={[]}
+        onEventClick={vi.fn()}
+        showEvents={true}
+        showSpecialDays={true}
+        isOpen={true}
+        onClose={onClose}
+      />
+    );
+
+    window.dispatchEvent(new PopStateEvent("popstate"));
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it("renders yoga and karana start times", () => {
+    render(
+      <DayDetailsPanel
+        selectedDate={MOCK_DATE}
+        selectedDayInfo={MOCK_INFO}
+        selectedDayEvents={[]}
+        selectedDaySpecial={[]}
+        onEventClick={vi.fn()}
+        showEvents={true}
+        showSpecialDays={true}
+        yogaStartTime="08:00"
+        karanaStartTime="09:00"
+      />
+    );
+
+    expect(screen.getByText(/Begint om 08:00/i)).toBeDefined();
+    expect(screen.getByText(/Begint om 09:00/i)).toBeDefined();
+  });
+
+  it("renders event spanning badge and notes", () => {
+    const spanningEvent = [
+      {
+        ...MOCK_EVENTS[0],
+        start: "2024-12-31",
+        resource: {
+          ...MOCK_EVENTS[0].resource,
+          originalEndDate: "2025-01-02",
+          notes: "Special Note",
+        },
+      },
+    ];
+
+    render(
+      <DayDetailsPanel
+        selectedDate={MOCK_DATE}
+        selectedDayInfo={MOCK_INFO}
+        selectedDayEvents={spanningEvent as any}
+        selectedDaySpecial={[]}
+        onEventClick={vi.fn()}
+        showEvents={true}
+        showSpecialDays={true}
+      />
+    );
+
+    expect(screen.getByText(/Loopt door/i)).toBeDefined();
+    expect(screen.getByText(/Special Note/i)).toBeDefined();
   });
 });

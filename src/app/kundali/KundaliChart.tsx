@@ -137,6 +137,8 @@ export function RashiCell({ rashiNum, grahas, isLagna, style }: RashiCellProps) 
 
   return (
     <div
+      data-testid={`rashi-cell-${rashiNum}`}
+      data-rashi={rashiNum}
       className={cn(
         "border-theme-border relative flex flex-col overflow-hidden border p-2.5",
         "transition-colors duration-150"

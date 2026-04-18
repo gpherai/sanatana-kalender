@@ -143,6 +143,7 @@ export function DayDetailsPanel({
       >
         {/* Drag handle — only this zone triggers swipe-to-dismiss */}
         <div
+          data-testid="swipe-handle"
           className="flex touch-none justify-center px-4 pt-3 pb-4 lg:hidden"
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
@@ -153,6 +154,7 @@ export function DayDetailsPanel({
         <div className="space-y-4 px-4 pb-8 lg:px-0 lg:pb-0">
           {/* Selected Day Header */}
           <div
+            data-testid="day-header"
             className="rounded-2xl p-4 text-white shadow-lg lg:cursor-default"
             style={{
               background: `var(--theme-almanac-day-header-bg)`,

@@ -130,6 +130,89 @@ describe("Kundali Page", () => {
     // Check Graha row
     expect(screen.getAllByText("Surya")[0]).toBeInTheDocument();
     expect(screen.getAllByText("Rashi").length).toBeGreaterThan(0);
+
+    // Switch to D9 Chart
+    fireEvent.click(screen.getByRole("button", { name: /D9 Grafiek/i }));
+    // "Navamsha" appears in both summary and chart, use getAll or within
+    expect(screen.getAllByText("Navamsha").length).toBeGreaterThan(0);
+
+    // Switch to D9 Table
+    fireEvent.click(screen.getByRole("button", { name: /D9 Tabel/i }));
+    expect(screen.getByText("Navagrahas — D9 Navamsha")).toBeInTheDocument();
+
+    // Toggle Technical Details
+    const details = screen.getByText("Technische details");
+    fireEvent.click(details);
+    expect(screen.getByText(/Julian Day:/i)).toBeInTheDocument();
+  });
+
+  it("validates the birth date client-side", async () => {
+    const { container } = render(<Kundali />);
+
+    // Fill invalid date (Feb 30th)
+    fireEvent.change(screen.getByPlaceholderText("DD"), { target: { value: "30" } });
+    fireEvent.change(screen.getByPlaceholderText("MM"), { target: { value: "02" } });
+    fireEvent.change(screen.getByPlaceholderText("JJJJ"), { target: { value: "2023" } });
+
+    // Fill ALL other required fields to bypass HTML5 validation and reach our logic
+    const timeInput = container.querySelector('input[type="time"]')!;
+    fireEvent.change(timeInput, { target: { value: "10:30" } });
+    fireEvent.change(screen.getByPlaceholderText("52.0893"), { target: { value: "52" } });
+    fireEvent.change(screen.getByPlaceholderText("4.3683"), { target: { value: "4" } });
+
+    fireEvent.submit(
+      screen.getByRole("button", { name: /Bereken Kundali/i }).closest("form")!
+    );
+
+    expect(screen.getByText(/Ongeldige geboortedatum/i)).toBeInTheDocument();
+  });
+
+  it("validates coordinates client-side", async () => {
+    const { container } = render(<Kundali />);
+
+    // Fill valid date/time but invalid coordinates
+    fireEvent.change(screen.getByPlaceholderText("DD"), { target: { value: "01" } });
+    fireEvent.change(screen.getByPlaceholderText("MM"), { target: { value: "01" } });
+    fireEvent.change(screen.getByPlaceholderText("JJJJ"), { target: { value: "2000" } });
+    const timeInput = container.querySelector('input[type="time"]')!;
+    fireEvent.change(timeInput, { target: { value: "10:30" } });
+
+    // Note: HTML5 input type="number" might block "abc", so we use a numeric string that fails our NaN check if possible,
+    // or we just trigger the submit and see if it hits our error.
+    // Actually, setForm uses e.target.value, so "abc" will be an empty string if type="number" in some browsers,
+    // but in JSDOM it might work.
+    fireEvent.change(screen.getByPlaceholderText("52.0893"), { target: { value: "" } });
+
+    fireEvent.submit(
+      screen.getByRole("button", { name: /Bereken Kundali/i }).closest("form")!
+    );
+
+    expect(
+      screen.getByText(/Breedtegraad en lengtegraad moeten getallen zijn/i)
+    ).toBeInTheDocument();
+  });
+
+  it("handles network errors gracefully", async () => {
+    vi.mocked(global.fetch).mockRejectedValueOnce(new Error("Network Error"));
+
+    const { container } = render(<Kundali />);
+
+    // Fill ALL form fields
+    fireEvent.change(screen.getByPlaceholderText("DD"), { target: { value: "01" } });
+    fireEvent.change(screen.getByPlaceholderText("MM"), { target: { value: "01" } });
+    fireEvent.change(screen.getByPlaceholderText("JJJJ"), { target: { value: "2000" } });
+    const timeInput = container.querySelector('input[type="time"]')!;
+    fireEvent.change(timeInput, { target: { value: "12:00" } });
+    fireEvent.change(screen.getByPlaceholderText("52.0893"), { target: { value: "52" } });
+    fireEvent.change(screen.getByPlaceholderText("4.3683"), { target: { value: "4" } });
+
+    fireEvent.submit(
+      screen.getByRole("button", { name: /Bereken Kundali/i }).closest("form")!
+    );
+
+    await waitFor(() =>
+      expect(screen.getByText(/Kon de server niet bereiken/i)).toBeInTheDocument()
+    );
   });
 
   it("displays an error message when the API fails", async () => {

@@ -92,6 +92,7 @@ export function VimshottariDasha({ chart }: { chart: BirthChart }) {
             <div key={period.lord + String(idx)}>
               {/* Mahadasha row — clickable */}
               <button
+                data-testid={`dasha-${period.lord}`}
                 aria-expanded={isOpen}
                 onClick={() => toggle(idx)}
                 className={cn(

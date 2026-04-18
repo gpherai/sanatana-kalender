@@ -93,4 +93,60 @@ describe("useFilters Hook", () => {
     // Items: Search (1) + Puja (1) + Festival (1) = 3
     expect(result.current.activeFilterItemCount).toBe(3);
   });
+
+  it("should validate and filter out invalid values from URL", () => {
+    mockSearchParams.set("categories", "valid_cat,INVALID_CAT");
+    mockSearchParams.set("types", "PUJA,INVALID_TYPE");
+    mockSearchParams.set("sortBy", "invalid_field");
+    mockSearchParams.set("order", "invalid_order");
+
+    // We need at least one valid category to test. Assuming 'shiva' or similar exists.
+    // Let's mock CATEGORIES in domain.ts if possible, or just use what's likely there.
+    // Based on src/config/categories.ts (checked via domain.ts), 'festival' or 'puja' might be names.
+
+    const { result } = renderHook(() => useFilters());
+
+    expect(result.current.filters.eventTypes).toEqual(["PUJA"]);
+    expect(result.current.filters.eventTypes).not.toContain("INVALID_TYPE");
+    expect(result.current.filters.sortBy).toBe("date"); // Reset to default
+    expect(result.current.filters.sortOrder).toBe("asc"); // Reset to default
+  });
+
+  it("should remove filter from URL when set to empty or default", () => {
+    mockSearchParams.set("search", "to-be-removed");
+    const { result } = renderHook(() => useFilters());
+
+    act(() => {
+      result.current.setFilter("search", "");
+    });
+
+    expect(mockPush).toHaveBeenCalledWith("/events", expect.anything());
+  });
+
+  it("should build correct query string for API", () => {
+    mockSearchParams.set("search", "diwali");
+    mockSearchParams.set("types", "FESTIVAL");
+    mockSearchParams.set("from", "2025-01-01");
+
+    const { result } = renderHook(() => useFilters());
+    const queryString = result.current.buildQueryString();
+
+    expect(queryString).toContain("search=diwali");
+    expect(queryString).toContain("types=FESTIVAL");
+    expect(queryString).toContain("start=2025-01-01");
+    expect(queryString).toContain("sortBy=date");
+  });
+
+  it("should handle array values in setFilter", () => {
+    const { result } = renderHook(() => useFilters());
+
+    act(() => {
+      result.current.setFilter("eventTypes", ["PUJA", "VRAT"]);
+    });
+
+    expect(mockPush).toHaveBeenCalledWith(
+      expect.stringContaining("types=PUJA%2CVRAT"),
+      expect.anything()
+    );
+  });
 });
