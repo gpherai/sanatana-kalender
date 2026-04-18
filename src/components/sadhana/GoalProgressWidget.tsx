@@ -1,0 +1,97 @@
+import { Target, CheckCircle2, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
+import type { Goal, GoalType } from "./types";
+
+const GOAL_TYPE_LABELS: Record<GoalType, string> = {
+  daily: "Dagdoel",
+  weekly: "Weekdoel",
+  lifetime: "Totaal doel",
+};
+
+export function GoalProgressWidget({
+  goals,
+  onGoToSettings,
+}: {
+  goals: Goal[];
+  onGoToSettings: () => void;
+}) {
+  const activeGoals = goals.filter((g) => g.active);
+  if (activeGoals.length === 0) return null;
+
+  return (
+    <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
+      <div className="mb-4 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
+            <Target className="h-4 w-4" />
+          </div>
+          <h2 className="text-theme-fg text-sm font-semibold">Doelen</h2>
+        </div>
+        <button
+          onClick={onGoToSettings}
+          className="text-theme-fg-muted hover:text-theme-primary flex cursor-pointer items-center gap-1 text-xs transition-colors"
+        >
+          Beheer
+          <ChevronRight className="h-3 w-3" />
+        </button>
+      </div>
+
+      <div className="space-y-3">
+        {activeGoals.map((g) => {
+          const progress = Math.min(1, (g.progress_malas ?? 0) / g.target_malas);
+          const pct = Math.round(progress * 100);
+          const done = progress >= 1;
+
+          return (
+            <div key={g.id}>
+              <div className="mb-1 flex items-center justify-between gap-2">
+                <div className="flex min-w-0 items-center gap-1.5">
+                  {done ? (
+                    <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-[var(--theme-success)]" />
+                  ) : (
+                    <Target className="text-theme-fg-muted h-3.5 w-3.5 shrink-0" />
+                  )}
+                  <span
+                    className={cn(
+                      "min-w-0 truncate text-sm font-medium",
+                      done ? "text-[var(--theme-success)]" : "text-theme-fg"
+                    )}
+                  >
+                    {g.name ?? GOAL_TYPE_LABELS[g.type]}
+                  </span>
+                  <span className="text-theme-fg-muted shrink-0 text-xs">
+                    ({GOAL_TYPE_LABELS[g.type]})
+                  </span>
+                </div>
+                <span
+                  className={cn(
+                    "shrink-0 text-xs font-medium tabular-nums",
+                    done ? "text-[var(--theme-success)]" : "text-theme-fg-muted"
+                  )}
+                >
+                  {g.progress_malas ?? 0} / {g.target_malas} malas
+                </span>
+              </div>
+
+              {/* Progress bar */}
+              <div
+                className="h-1.5 overflow-hidden rounded-full"
+                style={{
+                  background: "color-mix(in oklch, var(--theme-fg) 10%, transparent)",
+                }}
+              >
+                <div
+                  className="h-full rounded-full motion-safe:transition-all motion-safe:duration-500"
+                  style={{
+                    width: `${pct}%`,
+                    background: done ? "var(--theme-success)" : "var(--theme-primary)",
+                  }}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useCallback, useState } from "react";
 import { useFetch } from "@/hooks/useFetch";
 import { FocusTrap } from "focus-trap-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   X,
@@ -85,7 +86,7 @@ export function EventDetailModal({
     if (isOpen) {
       requestAnimationFrame(() => setIsVisible(true));
     } else {
-      setIsVisible(false);
+      requestAnimationFrame(() => setIsVisible(false));
     }
   }, [isOpen]);
 
@@ -457,9 +458,14 @@ export function EventDetailModal({
                 </div>
                 <div className="space-y-1">
                   {eventRelations.parentEvents.map((parent) => (
-                    <div key={parent.id} className="text-theme-fg text-sm font-medium">
+                    <Link
+                      key={parent.id}
+                      href={`/events/${parent.id}`}
+                      onClick={onClose}
+                      className="hover:text-theme-primary text-theme-fg block text-sm font-medium transition-colors"
+                    >
                       {parent.name}
-                    </div>
+                    </Link>
                   ))}
                 </div>
               </div>
@@ -476,9 +482,11 @@ export function EventDetailModal({
                 </div>
                 <div className="space-y-1.5">
                   {eventRelations.childEvents.map((child) => (
-                    <div
+                    <Link
                       key={child.id}
-                      className="text-theme-fg-secondary flex items-center gap-2 text-sm"
+                      href={`/events/${child.id}`}
+                      onClick={onClose}
+                      className="hover:bg-theme-hover text-theme-fg-secondary hover:text-theme-fg -mx-1 flex items-center gap-2 rounded-lg px-1 py-0.5 text-sm transition-colors"
                     >
                       {child.dayNumber != null && (
                         <span className="text-theme-fg-subtle w-4 shrink-0 text-right text-xs">
@@ -487,7 +495,7 @@ export function EventDetailModal({
                       )}
                       <ChevronRight className="text-theme-fg-subtle h-3.5 w-3.5 flex-shrink-0" />
                       <span>{child.name}</span>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               </div>

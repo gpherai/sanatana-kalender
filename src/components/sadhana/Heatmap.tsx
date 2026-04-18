@@ -67,14 +67,20 @@ const DAY_LABELS = ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"];
 // COMPONENT
 // =============================================================================
 
+type HeatmapEvent = { id: string; title: string };
+
 export function Heatmap({
   weeks,
   cellSize,
   dayInfoMap,
+  eventsByDate,
+  onEventClick,
 }: {
   weeks: HeatmapCell[][];
   cellSize?: number; // if omitted → fill container width
   dayInfoMap?: DayInfoMap;
+  eventsByDate?: Map<string, HeatmapEvent[]>;
+  onEventClick?: (id: string) => void;
 }) {
   const [tapped, setTapped] = useState<{ date: string; malas: number } | null>(null);
 
@@ -97,6 +103,9 @@ export function Heatmap({
 
   const tappedInfo = tapped ? dayInfoMap?.get(tapped.date) : undefined;
   const tappedLabel = tappedInfo ? dayContextLabel(tappedInfo) : null;
+  const tappedEvents: HeatmapEvent[] = tapped
+    ? (eventsByDate?.get(tapped.date) ?? [])
+    : [];
 
   if (fill) {
     // Responsive fill mode — cells grow to fill available width
@@ -149,6 +158,11 @@ export function Heatmap({
                 const info = dayInfoMap?.get(cell.date);
                 const isSpecial = !!(info?.specialDay || info?.moonPhaseEvent);
                 const label = info ? dayContextLabel(info) : "";
+                const cellEvents = eventsByDate?.get(cell.date) ?? [];
+                const hasEvents = cellEvents.length > 0;
+                const eventsTip = cellEvents.length
+                  ? ` · ${cellEvents.map((e) => e.title).join(", ")}`
+                  : "";
                 return (
                   <div
                     key={di}
@@ -160,7 +174,7 @@ export function Heatmap({
                           ? "var(--theme-heatmap-empty)"
                           : heatColor(cell.malas),
                     }}
-                    title={`${formatDate(cell.date)}: ${cell.malas} malas${label ? ` · ${label}` : ""}`}
+                    title={`${formatDate(cell.date)}: ${cell.malas} malas${label ? ` · ${label}` : ""}${eventsTip}`}
                     onClick={() =>
                       setTapped((prev) =>
                         prev?.date === cell.date
@@ -175,6 +189,19 @@ export function Heatmap({
                         style={{ width: 3, height: 3, bottom: 1, right: 1 }}
                       />
                     )}
+                    {hasEvents && (
+                      <span
+                        className="absolute rounded-full"
+                        style={{
+                          width: 3,
+                          height: 3,
+                          top: 1,
+                          left: 1,
+                          background: "var(--theme-primary)",
+                          opacity: 0.9,
+                        }}
+                      />
+                    )}
                   </div>
                 );
               })}
@@ -187,6 +214,25 @@ export function Heatmap({
             {formatDate(tapped.date)}:{" "}
             <span className="text-theme-fg font-medium">{tapped.malas} malas</span>
             {tappedLabel && <span className="text-theme-fg-muted"> · {tappedLabel}</span>}
+            {tappedEvents.length > 0 && (
+              <span>
+                {tappedEvents.map((ev, i) => (
+                  <span key={ev.id}>
+                    {i === 0 ? " · " : ", "}
+                    {onEventClick ? (
+                      <button
+                        onClick={() => onEventClick(ev.id)}
+                        className="text-theme-primary cursor-pointer underline-offset-2 hover:underline"
+                      >
+                        {ev.title}
+                      </button>
+                    ) : (
+                      <span className="text-theme-primary">{ev.title}</span>
+                    )}
+                  </span>
+                ))}
+              </span>
+            )}
           </div>
         )}
 
@@ -211,6 +257,30 @@ export function Heatmap({
               <span>{label}</span>
             </div>
           ))}
+          {eventsByDate && eventsByDate.size > 0 && (
+            <div className="flex items-center gap-1">
+              <div
+                className="relative rounded"
+                style={{
+                  width: 12,
+                  height: 12,
+                  background: "var(--theme-heatmap-empty)",
+                }}
+              >
+                <span
+                  className="absolute rounded-full"
+                  style={{
+                    width: 3,
+                    height: 3,
+                    top: 1,
+                    left: 1,
+                    background: "var(--theme-primary)",
+                  }}
+                />
+              </div>
+              <span>festival</span>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -259,6 +329,11 @@ export function Heatmap({
                 const info = dayInfoMap?.get(cell.date);
                 const isSpecial = !!(info?.specialDay || info?.moonPhaseEvent);
                 const label = info ? dayContextLabel(info) : "";
+                const cellEvents = eventsByDate?.get(cell.date) ?? [];
+                const hasEvents = cellEvents.length > 0;
+                const eventsTip = cellEvents.length
+                  ? ` · ${cellEvents.map((e) => e.title).join(", ")}`
+                  : "";
                 return (
                   <div
                     key={di}
@@ -271,7 +346,7 @@ export function Heatmap({
                           ? "var(--theme-heatmap-empty)"
                           : heatColor(cell.malas),
                     }}
-                    title={`${formatDate(cell.date)}: ${cell.malas} malas${label ? ` · ${label}` : ""}`}
+                    title={`${formatDate(cell.date)}: ${cell.malas} malas${label ? ` · ${label}` : ""}${eventsTip}`}
                     onClick={() =>
                       setTapped((prev) =>
                         prev?.date === cell.date
@@ -286,6 +361,19 @@ export function Heatmap({
                         style={{ width: dotSize, height: dotSize, bottom: 1, right: 1 }}
                       />
                     )}
+                    {hasEvents && (
+                      <span
+                        className="absolute rounded-full"
+                        style={{
+                          width: dotSize,
+                          height: dotSize,
+                          top: 1,
+                          left: 1,
+                          background: "var(--theme-primary)",
+                          opacity: 0.9,
+                        }}
+                      />
+                    )}
                   </div>
                 );
               })}
@@ -297,6 +385,25 @@ export function Heatmap({
             {formatDate(tapped.date)}:{" "}
             <span className="text-theme-fg font-medium">{tapped.malas} malas</span>
             {tappedLabel && <span className="text-theme-fg-muted"> · {tappedLabel}</span>}
+            {tappedEvents.length > 0 && (
+              <span>
+                {tappedEvents.map((ev, i) => (
+                  <span key={ev.id}>
+                    {i === 0 ? " · " : ", "}
+                    {onEventClick ? (
+                      <button
+                        onClick={() => onEventClick(ev.id)}
+                        className="text-theme-primary cursor-pointer underline-offset-2 hover:underline"
+                      >
+                        {ev.title}
+                      </button>
+                    ) : (
+                      <span className="text-theme-primary">{ev.title}</span>
+                    )}
+                  </span>
+                ))}
+              </span>
+            )}
           </div>
         )}
         <div className="text-theme-fg-muted mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">

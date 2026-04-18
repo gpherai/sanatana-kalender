@@ -1,16 +1,16 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import {
   Flame,
-  Calendar,
   Loader2,
   RefreshCw,
-  Sparkles,
-  Activity,
   TrendingUp,
-  BookOpen,
+  LayoutDashboard,
+  Settings,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import {
   type TodayStats,
   type StreakStats,
@@ -25,19 +25,47 @@ import {
   fetchDayInfoMap,
   localDateString,
   todayString,
-  formatDuration,
 } from "./types";
-import { buildHeatmap, Heatmap } from "./Heatmap";
-import { MalasChart } from "./MalasChart";
-import { StatCard } from "./StatCard";
-import { SessionsSection } from "./SessionsSection";
-import { AllTimeOverview } from "./AllTimeOverview";
-import { WeekdayPattern, ConsistencyRing } from "./AnalyticsWidgets";
-import { PracticesPanel } from "./PracticesPanel";
-import { GoalPanel } from "./GoalPanel";
-import { RoutinePanel } from "./RoutinePanel";
+import type { CalendarEventResponse, CalendarEvent } from "@/types/calendar";
+import { parseCalendarEvent } from "@/types/calendar";
+import { EventDetailModal } from "@/components/calendar/EventDetailModal";
+import { TrackerTab } from "./tabs/TrackerTab";
+import { DashboardTab } from "./tabs/DashboardTab";
+import { AnalyticsTab } from "./tabs/AnalyticsTab";
+import { InstellingenTab } from "./tabs/InstellingenTab";
+
+// =============================================================================
+// TYPES
+// =============================================================================
+
+type TabId = "tracker" | "dashboard" | "analytics" | "instellingen";
+
+const TABS: { id: TabId; label: string; Icon: React.ElementType }[] = [
+  { id: "tracker", label: "Tracker", Icon: Flame },
+  { id: "dashboard", label: "Dashboard", Icon: LayoutDashboard },
+  { id: "analytics", label: "Analytics", Icon: TrendingUp },
+  { id: "instellingen", label: "Instellingen", Icon: Settings },
+];
+
+const VALID_TABS = new Set<string>(TABS.map((t) => t.id));
+
+// =============================================================================
+// COMPONENT
+// =============================================================================
 
 export function SadhanaTracker() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const rawTab = searchParams.get("tab") ?? "tracker";
+  const activeTab: TabId = VALID_TABS.has(rawTab) ? (rawTab as TabId) : "tracker";
+
+  const setTab = useCallback(
+    (id: TabId) => router.push(`/sadhana?tab=${id}`, { scroll: false }),
+    [router]
+  );
+
+  // ── Data state ──────────────────────────────────────────────────────────────
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [todayStats, setTodayStats] = useState<TodayStats | null>(null);
@@ -48,18 +76,28 @@ export function SadhanaTracker() {
   const [allPractices, setAllPractices] = useState<Practice[]>([]);
   const [goals, setGoals] = useState<Goal[]>([]);
   const [routines, setRoutines] = useState<Routine[]>([]);
+  const [dayInfoMap, setDayInfoMap] = useState<DayInfoMap>(new Map());
+  const [heatmapEventsByDate, setHeatmapEventsByDate] = useState<
+    Map<string, Array<{ id: string; title: string }>>
+  >(new Map());
+  const [heatmapEventsRaw, setHeatmapEventsRaw] = useState<CalendarEventResponse[]>([]);
+  const [selectedHeatmapEvent, setSelectedHeatmapEvent] = useState<CalendarEvent | null>(
+    null
+  );
+
+  // ── UI state ────────────────────────────────────────────────────────────────
   const [showAddSession, setShowAddSession] = useState(false);
   const [expandedMonths, setExpandedMonths] = useState<Set<string>>(
     () => new Set([todayString().slice(0, 7)])
   );
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [dayInfoMap, setDayInfoMap] = useState<DayInfoMap>(new Map());
   const initialLoadDone = useRef(false);
   const prevGoalProgressRef = useRef<Map<string, number>>(new Map());
 
   const activePractices = allPractices.filter((p) => p.active);
 
+  // ── Data loading ─────────────────────────────────────────────────────────────
   const loadAll = useCallback(async () => {
     if (!initialLoadDone.current) setLoading(true);
     try {
@@ -69,6 +107,8 @@ export function SadhanaTracker() {
       yearAgo.setDate(yearAgo.getDate() - 364);
       const minDate = new Date("2026-01-01T00:00:00");
       const effectiveStart = yearAgo < minDate ? minDate : yearAgo;
+
+      const heatmapEventsUrl = `/api/events?start=${localDateString(effectiveStart)}&end=${todayString()}&sortBy=date&order=asc`;
 
       const results = await Promise.allSettled([
         apiFetch<TodayStats>("/stats/today"),
@@ -80,6 +120,7 @@ export function SadhanaTracker() {
         apiFetch<Goal[]>("/goals"),
         apiFetch<Routine[]>("/routines"),
         fetchDayInfoMap(localDateString(effectiveStart), todayString()),
+        fetch(heatmapEventsUrl).then((r) => r.json() as Promise<CalendarEventResponse[]>),
       ]);
 
       const failed = results.filter(
@@ -91,7 +132,7 @@ export function SadhanaTracker() {
         throw new Error(errors[0]);
       }
 
-      const [ts, st, ov, cal, sess, pracs, gl, rout, dim] = results.map(
+      const [ts, st, ov, cal, sess, pracs, gl, rout, dim, heatmapEvents] = results.map(
         (r) => (r as PromiseFulfilledResult<unknown>).value
       ) as [
         TodayStats,
@@ -103,6 +144,7 @@ export function SadhanaTracker() {
         Goal[],
         Routine[],
         DayInfoMap,
+        CalendarEventResponse[],
       ];
 
       setTodayStats(ts);
@@ -114,6 +156,17 @@ export function SadhanaTracker() {
       setGoals(gl);
       setRoutines(rout);
       setDayInfoMap(dim);
+
+      const rawEvs = heatmapEvents ?? [];
+      setHeatmapEventsRaw(rawEvs);
+      const evMap = new Map<string, Array<{ id: string; title: string }>>();
+      for (const ev of rawEvs) {
+        const dateKey = ev.start.slice(0, 10);
+        const arr = evMap.get(dateKey) ?? [];
+        arr.push({ id: ev.id, title: ev.title });
+        evMap.set(dateKey, arr);
+      }
+      setHeatmapEventsByDate(evMap);
     } catch (err: unknown) {
       const msg =
         err instanceof Error
@@ -128,10 +181,12 @@ export function SadhanaTracker() {
   }, []);
 
   useEffect(() => {
-    loadAll();
+    requestAnimationFrame(() => {
+      void loadAll();
+    });
   }, [loadAll]);
 
-  // Detect newly completed goals and toast once per transition
+  // ── Goal completion toast ───────────────────────────────────────────────────
   useEffect(() => {
     if (goals.length === 0) return;
     const isFirst = prevGoalProgressRef.current.size === 0;
@@ -174,9 +229,15 @@ export function SadhanaTracker() {
     });
   }, []);
 
-  const heatmapFull = buildHeatmap(calDays, 364);
-  const heatmapMobile = buildHeatmap(calDays, 154);
+  const handleHeatmapEventClick = useCallback(
+    (id: string) => {
+      const raw = heatmapEventsRaw.find((e) => e.id === id);
+      if (raw) setSelectedHeatmapEvent(parseCalendarEvent(raw));
+    },
+    [heatmapEventsRaw]
+  );
 
+  // ── Loading / error states ──────────────────────────────────────────────────
   if (loading) {
     return (
       <div className="flex min-h-64 items-center justify-center">
@@ -191,7 +252,7 @@ export function SadhanaTracker() {
         <p className="text-theme-warning text-sm">{error}</p>
         <button
           onClick={loadAll}
-          className="text-theme-primary mt-3 inline-flex items-center gap-2 text-sm hover:opacity-70"
+          className="text-theme-primary mt-3 inline-flex cursor-pointer items-center gap-2 text-sm hover:opacity-70"
         >
           <RefreshCw className="h-4 w-4" /> Opnieuw proberen
         </button>
@@ -199,153 +260,93 @@ export function SadhanaTracker() {
     );
   }
 
+  // ── Render ──────────────────────────────────────────────────────────────────
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+      {/* Header + tab nav */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-theme-fg text-2xl font-bold">Sadhana</h1>
           <p className="text-theme-fg-muted text-sm">
             Mantra japa &amp; beoefening tracker
           </p>
         </div>
-      </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <StatCard
-          icon={<Sparkles className="h-5 w-5" />}
-          label="Vandaag"
-          value={
-            todayStats?.goal_malas_target
-              ? `${todayStats.total_malas} / ${todayStats.goal_malas_target} malas`
-              : `${todayStats?.total_malas ?? 0} malas`
-          }
-          sub={`${(todayStats?.total_mantras ?? 0).toLocaleString("nl-NL")} mantras${todayStats?.total_minutes ? ` · ${formatDuration(todayStats.total_minutes)}` : ""}`}
-          progress={todayStats?.goal_malas_progress ?? undefined}
-        />
-        <StatCard
-          icon={<TrendingUp className="h-5 w-5" />}
-          label="Deze week"
-          value={`${overview?.total_malas_this_week ?? 0} malas`}
-          sub={`${overview?.total_sessions_this_week ?? 0} sessies${overview?.total_minutes_this_week ? ` · ${formatDuration(overview.total_minutes_this_week)}` : ""}`}
-        />
-        <StatCard
-          icon={<Activity className="h-5 w-5" />}
-          label="Deze maand"
-          value={`${overview?.total_malas_this_month ?? 0} malas`}
-          sub={`${overview?.total_sessions_this_month ?? 0} sessies${overview?.total_minutes_this_month ? ` · ${formatDuration(overview.total_minutes_this_month)}` : ""}`}
-        />
-        <StatCard
-          icon={<Flame className="h-5 w-5" />}
-          label="Streak"
-          value={`${streak?.current_streak ?? 0} dagen`}
-          sub={`Langste: ${streak?.longest_streak ?? 0} dagen`}
-          accent
-        />
-      </div>
-
-      {/* Vandaag per beoefening */}
-      {todayStats && (
-        <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
-          <div className="mb-3 flex items-center gap-2">
-            <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
-              <Sparkles className="h-4 w-4" />
-            </div>
-            <h2 className="text-theme-fg text-sm font-semibold">
-              Vandaag per beoefening
-            </h2>
-          </div>
-          {todayStats.practices.length === 0 ? (
-            <p className="text-theme-fg-muted text-sm">Vandaag nog niets gelogd.</p>
-          ) : (
-            <div className="space-y-2">
-              {todayStats.practices.map((ps) => (
-                <div key={ps.practice_id} className="flex items-center gap-3">
-                  <div className="text-theme-primary shrink-0">
-                    {ps.practice_type === "mantra_japa" ? (
-                      <Sparkles className="h-3.5 w-3.5" />
-                    ) : (
-                      <BookOpen className="h-3.5 w-3.5" />
-                    )}
-                  </div>
-                  <span className="text-theme-fg-secondary min-w-0 flex-1 truncate text-sm">
-                    {ps.practice_name}
-                  </span>
-                  <span className="text-theme-fg-muted shrink-0 text-xs tabular-nums">
-                    {ps.total_quantity}{" "}
-                    {ps.practice_type === "mantra_japa" ? "malas" : "×"}
-                    {ps.total_mantras
-                      ? ` · ${ps.total_mantras.toLocaleString("nl-NL")} mantras`
-                      : ""}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
+        {/* Tab navigatie — pill stijl */}
+        <div className="bg-theme-surface-raised flex items-center rounded-xl p-1 shadow-sm">
+          {TABS.map(({ id, label, Icon }) => (
+            <button
+              key={id}
+              onClick={() => setTab(id)}
+              style={{ touchAction: "manipulation" }}
+              className={cn(
+                "flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                activeTab === id
+                  ? "bg-theme-primary-15 text-theme-primary"
+                  : "text-theme-fg-muted hover:text-theme-fg"
+              )}
+              aria-label={label}
+            >
+              <Icon className="h-4 w-4 shrink-0" />
+              <span className="hidden sm:inline">{label}</span>
+            </button>
+          ))}
         </div>
+      </div>
+
+      {/* Tab content */}
+      {activeTab === "tracker" && (
+        <TrackerTab
+          todayStats={todayStats}
+          streak={streak}
+          overview={overview}
+          goals={goals}
+          sessions={sessions}
+          expandedMonths={expandedMonths}
+          toggleMonth={toggleMonth}
+          showAddSession={showAddSession}
+          setShowAddSession={setShowAddSession}
+          dayInfoMap={dayInfoMap}
+          activePractices={activePractices}
+          routines={routines}
+          loadAll={loadAll}
+          showToast={showToast}
+          onGoToSettings={() => setTab("instellingen")}
+        />
       )}
 
-      {/* Sessies */}
-      <SessionsSection
-        sessions={sessions}
-        expandedMonths={expandedMonths}
-        toggleMonth={toggleMonth}
-        showAddSession={showAddSession}
-        setShowAddSession={setShowAddSession}
-        dayInfoMap={dayInfoMap}
-        activePractices={activePractices}
-        routines={routines}
-        loadAll={loadAll}
-        showToast={showToast}
-      />
+      {activeTab === "dashboard" && (
+        <DashboardTab
+          calDays={calDays}
+          sessions={sessions}
+          overview={overview}
+          dayInfoMap={dayInfoMap}
+          heatmapEventsByDate={heatmapEventsByDate}
+          onHeatmapEventClick={handleHeatmapEventClick}
+        />
+      )}
 
-      {/* Heatmap */}
-      <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
-        <div className="mb-4 flex items-center gap-2">
-          <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
-            <Calendar className="h-4 w-4" />
-          </div>
-          <h2 className="text-theme-fg text-sm font-semibold">
-            Activiteit — laatste jaar
-          </h2>
-        </div>
-        <div className="hidden sm:block">
-          <Heatmap weeks={heatmapFull} dayInfoMap={dayInfoMap} />
-        </div>
-        <div className="sm:hidden">
-          <Heatmap weeks={heatmapMobile} cellSize={11} dayInfoMap={dayInfoMap} />
-        </div>
-      </div>
+      {activeTab === "analytics" && (
+        <AnalyticsTab sessions={sessions} calDays={calDays} />
+      )}
 
-      {/* Maandgrafiek */}
-      <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
-        <div className="mb-1 flex items-center gap-2">
-          <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
-            <TrendingUp className="h-4 w-4" />
-          </div>
-          <h2 className="text-theme-fg text-sm font-semibold">
-            Per maand — laatste jaar
-          </h2>
-        </div>
-        <MalasChart calDays={calDays} sessions={sessions} />
-      </div>
+      {activeTab === "instellingen" && (
+        <InstellingenTab
+          routines={routines}
+          goals={goals}
+          allPractices={allPractices}
+          loadAll={loadAll}
+        />
+      )}
 
-      {/* All-time overzicht */}
-      {overview && <AllTimeOverview overview={overview} />}
-
-      {/* Weekpatroon + Consistentie */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <WeekdayPattern sessions={sessions} />
-        <ConsistencyRing calDays={calDays} />
-      </div>
-
-      {/* Routines + Goals + Practices */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-start">
-        <RoutinePanel routines={routines} practices={allPractices} onChanged={loadAll} />
-        <GoalPanel goals={goals} practices={allPractices} onChanged={loadAll} />
-      </div>
-      <PracticesPanel practices={allPractices} onChanged={loadAll} />
+      {/* Event detail modal (vanuit heatmap in dashboard tab) */}
+      {selectedHeatmapEvent && (
+        <EventDetailModal
+          event={selectedHeatmapEvent}
+          isOpen
+          onClose={() => setSelectedHeatmapEvent(null)}
+        />
+      )}
 
       {/* Toast */}
       {toast && (

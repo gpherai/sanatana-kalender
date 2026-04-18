@@ -1,0 +1,224 @@
+"use client";
+
+import { Flame, Sparkles, Activity, TrendingUp, BookOpen } from "lucide-react";
+import { cn } from "@/lib/utils";
+import type {
+  TodayStats,
+  StreakStats,
+  OverviewStats,
+  SessionData,
+  Practice,
+  Routine,
+  DayInfoMap,
+  Goal,
+} from "../types";
+import { formatDuration } from "../types";
+import { SessionsSection } from "../SessionsSection";
+import { UpcomingEventsPanel } from "../UpcomingEventsPanel";
+import { GoalProgressWidget } from "../GoalProgressWidget";
+
+// Compact stat voor de sidebar — dichter dan de volledige StatCard
+function SidebarStat({
+  icon,
+  label,
+  value,
+  sub,
+  accent = false,
+  progress,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  sub?: string;
+  accent?: boolean;
+  progress?: number;
+}) {
+  return (
+    <div
+      className="flex flex-col gap-1 rounded-xl p-3"
+      style={{
+        background: accent
+          ? "color-mix(in oklch, var(--theme-accent) 8%, var(--theme-surface))"
+          : "var(--theme-surface)",
+      }}
+    >
+      <div className="flex items-center gap-1.5">
+        <span
+          className={cn("shrink-0", accent ? "" : "text-theme-primary")}
+          style={accent ? { color: "var(--theme-accent)" } : undefined}
+        >
+          {icon}
+        </span>
+        <span className="text-theme-fg-muted text-xs font-medium">{label}</span>
+      </div>
+      <div
+        className="text-lg leading-tight font-bold tabular-nums"
+        style={{ color: accent ? "var(--theme-accent)" : "var(--theme-stat-value)" }}
+      >
+        {value}
+      </div>
+      {sub && <div className="text-theme-fg-muted text-xs">{sub}</div>}
+      {progress !== undefined && (
+        <div
+          className="mt-1 h-1.5 overflow-hidden rounded-full"
+          style={{ background: "color-mix(in oklch, var(--theme-fg) 10%, transparent)" }}
+        >
+          <div
+            className="h-full rounded-full motion-safe:transition-all motion-safe:duration-500"
+            style={{
+              width: `${Math.min(100, Math.round(progress * 100))}%`,
+              background: accent ? "var(--theme-accent)" : "var(--theme-primary)",
+            }}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface TrackerTabProps {
+  todayStats: TodayStats | null;
+  streak: StreakStats | null;
+  overview: OverviewStats | null;
+  goals: Goal[];
+  sessions: SessionData[];
+  expandedMonths: Set<string>;
+  toggleMonth: (month: string) => void;
+  showAddSession: boolean;
+  setShowAddSession: (v: boolean) => void;
+  dayInfoMap: DayInfoMap;
+  activePractices: Practice[];
+  routines: Routine[];
+  loadAll: () => Promise<void>;
+  showToast: (msg: string) => void;
+  onGoToSettings: () => void;
+}
+
+export function TrackerTab({
+  todayStats,
+  streak,
+  overview,
+  goals,
+  sessions,
+  expandedMonths,
+  toggleMonth,
+  showAddSession,
+  setShowAddSession,
+  dayInfoMap,
+  activePractices,
+  routines,
+  loadAll,
+  showToast,
+  onGoToSettings,
+}: TrackerTabProps) {
+  return (
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-[320px_1fr]">
+      {/* ── Sidebar ────────────────────────────────────────────────────── */}
+      <div className="space-y-4">
+        {/* Doelen */}
+        <GoalProgressWidget goals={goals} onGoToSettings={onGoToSettings} />
+
+        {/* Vandaag per beoefening */}
+        {todayStats && (
+          <div className="bg-theme-surface-raised rounded-2xl p-4 shadow-lg">
+            <div className="mb-3 flex items-center gap-2">
+              <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
+                <Sparkles className="h-4 w-4" />
+              </div>
+              <h2 className="text-theme-fg text-sm font-semibold">Vandaag</h2>
+            </div>
+            {todayStats.practices.length === 0 ? (
+              <p className="text-theme-fg-muted text-sm">Nog niets gelogd.</p>
+            ) : (
+              <div className="space-y-2">
+                {todayStats.practices.map((ps) => (
+                  <div key={ps.practice_id} className="flex items-center gap-2">
+                    <span className="text-theme-primary shrink-0">
+                      {ps.practice_type === "mantra_japa" ? (
+                        <Sparkles className="h-3 w-3" />
+                      ) : (
+                        <BookOpen className="h-3 w-3" />
+                      )}
+                    </span>
+                    <span className="text-theme-fg-secondary min-w-0 flex-1 truncate text-xs">
+                      {ps.practice_name}
+                    </span>
+                    <span className="text-theme-fg-muted shrink-0 text-xs tabular-nums">
+                      {ps.total_quantity}
+                      {ps.practice_type === "mantra_japa" ? " malas" : "×"}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Compact stats — 2×2 grid */}
+        <div className="bg-theme-surface-raised rounded-2xl p-4 shadow-lg">
+          <div className="mb-3 flex items-center gap-2">
+            <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
+              <Activity className="h-4 w-4" />
+            </div>
+            <h2 className="text-theme-fg text-sm font-semibold">Overzicht</h2>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <SidebarStat
+              icon={<Sparkles className="h-3.5 w-3.5" />}
+              label="Vandaag"
+              value={
+                todayStats?.goal_malas_target
+                  ? `${todayStats.total_malas}/${todayStats.goal_malas_target}`
+                  : `${todayStats?.total_malas ?? 0} malas`
+              }
+              sub={
+                todayStats?.total_minutes
+                  ? formatDuration(todayStats.total_minutes)
+                  : undefined
+              }
+              progress={todayStats?.goal_malas_progress ?? undefined}
+            />
+            <SidebarStat
+              icon={<Flame className="h-3.5 w-3.5" />}
+              label="Streak"
+              value={`${streak?.current_streak ?? 0} d`}
+              sub={`Langste: ${streak?.longest_streak ?? 0} d`}
+              accent
+            />
+            <SidebarStat
+              icon={<TrendingUp className="h-3.5 w-3.5" />}
+              label="Deze week"
+              value={`${overview?.total_malas_this_week ?? 0} malas`}
+              sub={`${overview?.total_sessions_this_week ?? 0} sessies`}
+            />
+            <SidebarStat
+              icon={<Activity className="h-3.5 w-3.5" />}
+              label="Deze maand"
+              value={`${overview?.total_malas_this_month ?? 0} malas`}
+              sub={`${overview?.total_sessions_this_month ?? 0} sessies`}
+            />
+          </div>
+        </div>
+
+        {/* Aankomende festivals */}
+        <UpcomingEventsPanel />
+      </div>
+
+      {/* ── Sessies (hoofdkolom) ──────────────────────────────────────── */}
+      <div className="min-w-0">
+        <SessionsSection
+          sessions={sessions}
+          expandedMonths={expandedMonths}
+          toggleMonth={toggleMonth}
+          showAddSession={showAddSession}
+          setShowAddSession={setShowAddSession}
+          dayInfoMap={dayInfoMap}
+          activePractices={activePractices}
+          routines={routines}
+          loadAll={loadAll}
+          showToast={showToast}
+        />
+      </div>
+    </div>
+  );
+}
