@@ -91,7 +91,14 @@ export function selectFirstPerYear<T extends { date: Date; maas: string | null }
 export function isPredecessorEndsAfterSunrise(prev: PrevDayInfo): boolean {
   const endMin = parseTimeToMinutes(prev.tithiEndTime ?? "");
   const sunriseMin = parseTimeToMinutes(prev.sunrise ?? "");
-  return endMin !== null && sunriseMin !== null && endMin >= sunriseMin;
+  if (endMin === null || sunriseMin === null) return false;
+  // Only shift when the tithi started in the EVENING (after sunset).
+  // Daytime starts (after sunrise but before sunset) belong to the Udaya Tithi
+  // of the following day — no date shift needed.
+  const sunsetMin = parseTimeToMinutes(prev.sunset ?? "");
+  if (sunsetMin !== null) return endMin >= sunsetMin;
+  // Fallback when sunset is unavailable: use sunrise threshold.
+  return endMin >= sunriseMin;
 }
 
 /**
