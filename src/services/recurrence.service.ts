@@ -31,6 +31,7 @@ import {
   isPredecessorEndsAfterSunrise,
   isNishitakalDateShiftNeeded,
   selectFirstPerYear,
+  applyRatriVyapiniDateRule,
 } from "@/engine";
 
 // =============================================================================
@@ -1069,9 +1070,76 @@ async function generateMonthlyLunarOccurrences(
   // Group consecutive days into "tithi windows" (engine pure helper)
   // and emit one occurrence per window with real start/end times
   const windows = groupConsecutiveDays(dailyData);
-  const occurrences: GeneratedOccurrence[] = windows.map(({ firstDay, lastDay }) =>
-    computeTithiOccurrence(firstDay, lastDay, prevDayMap)
-  );
+
+  const config = (event.ruleConfig as Record<string, unknown>) ?? {};
+  const isRatriVyapini = config.dateRule === "RATRI_VYAPINI";
+
+  let occurrences: GeneratedOccurrence[];
+
+  if (isRatriVyapini) {
+    // Ratri Vyapini rule (e.g. Kalashtami): observe on the day whose Pradosh Kaal
+    // (sunset → sunset + nightDuration/5) is covered by the tithi.
+    // Requires the firstDay's sunrise to compute night duration.
+    const firstDayDates = windows.map((w) => w.firstDay.date);
+
+    // Also fetch the udaya tithi of each prevDay to detect kshaya predecessors.
+    // When the predecessor tithi is itself a kshaya (never appears at sunrise),
+    // prevDayMap contains the grand-predecessor's tithiEndTime — not the target
+    // tithi's actual start time. In that case we fall back to Udaya Tithi.
+    const prevDayDates = windows.map((w) => {
+      const d = new Date(w.firstDay.date);
+      d.setUTCDate(d.getUTCDate() - 1);
+      return d;
+    });
+
+    const [sunriseRows, prevTithiRows] = await Promise.all([
+      prisma.dailyInfo.findMany({
+        where: { date: { in: firstDayDates } },
+        select: { date: true, sunrise: true },
+      }),
+      prisma.dailyInfo.findMany({
+        where: { date: { in: prevDayDates } },
+        select: { date: true, tithi: true },
+      }),
+    ]);
+
+    const firstDaySunriseMap = new Map(
+      sunriseRows.map((r) => [r.date.toISOString().split("T")[0]!, r.sunrise])
+    );
+    const prevTithiMap = new Map(
+      prevTithiRows.map((r) => [r.date.toISOString().split("T")[0]!, r.tithi as string])
+    );
+
+    const expectedPredecessor = TITHI_PREDECESSOR[event.tithi as Tithi];
+
+    occurrences = windows.map(({ firstDay, lastDay }) => {
+      const key = firstDay.date.toISOString().split("T")[0]!;
+      const prevDate = new Date(firstDay.date);
+      prevDate.setUTCDate(prevDate.getUTCDate() - 1);
+      const prevKey = prevDate.toISOString().split("T")[0]!;
+      const prevTithi = prevTithiMap.get(prevKey);
+
+      // Kshaya predecessor: prevDay's udaya tithi is not the direct predecessor
+      // of the target tithi (e.g. Shashthi instead of Saptami when Saptami is kshaya).
+      // The tithiEndTime in prevDayMap is then the grand-predecessor's end time,
+      // not the target tithi's start → fall back to Udaya Tithi.
+      const hasKshayaPredecessor =
+        expectedPredecessor !== undefined &&
+        prevTithi !== undefined &&
+        prevTithi !== expectedPredecessor;
+
+      return applyRatriVyapiniDateRule(
+        firstDay,
+        lastDay,
+        hasKshayaPredecessor ? undefined : prevDayMap.get(key),
+        firstDaySunriseMap.get(key) ?? null
+      );
+    });
+  } else {
+    occurrences = windows.map(({ firstDay, lastDay }) =>
+      computeTithiOccurrence(firstDay, lastDay, prevDayMap)
+    );
+  }
 
   // Kshaya tithi fallback: a kshaya tithi never occurs at sunrise — the standard
   // query above misses it entirely for that month. Detect it by finding days where

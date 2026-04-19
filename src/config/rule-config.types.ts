@@ -31,6 +31,13 @@ export interface TithiRuleConfig {
    * for at least one muhurta. Example: Vaikuntha Chaturdashi.
    */
   nishitakalDateRule?: boolean;
+  /**
+   * Ratri Vyapini (night-pervading) date rule: observe on the day whose Pradosh
+   * Kaal (sunset → sunset + nightDuration/5) is covered by the tithi.
+   * If the tithi starts before Pradosh ends → that day (even if it precedes the
+   * Udaya Tithi). If after Pradosh → the Udaya Tithi day. Example: Kalashtami.
+   */
+  dateRule?: "RATRI_VYAPINI";
 }
 
 /** SOLAR: match a specific Sankranti (sun entering a new sign) */

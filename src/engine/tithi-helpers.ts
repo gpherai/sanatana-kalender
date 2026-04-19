@@ -151,6 +151,83 @@ export function isNishitakalDateShiftNeeded(
 }
 
 // ---------------------------------------------------------------------------
+// Ratri Vyapini (Pradosh-based) date rule
+// ---------------------------------------------------------------------------
+
+/**
+ * Selects the observation date for events governed by the "Ratri Vyapini"
+ * (night-pervading) rule — used by Kalashtami (Krishna Ashtami vrat).
+ *
+ * Rule: observe on the day whose Pradosh Kaal (sunset to sunset + nightDuration/5)
+ * is covered by the tithi. If the tithi starts before Pradosh ends → that day.
+ * If the tithi starts after Pradosh → the following Udaya Tithi day (firstDay).
+ *
+ * nightDuration/5 equals 3 muhurtas, which is the Pradosh Kaal duration used
+ * by DrikPanchang for the Ratri Vyapini determination.
+ *
+ * @param firstDay       First day where the tithi is the Udaya Tithi (active at sunrise).
+ * @param lastDay        Last day of the tithi window (same as firstDay for most months).
+ * @param prevInfo       Previous day's data: tithiEndTime = moment the target tithi
+ *                       started, plus sunrise and sunset of that previous day.
+ * @param firstDaySunrise Sunrise of firstDay — needed to compute the night duration.
+ */
+export function applyRatriVyapiniDateRule(
+  firstDay: { date: Date; tithiEndTime: string | null },
+  lastDay: { date: Date; tithiEndTime: string | null },
+  prevInfo: PrevDayInfo | undefined,
+  firstDaySunrise: string | null
+): GeneratedOccurrence {
+  const normalizeTime = (t: string): string => {
+    const min = parseTimeToMinutes(t);
+    return min !== null ? formatMinutesToTime(min) : t;
+  };
+
+  const endTime = lastDay.tithiEndTime ? normalizeTime(lastDay.tithiEndTime) : undefined;
+
+  // Fall back to Udaya Tithi when data required for the Pradosh calculation is missing.
+  if (!prevInfo?.tithiEndTime || !prevInfo.sunset || !firstDaySunrise) {
+    return { date: firstDay.date, endTime };
+  }
+
+  const tithiStartMin = parseTimeToMinutes(prevInfo.tithiEndTime);
+  const sunsetMin = parseTimeToMinutes(prevInfo.sunset);
+  const prevSunriseMin = parseTimeToMinutes(prevInfo.sunrise ?? "");
+  const firstDaySunriseMin = parseTimeToMinutes(firstDaySunrise);
+
+  if (tithiStartMin === null || sunsetMin === null || firstDaySunriseMin === null) {
+    return { date: firstDay.date, endTime };
+  }
+
+  // Express tithiStart on the prevDay timeline.
+  // A stored time < prevDay sunrise means it is a past-midnight (next-day) value.
+  const tithiOnPrevTimeline =
+    prevSunriseMin !== null && tithiStartMin < prevSunriseMin
+      ? tithiStartMin + 1440
+      : tithiStartMin;
+
+  // Express firstDay sunrise on the prevDay timeline (always next-day relative to sunset).
+  const sunriseOnPrevTimeline =
+    firstDaySunriseMin < sunsetMin ? firstDaySunriseMin + 1440 : firstDaySunriseMin;
+
+  // Pradosh Kaal = sunset to sunset + nightDuration/5 (= 3 muhurtas).
+  const nightDuration = sunriseOnPrevTimeline - sunsetMin;
+  const pradoshEnd = sunsetMin + nightDuration / 5;
+
+  if (tithiOnPrevTimeline <= pradoshEnd) {
+    // Tithi starts before Pradosh ends on prevDay → observe on prevDay.
+    const prevDate = new Date(firstDay.date);
+    prevDate.setUTCDate(prevDate.getUTCDate() - 1);
+    const startTime = normalizeTime(prevInfo.tithiEndTime);
+    const endDate =
+      lastDay.date.getTime() !== prevDate.getTime() ? lastDay.date : undefined;
+    return { date: prevDate, startTime, endDate, endTime };
+  }
+
+  // Tithi starts after Pradosh → observe on Udaya Tithi day (firstDay).
+  return { date: firstDay.date, endTime };
+}
+
+// ---------------------------------------------------------------------------
 // Occurrence computation
 // ---------------------------------------------------------------------------
 

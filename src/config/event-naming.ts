@@ -849,7 +849,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     categories: ["bhairava"],
     eventType: "VRAT",
     ruleType: "TITHI",
-    ruleConfig: { tithi: "ASHTAMI_KRISHNA", monthly: true },
+    ruleConfig: { tithi: "ASHTAMI_KRISHNA", monthly: true, dateRule: "RATRI_VYAPINI" },
     description:
       "Kalashtami (Kala Ashtami) is een maandelijkse vastendag gewijd aan Heer Kaal Bhairav, de felle en beschermende manifestatie van Heer Shiva. Elke maand gevierd op de achtste dag (Ashtami) van de afnemende maan (Krishna Paksha). Gelovigen vereren Bhairava — de Heer van de Tijd en Dood, vernietiger van angst en ego — voor bescherming tegen negatieve energieën, geesten en vijanden. Volgens het Vratraj-tekstboek dient het vasten gehouden te worden op de dag waarop de Ashtami-tithi 's nachts actief is (Ratri Vyapini Ashtami), zelfs als dat betekent dat het vasten op de Saptami-dag valt. Drik Panchang vereist dat de Ashtami minimaal één Ghati na de Pradosh-periode aanwezig is. Het vrat duurt van zonsopgang tot diep in de nacht, waarbij devotees puja's verrichten in elk Prahara (nachtwake), de Kalabhairava Ashtakam reciteren, en zwarte honden — het vahana van Bhairava — voeden. De meest significante Kalashtami van het jaar is Kalabhairav Jayanti (Kala Bhairava Ashtami), gevierd in de maand Margashirsha.",
     tags: [

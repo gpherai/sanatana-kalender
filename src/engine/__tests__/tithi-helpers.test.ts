@@ -96,14 +96,51 @@ describe("tithi-helpers", () => {
   });
 
   describe("isPredecessorEndsAfterSunrise", () => {
-    it("returns true when tithiEndTime >= sunrise", () => {
-      const prev: PrevDayInfo = { tithiEndTime: "10:00", sunrise: "06:00" };
+    // With sunset available: only evening/night starts (>= sunset) shift the occurrence.
+    // A daytime start (between sunrise and sunset) belongs to the next day via Udaya Tithi.
+    it("returns false when tithiEndTime is during the day (after sunrise, before sunset)", () => {
+      const prev: PrevDayInfo = {
+        tithiEndTime: "10:48",
+        sunrise: "06:00",
+        sunset: "20:00",
+      };
+      expect(isPredecessorEndsAfterSunrise(prev)).toBe(false);
+    });
+
+    it("returns true when tithiEndTime is in the evening (>= sunset)", () => {
+      const prev: PrevDayInfo = {
+        tithiEndTime: "21:00",
+        sunrise: "06:00",
+        sunset: "20:00",
+      };
       expect(isPredecessorEndsAfterSunrise(prev)).toBe(true);
     });
 
-    it("returns false when tithiEndTime < sunrise", () => {
-      const prev: PrevDayInfo = { tithiEndTime: "05:00", sunrise: "06:00" };
+    it("returns true when tithiEndTime is exactly at sunset", () => {
+      const prev: PrevDayInfo = {
+        tithiEndTime: "20:00",
+        sunrise: "06:00",
+        sunset: "20:00",
+      };
+      expect(isPredecessorEndsAfterSunrise(prev)).toBe(true);
+    });
+
+    it("returns false when tithiEndTime is before sunrise", () => {
+      const prev: PrevDayInfo = {
+        tithiEndTime: "05:00",
+        sunrise: "06:00",
+        sunset: "20:00",
+      };
       expect(isPredecessorEndsAfterSunrise(prev)).toBe(false);
+    });
+
+    // Without sunset: falls back to sunrise threshold (legacy behaviour)
+    it("falls back to sunrise threshold when sunset is unavailable", () => {
+      const afterSunrise: PrevDayInfo = { tithiEndTime: "10:00", sunrise: "06:00" };
+      expect(isPredecessorEndsAfterSunrise(afterSunrise)).toBe(true);
+
+      const beforeSunrise: PrevDayInfo = { tithiEndTime: "05:00", sunrise: "06:00" };
+      expect(isPredecessorEndsAfterSunrise(beforeSunrise)).toBe(false);
     });
 
     it("returns false if times are missing or invalid", () => {
@@ -197,18 +234,38 @@ describe("tithi-helpers", () => {
       expect(res.endTime).toBe("10:00");
     });
 
-    it("shifts date and sets startTime if predecessor ended after sunrise (kshaya start)", () => {
+    it("shifts date and sets startTime if predecessor ended in the evening (evening start)", () => {
       const firstDay = { date: new Date(Date.UTC(2025, 0, 2)), tithiEndTime: "15:00" };
       const lastDay = firstDay;
       const prevMap = new Map<string, PrevDayInfo>();
-      // Predecessor ended after sunrise on Jan 1
-      prevMap.set("2025-01-02", { tithiEndTime: "20:00:15", sunrise: "06:00" });
+      // Tithi started at 20:00 on Jan 1 — after sunset → shift to Jan 1
+      prevMap.set("2025-01-02", {
+        tithiEndTime: "20:00:15",
+        sunrise: "06:00",
+        sunset: "18:30",
+      });
 
       const res = computeTithiOccurrence(firstDay, lastDay, prevMap);
-      expect(res.date.toISOString()).toBe("2025-01-01T00:00:00.000Z"); // Shifted back to Jan 1
+      expect(res.date.toISOString()).toBe("2025-01-01T00:00:00.000Z");
       expect(res.startTime).toBe("20:00");
       expect(res.endDate?.toISOString()).toBe("2025-01-02T00:00:00.000Z");
       expect(res.endTime).toBe("15:00");
+    });
+
+    it("does NOT shift date when tithi started during the day (Udaya Tithi convention)", () => {
+      const firstDay = { date: new Date(Date.UTC(2026, 4, 20)), tithiEndTime: "15:15" };
+      const lastDay = firstDay;
+      const prevMap = new Map<string, PrevDayInfo>();
+      // Tithi started at 10:48 on May 19 — before sunset → stays on May 20
+      prevMap.set("2026-05-20", {
+        tithiEndTime: "10:48",
+        sunrise: "05:44",
+        sunset: "20:05",
+      });
+
+      const res = computeTithiOccurrence(firstDay, lastDay, prevMap);
+      expect(res.date.toISOString()).toBe("2026-05-20T00:00:00.000Z");
+      expect(res.startTime).toBeUndefined();
     });
 
     it("keeps invalid time format unchanged instead of formatting", () => {

@@ -16,4 +16,5 @@ export {
   isPredecessorEndsAfterSunrise,
   isNishitakalDateShiftNeeded,
   computeTithiOccurrence,
+  applyRatriVyapiniDateRule,
 } from "./tithi-helpers";
