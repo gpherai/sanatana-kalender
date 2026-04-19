@@ -17,6 +17,7 @@ export interface EncyclopediaTerm {
     | "Navagraha";
   shortDescription: string;
   parent?: string;
+  parents?: string[];
   isGroup?: boolean;
   priority?: number;
   content: string;
@@ -45,6 +46,7 @@ export function getAllTerms(): EncyclopediaTerm[] {
         category: data.category,
         shortDescription: data.shortDescription || "",
         parent: data.parent,
+        parents: data.parents,
         isGroup: data.isGroup || false,
         priority: data.priority !== undefined ? data.priority : 99,
         content,
@@ -68,6 +70,7 @@ export function getTermBySlug(slug: string): EncyclopediaTerm | null {
       category: data.category,
       shortDescription: data.shortDescription || "",
       parent: data.parent,
+      parents: data.parents,
       isGroup: data.isGroup || false,
       priority: data.priority !== undefined ? data.priority : 99,
       content,

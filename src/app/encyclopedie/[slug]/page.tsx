@@ -1,4 +1,4 @@
-import { getTermBySlug, getAllTerms } from "@/lib/encyclopedia";
+import { getTermBySlug, getAllTerms, type EncyclopediaTerm } from "@/lib/encyclopedia";
 import { notFound } from "next/navigation";
 import { PageLayout } from "@/components/layout";
 import { MDXRemote } from "next-mdx-remote/rsc";
@@ -105,9 +105,12 @@ export default async function TermPage({
   const allTerms = getAllTerms();
   const parentTerm = term.parent ? getTermBySlug(term.parent) : null;
 
+  const isChildOf = (t: EncyclopediaTerm, slug: string) =>
+    t.parent === slug || (t.parents ?? []).includes(slug);
+
   // 1. Identify direct child groups
   const childGroups = allTerms
-    .filter((t) => t.parent === term.slug && t.isGroup)
+    .filter((t) => isChildOf(t, term.slug) && t.isGroup)
     .sort((a, b) => {
       if (a.priority !== b.priority) return (a.priority || 99) - (b.priority || 99);
       return a.title.localeCompare(b.title);
@@ -117,7 +120,7 @@ export default async function TermPage({
   const groupedManifestations = childGroups.map((group) => ({
     group,
     members: allTerms
-      .filter((t) => t.parent === group.slug)
+      .filter((t) => isChildOf(t, group.slug))
       .sort((a, b) => {
         if ((a.priority || 99) !== (b.priority || 99)) {
           return (a.priority || 99) - (b.priority || 99);
@@ -128,7 +131,7 @@ export default async function TermPage({
 
   // 3. Identify direct standalone manifestations
   const standaloneManifestations = allTerms
-    .filter((t) => t.parent === term.slug && !t.isGroup)
+    .filter((t) => isChildOf(t, term.slug) && !t.isGroup)
     .sort((a, b) => {
       if ((a.priority || 99) !== (b.priority || 99)) {
         return (a.priority || 99) - (b.priority || 99);
@@ -142,8 +145,9 @@ export default async function TermPage({
       return (
         t.category === term.category &&
         t.slug !== term.slug &&
-        t.parent !== term.slug &&
+        !isChildOf(t, term.slug) &&
         t.slug !== term.parent &&
+        !(t.parents ?? []).includes(term.slug) &&
         !t.parent &&
         !t.isGroup
       );
