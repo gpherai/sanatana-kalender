@@ -1,7 +1,7 @@
 # 🚀 Dharma Calendar - Deployment Guide
 
-> **Versie:** 1.2  
-> **Laatst bijgewerkt:** 11 april 2026
+> **Versie:** 1.3  
+> **Laatst bijgewerkt:** 19 april 2026
 
 Dit document beschrijft hoe je Dharma Calendar deployt op een VPS met Docker.
 
@@ -389,9 +389,32 @@ docker compose --profile backup run --rm backup
 # 3. Rebuild and restart (migraties draaien automatisch)
 docker compose up -d --build
 
-# 4. Verify
+# 4. Sync event-catalog als event-naming.ts gewijzigd is (zie hieronder)
+
+# 5. Verify
 docker compose ps
 curl http://localhost:${APP_PORT:-3000}/api/health
+```
+
+### Event-catalog Syncen na Update
+
+Als `src/config/event-naming.ts` gewijzigd is (nieuwe events, bijgewerkte beschrijvingen of tags), sync dan de catalog naar de database via de `migrate`-service (builder stage met volledige devDependencies):
+
+```bash
+docker compose run --rm migrate node_modules/.bin/tsx \
+  --tsconfig tsconfig.json \
+  src/scripts/generate-events-from-naming.ts
+```
+
+> **Waarom niet `docker compose exec app`?** De productie-image installeert geen devDependencies, dus `tsx` is niet beschikbaar in de `app`-container. De `migrate`-service draait op de builder stage en heeft wel alle tools.
+
+Alleen nodig bij occurrences-wijzigingen (nieuwe events of aangepaste rekenregels):
+
+```bash
+docker compose run --rm migrate node_modules/.bin/tsx \
+  --tsconfig tsconfig.json \
+  src/scripts/generate-occurrences.ts \
+  --start 2026-01-01 --end 2029-12-31 --replace
 ```
 
 ### Rollback
