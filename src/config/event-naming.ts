@@ -851,7 +851,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleType: "TITHI",
     ruleConfig: { tithi: "ASHTAMI_KRISHNA", monthly: true },
     description:
-      "Kalashtami (Kala Ashtami) is een maandelijkse hindoeïstische vastendag gewijd aan Heer Kaal Bhairav, de felle en beschermende manifestatie van Heer Shiva. Het wordt elke maand gevierd op de achtste dag (Ashtami) van de afnemende maan (Krishna Paksha). Gelovigen aanbidden Bhairava, de bewaker van tijd en vernietiger van ego, voor bescherming tegen negatieve energieën, angsten en obstakels. Het vasten (vrat) duurt vaak tot de avond, waarna men speciale puja's verricht, mantra's zoals het Kalabhairava Ashtakam reciteert, en zwarte honden (het rijdier of vahana van Bhairava) voert.",
+      "Kalashtami (Kala Ashtami) is een maandelijkse vastendag gewijd aan Heer Kaal Bhairav, de felle en beschermende manifestatie van Heer Shiva. Elke maand gevierd op de achtste dag (Ashtami) van de afnemende maan (Krishna Paksha). Gelovigen vereren Bhairava — de Heer van de Tijd en Dood, vernietiger van angst en ego — voor bescherming tegen negatieve energieën, geesten en vijanden. Volgens het Vratraj-tekstboek dient het vasten gehouden te worden op de dag waarop de Ashtami-tithi 's nachts actief is (Ratri Vyapini Ashtami), zelfs als dat betekent dat het vasten op de Saptami-dag valt. Drik Panchang vereist dat de Ashtami minimaal één Ghati na de Pradosh-periode aanwezig is. Het vrat duurt van zonsopgang tot diep in de nacht, waarbij devotees puja's verrichten in elk Prahara (nachtwake), de Kalabhairava Ashtakam reciteren, en zwarte honden — het vahana van Bhairava — voeden. De meest significante Kalashtami van het jaar is Kalabhairav Jayanti (Kala Bhairava Ashtami), gevierd in de maand Margashirsha.",
     tags: [
       "ashtami",
       "bhairava",
@@ -860,6 +860,8 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       "kalabhairava ashtakam",
       "kalashtami",
       "maandelijks",
+      "pradosh",
+      "ratri",
       "shiva",
       "vasten",
       "vrat",
@@ -1388,15 +1390,28 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     key: "margashirsha_kalabhairav_jayanti",
     name: "Kala Bhairava Ashtami",
     categories: ["bhairava"],
+    aliases: ["Kalabhairav Jayanti", "Bhairava Ashtami", "Bhairava Jayanti"],
     eventType: "JAYANTI",
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "ASHTAMI_KRISHNA",
       maas: "MARGASHIRSHA",
     },
+    timingType: "PRADOSH_KAAL",
     description:
-      "Kalabhairav Jayanti. De verschijningsdag van Kala Bhairava, de heer van de tijd en bewaker van Kashi. Ashtami van de donkere helft van Margashirsha.",
-    tags: ["bhairava", "jayanti", "kashi", "shiva"],
+      "Kala Bhairava Ashtami — ook bekend als Kalabhairav Jayanti, Bhairava Ashtami of Bhairava Jayanti — viert de dag waarop Heer Shiva zich manifesteerde als Bhairava. Volgens de Shiva Rahasya vond deze verschijning plaats tijdens de Madhyahna, maar omdat dit een Ratri-vrat (nachtvast) is, geldt de Ratri Vyapini Ashtami: de Ashtami-tithi dient 's nachts actief te zijn. In de Purnimanta-kalender (Noord-India) valt dit in Margashirsha, in de Amanta-kalender (Zuid-India) in Kartika — beide kalenders vieren het echter op dezelfde dag. Bhairava betekent letterlijk 'de Angstaanjagende' of 'de Vernietiger van Angst': hij is de Heer van de Tijd en de Dood, bewaker van Kashi (Varanasi). In de tantrische traditie staat Bhairava Tantra bovenaan. Devotees vereren hem voor bescherming tegen geesten, negatieve energieën en vijanden; wie Bhairava oprecht aanbidt, wordt volkomen vreesloos. Vrat Vidhi: in elk Prahara van de nacht wordt Bhairava aanbeden met drie Arghya-offeranden onder recitatie van de drie Arghya-mantras (zie encyclopedie). Daarna volgt Jagarana (nachtwaak) met luisteren naar de glorie van Shiva. Door dit vrat met toewijding te houden wordt men bevrijd van alle zonden en bereikt men een verheven spirituele staat.",
+    tags: [
+      "arghya",
+      "bhairava",
+      "jagarana",
+      "jayanti",
+      "kashi",
+      "margashirsha",
+      "ratri",
+      "shiva",
+      "tantra",
+      "vrat",
+    ],
   },
 
   // ==========================================================================
@@ -2209,13 +2224,14 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleType: "TITHI",
     ruleConfig: { tithi: "CHATURTHI_KRISHNA", maas: "JYESHTHA", isAdhikaOnly: true },
     description:
-      "Vibhuvana betekent 'hij die alle werelden doordringt en beheerst'. In deze alomtegenwoordige manifestatie is Ganesha aanwezig in alle drie de werelden. Deze Sankashti valt uitsluitend in jaren met een Adhika (schrikkel) Jyeshtha-maand — de extra schrikkelmaand krijgt zijn eigen Sankashti-naam buiten de reguliere twaalfmaandse cyclus. Devotees vasten van zonsopgang tot maanopkomst.",
+      "Vibhuvana Sankashti Chaturthi is de Krishna Paksha Chaturthi in de Adhika (schrikkel-) maand — de zeldzaamste van alle Sankashti-observanties, die gemiddeld slechts eens per twee en een half jaar voorkomt. Op deze dag wordt Vibhuvana Ganapati vereerd: Vibhuvana betekent 'aanwezig in alle drie de werelden' of 'hij die alle drie de Loka's verlicht' — Ganapati als de alomtegenwoordige kosmische kracht die Bhuloka (aarde), Bhuvarloka (tussenwereld) en Svarloka (hemel) doordringt. Bijzonder aanbod: kokosnotenladdu's (nariyal ke laddoo) worden op deze dag speciaal geofferd. Omdat Adhika Maas als de heiligste maand geldt, dragen gebeden, penance, aanbidding en het vasten duizendvoudig meer vrucht dan op een gewone Sankashti. Dit vrat vervult alle wensen en verwijdert alle belemmeringen. Ritueeel: vasten van zonsopgang tot maanopkomst, Ganesha-puja met kokosnotenladdu's, durva-gras en rode bloemen, maanaanbidding na maansopkomst (Arghya), en verbreking van het vasten na het zien van de maan.",
     tags: [
       "adhika",
       "arghya",
       "darshan",
       "ganesha",
-      "jyeshtha",
+      "kokos",
+      "laddu",
       "sankashti",
       "vasten",
       "vibhuvana",
