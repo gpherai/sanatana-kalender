@@ -93,12 +93,37 @@ export function EncyclopediaOverview({
   const searchResults = useMemo(() => {
     if (!q) return null;
     const all = categories.flatMap((cat) => groupedTerms[cat] ?? []);
-    return all.filter(
-      (t) =>
-        t.title.toLowerCase().includes(q) ||
-        t.sanskrit.toLowerCase().includes(q) ||
-        t.shortDescription.toLowerCase().includes(q)
-    );
+    const normalize = (s: string) =>
+      s
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase();
+    // Alternate transliterations → canonical normalized form
+    const SYNONYMS: [string, string][] = [
+      ["ganesh", "ganesa"],
+      ["ganapati", "ganesa"],
+      ["vinayaka", "ganesa"],
+      ["vighnesh", "ganesa"],
+      ["shiva", "siva"],
+      ["vishnu", "visnu"],
+      ["lakshmi", "laksmi"],
+      ["krishna", "krsna"],
+      ["narayana", "narayana"],
+      ["durga", "durga"],
+      ["parvati", "parvati"],
+    ];
+    const nq = normalize(q);
+    const terms = new Set([nq]);
+    for (const [a, b] of SYNONYMS) {
+      if (nq.includes(a)) terms.add(nq.replace(a, b));
+      if (nq.includes(b)) terms.add(nq.replace(b, a));
+    }
+    return all.filter((t) => {
+      const haystack = normalize(
+        `${t.title} ${t.sanskrit} ${t.shortDescription} ${t.slug}`
+      );
+      return [...terms].some((term) => haystack.includes(term));
+    });
   }, [q, categories, groupedTerms]);
 
   return (

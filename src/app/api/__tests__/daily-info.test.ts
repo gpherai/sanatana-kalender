@@ -215,4 +215,68 @@ describe("GET /api/daily-info", () => {
     expect(json.message).toBe("Maximum bereik is 90 dagen.");
     expect(calculateRange).not.toHaveBeenCalled();
   });
+
+  it("returns daily info with all optional fields mapped", async () => {
+    const fullPanchanga: DailyPanchangaFull = {
+      ...basePanchanga,
+      maas: { name: "PHALGUNA", type: "AMANTA", lunarDay: 14, paksha: "KRISHNA" },
+      vikramaSamvat: { year: 2082, name: "Krodhi" },
+      samvatsara: { name: "Krodhi", number: 38 },
+      shakaSamvat: { year: 1947, name: "Vishvavasu" },
+      sunSign: {
+        number: 11,
+        name: "Kumbha",
+        uptoLocal: "10:00",
+        uptoUtcIso: "2025-01-01T10:00:00Z",
+      },
+      moonSign: {
+        number: 9,
+        name: "Dhanu",
+        uptoLocal: "11:00",
+        uptoUtcIso: "2025-01-01T11:00:00Z",
+      },
+      pravishte: {
+        daysSinceSankranti: 15,
+        currentRashi: "Dhanu",
+        lastSankrantiDate: "2024-12-16",
+      },
+      nextTithi: {
+        number: 2,
+        name: "Dwitiya",
+        paksha: "Shukla",
+        endLocal: "08:00",
+        endUtcIso: "2025-01-02T08:00:00Z",
+      },
+      nextNakshatra: {
+        number: 2,
+        name: "Bharani",
+        pada: 1,
+        endLocal: "09:00",
+        endUtcIso: "2025-01-02T09:00:00Z",
+      },
+      nextYoga: {
+        number: 2,
+        name: "Atiganda",
+        endLocal: "10:00",
+        endUtcIso: "2025-01-02T10:00:00Z",
+      },
+      nextKarana: {
+        number: 2,
+        name: "Bava",
+        endLocal: "11:00",
+        endUtcIso: "2025-01-02T11:00:00Z",
+      },
+    };
+    calculateDaily.mockResolvedValue(fullPanchanga);
+
+    const request = new NextRequest("http://localhost/api/daily-info?date=2025-01-01");
+    const response = await GET(request);
+    const json = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(json.maas.name).toBe("PHALGUNA");
+    expect(json.sunSign.name).toBe("Kumbha");
+    expect(json.nextTithi.name).toBe("Dwitiya");
+    expect(json.pravishte.daysSinceSankranti).toBe(15);
+  });
 });

@@ -92,6 +92,34 @@ describe("API Preferences", () => {
     expect(json.currentTheme).toBe("forest-green");
   });
 
+  it("updates preferences with empty payload (partial update)", async () => {
+    prismaMock.userPreference.upsert.mockResolvedValue({
+      id: "default",
+      currentTheme: "spiritual-minimal",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as any);
+
+    const request = new NextRequest("http://localhost/api/preferences", {
+      method: "PUT",
+      body: JSON.stringify({}), // Empty but valid
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const response = await PUT(request);
+    expect(response.status).toBe(200);
+    expect(prismaMock.userPreference.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        create: expect.objectContaining({
+          currentTheme: "spiritual-minimal", // Default
+        }),
+        update: expect.objectContaining({
+          // No fields should be present in the update object if payload is empty
+        }),
+      })
+    );
+  });
+
   it("handles Prisma P2002 error in PUT", async () => {
     const error = new Prisma.PrismaClientKnownRequestError("Conflict", {
       code: "P2002",
