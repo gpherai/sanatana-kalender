@@ -2177,8 +2177,20 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleType: "TITHI",
     ruleConfig: { tithi: "CHATURTHI_KRISHNA", maas: "JYESHTHA" },
     description:
-      "Ekadanta betekent 'hij met één slagtand'. Ganesha brak zijn tweede slagtand om als pen te dienen bij het optekenen van de Mahabharata onder dictaat van Vyasa — symbool van totale toewijding aan kennis en offer. Dit is de traditionele naam voor de Sankashti van de reguliere Jyeshtha-maand. Devotees vasten van zonsopgang tot maanopkomst.",
-    tags: ["arghya", "darshan", "ekadanta", "ganesha", "jyeshtha", "sankashti", "vasten"],
+      "Op deze Sankashti wordt Ganesha vereerd in zijn Ekadanta-manifestatie — de tweede van zijn acht Ashtavinayaka-incarnaties zoals beschreven in de Mudgala Purana. 'Ekadanta' heeft een diepe filosofische betekenis: 'Eka' staat voor Maya (illusie), 'Danta' voor het Brahman (de ultieme werkelijkheid) — Ekadanta is hij die Maya draagt maar volledig geworteld is in de Absolute Waarheid. In deze vorm verscheen hij om de goden te bevrijden van de demon Madasura, die na een boon van de godin de drie werelden had onderworpen. Ekadanta verscheen rijdend op zijn muis, gewapend met strik, bijl, lotus en het abhaya-gebaar, en versloeg Madasura — die zich uiteindelijk overgaf en zich terugtrok naar de Patala Loka. Een andere overlevering schrijft de enkel-slagtand toe aan de slag met Parashurama, of aan het afbreken ervan als pen voor de Mahabharata. Devotees vasten van zonsopgang tot maanopkomst en reciteren de Sankat Nashan Ganesha Stotram.",
+    tags: [
+      "arghya",
+      "ashtavinayaka",
+      "darshan",
+      "ekadanta",
+      "ganesha",
+      "jyeshtha",
+      "madasura",
+      "mudgala purana",
+      "parashurama",
+      "sankashti",
+      "vasten",
+    ],
   },
   {
     key: "adhika_jyeshtha_vibhuvana_sankashti",
