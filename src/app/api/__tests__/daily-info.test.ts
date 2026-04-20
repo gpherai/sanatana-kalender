@@ -219,7 +219,13 @@ describe("GET /api/daily-info", () => {
   it("returns daily info with all optional fields mapped", async () => {
     const fullPanchanga: DailyPanchangaFull = {
       ...basePanchanga,
-      maas: { name: "PHALGUNA", type: "AMANTA", lunarDay: 14, paksha: "KRISHNA" },
+      maas: {
+        name: "PHALGUNA",
+        type: "Amanta",
+        lunarDay: 14,
+        paksha: "Krishna",
+        isAdhika: false,
+      },
       vikramaSamvat: { year: 2082, name: "Krodhi" },
       samvatsara: { name: "Krodhi", number: 38 },
       shakaSamvat: { year: 1947, name: "Vishvavasu" },
@@ -263,6 +269,7 @@ describe("GET /api/daily-info", () => {
       nextKarana: {
         number: 2,
         name: "Bava",
+        type: "Movable",
         endLocal: "11:00",
         endUtcIso: "2025-01-02T11:00:00Z",
       },
