@@ -1,4 +1,1256 @@
 /* =============================================================================
+   THEME UTILITY CLASSES
+   
+   IMPORTANT: Use HYPHEN notation for opacity variants!
+   ✅ Correct: .bg-theme-primary-10
+   ❌ Wrong:   .bg-theme-primary/10
+   ============================================================================= */
+
+/* === SOLID BACKGROUNDS === */
+.bg-theme-primary {
+  background-color: var(--theme-primary);
+}
+.bg-theme-secondary {
+  background-color: var(--theme-secondary);
+}
+.bg-theme-accent {
+  background-color: var(--theme-accent);
+}
+
+/* === BACKGROUND WITH OPACITY (hyphen notation) === */
+.bg-theme-primary-10 {
+  background-color: color-mix(in oklch, var(--theme-primary) 10%, transparent);
+}
+.bg-theme-primary-15 {
+  background-color: color-mix(in oklch, var(--theme-primary) 15%, transparent);
+}
+.bg-theme-primary-20 {
+  background-color: color-mix(in oklch, var(--theme-primary) 20%, transparent);
+}
+.bg-theme-primary-30 {
+  background-color: color-mix(in oklch, var(--theme-primary) 30%, transparent);
+}
+.bg-theme-primary-50 {
+  background-color: color-mix(in oklch, var(--theme-primary) 50%, transparent);
+}
+
+.bg-theme-secondary-10 {
+  background-color: color-mix(in oklch, var(--theme-secondary) 10%, transparent);
+}
+.bg-theme-secondary-15 {
+  background-color: color-mix(in oklch, var(--theme-secondary) 15%, transparent);
+}
+.bg-theme-secondary-20 {
+  background-color: color-mix(in oklch, var(--theme-secondary) 20%, transparent);
+}
+
+.bg-theme-accent-10 {
+  background-color: color-mix(in oklch, var(--theme-accent) 10%, transparent);
+}
+.bg-theme-accent-15 {
+  background-color: color-mix(in oklch, var(--theme-accent) 15%, transparent);
+}
+.bg-theme-accent-20 {
+  background-color: color-mix(in oklch, var(--theme-accent) 20%, transparent);
+}
+
+.bg-theme-fg-4 {
+  background-color: color-mix(in oklch, var(--theme-fg) 4%, transparent);
+}
+.bg-theme-fg-8 {
+  background-color: color-mix(in oklch, var(--theme-fg) 8%, transparent);
+}
+.text-theme-stat-value {
+  color: var(--theme-stat-value);
+}
+
+/* === TEXT COLORS === */
+.text-theme-primary {
+  color: var(--theme-primary);
+}
+.text-theme-secondary {
+  color: var(--theme-secondary);
+}
+.text-theme-accent {
+  color: var(--theme-accent);
+}
+
+/* === BORDER COLORS === */
+.border-theme-primary {
+  border-color: var(--theme-primary);
+}
+.border-theme-secondary {
+  border-color: var(--theme-secondary);
+}
+.border-theme-accent {
+  border-color: var(--theme-accent);
+}
+.border-theme-primary-30 {
+  border-color: color-mix(in oklch, var(--theme-primary) 30%, transparent);
+}
+.border-theme-primary-50 {
+  border-color: color-mix(in oklch, var(--theme-primary) 50%, transparent);
+}
+
+/* === RING COLORS === */
+.ring-theme-primary {
+  --tw-ring-color: var(--theme-primary);
+}
+.ring-theme-primary-30 {
+  --tw-ring-color: color-mix(in oklch, var(--theme-primary) 30%, transparent);
+}
+.ring-theme-primary-50 {
+  --tw-ring-color: color-mix(in oklch, var(--theme-primary) 50%, transparent);
+}
+
+/* === SHADOWS === */
+.shadow-theme-primary {
+  box-shadow: 0 4px 14px 0 color-mix(in oklch, var(--theme-primary) 25%, transparent);
+}
+.shadow-theme-primary-lg {
+  box-shadow: 0 10px 25px -3px color-mix(in oklch, var(--theme-primary) 30%, transparent);
+}
+
+/* === SEMANTIC BACKGROUNDS === */
+.bg-theme-bg {
+  background-color: var(--theme-bg);
+}
+.bg-theme-bg-subtle {
+  background-color: var(--theme-bg-subtle);
+}
+.bg-theme-surface {
+  background-color: var(--theme-surface);
+}
+.bg-theme-surface-raised {
+  background-color: var(--theme-surface-raised);
+}
+.bg-theme-surface-overlay {
+  background-color: var(--theme-surface-overlay);
+}
+.bg-theme-hover {
+  background-color: var(--theme-hover);
+}
+.bg-theme-surface-hover {
+  background-color: var(--theme-hover);
+}
+.bg-theme-active {
+  background-color: var(--theme-active);
+}
+
+/* === SEMANTIC TEXT === */
+.text-theme-fg {
+  color: var(--theme-fg);
+}
+.text-theme-fg-secondary {
+  color: var(--theme-fg-secondary);
+}
+.text-theme-fg-muted {
+  color: var(--theme-fg-muted);
+}
+.text-theme-fg-subtle {
+  color: var(--theme-fg-subtle);
+}
+
+/* === SEMANTIC BORDERS === */
+.border-theme-border {
+  border-color: var(--theme-border);
+}
+.border-theme-border-subtle {
+  border-color: var(--theme-border-subtle);
+}
+.border-theme-border-strong {
+  border-color: var(--theme-border-strong);
+}
+.divide-theme-divider > :not([hidden]) ~ :not([hidden]) {
+  border-color: var(--theme-divider);
+}
+
+/* === STATUS COLORS === */
+.bg-theme-success {
+  background-color: var(--theme-success);
+}
+.bg-theme-success-subtle {
+  background-color: var(--theme-success-bg);
+}
+.text-theme-success {
+  color: var(--theme-success);
+}
+.border-theme-success {
+  border-color: var(--theme-success);
+}
+
+.bg-theme-warning {
+  background-color: var(--theme-warning);
+}
+.bg-theme-warning-subtle {
+  background-color: var(--theme-warning-bg);
+}
+.text-theme-warning {
+  color: var(--theme-warning);
+}
+.border-theme-warning {
+  border-color: var(--theme-warning);
+}
+
+.bg-theme-error {
+  background-color: var(--theme-error);
+}
+.bg-theme-error-subtle {
+  background-color: var(--theme-error-bg);
+}
+.text-theme-error {
+  color: var(--theme-error);
+}
+.border-theme-error {
+  border-color: var(--theme-error);
+}
+
+.bg-theme-info {
+  background-color: var(--theme-info);
+}
+.bg-theme-info-subtle {
+  background-color: var(--theme-info-bg);
+}
+.text-theme-info {
+  color: var(--theme-info);
+}
+.border-theme-info {
+  border-color: var(--theme-info);
+}
+
+/* === ICON COLORS === */
+.text-theme-icon-sun {
+  color: var(--theme-icon-sun);
+}
+.text-theme-icon-sunrise {
+  color: var(--theme-icon-sunrise);
+}
+.text-theme-icon-sunset {
+  color: var(--theme-icon-sunset);
+}
+.text-theme-icon-moon {
+  color: var(--theme-icon-moon);
+}
+.text-theme-icon-event-special {
+  color: var(--theme-icon-event-special);
+}
+.text-theme-icon-mode-sun {
+  color: var(--theme-icon-mode-sun);
+}
+.text-theme-icon-mode-moon {
+  color: var(--theme-icon-mode-moon);
+}
+
+/* === GRADIENTS === */
+.bg-theme-gradient {
+  background: linear-gradient(135deg, var(--theme-primary), var(--theme-accent));
+}
+.bg-theme-gradient-to-r {
+  background: linear-gradient(to right, var(--theme-primary), var(--theme-accent));
+}
+.bg-theme-gradient-subtle {
+  background: linear-gradient(
+    135deg,
+    color-mix(in oklch, var(--theme-primary) 10%, transparent),
+    color-mix(in oklch, var(--theme-accent) 10%, transparent)
+  );
+}
+
+/* === HOVER STATES === */
+.hover-bg-theme-primary:hover {
+  background-color: var(--theme-primary);
+}
+.hover-bg-theme-primary-20:hover {
+  background-color: color-mix(in oklch, var(--theme-primary) 20%, transparent);
+}
+.hover-text-theme-primary:hover {
+  color: var(--theme-primary);
+}
+.hover-border-theme-primary:hover {
+  border-color: var(--theme-primary);
+}
+
+/* === FOCUS STATES === */
+.focus-ring-theme-primary:focus {
+  --tw-ring-color: var(--theme-primary);
+}
+.focus-border-theme-primary:focus {
+  border-color: var(--theme-primary);
+}
+
+/* =============================================================================
+   CATEGORY COLOR UTILITIES (Hybrid Approach)
+
+   Pre-generated classes for standard opacity levels (10%, 15%, 20%, 30%)
+   Fallback custom property for dynamic/edge cases
+   ============================================================================= */
+
+/* === BACKGROUND CLASSES === */
+.bg-category-ganesha-10 {
+  background-color: color-mix(in oklch, oklch(0.72 0.18 42) 10%, transparent);
+}
+.bg-category-ganesha-15 {
+  background-color: color-mix(in oklch, oklch(0.72 0.18 42) 15%, transparent);
+}
+.bg-category-ganesha-20 {
+  background-color: color-mix(in oklch, oklch(0.72 0.18 42) 20%, transparent);
+}
+.bg-category-ganesha-30 {
+  background-color: color-mix(in oklch, oklch(0.72 0.18 42) 30%, transparent);
+}
+.bg-category-shiva-10 {
+  background-color: color-mix(in oklch, oklch(0.65 0.1 215) 10%, transparent);
+}
+.bg-category-shiva-15 {
+  background-color: color-mix(in oklch, oklch(0.65 0.1 215) 15%, transparent);
+}
+.bg-category-shiva-20 {
+  background-color: color-mix(in oklch, oklch(0.65 0.1 215) 20%, transparent);
+}
+.bg-category-shiva-30 {
+  background-color: color-mix(in oklch, oklch(0.65 0.1 215) 30%, transparent);
+}
+.bg-category-vishnu-10 {
+  background-color: color-mix(in oklch, oklch(0.5 0.22 240) 10%, transparent);
+}
+.dark .bg-category-vishnu-10 {
+  background-color: color-mix(in oklch, oklch(0.72 0.2 240) 10%, transparent);
+}
+.bg-category-vishnu-15 {
+  background-color: color-mix(in oklch, oklch(0.5 0.22 240) 15%, transparent);
+}
+.dark .bg-category-vishnu-15 {
+  background-color: color-mix(in oklch, oklch(0.72 0.2 240) 15%, transparent);
+}
+.bg-category-vishnu-20 {
+  background-color: color-mix(in oklch, oklch(0.5 0.22 240) 20%, transparent);
+}
+.dark .bg-category-vishnu-20 {
+  background-color: color-mix(in oklch, oklch(0.72 0.2 240) 20%, transparent);
+}
+.bg-category-vishnu-30 {
+  background-color: color-mix(in oklch, oklch(0.5 0.22 240) 30%, transparent);
+}
+.dark .bg-category-vishnu-30 {
+  background-color: color-mix(in oklch, oklch(0.72 0.2 240) 30%, transparent);
+}
+.bg-category-durga-10 {
+  background-color: color-mix(in oklch, oklch(0.65 0.22 2) 10%, transparent);
+}
+.bg-category-durga-15 {
+  background-color: color-mix(in oklch, oklch(0.65 0.22 2) 15%, transparent);
+}
+.bg-category-durga-20 {
+  background-color: color-mix(in oklch, oklch(0.65 0.22 2) 20%, transparent);
+}
+.bg-category-durga-30 {
+  background-color: color-mix(in oklch, oklch(0.65 0.22 2) 30%, transparent);
+}
+.bg-category-lakshmi-10 {
+  background-color: color-mix(in oklch, oklch(0.82 0.17 72) 10%, transparent);
+}
+.bg-category-lakshmi-15 {
+  background-color: color-mix(in oklch, oklch(0.82 0.17 72) 15%, transparent);
+}
+.bg-category-lakshmi-20 {
+  background-color: color-mix(in oklch, oklch(0.82 0.17 72) 20%, transparent);
+}
+.bg-category-lakshmi-30 {
+  background-color: color-mix(in oklch, oklch(0.82 0.17 72) 30%, transparent);
+}
+.bg-category-saraswati-10 {
+  background-color: color-mix(in oklch, oklch(0.72 0.13 230) 10%, transparent);
+}
+.bg-category-saraswati-15 {
+  background-color: color-mix(in oklch, oklch(0.72 0.13 230) 15%, transparent);
+}
+.bg-category-saraswati-20 {
+  background-color: color-mix(in oklch, oklch(0.72 0.13 230) 20%, transparent);
+}
+.bg-category-saraswati-30 {
+  background-color: color-mix(in oklch, oklch(0.72 0.13 230) 30%, transparent);
+}
+.bg-category-hanuman-10 {
+  background-color: color-mix(in oklch, oklch(0.62 0.26 32) 10%, transparent);
+}
+.bg-category-hanuman-15 {
+  background-color: color-mix(in oklch, oklch(0.62 0.26 32) 15%, transparent);
+}
+.bg-category-hanuman-20 {
+  background-color: color-mix(in oklch, oklch(0.62 0.26 32) 20%, transparent);
+}
+.bg-category-hanuman-30 {
+  background-color: color-mix(in oklch, oklch(0.62 0.26 32) 30%, transparent);
+}
+.bg-category-krishna-10 {
+  background-color: color-mix(in oklch, oklch(0.45 0.18 250) 10%, transparent);
+}
+.dark .bg-category-krishna-10 {
+  background-color: color-mix(in oklch, oklch(0.7 0.18 250) 10%, transparent);
+}
+.bg-category-krishna-15 {
+  background-color: color-mix(in oklch, oklch(0.45 0.18 250) 15%, transparent);
+}
+.dark .bg-category-krishna-15 {
+  background-color: color-mix(in oklch, oklch(0.7 0.18 250) 15%, transparent);
+}
+.bg-category-krishna-20 {
+  background-color: color-mix(in oklch, oklch(0.45 0.18 250) 20%, transparent);
+}
+.dark .bg-category-krishna-20 {
+  background-color: color-mix(in oklch, oklch(0.7 0.18 250) 20%, transparent);
+}
+.bg-category-krishna-30 {
+  background-color: color-mix(in oklch, oklch(0.45 0.18 250) 30%, transparent);
+}
+.dark .bg-category-krishna-30 {
+  background-color: color-mix(in oklch, oklch(0.7 0.18 250) 30%, transparent);
+}
+.bg-category-rama-10 {
+  background-color: color-mix(in oklch, oklch(0.52 0.16 245) 10%, transparent);
+}
+.dark .bg-category-rama-10 {
+  background-color: color-mix(in oklch, oklch(0.72 0.16 245) 10%, transparent);
+}
+.bg-category-rama-15 {
+  background-color: color-mix(in oklch, oklch(0.52 0.16 245) 15%, transparent);
+}
+.dark .bg-category-rama-15 {
+  background-color: color-mix(in oklch, oklch(0.72 0.16 245) 15%, transparent);
+}
+.bg-category-rama-20 {
+  background-color: color-mix(in oklch, oklch(0.52 0.16 245) 20%, transparent);
+}
+.dark .bg-category-rama-20 {
+  background-color: color-mix(in oklch, oklch(0.72 0.16 245) 20%, transparent);
+}
+.bg-category-rama-30 {
+  background-color: color-mix(in oklch, oklch(0.52 0.16 245) 30%, transparent);
+}
+.dark .bg-category-rama-30 {
+  background-color: color-mix(in oklch, oklch(0.72 0.16 245) 30%, transparent);
+}
+.bg-category-dattatreya-10 {
+  background-color: color-mix(in oklch, oklch(0.72 0.13 55) 10%, transparent);
+}
+.bg-category-dattatreya-15 {
+  background-color: color-mix(in oklch, oklch(0.72 0.13 55) 15%, transparent);
+}
+.bg-category-dattatreya-20 {
+  background-color: color-mix(in oklch, oklch(0.72 0.13 55) 20%, transparent);
+}
+.bg-category-dattatreya-30 {
+  background-color: color-mix(in oklch, oklch(0.72 0.13 55) 30%, transparent);
+}
+.bg-category-skanda-10 {
+  background-color: color-mix(in oklch, oklch(0.6 0.22 18) 10%, transparent);
+}
+.bg-category-skanda-15 {
+  background-color: color-mix(in oklch, oklch(0.6 0.22 18) 15%, transparent);
+}
+.bg-category-skanda-20 {
+  background-color: color-mix(in oklch, oklch(0.6 0.22 18) 20%, transparent);
+}
+.bg-category-skanda-30 {
+  background-color: color-mix(in oklch, oklch(0.6 0.22 18) 30%, transparent);
+}
+.bg-category-surya-10 {
+  background-color: color-mix(in oklch, oklch(0.78 0.22 62) 10%, transparent);
+}
+.bg-category-surya-15 {
+  background-color: color-mix(in oklch, oklch(0.78 0.22 62) 15%, transparent);
+}
+.bg-category-surya-20 {
+  background-color: color-mix(in oklch, oklch(0.78 0.22 62) 20%, transparent);
+}
+.bg-category-surya-30 {
+  background-color: color-mix(in oklch, oklch(0.78 0.22 62) 30%, transparent);
+}
+.bg-category-bhairava-10 {
+  background-color: color-mix(in oklch, oklch(0.22 0.08 280) 10%, transparent);
+}
+.dark .bg-category-bhairava-10 {
+  background-color: color-mix(in oklch, oklch(0.6 0.14 280) 10%, transparent);
+}
+.bg-category-bhairava-15 {
+  background-color: color-mix(in oklch, oklch(0.22 0.08 280) 15%, transparent);
+}
+.dark .bg-category-bhairava-15 {
+  background-color: color-mix(in oklch, oklch(0.6 0.14 280) 15%, transparent);
+}
+.bg-category-bhairava-20 {
+  background-color: color-mix(in oklch, oklch(0.22 0.08 280) 20%, transparent);
+}
+.dark .bg-category-bhairava-20 {
+  background-color: color-mix(in oklch, oklch(0.6 0.14 280) 20%, transparent);
+}
+.bg-category-bhairava-30 {
+  background-color: color-mix(in oklch, oklch(0.22 0.08 280) 30%, transparent);
+}
+.dark .bg-category-bhairava-30 {
+  background-color: color-mix(in oklch, oklch(0.6 0.14 280) 30%, transparent);
+}
+.bg-category-narasimha-10 {
+  background-color: color-mix(in oklch, oklch(0.65 0.24 45) 10%, transparent);
+}
+.bg-category-narasimha-15 {
+  background-color: color-mix(in oklch, oklch(0.65 0.24 45) 15%, transparent);
+}
+.bg-category-narasimha-20 {
+  background-color: color-mix(in oklch, oklch(0.65 0.24 45) 20%, transparent);
+}
+.bg-category-narasimha-30 {
+  background-color: color-mix(in oklch, oklch(0.65 0.24 45) 30%, transparent);
+}
+.bg-category-mahavidya-10 {
+  background-color: color-mix(in oklch, oklch(0.45 0.22 298) 10%, transparent);
+}
+.dark .bg-category-mahavidya-10 {
+  background-color: color-mix(in oklch, oklch(0.7 0.2 298) 10%, transparent);
+}
+.bg-category-mahavidya-15 {
+  background-color: color-mix(in oklch, oklch(0.45 0.22 298) 15%, transparent);
+}
+.dark .bg-category-mahavidya-15 {
+  background-color: color-mix(in oklch, oklch(0.7 0.2 298) 15%, transparent);
+}
+.bg-category-mahavidya-20 {
+  background-color: color-mix(in oklch, oklch(0.45 0.22 298) 20%, transparent);
+}
+.dark .bg-category-mahavidya-20 {
+  background-color: color-mix(in oklch, oklch(0.7 0.2 298) 20%, transparent);
+}
+.bg-category-mahavidya-30 {
+  background-color: color-mix(in oklch, oklch(0.45 0.22 298) 30%, transparent);
+}
+.dark .bg-category-mahavidya-30 {
+  background-color: color-mix(in oklch, oklch(0.7 0.2 298) 30%, transparent);
+}
+.bg-category-kali-10 {
+  background-color: color-mix(in oklch, oklch(0.25 0.12 258) 10%, transparent);
+}
+.dark .bg-category-kali-10 {
+  background-color: color-mix(in oklch, oklch(0.6 0.18 258) 10%, transparent);
+}
+.bg-category-kali-15 {
+  background-color: color-mix(in oklch, oklch(0.25 0.12 258) 15%, transparent);
+}
+.dark .bg-category-kali-15 {
+  background-color: color-mix(in oklch, oklch(0.6 0.18 258) 15%, transparent);
+}
+.bg-category-kali-20 {
+  background-color: color-mix(in oklch, oklch(0.25 0.12 258) 20%, transparent);
+}
+.dark .bg-category-kali-20 {
+  background-color: color-mix(in oklch, oklch(0.6 0.18 258) 20%, transparent);
+}
+.bg-category-kali-30 {
+  background-color: color-mix(in oklch, oklch(0.25 0.12 258) 30%, transparent);
+}
+.dark .bg-category-kali-30 {
+  background-color: color-mix(in oklch, oklch(0.6 0.18 258) 30%, transparent);
+}
+.bg-category-tara-10 {
+  background-color: color-mix(in oklch, oklch(0.4 0.2 232) 10%, transparent);
+}
+.dark .bg-category-tara-10 {
+  background-color: color-mix(in oklch, oklch(0.7 0.18 232) 10%, transparent);
+}
+.bg-category-tara-15 {
+  background-color: color-mix(in oklch, oklch(0.4 0.2 232) 15%, transparent);
+}
+.dark .bg-category-tara-15 {
+  background-color: color-mix(in oklch, oklch(0.7 0.18 232) 15%, transparent);
+}
+.bg-category-tara-20 {
+  background-color: color-mix(in oklch, oklch(0.4 0.2 232) 20%, transparent);
+}
+.dark .bg-category-tara-20 {
+  background-color: color-mix(in oklch, oklch(0.7 0.18 232) 20%, transparent);
+}
+.bg-category-tara-30 {
+  background-color: color-mix(in oklch, oklch(0.4 0.2 232) 30%, transparent);
+}
+.dark .bg-category-tara-30 {
+  background-color: color-mix(in oklch, oklch(0.7 0.18 232) 30%, transparent);
+}
+.bg-category-lalita-10 {
+  background-color: color-mix(in oklch, oklch(0.6 0.24 12) 10%, transparent);
+}
+.bg-category-lalita-15 {
+  background-color: color-mix(in oklch, oklch(0.6 0.24 12) 15%, transparent);
+}
+.bg-category-lalita-20 {
+  background-color: color-mix(in oklch, oklch(0.6 0.24 12) 20%, transparent);
+}
+.bg-category-lalita-30 {
+  background-color: color-mix(in oklch, oklch(0.6 0.24 12) 30%, transparent);
+}
+.bg-category-bhuvaneshvari-10 {
+  background-color: color-mix(in oklch, oklch(0.74 0.16 62) 10%, transparent);
+}
+.bg-category-bhuvaneshvari-15 {
+  background-color: color-mix(in oklch, oklch(0.74 0.16 62) 15%, transparent);
+}
+.bg-category-bhuvaneshvari-20 {
+  background-color: color-mix(in oklch, oklch(0.74 0.16 62) 20%, transparent);
+}
+.bg-category-bhuvaneshvari-30 {
+  background-color: color-mix(in oklch, oklch(0.74 0.16 62) 30%, transparent);
+}
+.bg-category-bhairavi-10 {
+  background-color: color-mix(in oklch, oklch(0.5 0.26 18) 10%, transparent);
+}
+.bg-category-bhairavi-15 {
+  background-color: color-mix(in oklch, oklch(0.5 0.26 18) 15%, transparent);
+}
+.bg-category-bhairavi-20 {
+  background-color: color-mix(in oklch, oklch(0.5 0.26 18) 20%, transparent);
+}
+.bg-category-bhairavi-30 {
+  background-color: color-mix(in oklch, oklch(0.5 0.26 18) 30%, transparent);
+}
+.bg-category-chhinnamasta-10 {
+  background-color: color-mix(in oklch, oklch(0.62 0.24 8) 10%, transparent);
+}
+.bg-category-chhinnamasta-15 {
+  background-color: color-mix(in oklch, oklch(0.62 0.24 8) 15%, transparent);
+}
+.bg-category-chhinnamasta-20 {
+  background-color: color-mix(in oklch, oklch(0.62 0.24 8) 20%, transparent);
+}
+.bg-category-chhinnamasta-30 {
+  background-color: color-mix(in oklch, oklch(0.62 0.24 8) 30%, transparent);
+}
+.bg-category-dhumavati-10 {
+  background-color: color-mix(in oklch, oklch(0.42 0.08 225) 10%, transparent);
+}
+.dark .bg-category-dhumavati-10 {
+  background-color: color-mix(in oklch, oklch(0.65 0.1 225) 10%, transparent);
+}
+.bg-category-dhumavati-15 {
+  background-color: color-mix(in oklch, oklch(0.42 0.08 225) 15%, transparent);
+}
+.dark .bg-category-dhumavati-15 {
+  background-color: color-mix(in oklch, oklch(0.65 0.1 225) 15%, transparent);
+}
+.bg-category-dhumavati-20 {
+  background-color: color-mix(in oklch, oklch(0.42 0.08 225) 20%, transparent);
+}
+.dark .bg-category-dhumavati-20 {
+  background-color: color-mix(in oklch, oklch(0.65 0.1 225) 20%, transparent);
+}
+.bg-category-dhumavati-30 {
+  background-color: color-mix(in oklch, oklch(0.42 0.08 225) 30%, transparent);
+}
+.dark .bg-category-dhumavati-30 {
+  background-color: color-mix(in oklch, oklch(0.65 0.1 225) 30%, transparent);
+}
+.bg-category-bagalamukhi-10 {
+  background-color: color-mix(in oklch, oklch(0.85 0.22 88) 10%, transparent);
+}
+.bg-category-bagalamukhi-15 {
+  background-color: color-mix(in oklch, oklch(0.85 0.22 88) 15%, transparent);
+}
+.bg-category-bagalamukhi-20 {
+  background-color: color-mix(in oklch, oklch(0.85 0.22 88) 20%, transparent);
+}
+.bg-category-bagalamukhi-30 {
+  background-color: color-mix(in oklch, oklch(0.85 0.22 88) 30%, transparent);
+}
+.bg-category-matangi-10 {
+  background-color: color-mix(in oklch, oklch(0.55 0.22 148) 10%, transparent);
+}
+.bg-category-matangi-15 {
+  background-color: color-mix(in oklch, oklch(0.55 0.22 148) 15%, transparent);
+}
+.bg-category-matangi-20 {
+  background-color: color-mix(in oklch, oklch(0.55 0.22 148) 20%, transparent);
+}
+.bg-category-matangi-30 {
+  background-color: color-mix(in oklch, oklch(0.55 0.22 148) 30%, transparent);
+}
+.bg-category-general-10 {
+  background-color: color-mix(in oklch, oklch(0.7 0.1 180) 10%, transparent);
+}
+.bg-category-general-15 {
+  background-color: color-mix(in oklch, oklch(0.7 0.1 180) 15%, transparent);
+}
+.bg-category-general-20 {
+  background-color: color-mix(in oklch, oklch(0.7 0.1 180) 20%, transparent);
+}
+.bg-category-general-30 {
+  background-color: color-mix(in oklch, oklch(0.7 0.1 180) 30%, transparent);
+}
+
+/* === BORDER CLASSES === */
+.border-category-ganesha-10 {
+  border-color: color-mix(in oklch, oklch(0.72 0.18 42) 10%, transparent);
+}
+.border-category-ganesha-15 {
+  border-color: color-mix(in oklch, oklch(0.72 0.18 42) 15%, transparent);
+}
+.border-category-ganesha-20 {
+  border-color: color-mix(in oklch, oklch(0.72 0.18 42) 20%, transparent);
+}
+.border-category-ganesha-30 {
+  border-color: color-mix(in oklch, oklch(0.72 0.18 42) 30%, transparent);
+}
+.border-category-shiva-10 {
+  border-color: color-mix(in oklch, oklch(0.65 0.1 215) 10%, transparent);
+}
+.border-category-shiva-15 {
+  border-color: color-mix(in oklch, oklch(0.65 0.1 215) 15%, transparent);
+}
+.border-category-shiva-20 {
+  border-color: color-mix(in oklch, oklch(0.65 0.1 215) 20%, transparent);
+}
+.border-category-shiva-30 {
+  border-color: color-mix(in oklch, oklch(0.65 0.1 215) 30%, transparent);
+}
+.border-category-vishnu-10 {
+  border-color: color-mix(in oklch, oklch(0.5 0.22 240) 10%, transparent);
+}
+.dark .border-category-vishnu-10 {
+  border-color: color-mix(in oklch, oklch(0.72 0.2 240) 10%, transparent);
+}
+.border-category-vishnu-15 {
+  border-color: color-mix(in oklch, oklch(0.5 0.22 240) 15%, transparent);
+}
+.dark .border-category-vishnu-15 {
+  border-color: color-mix(in oklch, oklch(0.72 0.2 240) 15%, transparent);
+}
+.border-category-vishnu-20 {
+  border-color: color-mix(in oklch, oklch(0.5 0.22 240) 20%, transparent);
+}
+.dark .border-category-vishnu-20 {
+  border-color: color-mix(in oklch, oklch(0.72 0.2 240) 20%, transparent);
+}
+.border-category-vishnu-30 {
+  border-color: color-mix(in oklch, oklch(0.5 0.22 240) 30%, transparent);
+}
+.dark .border-category-vishnu-30 {
+  border-color: color-mix(in oklch, oklch(0.72 0.2 240) 30%, transparent);
+}
+.border-category-durga-10 {
+  border-color: color-mix(in oklch, oklch(0.65 0.22 2) 10%, transparent);
+}
+.border-category-durga-15 {
+  border-color: color-mix(in oklch, oklch(0.65 0.22 2) 15%, transparent);
+}
+.border-category-durga-20 {
+  border-color: color-mix(in oklch, oklch(0.65 0.22 2) 20%, transparent);
+}
+.border-category-durga-30 {
+  border-color: color-mix(in oklch, oklch(0.65 0.22 2) 30%, transparent);
+}
+.border-category-lakshmi-10 {
+  border-color: color-mix(in oklch, oklch(0.82 0.17 72) 10%, transparent);
+}
+.border-category-lakshmi-15 {
+  border-color: color-mix(in oklch, oklch(0.82 0.17 72) 15%, transparent);
+}
+.border-category-lakshmi-20 {
+  border-color: color-mix(in oklch, oklch(0.82 0.17 72) 20%, transparent);
+}
+.border-category-lakshmi-30 {
+  border-color: color-mix(in oklch, oklch(0.82 0.17 72) 30%, transparent);
+}
+.border-category-saraswati-10 {
+  border-color: color-mix(in oklch, oklch(0.72 0.13 230) 10%, transparent);
+}
+.border-category-saraswati-15 {
+  border-color: color-mix(in oklch, oklch(0.72 0.13 230) 15%, transparent);
+}
+.border-category-saraswati-20 {
+  border-color: color-mix(in oklch, oklch(0.72 0.13 230) 20%, transparent);
+}
+.border-category-saraswati-30 {
+  border-color: color-mix(in oklch, oklch(0.72 0.13 230) 30%, transparent);
+}
+.border-category-hanuman-10 {
+  border-color: color-mix(in oklch, oklch(0.62 0.26 32) 10%, transparent);
+}
+.border-category-hanuman-15 {
+  border-color: color-mix(in oklch, oklch(0.62 0.26 32) 15%, transparent);
+}
+.border-category-hanuman-20 {
+  border-color: color-mix(in oklch, oklch(0.62 0.26 32) 20%, transparent);
+}
+.border-category-hanuman-30 {
+  border-color: color-mix(in oklch, oklch(0.62 0.26 32) 30%, transparent);
+}
+.border-category-krishna-10 {
+  border-color: color-mix(in oklch, oklch(0.45 0.18 250) 10%, transparent);
+}
+.dark .border-category-krishna-10 {
+  border-color: color-mix(in oklch, oklch(0.7 0.18 250) 10%, transparent);
+}
+.border-category-krishna-15 {
+  border-color: color-mix(in oklch, oklch(0.45 0.18 250) 15%, transparent);
+}
+.dark .border-category-krishna-15 {
+  border-color: color-mix(in oklch, oklch(0.7 0.18 250) 15%, transparent);
+}
+.border-category-krishna-20 {
+  border-color: color-mix(in oklch, oklch(0.45 0.18 250) 20%, transparent);
+}
+.dark .border-category-krishna-20 {
+  border-color: color-mix(in oklch, oklch(0.7 0.18 250) 20%, transparent);
+}
+.border-category-krishna-30 {
+  border-color: color-mix(in oklch, oklch(0.45 0.18 250) 30%, transparent);
+}
+.dark .border-category-krishna-30 {
+  border-color: color-mix(in oklch, oklch(0.7 0.18 250) 30%, transparent);
+}
+.border-category-rama-10 {
+  border-color: color-mix(in oklch, oklch(0.52 0.16 245) 10%, transparent);
+}
+.dark .border-category-rama-10 {
+  border-color: color-mix(in oklch, oklch(0.72 0.16 245) 10%, transparent);
+}
+.border-category-rama-15 {
+  border-color: color-mix(in oklch, oklch(0.52 0.16 245) 15%, transparent);
+}
+.dark .border-category-rama-15 {
+  border-color: color-mix(in oklch, oklch(0.72 0.16 245) 15%, transparent);
+}
+.border-category-rama-20 {
+  border-color: color-mix(in oklch, oklch(0.52 0.16 245) 20%, transparent);
+}
+.dark .border-category-rama-20 {
+  border-color: color-mix(in oklch, oklch(0.72 0.16 245) 20%, transparent);
+}
+.border-category-rama-30 {
+  border-color: color-mix(in oklch, oklch(0.52 0.16 245) 30%, transparent);
+}
+.dark .border-category-rama-30 {
+  border-color: color-mix(in oklch, oklch(0.72 0.16 245) 30%, transparent);
+}
+.border-category-dattatreya-10 {
+  border-color: color-mix(in oklch, oklch(0.72 0.13 55) 10%, transparent);
+}
+.border-category-dattatreya-15 {
+  border-color: color-mix(in oklch, oklch(0.72 0.13 55) 15%, transparent);
+}
+.border-category-dattatreya-20 {
+  border-color: color-mix(in oklch, oklch(0.72 0.13 55) 20%, transparent);
+}
+.border-category-dattatreya-30 {
+  border-color: color-mix(in oklch, oklch(0.72 0.13 55) 30%, transparent);
+}
+.border-category-skanda-10 {
+  border-color: color-mix(in oklch, oklch(0.6 0.22 18) 10%, transparent);
+}
+.border-category-skanda-15 {
+  border-color: color-mix(in oklch, oklch(0.6 0.22 18) 15%, transparent);
+}
+.border-category-skanda-20 {
+  border-color: color-mix(in oklch, oklch(0.6 0.22 18) 20%, transparent);
+}
+.border-category-skanda-30 {
+  border-color: color-mix(in oklch, oklch(0.6 0.22 18) 30%, transparent);
+}
+.border-category-surya-10 {
+  border-color: color-mix(in oklch, oklch(0.78 0.22 62) 10%, transparent);
+}
+.border-category-surya-15 {
+  border-color: color-mix(in oklch, oklch(0.78 0.22 62) 15%, transparent);
+}
+.border-category-surya-20 {
+  border-color: color-mix(in oklch, oklch(0.78 0.22 62) 20%, transparent);
+}
+.border-category-surya-30 {
+  border-color: color-mix(in oklch, oklch(0.78 0.22 62) 30%, transparent);
+}
+.border-category-bhairava-10 {
+  border-color: color-mix(in oklch, oklch(0.22 0.08 280) 10%, transparent);
+}
+.dark .border-category-bhairava-10 {
+  border-color: color-mix(in oklch, oklch(0.6 0.14 280) 10%, transparent);
+}
+.border-category-bhairava-15 {
+  border-color: color-mix(in oklch, oklch(0.22 0.08 280) 15%, transparent);
+}
+.dark .border-category-bhairava-15 {
+  border-color: color-mix(in oklch, oklch(0.6 0.14 280) 15%, transparent);
+}
+.border-category-bhairava-20 {
+  border-color: color-mix(in oklch, oklch(0.22 0.08 280) 20%, transparent);
+}
+.dark .border-category-bhairava-20 {
+  border-color: color-mix(in oklch, oklch(0.6 0.14 280) 20%, transparent);
+}
+.border-category-bhairava-30 {
+  border-color: color-mix(in oklch, oklch(0.22 0.08 280) 30%, transparent);
+}
+.dark .border-category-bhairava-30 {
+  border-color: color-mix(in oklch, oklch(0.6 0.14 280) 30%, transparent);
+}
+.border-category-narasimha-10 {
+  border-color: color-mix(in oklch, oklch(0.65 0.24 45) 10%, transparent);
+}
+.border-category-narasimha-15 {
+  border-color: color-mix(in oklch, oklch(0.65 0.24 45) 15%, transparent);
+}
+.border-category-narasimha-20 {
+  border-color: color-mix(in oklch, oklch(0.65 0.24 45) 20%, transparent);
+}
+.border-category-narasimha-30 {
+  border-color: color-mix(in oklch, oklch(0.65 0.24 45) 30%, transparent);
+}
+.border-category-mahavidya-10 {
+  border-color: color-mix(in oklch, oklch(0.45 0.22 298) 10%, transparent);
+}
+.dark .border-category-mahavidya-10 {
+  border-color: color-mix(in oklch, oklch(0.7 0.2 298) 10%, transparent);
+}
+.border-category-mahavidya-15 {
+  border-color: color-mix(in oklch, oklch(0.45 0.22 298) 15%, transparent);
+}
+.dark .border-category-mahavidya-15 {
+  border-color: color-mix(in oklch, oklch(0.7 0.2 298) 15%, transparent);
+}
+.border-category-mahavidya-20 {
+  border-color: color-mix(in oklch, oklch(0.45 0.22 298) 20%, transparent);
+}
+.dark .border-category-mahavidya-20 {
+  border-color: color-mix(in oklch, oklch(0.7 0.2 298) 20%, transparent);
+}
+.border-category-mahavidya-30 {
+  border-color: color-mix(in oklch, oklch(0.45 0.22 298) 30%, transparent);
+}
+.dark .border-category-mahavidya-30 {
+  border-color: color-mix(in oklch, oklch(0.7 0.2 298) 30%, transparent);
+}
+.border-category-kali-10 {
+  border-color: color-mix(in oklch, oklch(0.25 0.12 258) 10%, transparent);
+}
+.dark .border-category-kali-10 {
+  border-color: color-mix(in oklch, oklch(0.6 0.18 258) 10%, transparent);
+}
+.border-category-kali-15 {
+  border-color: color-mix(in oklch, oklch(0.25 0.12 258) 15%, transparent);
+}
+.dark .border-category-kali-15 {
+  border-color: color-mix(in oklch, oklch(0.6 0.18 258) 15%, transparent);
+}
+.border-category-kali-20 {
+  border-color: color-mix(in oklch, oklch(0.25 0.12 258) 20%, transparent);
+}
+.dark .border-category-kali-20 {
+  border-color: color-mix(in oklch, oklch(0.6 0.18 258) 20%, transparent);
+}
+.border-category-kali-30 {
+  border-color: color-mix(in oklch, oklch(0.25 0.12 258) 30%, transparent);
+}
+.dark .border-category-kali-30 {
+  border-color: color-mix(in oklch, oklch(0.6 0.18 258) 30%, transparent);
+}
+.border-category-tara-10 {
+  border-color: color-mix(in oklch, oklch(0.4 0.2 232) 10%, transparent);
+}
+.dark .border-category-tara-10 {
+  border-color: color-mix(in oklch, oklch(0.7 0.18 232) 10%, transparent);
+}
+.border-category-tara-15 {
+  border-color: color-mix(in oklch, oklch(0.4 0.2 232) 15%, transparent);
+}
+.dark .border-category-tara-15 {
+  border-color: color-mix(in oklch, oklch(0.7 0.18 232) 15%, transparent);
+}
+.border-category-tara-20 {
+  border-color: color-mix(in oklch, oklch(0.4 0.2 232) 20%, transparent);
+}
+.dark .border-category-tara-20 {
+  border-color: color-mix(in oklch, oklch(0.7 0.18 232) 20%, transparent);
+}
+.border-category-tara-30 {
+  border-color: color-mix(in oklch, oklch(0.4 0.2 232) 30%, transparent);
+}
+.dark .border-category-tara-30 {
+  border-color: color-mix(in oklch, oklch(0.7 0.18 232) 30%, transparent);
+}
+.border-category-lalita-10 {
+  border-color: color-mix(in oklch, oklch(0.6 0.24 12) 10%, transparent);
+}
+.border-category-lalita-15 {
+  border-color: color-mix(in oklch, oklch(0.6 0.24 12) 15%, transparent);
+}
+.border-category-lalita-20 {
+  border-color: color-mix(in oklch, oklch(0.6 0.24 12) 20%, transparent);
+}
+.border-category-lalita-30 {
+  border-color: color-mix(in oklch, oklch(0.6 0.24 12) 30%, transparent);
+}
+.border-category-bhuvaneshvari-10 {
+  border-color: color-mix(in oklch, oklch(0.74 0.16 62) 10%, transparent);
+}
+.border-category-bhuvaneshvari-15 {
+  border-color: color-mix(in oklch, oklch(0.74 0.16 62) 15%, transparent);
+}
+.border-category-bhuvaneshvari-20 {
+  border-color: color-mix(in oklch, oklch(0.74 0.16 62) 20%, transparent);
+}
+.border-category-bhuvaneshvari-30 {
+  border-color: color-mix(in oklch, oklch(0.74 0.16 62) 30%, transparent);
+}
+.border-category-bhairavi-10 {
+  border-color: color-mix(in oklch, oklch(0.5 0.26 18) 10%, transparent);
+}
+.border-category-bhairavi-15 {
+  border-color: color-mix(in oklch, oklch(0.5 0.26 18) 15%, transparent);
+}
+.border-category-bhairavi-20 {
+  border-color: color-mix(in oklch, oklch(0.5 0.26 18) 20%, transparent);
+}
+.border-category-bhairavi-30 {
+  border-color: color-mix(in oklch, oklch(0.5 0.26 18) 30%, transparent);
+}
+.border-category-chhinnamasta-10 {
+  border-color: color-mix(in oklch, oklch(0.62 0.24 8) 10%, transparent);
+}
+.border-category-chhinnamasta-15 {
+  border-color: color-mix(in oklch, oklch(0.62 0.24 8) 15%, transparent);
+}
+.border-category-chhinnamasta-20 {
+  border-color: color-mix(in oklch, oklch(0.62 0.24 8) 20%, transparent);
+}
+.border-category-chhinnamasta-30 {
+  border-color: color-mix(in oklch, oklch(0.62 0.24 8) 30%, transparent);
+}
+.border-category-dhumavati-10 {
+  border-color: color-mix(in oklch, oklch(0.42 0.08 225) 10%, transparent);
+}
+.dark .border-category-dhumavati-10 {
+  border-color: color-mix(in oklch, oklch(0.65 0.1 225) 10%, transparent);
+}
+.border-category-dhumavati-15 {
+  border-color: color-mix(in oklch, oklch(0.42 0.08 225) 15%, transparent);
+}
+.dark .border-category-dhumavati-15 {
+  border-color: color-mix(in oklch, oklch(0.65 0.1 225) 15%, transparent);
+}
+.border-category-dhumavati-20 {
+  border-color: color-mix(in oklch, oklch(0.42 0.08 225) 20%, transparent);
+}
+.dark .border-category-dhumavati-20 {
+  border-color: color-mix(in oklch, oklch(0.65 0.1 225) 20%, transparent);
+}
+.border-category-dhumavati-30 {
+  border-color: color-mix(in oklch, oklch(0.42 0.08 225) 30%, transparent);
+}
+.dark .border-category-dhumavati-30 {
+  border-color: color-mix(in oklch, oklch(0.65 0.1 225) 30%, transparent);
+}
+.border-category-bagalamukhi-10 {
+  border-color: color-mix(in oklch, oklch(0.85 0.22 88) 10%, transparent);
+}
+.border-category-bagalamukhi-15 {
+  border-color: color-mix(in oklch, oklch(0.85 0.22 88) 15%, transparent);
+}
+.border-category-bagalamukhi-20 {
+  border-color: color-mix(in oklch, oklch(0.85 0.22 88) 20%, transparent);
+}
+.border-category-bagalamukhi-30 {
+  border-color: color-mix(in oklch, oklch(0.85 0.22 88) 30%, transparent);
+}
+.border-category-matangi-10 {
+  border-color: color-mix(in oklch, oklch(0.55 0.22 148) 10%, transparent);
+}
+.border-category-matangi-15 {
+  border-color: color-mix(in oklch, oklch(0.55 0.22 148) 15%, transparent);
+}
+.border-category-matangi-20 {
+  border-color: color-mix(in oklch, oklch(0.55 0.22 148) 20%, transparent);
+}
+.border-category-matangi-30 {
+  border-color: color-mix(in oklch, oklch(0.55 0.22 148) 30%, transparent);
+}
+.border-category-general-10 {
+  border-color: color-mix(in oklch, oklch(0.7 0.1 180) 10%, transparent);
+}
+.border-category-general-15 {
+  border-color: color-mix(in oklch, oklch(0.7 0.1 180) 15%, transparent);
+}
+.border-category-general-20 {
+  border-color: color-mix(in oklch, oklch(0.7 0.1 180) 20%, transparent);
+}
+.border-category-general-30 {
+  border-color: color-mix(in oklch, oklch(0.7 0.1 180) 30%, transparent);
+}
+
+/* === TEXT CLASSES === */
+.text-category-ganesha {
+  color: oklch(0.55 0.18 42);
+}
+.dark .text-category-ganesha {
+  color: oklch(0.72 0.18 42);
+}
+.text-category-shiva {
+  color: oklch(0.55 0.1 215);
+}
+.dark .text-category-shiva {
+  color: oklch(0.68 0.1 215);
+}
+.text-category-vishnu {
+  color: oklch(0.5 0.22 240);
+}
+.dark .text-category-vishnu {
+  color: oklch(0.72 0.2 240);
+}
+.text-category-durga {
+  color: oklch(0.55 0.22 2);
+}
+.dark .text-category-durga {
+  color: oklch(0.68 0.22 2);
+}
+.text-category-lakshmi {
+  color: oklch(0.55 0.17 72);
+}
+.dark .text-category-lakshmi {
+  color: oklch(0.82 0.17 72);
+}
+.text-category-saraswati {
+  color: oklch(0.55 0.13 230);
+}
+.dark .text-category-saraswati {
+  color: oklch(0.72 0.13 230);
+}
+.text-category-hanuman {
+  color: oklch(0.55 0.26 32);
+}
+.dark .text-category-hanuman {
+  color: oklch(0.68 0.26 32);
+}
+.text-category-krishna {
+  color: oklch(0.45 0.18 250);
+}
+.dark .text-category-krishna {
+  color: oklch(0.7 0.18 250);
+}
+.text-category-rama {
+  color: oklch(0.52 0.16 245);
+}
+.dark .text-category-rama {
+  color: oklch(0.72 0.16 245);
+}
+.text-category-dattatreya {
+  color: oklch(0.55 0.13 55);
+}
+.dark .text-category-dattatreya {
+  color: oklch(0.72 0.13 55);
+}
+.text-category-skanda {
+  color: oklch(0.55 0.22 18);
+}
+.dark .text-category-skanda {
+  color: oklch(0.68 0.22 18);
+}
+.text-category-surya {
+  color: oklch(0.55 0.22 62);
+}
+.dark .text-category-surya {
+  color: oklch(0.78 0.22 62);
+}
+.text-category-bhairava {
+  color: oklch(0.35 0.08 280);
+}
+.dark .text-category-bhairava {
+  color: oklch(0.68 0.14 280);
+}
+.text-category-narasimha {
+  color: oklch(0.55 0.24 45);
+}
+.dark .text-category-narasimha {
+  color: oklch(0.68 0.24 45);
+}
+.text-category-mahavidya {
+  color: oklch(0.45 0.22 298);
+}
+.dark .text-category-mahavidya {
+  color: oklch(0.7 0.2 298);
+}
+.text-category-kali {
+  color: oklch(0.35 0.12 258);
+}
+.dark .text-category-kali {
+  color: oklch(0.68 0.18 258);
+}
+.text-category-tara {
+  color: oklch(0.4 0.2 232);
+}
+.dark .text-category-tara {
+  color: oklch(0.7 0.18 232);
+}
+.text-category-lalita {
+  color: oklch(0.55 0.24 12);
+}
+.dark .text-category-lalita {
+  color: oklch(0.68 0.24 12);
+}
+.text-category-bhuvaneshvari {
+  color: oklch(0.55 0.16 62);
+}
+.dark .text-category-bhuvaneshvari {
+  color: oklch(0.74 0.16 62);
+}
+.text-category-bhairavi {
+  color: oklch(0.5 0.26 18);
+}
+.dark .text-category-bhairavi {
+  color: oklch(0.68 0.26 18);
+}
+.text-category-chhinnamasta {
+  color: oklch(0.55 0.24 8);
+}
+.dark .text-category-chhinnamasta {
+  color: oklch(0.68 0.24 8);
+}
+.text-category-dhumavati {
+  color: oklch(0.42 0.08 225);
+}
+.dark .text-category-dhumavati {
+  color: oklch(0.68 0.1 225);
+}
+.text-category-bagalamukhi {
+  color: oklch(0.55 0.22 88);
+}
+.dark .text-category-bagalamukhi {
+  color: oklch(0.82 0.22 88);
+}
+.text-category-matangi {
+  color: oklch(0.55 0.22 148);
+}
+.dark .text-category-matangi {
+  color: oklch(0.68 0.22 148);
+}
+.text-category-general {
+  color: oklch(0.55 0.1 180);
+}
+.dark .text-category-general {
+  color: oklch(0.7 0.1 180);
+}
+
+/* === FALLBACK: Custom Property for Dynamic Cases === */
+:root {
+  --category-color: transparent;
+}
+.bg-category-dynamic-10 {
+  background-color: color-mix(in oklch, var(--category-color) 10%, transparent);
+}
+.bg-category-dynamic-15 {
+  background-color: color-mix(in oklch, var(--category-color) 15%, transparent);
+}
+.bg-category-dynamic-20 {
+  background-color: color-mix(in oklch, var(--category-color) 20%, transparent);
+}
+.bg-category-dynamic-30 {
+  background-color: color-mix(in oklch, var(--category-color) 30%, transparent);
+}
+
+/* =============================================================================
    GLOBAL ANIMATIONS
    ============================================================================= */
 @keyframes slide-in-from-right {

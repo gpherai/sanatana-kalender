@@ -1,4 +1,226 @@
 /* =============================================================================
+   ROOT VARIABLES
+   Default theme: spiritual-minimal
+   ============================================================================= */
+:root {
+  /* Light mode base colors */
+  --background: #ffffff;
+  --foreground: #171717;
+
+  /* Theme colors (default: spiritual-minimal) */
+  --theme-primary: oklch(0.65 0.15 45);
+  --theme-secondary: oklch(0.55 0.1 200);
+  --theme-accent: oklch(0.7 0.12 85);
+
+  /* Semantic aliases for Tailwind */
+  --color-primary: var(--theme-primary);
+  --color-secondary: var(--theme-secondary);
+  --color-accent: var(--theme-accent);
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     SEMANTIC TOKENS - Theme-independent UI colors
+     Use these instead of hardcoded zinc/gray values!
+     ═══════════════════════════════════════════════════════════════════════════ */
+
+  /* Backgrounds */
+  --theme-bg: oklch(0.97 0.006 60); /* Page background (warm light gray) */
+  --theme-bg-subtle: oklch(0.96 0.007 60); /* Subtle background */
+  --theme-surface: oklch(1 0 0); /* Cards, elevated surfaces */
+  --theme-surface-raised: oklch(1 0 0); /* Raised surface (white on warm bg) */
+  --theme-surface-overlay: oklch(1 0 0 / 0.95); /* Modals, dropdowns */
+
+  /* Text colors */
+  --theme-fg: oklch(0.141 0.005 285); /* Primary text (zinc-900) */
+  --theme-fg-secondary: oklch(0.442 0.017 285); /* Secondary text (zinc-600) */
+  --theme-fg-muted: oklch(0.552 0.016 286); /* Muted text (zinc-500) */
+  --theme-fg-subtle: oklch(0.705 0.015 286); /* Subtle text (zinc-400) */
+
+  /* Borders & Dividers */
+  --theme-border: oklch(0.871 0.006 286); /* Default border (zinc-200) */
+  --theme-border-subtle: oklch(0.92 0.004 286); /* Subtle border (zinc-100) */
+  --theme-border-strong: oklch(0.705 0.015 286); /* Strong border (zinc-400) */
+  --theme-divider: oklch(0.92 0.004 286); /* Dividers */
+
+  /* Interactive states */
+  --theme-hover: oklch(0.94 0.006 60); /* Hover background (warm gray) */
+  --theme-active: oklch(0.91 0.008 60); /* Active/pressed */
+  --theme-disabled: oklch(0.92 0.004 286); /* Disabled elements */
+  --theme-ring: var(--theme-primary); /* Focus ring color */
+  --theme-stat-value: var(
+    --theme-primary
+  ); /* Stat/emphasis numbers — may override per theme */
+
+  /* Status colors (extended for Fase 2) */
+  --theme-success: oklch(0.65 0.15 145);
+  --theme-success-bg: oklch(0.92 0.08 145);
+  --theme-success-fg: oklch(0.35 0.14 145);
+  --theme-success-border: oklch(0.75 0.12 145);
+
+  --theme-warning: oklch(0.75 0.15 85);
+  --theme-warning-bg: oklch(0.95 0.08 85);
+  --theme-warning-fg: oklch(0.4 0.14 85);
+  --theme-warning-border: oklch(0.75 0.14 85);
+
+  --theme-error: oklch(0.6 0.2 25);
+  --theme-error-bg: oklch(0.92 0.08 25);
+  --theme-error-fg: oklch(0.35 0.18 25);
+  --theme-error-border: oklch(0.75 0.16 25);
+
+  --theme-info: oklch(0.6 0.12 240);
+  --theme-info-bg: oklch(0.88 0.08 245);
+  --theme-info-fg: oklch(0.42 0.12 245);
+  --theme-info-border: oklch(0.75 0.14 245);
+
+  /* Loading & Spinner */
+  --theme-spinner-track: oklch(0.9 0.02 250 / 0.3);
+  --theme-spinner-fill: var(--theme-primary);
+
+  /* Glass & Overlay Effects */
+  --theme-glass-bg: oklch(1 0 0 / 0.15);
+  --theme-glass-border: oklch(1 0 0 / 0.2);
+  --theme-modal-backdrop: oklch(0 0 0 / 0.6);
+
+  /* Icon colors (celestial & UI) */
+  --theme-icon-sun: oklch(0.85 0.18 60); /* Bright yellow */
+  --theme-icon-sunrise: oklch(0.75 0.2 45); /* Vibrant orange */
+  --theme-icon-sunset: oklch(0.6 0.22 20); /* Rich red */
+  --theme-icon-moon: oklch(0.72 0.16 210); /* Cool blue */
+  --theme-icon-event-special: oklch(0.85 0.18 60); /* Yellow (same as sun) */
+  --theme-icon-mode-sun: oklch(0.85 0.18 60); /* Mode toggle sun */
+  --theme-icon-mode-moon: oklch(0.65 0.08 240); /* Mode toggle moon */
+
+  /* Moon Phase Visualization (default colors) */
+  --theme-moon-surface-light: oklch(0.985 0.015 80); /* Warm cream */
+  --theme-moon-surface-mid: oklch(0.945 0.02 75); /* Light beige */
+  --theme-moon-surface-dark: oklch(0.895 0.025 70); /* Medium sand */
+  --theme-moon-shadow-light: oklch(0.165 0.015 280); /* Dark blue-gray */
+  --theme-moon-shadow-deep: oklch(0.105 0.01 275); /* Deep indigo-black */
+  --theme-moon-glow: oklch(0.98 0.035 85 / 0.7); /* Soft golden glow */
+  --theme-moon-rim: oklch(1 0 0 / 0.1); /* Subtle white rim */
+
+  /* Calendar-specific colors */
+  --theme-calendar-header-text: oklch(0.5 0.02 250);
+  --theme-calendar-date-text: oklch(0.4 0.02 250);
+  --theme-calendar-today-text: white;
+  --theme-calendar-off-range-text: oklch(0.7 0.01 250);
+  --theme-calendar-agenda-text: inherit;
+  --theme-calendar-off-range-bg: oklch(0.98 0.005 250);
+  --theme-calendar-weekend-bg: oklch(0.97 0.01 60);
+  --theme-calendar-popup-bg: white;
+  --theme-calendar-today-bg: color-mix(in oklch, var(--theme-primary) 10%, transparent);
+  --theme-calendar-border: oklch(0.9 0.01 250);
+  --theme-calendar-border-subtle: oklch(0.92 0.01 250);
+  --theme-calendar-full-moon-bg-start: oklch(0.97 0.04 85);
+  --theme-calendar-full-moon-bg-end: oklch(0.95 0.06 75);
+  --theme-calendar-full-moon-glow: oklch(1 0.05 85 / 0.3);
+  --theme-calendar-new-moon-bg-start: oklch(0.96 0.02 280);
+  --theme-calendar-new-moon-bg-end: oklch(0.94 0.03 270);
+
+  /* Almanac-specific colors (Moon Phase Category - Blue/Indigo) */
+  --theme-almanac-moon-bg: oklch(0.88 0.08 240);
+  --theme-almanac-moon-fg: oklch(0.42 0.12 245);
+  --theme-almanac-moon-focus: oklch(0.6 0.18 245);
+  --theme-almanac-moon-cell-bg: oklch(0.86 0.06 270);
+  --theme-almanac-moon-cell-bg-hover: oklch(0.82 0.08 270);
+  --theme-almanac-moon-card-from: oklch(0.88 0.08 240);
+  --theme-almanac-moon-card-to: oklch(0.86 0.06 270);
+  --theme-almanac-moon-icon: oklch(0.55 0.16 245);
+  --theme-almanac-moon-rise-icon: oklch(0.6 0.18 245);
+  --theme-almanac-moon-set-icon: oklch(0.6 0.14 270);
+  --theme-almanac-moon-badge-bg: oklch(0.88 0.08 240);
+  --theme-almanac-moon-badge-fg: oklch(0.42 0.12 245);
+
+  /* Almanac-specific colors (Special Days Category - Purple) */
+  --theme-almanac-special-bg: oklch(0.87 0.08 295);
+  --theme-almanac-special-fg: oklch(0.42 0.14 295);
+  --theme-almanac-special-focus: oklch(0.6 0.2 295);
+  --theme-almanac-special-cell-bg: oklch(0.9 0.04 295);
+  --theme-almanac-special-cell-bg-hover: oklch(0.87 0.08 295);
+  --theme-almanac-special-card-bg: oklch(0.9 0.04 295);
+  --theme-almanac-special-heading: oklch(0.35 0.12 295);
+  --theme-almanac-special-badge-bg: oklch(0.87 0.08 295);
+  --theme-almanac-special-badge-fg: oklch(0.42 0.14 295);
+
+  /* Almanac-specific colors (Events Category - Amber) */
+  --theme-almanac-event-bg: oklch(0.88 0.1 75);
+  --theme-almanac-event-fg: oklch(0.42 0.14 65);
+  --theme-almanac-event-focus: oklch(0.6 0.18 70);
+  --theme-almanac-event-cell-bg: oklch(0.92 0.06 75);
+  --theme-almanac-event-cell-bg-hover: oklch(0.88 0.1 75);
+  --theme-almanac-event-icon: oklch(0.6 0.18 70);
+  --theme-almanac-event-major-bg: oklch(0.92 0.06 75);
+  --theme-almanac-event-major-bg-hover: oklch(0.88 0.1 75);
+  --theme-almanac-event-major-star: oklch(0.6 0.18 70);
+
+  /* Almanac-specific colors (Sun Times Category - Orange/Yellow) */
+  --theme-almanac-sun-rise-icon: oklch(0.65 0.2 50);
+  --theme-almanac-sun-set-icon: oklch(0.58 0.22 25);
+  --theme-almanac-sun-card-from: oklch(0.9 0.08 50);
+  --theme-almanac-sun-card-to: oklch(0.94 0.08 90);
+  --theme-almanac-sun-icon: oklch(0.6 0.18 50);
+
+  /* Almanac-specific colors (Planetary Category - Vedic color-coded) */
+  --theme-almanac-planet-moon: oklch(0.7 0.12 240);
+  --theme-almanac-planet-mars: oklch(0.65 0.2 25);
+  --theme-almanac-planet-mercury: oklch(0.7 0.18 145);
+  --theme-almanac-planet-jupiter: oklch(0.75 0.18 95);
+  --theme-almanac-planet-venus: oklch(0.75 0.14 345);
+  --theme-almanac-planet-saturn: oklch(0.65 0.18 295);
+  --theme-almanac-planet-sun: oklch(0.65 0.2 50);
+
+  /* Almanac-specific colors (Warning/Inauspicious Category - Red) */
+  --theme-almanac-warning-border: oklch(0.55 0.22 25);
+  --theme-almanac-warning-bg: oklch(0.92 0.08 25);
+  --theme-almanac-warning-heading: oklch(0.5 0.2 25);
+  --theme-almanac-warning-text: oklch(0.38 0.16 25);
+
+  /* Almanac - Day header background (DayDetailsPanel selected day header) */
+  --theme-almanac-day-header-bg: linear-gradient(
+    135deg,
+    color-mix(in oklch, var(--theme-primary) 65%, black),
+    var(--theme-secondary)
+  );
+
+  /* Almanac - MoonPhasesTimeline background */
+  --theme-almanac-moon-timeline-bg: linear-gradient(
+    to right,
+    oklch(0.93 0.04 240),
+    oklch(0.93 0.03 285),
+    oklch(0.94 0.04 330)
+  );
+
+  /* Almanac - Event time badges (semantically correct, separate from moon/special category vars) */
+  --theme-almanac-event-time-start-bg: oklch(0.88 0.08 240);
+  --theme-almanac-event-time-start-fg: oklch(0.42 0.12 245);
+  --theme-almanac-event-time-end-bg: oklch(0.92 0.06 75);
+  --theme-almanac-event-time-end-fg: oklch(0.42 0.14 65);
+
+  /* Panchanga detail cards (yoga, karana) — default neutral purples */
+  --theme-panchanga-yoga-bg: oklch(0.9 0.05 280);
+  --theme-panchanga-yoga-label: oklch(0.4 0.14 278);
+  --theme-panchanga-karana-bg: oklch(0.91 0.04 295);
+  --theme-panchanga-karana-label: oklch(0.42 0.12 290);
+
+  /* Sadhana tracker — heatmap cell intensity levels */
+  --theme-heatmap-empty: color-mix(in oklch, var(--theme-fg) 10%, transparent);
+  --theme-heatmap-1: color-mix(in oklch, var(--theme-primary) 28%, transparent);
+  --theme-heatmap-2: color-mix(in oklch, var(--theme-primary) 52%, transparent);
+  --theme-heatmap-3: color-mix(in oklch, var(--theme-primary) 75%, transparent);
+  --theme-heatmap-4: var(--theme-primary);
+
+  /* Legacy aliases (for compatibility) */
+  --color-success: var(--theme-success);
+  --color-warning: var(--theme-warning);
+  --color-error: var(--theme-error);
+  --color-info: var(--theme-info);
+}
+
+/* MoonPhasesTimeline base style — background driven by theme var */
+.almanac-moon-timeline {
+  background: var(--theme-almanac-moon-timeline-bg);
+}
+
+/* =============================================================================
    DARK MODE BASE
    ============================================================================= */
 .dark {
