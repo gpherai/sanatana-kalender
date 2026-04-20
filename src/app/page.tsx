@@ -1,50 +1,21 @@
 import Link from "next/link";
 import { ArrowRight, Plus } from "lucide-react";
-import { prisma } from "@/lib/db";
 import { DharmaCalendar } from "@/components/calendar/DharmaCalendar";
 import { TodayHero } from "@/components/ui/TodayHero";
 import { PageLayout } from "@/components/layout";
+import { findUpcomingOccurrences } from "@/repositories/event.repository";
+import { findAllCategories } from "@/repositories/category.repository";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  // Fetch upcoming events from database with category relation (7 days window)
-  // Strip time component to UTC midnight so all-day events for today are included
   const now = new Date();
-  const today = new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
-  );
-  const sevenDaysLater = new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 7)
-  );
 
-  const upcomingEvents = await prisma.eventOccurrence.findMany({
-    where: {
-      date: {
-        gte: today,
-        lte: sevenDaysLater,
-      },
-    },
-    include: {
-      event: {
-        include: {
-          categories: {
-            include: { category: true },
-            orderBy: { sortOrder: "asc" as const },
-          },
-        },
-      },
-    },
-    orderBy: {
-      date: "asc",
-    },
-    // No take limit — show all events within the 7-day window
-  });
-
-  // Fetch categories for the legend
-  const categories = await prisma.category.findMany({
-    orderBy: { sortOrder: "asc" },
-  });
+  // Fetch data using repositories
+  const [upcomingEvents, categories] = await Promise.all([
+    findUpcomingOccurrences(7),
+    findAllCategories(),
+  ]);
 
   return (
     <PageLayout spacing>

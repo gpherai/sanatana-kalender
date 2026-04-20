@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { prisma } from "@/lib/db";
+import * as sadhanaRepo from "@/repositories/sadhana.repository";
 import { formatPractice } from "../../_helpers";
 
 type Params = { params: Promise<{ id: string }> };
@@ -14,36 +14,43 @@ const patchPracticeSchema = z.object({
 });
 
 export async function PATCH(req: NextRequest, { params }: Params) {
-  const { id } = await params;
-  const parsed = patchPracticeSchema.safeParse(await req.json());
-  if (!parsed.success)
-    return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+  try {
+    const { id } = await params;
+    const parsed = patchPracticeSchema.safeParse(await req.json());
+    if (!parsed.success)
+      return NextResponse.json({ error: "Invalid input" }, { status: 400 });
 
-  const practice = await prisma.sadhanaPractice.findUnique({ where: { id } });
-  if (!practice) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    const practice = await sadhanaRepo.findPracticeById(id);
+    if (!practice) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  const { name, type, mantra_text, notes, active } = parsed.data;
-  const updated = await prisma.sadhanaPractice.update({
-    where: { id },
-    data: {
+    const { name, type, mantra_text, notes, active } = parsed.data;
+    const updated = await sadhanaRepo.updatePractice(id, {
       ...(name !== undefined && { name }),
       ...(type !== undefined && { type }),
       ...(mantra_text !== undefined && { mantraText: mantra_text ?? null }),
       ...(notes !== undefined && { notes: notes ?? null }),
       ...(active !== undefined && { active }),
-    },
-  });
-  return NextResponse.json(formatPractice(updated));
+    });
+    return NextResponse.json(formatPractice(updated));
+  } catch (error) {
+    console.error("[SADHANA_PRACTICE_PATCH]", error);
+    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+  }
 }
 
 export async function DELETE(_req: NextRequest, { params }: Params) {
-  const { id } = await params;
+  try {
+    const { id } = await params;
 
-  const practice = await prisma.sadhanaPractice.findUnique({ where: { id } });
-  if (!practice) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
+    const practice = await sadhanaRepo.findPracticeById(id);
+    if (!practice) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    await sadhanaRepo.deletePractice(id);
+    return new NextResponse(null, { status: 204 });
+  } catch (error) {
+    console.error("[SADHANA_PRACTICE_DELETE]", error);
+    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
   }
-
-  await prisma.sadhanaPractice.delete({ where: { id } });
-  return new NextResponse(null, { status: 204 });
 }

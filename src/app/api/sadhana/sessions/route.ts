@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { prisma } from "@/lib/db";
 import { formatSession, utcDate } from "../_helpers";
+import * as sadhanaRepo from "@/repositories/sadhana.repository";
 
 const sessionItemSchema = z.object({
   practice_id: z.string().min(1),
@@ -19,69 +19,47 @@ const createSessionSchema = z.object({
   items: z.array(sessionItemSchema).min(1),
 });
 
-const INCLUDE_ITEMS = {
-  items: {
-    include: { practice: true },
-    orderBy: { createdAt: "asc" as const },
-  },
-} as const;
-
 export async function GET(req: NextRequest) {
-  const params = req.nextUrl.searchParams;
-  const fromStr = params.get("from");
-  const toStr = params.get("to");
+  try {
+    const params = req.nextUrl.searchParams;
+    const fromStr = params.get("from");
+    const toStr = params.get("to");
 
-  const sessions = await prisma.sadhanaSession.findMany({
-    where: {
-      ...(fromStr ? { date: { gte: utcDate(fromStr) } } : {}),
-      ...(toStr ? { date: { lte: utcDate(toStr) } } : {}),
-    },
-    include: INCLUDE_ITEMS,
-    orderBy: [{ date: "desc" }, { createdAt: "desc" }],
-  });
+    let sessions;
+    if (fromStr || toStr) {
+      const fromDate = fromStr ? utcDate(fromStr) : new Date(0);
+      const toDate = toStr ? utcDate(toStr) : new Date();
+      sessions = await sadhanaRepo.findSessionsByDateRange(fromDate, toDate);
+    } else {
+      sessions = await sadhanaRepo.findAllSessions();
+    }
 
-  return NextResponse.json(sessions.map(formatSession));
+    return NextResponse.json(sessions.map(formatSession));
+  } catch (error) {
+    console.error("[SADHANA_SESSIONS_GET]", error);
+    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+  }
 }
 
 export async function POST(req: NextRequest) {
-  const parsed = createSessionSchema.safeParse(await req.json());
-  if (!parsed.success)
-    return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+  try {
+    const parsed = createSessionSchema.safeParse(await req.json());
+    if (!parsed.success)
+      return NextResponse.json({ error: "Invalid input" }, { status: 400 });
 
-  const { date, started_at, duration_minutes, notes, items } = parsed.data;
+    const { date, started_at, duration_minutes, notes, items } = parsed.data;
 
-  const session = await prisma.$transaction(async (tx) => {
-    const s = await tx.sadhanaSession.create({
-      data: {
-        date: utcDate(date),
-        startedAt: started_at ? new Date(started_at) : null,
-        durationMinutes: duration_minutes ?? null,
-        notes: notes ?? null,
-      },
-    });
+    const session = await sadhanaRepo.createSessionWithItems(
+      date,
+      started_at,
+      duration_minutes,
+      notes,
+      items
+    );
 
-    for (const item of items) {
-      const practice = await tx.sadhanaPractice.findUnique({
-        where: { id: item.practice_id },
-      });
-      if (!practice) throw new Error(`Practice ${item.practice_id} not found`);
-      await tx.sadhanaSessionItem.create({
-        data: {
-          sessionId: s.id,
-          practiceId: item.practice_id,
-          quantity: item.quantity,
-          unit: item.unit ?? "malas",
-          durationMinutes: item.duration_minutes ?? null,
-          notes: item.notes ?? null,
-        },
-      });
-    }
-
-    return tx.sadhanaSession.findUniqueOrThrow({
-      where: { id: s.id },
-      include: INCLUDE_ITEMS,
-    });
-  });
-
-  return NextResponse.json(formatSession(session), { status: 201 });
+    return NextResponse.json(formatSession(session), { status: 201 });
+  } catch (error) {
+    console.error("[SADHANA_SESSIONS_POST]", error);
+    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+  }
 }

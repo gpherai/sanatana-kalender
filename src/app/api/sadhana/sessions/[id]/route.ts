@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { prisma } from "@/lib/db";
-import { formatSession, utcDate } from "../../_helpers";
+import { formatSession } from "../../_helpers";
+import * as sadhanaRepo from "@/repositories/sadhana.repository";
 
 const patchSessionItemSchema = z.object({
   practice_id: z.string().min(1),
@@ -24,78 +24,57 @@ const patchSessionSchema = z.object({
 
 type Params = { params: Promise<{ id: string }> };
 
-const INCLUDE_ITEMS = {
-  items: {
-    include: { practice: true },
-    orderBy: { createdAt: "asc" as const },
-  },
-} as const;
-
 export async function PATCH(req: NextRequest, { params }: Params) {
-  const { id } = await params;
-  const parsed = patchSessionSchema.safeParse(await req.json());
-  if (!parsed.success)
-    return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+  try {
+    const { id } = await params;
+    const parsed = patchSessionSchema.safeParse(await req.json());
+    if (!parsed.success)
+      return NextResponse.json({ error: "Invalid input" }, { status: 400 });
 
-  const existing = await prisma.sadhanaSession.findUnique({ where: { id } });
-  if (!existing) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
-
-  const { date, started_at, duration_minutes, notes, items } = parsed.data;
-
-  const session = await prisma.$transaction(async (tx) => {
-    await tx.sadhanaSession.update({
-      where: { id },
-      data: {
-        ...(date !== undefined && { date: utcDate(date) }),
-        ...(started_at !== undefined && {
-          startedAt: started_at ? new Date(started_at) : null,
-        }),
-        ...(duration_minutes !== undefined && {
-          durationMinutes: duration_minutes ?? null,
-        }),
-        ...(notes !== undefined && { notes: notes ?? null }),
-      },
-    });
-
-    if (items !== undefined) {
-      await tx.sadhanaSessionItem.deleteMany({ where: { sessionId: id } });
-      for (const item of items) {
-        const practice = await tx.sadhanaPractice.findUnique({
-          where: { id: item.practice_id },
-        });
-        if (!practice) throw new Error(`Practice ${item.practice_id} not found`);
-        await tx.sadhanaSessionItem.create({
-          data: {
-            sessionId: id,
-            practiceId: item.practice_id,
-            quantity: item.quantity,
-            unit: item.unit ?? "malas",
-            durationMinutes: item.duration_minutes ?? null,
-            notes: item.notes ?? null,
-          },
-        });
-      }
+    const existing = await sadhanaRepo.findSessionById(id);
+    if (!existing) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
-    return tx.sadhanaSession.findUniqueOrThrow({
-      where: { id },
-      include: INCLUDE_ITEMS,
-    });
-  });
+    const { date, started_at, duration_minutes, notes, items } = parsed.data;
 
-  return NextResponse.json(formatSession(session));
+    // Use specific transaction-based repo method for complex updates
+    const session = await sadhanaRepo.updateSessionWithItems(
+      id,
+      date ?? (existing.date as Date).toISOString().split("T")[0]!,
+      started_at !== undefined ? started_at : existing.startedAt?.toISOString(),
+      duration_minutes !== undefined ? duration_minutes : existing.durationMinutes,
+      notes !== undefined ? notes : existing.notes,
+      items ??
+        existing.items.map((i) => ({
+          practice_id: i.practiceId,
+          quantity: i.quantity,
+          unit: i.unit,
+          duration_minutes: i.durationMinutes,
+          notes: i.notes,
+        }))
+    );
+
+    return NextResponse.json(formatSession(session));
+  } catch (error) {
+    console.error("[SADHANA_SESSION_PATCH]", error);
+    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+  }
 }
 
 export async function DELETE(_req: NextRequest, { params }: Params) {
-  const { id } = await params;
+  try {
+    const { id } = await params;
 
-  const existing = await prisma.sadhanaSession.findUnique({ where: { id } });
-  if (!existing) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
+    const existing = await sadhanaRepo.findSessionById(id);
+    if (!existing) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    await sadhanaRepo.deleteSession(id);
+    return new NextResponse(null, { status: 204 });
+  } catch (error) {
+    console.error("[SADHANA_SESSION_DELETE]", error);
+    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
   }
-
-  await prisma.sadhanaSession.delete({ where: { id } });
-  return new NextResponse(null, { status: 204 });
 }

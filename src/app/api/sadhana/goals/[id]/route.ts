@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { prisma } from "@/lib/db";
+import * as sadhanaRepo from "@/repositories/sadhana.repository";
 import { formatGoal } from "../../_helpers";
 
 const patchGoalSchema = z.object({
@@ -15,15 +15,14 @@ export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params;
-  const parsed = patchGoalSchema.safeParse(await req.json());
-  if (!parsed.success)
-    return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+  try {
+    const { id } = await params;
+    const parsed = patchGoalSchema.safeParse(await req.json());
+    if (!parsed.success)
+      return NextResponse.json({ error: "Invalid input" }, { status: 400 });
 
-  const { name, target_malas, target_minutes, active, practice_ids } = parsed.data;
-  const goal = await prisma.sadhanaGoal.update({
-    where: { id },
-    data: {
+    const { name, target_malas, target_minutes, active, practice_ids } = parsed.data;
+    const goal = await sadhanaRepo.updateGoal(id, {
       ...(name !== undefined && { name }),
       ...(target_malas !== undefined && { targetMalas: target_malas }),
       ...(target_minutes !== undefined && { targetMinutes: target_minutes }),
@@ -31,17 +30,24 @@ export async function PATCH(
       ...(practice_ids !== undefined && {
         practices: { set: practice_ids.map((pid) => ({ id: pid })) },
       }),
-    },
-    include: { practices: true },
-  });
-  return NextResponse.json(formatGoal(goal));
+    });
+    return NextResponse.json(formatGoal(goal));
+  } catch (error) {
+    console.error("[SADHANA_GOAL_PATCH]", error);
+    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+  }
 }
 
 export async function DELETE(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params;
-  await prisma.sadhanaGoal.delete({ where: { id } });
-  return new NextResponse(null, { status: 204 });
+  try {
+    const { id } = await params;
+    await sadhanaRepo.deleteGoal(id);
+    return new NextResponse(null, { status: 204 });
+  } catch (error) {
+    console.error("[SADHANA_GOAL_DELETE]", error);
+    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+  }
 }

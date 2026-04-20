@@ -106,3 +106,73 @@ export async function findEventOccurrences(params: EventQueryParams) {
     orderBy,
   });
 }
+
+/**
+ * Find upcoming event occurrences within a specific day window.
+ * Starting from today (UTC midnight).
+ */
+export async function findUpcomingOccurrences(daysWindow = 7) {
+  const now = new Date();
+  const today = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+  );
+  const futureDate = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + daysWindow)
+  );
+
+  return prisma.eventOccurrence.findMany({
+    where: {
+      date: {
+        gte: today,
+        lte: futureDate,
+      },
+    },
+    include: {
+      event: {
+        include: {
+          categories: {
+            include: { category: true },
+            orderBy: { sortOrder: "asc" as const },
+          },
+        },
+      },
+    },
+    orderBy: {
+      date: "asc",
+    },
+  });
+}
+
+/**
+ * Find a single event by ID with all its relations and details.
+ */
+export async function findEventById(id: string) {
+  return prisma.event.findUnique({
+    where: { id },
+    include: {
+      categories: {
+        include: { category: true },
+        orderBy: { sortOrder: "asc" },
+      },
+      occurrences: {
+        orderBy: { date: "asc" },
+      },
+      seriesChildEntries: {
+        include: {
+          parent: {
+            select: { id: true, name: true },
+          },
+        },
+        orderBy: { sortOrder: "asc" },
+      },
+      seriesParentEntries: {
+        include: {
+          child: {
+            select: { id: true, name: true },
+          },
+        },
+        orderBy: { sortOrder: "asc" },
+      },
+    },
+  });
+}

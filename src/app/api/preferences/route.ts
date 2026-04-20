@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
 import { updatePreferencesSchema } from "@/lib/validations";
 import { serverError, validationError } from "@/lib/api-response";
 import { DEFAULT_LOCATION, DEFAULT_PREFERENCES_ID } from "@/lib/domain";
@@ -7,6 +6,7 @@ import { DEFAULT_THEME_NAME } from "@/config/themes";
 import { logError } from "@/lib/utils";
 import { Prisma } from "@prisma/client";
 import { EventType, CalendarView } from "@prisma/client";
+import { findPreferences, upsertPreferences } from "@/repositories/preference.repository";
 
 /**
  * Default preferences object (not persisted until first PUT)
@@ -31,19 +31,12 @@ const DEFAULT_PREFERENCES = {
 /**
  * GET /api/preferences
  * Haal de gebruikersvoorkeuren op (single user systeem)
- *
- * Returns existing preferences or default values (without writing to DB)
- * This keeps GET idempotent and side-effect free
  */
 export async function GET() {
   try {
-    const preferences = await prisma.userPreference.findUnique({
-      where: { id: DEFAULT_PREFERENCES_ID },
-    });
+    const preferences = await findPreferences();
 
     if (!preferences) {
-      // Return default preferences without creating in DB
-      // This keeps GET idempotent (no side effects)
       return NextResponse.json(DEFAULT_PREFERENCES);
     }
 
@@ -57,8 +50,6 @@ export async function GET() {
 /**
  * PUT /api/preferences
  * Update de gebruikersvoorkeuren (upsert pattern)
- *
- * Creates preferences if they don't exist, updates if they do
  */
 export async function PUT(request: NextRequest) {
   try {
@@ -73,14 +64,11 @@ export async function PUT(request: NextRequest) {
     const data = result.data;
 
     // Cast validated strings to Prisma enum types
-    // Zod has already validated these are valid enum values
     const visibleEventTypes = data.visibleEventTypes as EventType[] | undefined;
     const defaultView = data.defaultView as CalendarView | undefined;
 
-    // Use upsert pattern for cleaner code
-    const preferences = await prisma.userPreference.upsert({
-      where: { id: DEFAULT_PREFERENCES_ID }, // Fixed ID for single-user system
-      create: {
+    const preferences = await upsertPreferences(
+      {
         id: DEFAULT_PREFERENCES_ID,
         currentTheme: data.currentTheme ?? DEFAULT_PREFERENCES.currentTheme,
         defaultView: defaultView ?? DEFAULT_PREFERENCES.defaultView,
@@ -96,7 +84,7 @@ export async function PUT(request: NextRequest) {
         notificationDaysBefore:
           data.notificationDaysBefore ?? DEFAULT_PREFERENCES.notificationDaysBefore,
       },
-      update: {
+      {
         ...(data.currentTheme !== undefined && { currentTheme: data.currentTheme }),
         ...(defaultView !== undefined && { defaultView }),
         ...(data.timezone !== undefined && { timezone: data.timezone }),
@@ -113,14 +101,13 @@ export async function PUT(request: NextRequest) {
         ...(data.notificationDaysBefore !== undefined && {
           notificationDaysBefore: data.notificationDaysBefore,
         }),
-      },
-    });
+      }
+    );
 
     return NextResponse.json(preferences);
   } catch (error) {
     logError("Error updating preferences:", error);
 
-    // Handle specific Prisma errors
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === "P2002") {
         return serverError("Voorkeuren bestaan al");

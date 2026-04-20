@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/db";
 import { ArrowLeft, Calendar, Clock, Pencil, Tag, RefreshCw } from "lucide-react";
 import { PageLayout } from "@/components/layout";
 import { formatDateNL } from "@/lib/date-utils";
@@ -12,6 +11,7 @@ import {
   getCategoryTextClass,
   FALLBACK_CATEGORY_COLOR,
 } from "@/lib/category-styles";
+import { findEventById } from "@/repositories/event.repository";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -19,27 +19,14 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
-  const event = await prisma.event.findUnique({ where: { id }, select: { name: true } });
+  const event = await findEventById(id);
   return { title: event?.name ?? "Event" };
 }
 
 export default async function EventDetailPage({ params }: PageProps) {
   const { id } = await params;
 
-  const event = await prisma.event.findUnique({
-    where: { id },
-    include: {
-      categories: {
-        include: { category: true },
-        orderBy: { sortOrder: "asc" as const },
-        take: 1,
-      },
-      occurrences: {
-        orderBy: { date: "asc" },
-        take: 1,
-      },
-    },
-  });
+  const event = await findEventById(id);
 
   if (!event) {
     notFound();

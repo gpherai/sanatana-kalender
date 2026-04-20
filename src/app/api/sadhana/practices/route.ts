@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { prisma } from "@/lib/db";
 import { formatPractice } from "../_helpers";
+import * as sadhanaRepo from "@/repositories/sadhana.repository";
 
 const createPracticeSchema = z.object({
   name: z.string().min(1).max(100),
@@ -11,22 +11,32 @@ const createPracticeSchema = z.object({
 });
 
 export async function GET(req: NextRequest) {
-  const activeOnly = req.nextUrl.searchParams.get("active_only") !== "false";
-  const practices = await prisma.sadhanaPractice.findMany({
-    where: activeOnly ? { active: true } : {},
-    orderBy: { createdAt: "asc" },
-  });
-  return NextResponse.json(practices.map(formatPractice));
+  try {
+    const activeOnly = req.nextUrl.searchParams.get("active_only") !== "false";
+    const practices = await sadhanaRepo.findAllPractices(activeOnly);
+    return NextResponse.json(practices.map(formatPractice));
+  } catch (error) {
+    console.error("[SADHANA_PRACTICES_GET]", error);
+    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+  }
 }
 
 export async function POST(req: NextRequest) {
-  const parsed = createPracticeSchema.safeParse(await req.json());
-  if (!parsed.success)
-    return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+  try {
+    const parsed = createPracticeSchema.safeParse(await req.json());
+    if (!parsed.success)
+      return NextResponse.json({ error: "Invalid input" }, { status: 400 });
 
-  const { name, type, mantra_text, notes } = parsed.data;
-  const practice = await prisma.sadhanaPractice.create({
-    data: { name, type, mantraText: mantra_text ?? null, notes: notes ?? null },
-  });
-  return NextResponse.json(formatPractice(practice), { status: 201 });
+    const { name, type, mantra_text, notes } = parsed.data;
+    const practice = await sadhanaRepo.createPractice({
+      name,
+      type,
+      mantraText: mantra_text ?? null,
+      notes: notes ?? null,
+    });
+    return NextResponse.json(formatPractice(practice), { status: 201 });
+  } catch (error) {
+    console.error("[SADHANA_PRACTICES_POST]", error);
+    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+  }
 }
