@@ -152,14 +152,14 @@ function aqiBadgeClass(aqi: number) {
       "bg-yellow-100 text-yellow-800 dark:bg-yellow-950/60 dark:text-yellow-300",
       "bg-orange-100 text-orange-800 dark:bg-orange-950/60 dark:text-orange-300",
       "bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-300",
-    ][aqi - 1] ?? "bg-slate-100 text-slate-800"
+    ][aqi - 1] ?? "bg-theme-bg-subtle text-theme-fg-muted"
   );
 }
 function aqiDotClass(aqi: number) {
   return (
     ["bg-green-500", "bg-lime-500", "bg-yellow-500", "bg-orange-500", "bg-red-500"][
       aqi - 1
-    ] ?? "bg-slate-400"
+    ] ?? "bg-theme-border-strong"
   );
 }
 
@@ -803,12 +803,12 @@ function CurrentWeatherCard({
       {/* KPI BADGES — rij 2: bewolking / zichtbaarheid / wind max / neerslag vandaag */}
       <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
         <KpiBadge
-          icon={<Cloud className="h-4 w-4 text-slate-400" />}
+          icon={<Cloud className="text-theme-fg-muted h-4 w-4" />}
           label="Bewolking"
           value={`${c.clouds}%`}
         />
         <KpiBadge
-          icon={<Eye className="h-4 w-4 text-slate-400" />}
+          icon={<Eye className="text-theme-fg-muted h-4 w-4" />}
           label="Zichtbaarheid"
           value={`${(c.visibility / 1000).toFixed(1)} km`}
         />
@@ -1123,7 +1123,7 @@ function TempChart({
                 stroke="currentColor"
                 strokeWidth="0.5"
                 strokeDasharray="4 4"
-                className="text-slate-200 dark:text-slate-700"
+                className="text-theme-border-subtle"
               />
               <text
                 x={PAD.l - 5}
@@ -1132,7 +1132,7 @@ function TempChart({
                 dominantBaseline="middle"
                 fill="currentColor"
                 style={{ fontSize: 9, fontVariantNumeric: "tabular-nums" }}
-                className="text-slate-400 dark:text-slate-500"
+                className="text-theme-fg-muted"
               >
                 {t}°
               </text>
@@ -1149,14 +1149,14 @@ function TempChart({
                 y2={PAD.t + ph}
                 stroke="currentColor"
                 strokeWidth="0.75"
-                className="text-slate-200 dark:text-slate-700"
+                className="text-theme-border-subtle"
               />
               <text
                 x={(xi + 5).toFixed(1)}
                 y={(PAD.t + ph + 18).toFixed(1)}
                 fill="currentColor"
                 style={{ fontSize: 9 }}
-                className="text-slate-400 dark:text-slate-500"
+                className="text-theme-fg-muted"
               >
                 {label}
               </text>
