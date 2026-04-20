@@ -22,7 +22,6 @@ export async function GET() {
     isDefault: t.isDefault,
     isSpecial: t.isSpecial ?? false,
     colors: t.colors,
-    background: t.background ?? null,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   }));

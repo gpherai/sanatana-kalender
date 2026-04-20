@@ -1,0 +1,205 @@
+/* =============================================================================
+   DARK MODE BASE
+   ============================================================================= */
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+
+  /* Dark mode semantic tokens */
+
+  /* Backgrounds */
+  --theme-bg: oklch(0.145 0.005 285); /* Page background (zinc-900) */
+  --theme-bg-subtle: oklch(0.21 0.006 285); /* Subtle background (zinc-800) */
+  --theme-surface: oklch(0.21 0.006 285); /* Cards, elevated surfaces */
+  --theme-surface-raised: oklch(0.274 0.006 286); /* Raised surface (zinc-700) */
+  --theme-surface-overlay: oklch(0.21 0.006 285 / 0.95); /* Modals, dropdowns */
+
+  /* Text colors */
+  --theme-fg: oklch(0.968 0.003 286); /* Primary text (zinc-100) */
+  --theme-fg-secondary: oklch(0.705 0.015 286); /* Secondary text (zinc-400) */
+  --theme-fg-muted: oklch(0.552 0.016 286); /* Muted text (zinc-500) */
+  --theme-fg-subtle: oklch(0.442 0.017 285); /* Subtle text (zinc-600) */
+
+  /* Borders & Dividers */
+  --theme-border: oklch(0.339 0.007 286); /* Default border (zinc-700) */
+  --theme-border-subtle: oklch(0.274 0.006 286); /* Subtle border (zinc-800) */
+  --theme-border-strong: oklch(0.442 0.017 285); /* Strong border (zinc-600) */
+  --theme-divider: oklch(0.274 0.006 286); /* Dividers */
+
+  /* Interactive states */
+  --theme-hover: oklch(0.274 0.006 286); /* Hover background (zinc-800) */
+  --theme-active: oklch(0.339 0.007 286); /* Active/pressed (zinc-700) */
+  --theme-disabled: oklch(0.274 0.006 286); /* Disabled elements */
+
+  /* Status colors (extended for Fase 2 - dark mode) */
+  --theme-success-bg: oklch(0.35 0.14 145 / 0.3);
+  --theme-success-fg: oklch(0.75 0.12 145);
+  --theme-success-border: oklch(0.55 0.15 145);
+
+  --theme-warning-bg: oklch(0.4 0.14 85 / 0.3);
+  --theme-warning-fg: oklch(0.8 0.14 85);
+  --theme-warning-border: oklch(0.65 0.16 85);
+
+  --theme-error-bg: oklch(0.35 0.18 25 / 0.3);
+  --theme-error-fg: oklch(0.75 0.16 25);
+  --theme-error-border: oklch(0.55 0.2 25);
+
+  --theme-info-bg: oklch(0.35 0.12 245 / 0.3);
+  --theme-info-fg: oklch(0.75 0.12 245);
+  --theme-info-border: oklch(0.6 0.16 245);
+
+  /* Loading & Spinner (dark mode) */
+  --theme-spinner-track: oklch(0.3 0.02 250 / 0.3);
+  --theme-spinner-fill: var(--theme-primary);
+
+  /* Glass & Overlay Effects (dark mode) */
+  --theme-glass-bg: oklch(1 0 0 / 0.08);
+  --theme-glass-border: oklch(1 0 0 / 0.15);
+  --theme-modal-backdrop: oklch(0 0 0 / 0.6);
+
+  /* Icon colors - adjusted for dark mode visibility */
+  --theme-icon-sun: oklch(0.8 0.16 50); /* Golden yellow */
+  --theme-icon-sunrise: oklch(0.72 0.18 35); /* Warm amber */
+  --theme-icon-sunset: oklch(0.65 0.2 15); /* Brighter red */
+  --theme-icon-moon: oklch(0.78 0.14 220); /* Brighter blue */
+  --theme-icon-event-special: oklch(0.8 0.16 50); /* Golden yellow */
+  --theme-icon-mode-sun: oklch(0.85 0.18 60); /* Bright in dark mode */
+  --theme-icon-mode-moon: oklch(0.75 0.12 250); /* More prominent */
+
+  /* Moon Phase Visualization (dark mode - slightly cooler/brighter) */
+  --theme-moon-surface-light: oklch(0.99 0.012 85); /* Bright cream */
+  --theme-moon-surface-mid: oklch(0.95 0.018 80); /* Pale beige */
+  --theme-moon-surface-dark: oklch(0.9 0.023 75); /* Light sand */
+  --theme-moon-shadow-light: oklch(0.11 0.012 275); /* Very dark blue */
+  --theme-moon-shadow-deep: oklch(0.065 0.008 270); /* Near black indigo */
+  --theme-moon-glow: oklch(0.985 0.03 90 / 0.6); /* Cool silver glow */
+  --theme-moon-rim: oklch(1 0 0 / 0.12); /* Slightly brighter rim */
+
+  /* Calendar-specific colors (dark mode) */
+  --theme-calendar-header-text: oklch(0.7 0.02 250);
+  --theme-calendar-date-text: oklch(0.8 0.02 250);
+  --theme-calendar-today-text: white;
+  --theme-calendar-off-range-text: oklch(0.5 0.01 250);
+  --theme-calendar-agenda-text: oklch(0.85 0.02 250);
+  --theme-calendar-off-range-bg: oklch(0.15 0.005 250);
+  --theme-calendar-weekend-bg: oklch(0.18 0.01 60);
+  --theme-calendar-popup-bg: oklch(0.2 0.01 250);
+  --theme-calendar-today-bg: color-mix(in oklch, var(--theme-primary) 15%, transparent);
+  --theme-calendar-border: oklch(0.3 0.01 250);
+  --theme-calendar-border-subtle: oklch(0.25 0.01 250);
+  --theme-calendar-full-moon-bg-start: oklch(0.25 0.04 85);
+  --theme-calendar-full-moon-bg-end: oklch(0.22 0.06 75);
+  --theme-calendar-full-moon-glow: oklch(0.4 0.08 85 / 0.3);
+  --theme-calendar-new-moon-bg-start: oklch(0.18 0.03 280);
+  --theme-calendar-new-moon-bg-end: oklch(0.16 0.04 270);
+
+  /* Almanac-specific colors (Moon Phase Category - dark mode) */
+  --theme-almanac-moon-bg: oklch(0.35 0.12 245 / 0.3);
+  --theme-almanac-moon-fg: oklch(0.75 0.1 245);
+  --theme-almanac-moon-focus: oklch(0.6 0.18 245);
+  --theme-almanac-moon-cell-bg: oklch(0.35 0.1 270 / 0.2);
+  --theme-almanac-moon-cell-bg-hover: oklch(0.35 0.1 270 / 0.3);
+  --theme-almanac-moon-card-from: oklch(0.35 0.12 240 / 0.2);
+  --theme-almanac-moon-card-to: oklch(0.35 0.1 270 / 0.2);
+  --theme-almanac-moon-icon: oklch(0.55 0.16 245);
+  --theme-almanac-moon-rise-icon: oklch(0.6 0.18 245);
+  --theme-almanac-moon-set-icon: oklch(0.6 0.14 270);
+  --theme-almanac-moon-badge-bg: oklch(0.35 0.12 245 / 0.3);
+  --theme-almanac-moon-badge-fg: oklch(0.75 0.1 245);
+
+  /* Almanac-specific colors (Special Days Category - dark mode) */
+  --theme-almanac-special-bg: oklch(0.35 0.14 295 / 0.3);
+  --theme-almanac-special-fg: oklch(0.75 0.12 295);
+  --theme-almanac-special-focus: oklch(0.6 0.2 295);
+  --theme-almanac-special-cell-bg: oklch(0.35 0.12 295 / 0.2);
+  --theme-almanac-special-cell-bg-hover: oklch(0.35 0.12 295 / 0.3);
+  --theme-almanac-special-card-bg: oklch(0.35 0.12 295 / 0.2);
+  --theme-almanac-special-heading: oklch(0.75 0.12 295);
+  --theme-almanac-special-badge-bg: oklch(0.35 0.14 295 / 0.3);
+  --theme-almanac-special-badge-fg: oklch(0.75 0.12 295);
+
+  /* Almanac-specific colors (Events Category - dark mode) */
+  --theme-almanac-event-bg: oklch(0.4 0.14 70 / 0.3);
+  --theme-almanac-event-fg: oklch(0.75 0.12 70);
+  --theme-almanac-event-focus: oklch(0.6 0.18 70);
+  --theme-almanac-event-cell-bg: oklch(0.4 0.14 75 / 0.2);
+  --theme-almanac-event-cell-bg-hover: oklch(0.4 0.14 75 / 0.3);
+  --theme-almanac-event-icon: oklch(0.6 0.18 70);
+  --theme-almanac-event-major-bg: oklch(0.4 0.14 75 / 0.2);
+  --theme-almanac-event-major-bg-hover: oklch(0.4 0.14 75 / 0.3);
+  --theme-almanac-event-major-star: oklch(0.6 0.18 70);
+
+  /* Almanac-specific colors (Sun Times Category - dark mode) */
+  --theme-almanac-sun-rise-icon: oklch(0.65 0.2 50);
+  --theme-almanac-sun-set-icon: oklch(0.58 0.22 25);
+  --theme-almanac-sun-card-from: oklch(0.4 0.14 50 / 0.2);
+  --theme-almanac-sun-card-to: oklch(0.42 0.14 90 / 0.2);
+  --theme-almanac-sun-icon: oklch(0.6 0.18 50);
+
+  /* Almanac-specific colors (Planetary Category - dark mode) */
+  --theme-almanac-planet-moon: oklch(0.7 0.12 240);
+  --theme-almanac-planet-mars: oklch(0.65 0.2 25);
+  --theme-almanac-planet-mercury: oklch(0.7 0.18 145);
+  --theme-almanac-planet-jupiter: oklch(0.75 0.18 95);
+  --theme-almanac-planet-venus: oklch(0.75 0.14 345);
+  --theme-almanac-planet-saturn: oklch(0.65 0.18 295);
+  --theme-almanac-planet-sun: oklch(0.65 0.2 50);
+
+  /* Almanac-specific colors (Warning/Inauspicious Category - dark mode) */
+  --theme-almanac-warning-border: oklch(0.55 0.22 25);
+  --theme-almanac-warning-bg: oklch(0.38 0.18 25 / 0.2);
+  --theme-almanac-warning-heading: oklch(0.65 0.2 25);
+  --theme-almanac-warning-text: oklch(0.75 0.14 25);
+
+  /* Almanac - Day header (dark mode — same gradient, primary/secondary already adapt) */
+  --theme-almanac-day-header-bg: linear-gradient(
+    135deg,
+    color-mix(in oklch, var(--theme-primary) 65%, black),
+    var(--theme-secondary)
+  );
+
+  /* Almanac - MoonPhasesTimeline (dark mode) */
+  --theme-almanac-moon-timeline-bg: linear-gradient(
+    to right,
+    oklch(0.18 0.08 240 / 0.25),
+    oklch(0.16 0.06 285 / 0.25),
+    oklch(0.18 0.05 330 / 0.25)
+  );
+
+  /* Almanac - Event time badges (dark mode) */
+  --theme-almanac-event-time-start-bg: oklch(0.35 0.12 245 / 0.3);
+  --theme-almanac-event-time-start-fg: oklch(0.75 0.1 245);
+  --theme-almanac-event-time-end-bg: oklch(0.38 0.1 75 / 0.3);
+  --theme-almanac-event-time-end-fg: oklch(0.75 0.12 70);
+
+  /* Panchanga detail cards (dark mode defaults) */
+  --theme-panchanga-yoga-bg: oklch(0.28 0.08 280 / 0.4);
+  --theme-panchanga-yoga-label: oklch(0.75 0.1 278);
+  --theme-panchanga-karana-bg: oklch(0.28 0.06 295 / 0.4);
+  --theme-panchanga-karana-label: oklch(0.75 0.1 290);
+}
+
+/* =============================================================================
+   BASE STYLES
+   ============================================================================= */
+body {
+  background: var(--background);
+  color: var(--foreground);
+  min-height: 100vh;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Focus ring using theme color */
+*:focus-visible {
+  outline: 2px solid var(--theme-primary);
+  outline-offset: 2px;
+}
+
+/* Selection using theme color */
+::selection {
+  background-color: color-mix(in oklch, var(--theme-primary) 30%, transparent);
+  color: var(--foreground);
+}

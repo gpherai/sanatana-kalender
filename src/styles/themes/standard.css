@@ -1,0 +1,460 @@
+/* =============================================================================
+   STANDARD THEMES (Classic + Revamped)
+   ============================================================================= */
+
+/* Theme: Spiritual Minimal (Classic) */
+[data-theme="spiritual-minimal"] {
+  --theme-primary: oklch(0.65 0.15 45);
+  --theme-secondary: oklch(0.55 0.1 200);
+  --theme-accent: oklch(0.7 0.12 85);
+}
+
+/* Theme: Traditional Rich (Classic) */
+[data-theme="traditional-rich"] {
+  --theme-primary: oklch(0.55 0.18 30);
+  --theme-secondary: oklch(0.45 0.12 45);
+  --theme-accent: oklch(0.75 0.15 85);
+}
+
+/* Theme: Cosmic Purple (Classic) */
+[data-theme="cosmic-purple"] {
+  --theme-primary: oklch(0.45 0.2 280);
+  --theme-secondary: oklch(0.35 0.15 300);
+  --theme-accent: oklch(0.7 0.18 320);
+}
+
+/* Theme: Forest Green (Classic) */
+[data-theme="forest-green"] {
+  --theme-primary: oklch(0.5 0.15 145);
+  --theme-secondary: oklch(0.4 0.1 160);
+  --theme-accent: oklch(0.65 0.12 130);
+}
+
+/* Theme: Sunrise Orange (Classic) */
+[data-theme="sunrise-orange"] {
+  --theme-primary: oklch(0.7 0.18 50);
+  --theme-secondary: oklch(0.6 0.15 40);
+  --theme-accent: oklch(0.8 0.12 70);
+}
+
+/* Theme: Spiritual Minimal (Revamped) (Revamped with gradients) */
+[data-theme="spiritual-minimal-revamped"] {
+  --theme-primary: oklch(0.65 0.15 45);
+  --theme-secondary: oklch(0.55 0.1 200);
+  --theme-accent: oklch(0.7 0.12 85);
+}
+
+/* Background (Light) */
+[data-theme="spiritual-minimal-revamped"] body {
+  background:
+    radial-gradient(circle at 20% 20%, oklch(0.78 0.12 60 / 0.35) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, oklch(0.7 0.08 200 / 0.25) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 100%, oklch(0.85 0.06 85 / 0.2) 0%, transparent 60%),
+    linear-gradient(
+      135deg,
+      oklch(0.97 0.02 60) 0%,
+      oklch(0.96 0.03 80) 25%,
+      oklch(0.95 0.02 200) 50%,
+      oklch(0.96 0.02 220) 75%,
+      oklch(0.97 0.01 240) 100%
+    );
+  background-attachment: fixed;
+}
+
+/* Page backgrounds - transparent to show gradient */
+[data-theme="spiritual-minimal-revamped"] .bg-theme-bg,
+[data-theme="spiritual-minimal-revamped"] .bg-theme-bg-subtle {
+  background: transparent !important;
+}
+
+/* Cards and surfaces - glassmorphism effect for better contrast */
+[data-theme="spiritual-minimal-revamped"] .bg-theme-surface {
+  background: oklch(1 0 0 / 0.7) !important;
+  backdrop-filter: blur(12px);
+  border-color: oklch(1 0 0 / 0.3) !important;
+}
+
+[data-theme="spiritual-minimal-revamped"] .bg-theme-surface-raised {
+  background: oklch(1 0 0 / 0.8) !important;
+  backdrop-filter: blur(16px);
+  border-color: oklch(1 0 0 / 0.4) !important;
+}
+
+/* Background (Dark) */
+.dark[data-theme="spiritual-minimal-revamped"] body,
+[data-theme="spiritual-minimal-revamped"].dark body {
+  background:
+    radial-gradient(circle at 20% 20%, oklch(0.45 0.15 45 / 0.4) 0%, transparent 45%),
+    radial-gradient(circle at 80% 80%, oklch(0.35 0.12 200 / 0.35) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 0%, oklch(0.5 0.1 70 / 0.25) 0%, transparent 55%),
+    linear-gradient(
+      135deg,
+      oklch(0.15 0.03 45) 0%,
+      oklch(0.13 0.04 60) 25%,
+      oklch(0.12 0.03 180) 50%,
+      oklch(0.13 0.03 200) 75%,
+      oklch(0.14 0.02 220) 100%
+    );
+  background-attachment: fixed;
+}
+
+/* Page backgrounds - dark mode transparent */
+.dark[data-theme="spiritual-minimal-revamped"] .bg-theme-bg,
+[data-theme="spiritual-minimal-revamped"].dark .bg-theme-bg,
+.dark[data-theme="spiritual-minimal-revamped"] .bg-theme-bg-subtle,
+[data-theme="spiritual-minimal-revamped"].dark .bg-theme-bg-subtle {
+  background: transparent !important;
+}
+
+/* Cards and surfaces - dark mode glassmorphism (tinted to theme hue) */
+.dark[data-theme="spiritual-minimal-revamped"] .bg-theme-surface,
+[data-theme="spiritual-minimal-revamped"].dark .bg-theme-surface {
+  background: oklch(0.18 0.015 45 / 0.75) !important;
+  backdrop-filter: blur(12px);
+  border-color: oklch(1 0 0 / 0.1) !important;
+}
+
+.dark[data-theme="spiritual-minimal-revamped"] .bg-theme-surface-raised,
+[data-theme="spiritual-minimal-revamped"].dark .bg-theme-surface-raised {
+  background: oklch(0.22 0.015 45 / 0.85) !important;
+  backdrop-filter: blur(16px);
+  border-color: oklch(1 0 0 / 0.15) !important;
+}
+
+/* Theme: Traditional Rich (Revamped) (Revamped with gradients) */
+[data-theme="traditional-rich-revamped"] {
+  --theme-primary: oklch(0.55 0.18 30);
+  --theme-secondary: oklch(0.62 0.15 75);
+  --theme-accent: oklch(0.75 0.15 85);
+}
+
+/* Background (Light) */
+[data-theme="traditional-rich-revamped"] body {
+  background:
+    radial-gradient(circle at 18% 18%, oklch(0.68 0.18 35 / 0.4) 0%, transparent 48%),
+    radial-gradient(circle at 82% 82%, oklch(0.75 0.16 65 / 0.32) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 100%, oklch(0.72 0.14 50 / 0.24) 0%, transparent 58%),
+    linear-gradient(
+      135deg,
+      oklch(0.94 0.06 30) 0%,
+      oklch(0.93 0.07 40) 20%,
+      oklch(0.92 0.06 55) 40%,
+      oklch(0.93 0.05 70) 60%,
+      oklch(0.94 0.04 80) 80%,
+      oklch(0.95 0.03 90) 100%
+    );
+  background-attachment: fixed;
+}
+
+/* Page backgrounds - transparent to show gradient */
+[data-theme="traditional-rich-revamped"] .bg-theme-bg,
+[data-theme="traditional-rich-revamped"] .bg-theme-bg-subtle {
+  background: transparent !important;
+}
+
+/* Cards and surfaces - glassmorphism effect for better contrast */
+[data-theme="traditional-rich-revamped"] .bg-theme-surface {
+  background: oklch(1 0 0 / 0.7) !important;
+  backdrop-filter: blur(12px);
+  border-color: oklch(1 0 0 / 0.3) !important;
+}
+
+[data-theme="traditional-rich-revamped"] .bg-theme-surface-raised {
+  background: oklch(1 0 0 / 0.8) !important;
+  backdrop-filter: blur(16px);
+  border-color: oklch(1 0 0 / 0.4) !important;
+}
+
+/* Background (Dark) */
+.dark[data-theme="traditional-rich-revamped"] body,
+[data-theme="traditional-rich-revamped"].dark body {
+  background:
+    radial-gradient(circle at 18% 18%, oklch(0.4 0.2 25 / 0.48) 0%, transparent 45%),
+    radial-gradient(circle at 82% 82%, oklch(0.5 0.18 60 / 0.4) 0%, transparent 48%),
+    radial-gradient(ellipse at 50% 0%, oklch(0.45 0.16 40 / 0.3) 0%, transparent 52%),
+    linear-gradient(
+      135deg,
+      oklch(0.16 0.06 25) 0%,
+      oklch(0.15 0.07 35) 20%,
+      oklch(0.13 0.06 50) 40%,
+      oklch(0.14 0.05 60) 60%,
+      oklch(0.15 0.04 70) 80%,
+      oklch(0.16 0.03 80) 100%
+    );
+  background-attachment: fixed;
+}
+
+/* Page backgrounds - dark mode transparent */
+.dark[data-theme="traditional-rich-revamped"] .bg-theme-bg,
+[data-theme="traditional-rich-revamped"].dark .bg-theme-bg,
+.dark[data-theme="traditional-rich-revamped"] .bg-theme-bg-subtle,
+[data-theme="traditional-rich-revamped"].dark .bg-theme-bg-subtle {
+  background: transparent !important;
+}
+
+/* Cards and surfaces - dark mode glassmorphism (tinted to theme hue) */
+.dark[data-theme="traditional-rich-revamped"] .bg-theme-surface,
+[data-theme="traditional-rich-revamped"].dark .bg-theme-surface {
+  background: oklch(0.18 0.015 30 / 0.75) !important;
+  backdrop-filter: blur(12px);
+  border-color: oklch(1 0 0 / 0.1) !important;
+}
+
+.dark[data-theme="traditional-rich-revamped"] .bg-theme-surface-raised,
+[data-theme="traditional-rich-revamped"].dark .bg-theme-surface-raised {
+  background: oklch(0.22 0.015 30 / 0.85) !important;
+  backdrop-filter: blur(16px);
+  border-color: oklch(1 0 0 / 0.15) !important;
+}
+
+/* Theme: Cosmic Purple (Revamped) (Revamped with gradients) */
+[data-theme="cosmic-purple-revamped"] {
+  --theme-primary: oklch(0.45 0.2 280);
+  --theme-secondary: oklch(0.55 0.15 300);
+  --theme-accent: oklch(0.7 0.18 320);
+}
+
+/* Background (Light) */
+[data-theme="cosmic-purple-revamped"] body {
+  background:
+    radial-gradient(circle at 20% 20%, oklch(0.45 0.2 280 / 0.18) 0%, transparent 55%),
+    radial-gradient(circle at 80% 80%, oklch(0.7 0.18 320 / 0.14) 0%, transparent 52%),
+    radial-gradient(ellipse at 50% 100%, oklch(0.55 0.15 300 / 0.1) 0%, transparent 60%),
+    linear-gradient(
+      135deg,
+      oklch(0.97 0.03 270) 0%,
+      oklch(0.96 0.04 285) 25%,
+      oklch(0.95 0.04 300) 50%,
+      oklch(0.96 0.03 315) 75%,
+      oklch(0.97 0.02 330) 100%
+    );
+  background-attachment: fixed;
+}
+
+/* Page backgrounds - transparent to show gradient */
+[data-theme="cosmic-purple-revamped"] .bg-theme-bg,
+[data-theme="cosmic-purple-revamped"] .bg-theme-bg-subtle {
+  background: transparent !important;
+}
+
+/* Cards and surfaces - glassmorphism effect for better contrast */
+[data-theme="cosmic-purple-revamped"] .bg-theme-surface {
+  background: oklch(1 0 0 / 0.7) !important;
+  backdrop-filter: blur(12px);
+  border-color: oklch(1 0 0 / 0.3) !important;
+}
+
+[data-theme="cosmic-purple-revamped"] .bg-theme-surface-raised {
+  background: oklch(1 0 0 / 0.8) !important;
+  backdrop-filter: blur(16px);
+  border-color: oklch(1 0 0 / 0.4) !important;
+}
+
+/* Background (Dark) */
+.dark[data-theme="cosmic-purple-revamped"] body,
+[data-theme="cosmic-purple-revamped"].dark body {
+  background:
+    radial-gradient(circle at 20% 20%, oklch(0.45 0.2 280 / 0.3) 0%, transparent 52%),
+    radial-gradient(circle at 80% 80%, oklch(0.7 0.18 320 / 0.22) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 0%, oklch(0.55 0.15 300 / 0.18) 0%, transparent 55%),
+    linear-gradient(
+      135deg,
+      oklch(0.13 0.04 270) 0%,
+      oklch(0.12 0.05 285) 25%,
+      oklch(0.11 0.04 300) 50%,
+      oklch(0.12 0.03 315) 75%,
+      oklch(0.13 0.02 330) 100%
+    );
+  background-attachment: fixed;
+}
+
+/* Page backgrounds - dark mode transparent */
+.dark[data-theme="cosmic-purple-revamped"] .bg-theme-bg,
+[data-theme="cosmic-purple-revamped"].dark .bg-theme-bg,
+.dark[data-theme="cosmic-purple-revamped"] .bg-theme-bg-subtle,
+[data-theme="cosmic-purple-revamped"].dark .bg-theme-bg-subtle {
+  background: transparent !important;
+}
+
+/* Cards and surfaces - dark mode glassmorphism (tinted to theme hue) */
+.dark[data-theme="cosmic-purple-revamped"] .bg-theme-surface,
+[data-theme="cosmic-purple-revamped"].dark .bg-theme-surface {
+  background: oklch(0.18 0.015 280 / 0.75) !important;
+  backdrop-filter: blur(12px);
+  border-color: oklch(1 0 0 / 0.1) !important;
+}
+
+.dark[data-theme="cosmic-purple-revamped"] .bg-theme-surface-raised,
+[data-theme="cosmic-purple-revamped"].dark .bg-theme-surface-raised {
+  background: oklch(0.22 0.015 280 / 0.85) !important;
+  backdrop-filter: blur(16px);
+  border-color: oklch(1 0 0 / 0.15) !important;
+}
+
+/* Theme: Forest Green (Revamped) (Revamped with gradients) */
+[data-theme="forest-green-revamped"] {
+  --theme-primary: oklch(0.5 0.15 145);
+  --theme-secondary: oklch(0.45 0.12 160);
+  --theme-accent: oklch(0.65 0.12 130);
+}
+
+/* Background (Light) */
+[data-theme="forest-green-revamped"] body {
+  background:
+    radial-gradient(circle at 14% 10%, oklch(0.5 0.15 145 / 0.15) 0%, transparent 55%),
+    radial-gradient(circle at 86% 90%, oklch(0.65 0.12 130 / 0.12) 0%, transparent 52%),
+    radial-gradient(ellipse at 50% 100%, oklch(0.55 0.1 155 / 0.1) 0%, transparent 60%),
+    linear-gradient(
+      135deg,
+      oklch(0.97 0.03 140) 0%,
+      oklch(0.96 0.04 145) 25%,
+      oklch(0.95 0.04 155) 50%,
+      oklch(0.96 0.03 160) 75%,
+      oklch(0.97 0.02 165) 100%
+    );
+  background-attachment: fixed;
+}
+
+/* Page backgrounds - transparent to show gradient */
+[data-theme="forest-green-revamped"] .bg-theme-bg,
+[data-theme="forest-green-revamped"] .bg-theme-bg-subtle {
+  background: transparent !important;
+}
+
+/* Cards and surfaces - glassmorphism effect for better contrast */
+[data-theme="forest-green-revamped"] .bg-theme-surface {
+  background: oklch(1 0 0 / 0.7) !important;
+  backdrop-filter: blur(12px);
+  border-color: oklch(1 0 0 / 0.3) !important;
+}
+
+[data-theme="forest-green-revamped"] .bg-theme-surface-raised {
+  background: oklch(1 0 0 / 0.8) !important;
+  backdrop-filter: blur(16px);
+  border-color: oklch(1 0 0 / 0.4) !important;
+}
+
+/* Background (Dark) */
+.dark[data-theme="forest-green-revamped"] body,
+[data-theme="forest-green-revamped"].dark body {
+  background:
+    radial-gradient(circle at 14% 10%, oklch(0.5 0.15 145 / 0.25) 0%, transparent 52%),
+    radial-gradient(circle at 86% 90%, oklch(0.65 0.12 130 / 0.2) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 0%, oklch(0.55 0.1 155 / 0.15) 0%, transparent 55%),
+    linear-gradient(
+      135deg,
+      oklch(0.14 0.03 140) 0%,
+      oklch(0.13 0.04 145) 25%,
+      oklch(0.12 0.04 155) 50%,
+      oklch(0.13 0.03 160) 75%,
+      oklch(0.14 0.02 165) 100%
+    );
+  background-attachment: fixed;
+}
+
+/* Page backgrounds - dark mode transparent */
+.dark[data-theme="forest-green-revamped"] .bg-theme-bg,
+[data-theme="forest-green-revamped"].dark .bg-theme-bg,
+.dark[data-theme="forest-green-revamped"] .bg-theme-bg-subtle,
+[data-theme="forest-green-revamped"].dark .bg-theme-bg-subtle {
+  background: transparent !important;
+}
+
+/* Cards and surfaces - dark mode glassmorphism (tinted to theme hue) */
+.dark[data-theme="forest-green-revamped"] .bg-theme-surface,
+[data-theme="forest-green-revamped"].dark .bg-theme-surface {
+  background: oklch(0.18 0.015 145 / 0.75) !important;
+  backdrop-filter: blur(12px);
+  border-color: oklch(1 0 0 / 0.1) !important;
+}
+
+.dark[data-theme="forest-green-revamped"] .bg-theme-surface-raised,
+[data-theme="forest-green-revamped"].dark .bg-theme-surface-raised {
+  background: oklch(0.22 0.015 145 / 0.85) !important;
+  backdrop-filter: blur(16px);
+  border-color: oklch(1 0 0 / 0.15) !important;
+}
+
+/* Theme: Sunrise Orange (Revamped) (Revamped with gradients) */
+[data-theme="sunrise-orange-revamped"] {
+  --theme-primary: oklch(0.7 0.18 50);
+  --theme-secondary: oklch(0.65 0.15 60);
+  --theme-accent: oklch(0.8 0.12 70);
+}
+
+/* Background (Light) */
+[data-theme="sunrise-orange-revamped"] body {
+  background:
+    radial-gradient(circle at 16% 8%, oklch(0.7 0.18 50 / 0.16) 0%, transparent 55%),
+    radial-gradient(circle at 84% 92%, oklch(0.8 0.12 70 / 0.14) 0%, transparent 52%),
+    radial-gradient(ellipse at 50% 100%, oklch(0.75 0.14 60 / 0.1) 0%, transparent 60%),
+    linear-gradient(
+      135deg,
+      oklch(0.97 0.03 45) 0%,
+      oklch(0.96 0.04 50) 25%,
+      oklch(0.95 0.04 60) 50%,
+      oklch(0.96 0.03 70) 75%,
+      oklch(0.97 0.02 80) 100%
+    );
+  background-attachment: fixed;
+}
+
+/* Page backgrounds - transparent to show gradient */
+[data-theme="sunrise-orange-revamped"] .bg-theme-bg,
+[data-theme="sunrise-orange-revamped"] .bg-theme-bg-subtle {
+  background: transparent !important;
+}
+
+/* Cards and surfaces - glassmorphism effect for better contrast */
+[data-theme="sunrise-orange-revamped"] .bg-theme-surface {
+  background: oklch(1 0 0 / 0.7) !important;
+  backdrop-filter: blur(12px);
+  border-color: oklch(1 0 0 / 0.3) !important;
+}
+
+[data-theme="sunrise-orange-revamped"] .bg-theme-surface-raised {
+  background: oklch(1 0 0 / 0.8) !important;
+  backdrop-filter: blur(16px);
+  border-color: oklch(1 0 0 / 0.4) !important;
+}
+
+/* Background (Dark) */
+.dark[data-theme="sunrise-orange-revamped"] body,
+[data-theme="sunrise-orange-revamped"].dark body {
+  background:
+    radial-gradient(circle at 16% 8%, oklch(0.7 0.18 50 / 0.26) 0%, transparent 52%),
+    radial-gradient(circle at 84% 92%, oklch(0.8 0.12 70 / 0.22) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 0%, oklch(0.75 0.14 60 / 0.16) 0%, transparent 55%),
+    linear-gradient(
+      135deg,
+      oklch(0.15 0.04 45) 0%,
+      oklch(0.14 0.05 50) 25%,
+      oklch(0.13 0.04 60) 50%,
+      oklch(0.14 0.03 70) 75%,
+      oklch(0.15 0.02 80) 100%
+    );
+  background-attachment: fixed;
+}
+
+/* Page backgrounds - dark mode transparent */
+.dark[data-theme="sunrise-orange-revamped"] .bg-theme-bg,
+[data-theme="sunrise-orange-revamped"].dark .bg-theme-bg,
+.dark[data-theme="sunrise-orange-revamped"] .bg-theme-bg-subtle,
+[data-theme="sunrise-orange-revamped"].dark .bg-theme-bg-subtle {
+  background: transparent !important;
+}
+
+/* Cards and surfaces - dark mode glassmorphism (tinted to theme hue) */
+.dark[data-theme="sunrise-orange-revamped"] .bg-theme-surface,
+[data-theme="sunrise-orange-revamped"].dark .bg-theme-surface {
+  background: oklch(0.18 0.015 50 / 0.75) !important;
+  backdrop-filter: blur(12px);
+  border-color: oklch(1 0 0 / 0.1) !important;
+}
+
+.dark[data-theme="sunrise-orange-revamped"] .bg-theme-surface-raised,
+[data-theme="sunrise-orange-revamped"].dark .bg-theme-surface-raised {
+  background: oklch(0.22 0.015 50 / 0.85) !important;
+  backdrop-filter: blur(16px);
+  border-color: oklch(1 0 0 / 0.15) !important;
+}

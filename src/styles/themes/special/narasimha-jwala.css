@@ -1,0 +1,515 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   ✨ SPECIAL THEME:🦁 Narasimha Jwala
+   Fierce divine fire of the lion-god emerging from the pillar at twilight
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Base colors */
+[data-theme="narasimha-jwala"] {
+  --theme-primary: oklch(0.68 0.22 52);
+  --theme-secondary: oklch(0.45 0.2 32);
+  --theme-accent: oklch(0.74 0.24 38);
+  --narasimha-fire: oklch(0.68 0.22 52);
+  --narasimha-flame: oklch(0.74 0.24 38);
+  --theme-glass-bg: oklch(0.88 0.05 52 / 0.12);
+  --theme-glass-border: oklch(0.74 0.24 38 / 0.28);
+  --theme-hero-blob-color: oklch(0.74 0.16 52 / 0.07);
+  --theme-hero-bg:
+    radial-gradient(
+      ellipse 65% 45% at 75% 15%,
+      oklch(0.76 0.2 58 / 0.55) 0%,
+      transparent 58%
+    ),
+    radial-gradient(
+      ellipse 55% 60% at 8% 90%,
+      oklch(0.24 0.16 25 / 0.8) 0%,
+      transparent 52%
+    ),
+    linear-gradient(
+      145deg,
+      oklch(0.22 0.18 28) 0%,
+      oklch(0.42 0.22 38) 30%,
+      oklch(0.62 0.22 50) 65%,
+      oklch(0.7 0.18 60) 100%
+    );
+  --theme-almanac-special-bg: oklch(0.74 0.22 38);
+  --theme-almanac-special-fg: oklch(0.18 0.06 42);
+  --theme-almanac-special-cell-bg: oklch(0.94 0.05 48);
+  --theme-almanac-special-cell-bg-hover: oklch(0.91 0.07 45);
+  --theme-almanac-special-card-bg: oklch(0.95 0.04 50);
+  --theme-almanac-special-heading: oklch(0.35 0.18 36);
+  --theme-almanac-special-badge-bg: oklch(0.9 0.08 42);
+  --theme-almanac-special-badge-fg: oklch(0.22 0.1 36);
+  --theme-almanac-event-bg: oklch(0.76 0.2 52);
+  --theme-almanac-event-fg: oklch(0.18 0.06 42);
+  --theme-almanac-event-cell-bg: oklch(0.94 0.05 55);
+  --theme-almanac-event-cell-bg-hover: oklch(0.91 0.07 52);
+  --theme-almanac-event-icon: oklch(0.55 0.2 48);
+  --theme-almanac-event-major-bg: oklch(0.94 0.05 55);
+  --theme-almanac-event-major-bg-hover: oklch(0.91 0.07 52);
+  --theme-almanac-event-major-star: oklch(0.55 0.2 48);
+  --theme-almanac-moon-bg: oklch(0.91 0.08 55);
+  --theme-almanac-moon-fg: oklch(0.38 0.16 42);
+  --theme-almanac-moon-cell-bg: oklch(0.93 0.05 58);
+  --theme-almanac-moon-cell-bg-hover: oklch(0.9 0.07 55);
+  --theme-almanac-moon-card-from: oklch(0.93 0.06 58);
+  --theme-almanac-moon-card-to: oklch(0.91 0.08 48);
+  --theme-almanac-moon-icon: oklch(0.52 0.18 45);
+  --theme-almanac-moon-badge-bg: oklch(0.91 0.08 55);
+  --theme-almanac-moon-badge-fg: oklch(0.38 0.16 42);
+  --theme-stat-value: var(--theme-fg);
+  --theme-heatmap-4: var(--theme-accent);
+}
+
+/* Background (Light) */
+[data-theme="narasimha-jwala"] body {
+  background:
+    radial-gradient(
+      ellipse 80% 65% at 50% -8%,
+      oklch(0.88 0.18 60 / 0.8) 0%,
+      oklch(0.82 0.14 52 / 0.45) 40%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 55% 45% at -5% 110%,
+      oklch(0.75 0.2 42 / 0.38) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 50% 40% at 105% 100%,
+      oklch(0.48 0.18 228 / 0.18) 0%,
+      transparent 50%
+    ),
+    linear-gradient(
+      180deg,
+      oklch(0.97 0.04 62) 0%,
+      oklch(0.95 0.05 56) 40%,
+      oklch(0.93 0.04 50) 100%
+    );
+  background-attachment: fixed;
+}
+
+/* Make main container transparent */
+[data-theme="narasimha-jwala"] .min-h-screen {
+  background: transparent !important;
+}
+
+/* Background (Dark) */
+.dark[data-theme="narasimha-jwala"] body,
+[data-theme="narasimha-jwala"].dark body {
+  background:
+    radial-gradient(
+      ellipse 25% 75% at 50% 35%,
+      oklch(0.65 0.22 52 / 0.28) 0%,
+      transparent 58%
+    ),
+    radial-gradient(
+      ellipse 100% 55% at 50% 108%,
+      oklch(0.62 0.24 40 / 0.42) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 90% 60% at 0% 60%,
+      oklch(0.32 0.16 228 / 0.36) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 80% 50% at 100% 40%,
+      oklch(0.28 0.14 232 / 0.3) 0%,
+      transparent 50%
+    ),
+    linear-gradient(
+      180deg,
+      oklch(0.11 0.03 42) 0%,
+      oklch(0.09 0.04 48) 40%,
+      oklch(0.08 0.03 228) 100%
+    );
+  background-attachment: fixed;
+}
+
+/* Header (Light) */
+[data-theme="narasimha-jwala"] header {
+  background: linear-gradient(
+    180deg,
+    oklch(0.98 0.04 65 / 0.94) 0%,
+    oklch(0.96 0.05 58 / 0.9) 100%
+  ) !important;
+  border-bottom: 2px solid oklch(0.68 0.22 52 / 0.32) !important;
+  box-shadow:
+    0 2px 20px oklch(0.68 0.22 52 / 0.16),
+    0 1px 0 oklch(0.74 0.24 38 / 0.18) inset;
+}
+
+/* Header (Dark) */
+.dark[data-theme="narasimha-jwala"] header,
+[data-theme="narasimha-jwala"].dark header {
+  background: linear-gradient(
+    180deg,
+    oklch(0.14 0.04 42 / 0.93) 0%,
+    oklch(0.1 0.03 228 / 0.9) 100%
+  ) !important;
+  border-bottom: 2px solid oklch(0.68 0.22 52 / 0.32) !important;
+  box-shadow:
+    0 2px 24px oklch(0.68 0.22 52 / 0.18),
+    0 1px 0 oklch(0.74 0.24 38 / 0.1) inset;
+}
+
+/* Surface (Light) */
+[data-theme="narasimha-jwala"] .bg-theme-surface {
+  background: linear-gradient(
+    145deg,
+    oklch(1 0 0 / 0.9) 0%,
+    oklch(0.98 0.02 65 / 0.86) 100%
+  ) !important;
+  border: 1px solid oklch(0.68 0.22 52 / 0.2) !important;
+  box-shadow:
+    0 4px 20px oklch(0.68 0.22 52 / 0.12),
+    0 0 0 1px oklch(0.74 0.24 38 / 0.07),
+    inset 0 1px 0 oklch(1 0 0 / 0.5) !important;
+}
+
+/* Surface (Dark) */
+.dark[data-theme="narasimha-jwala"] .bg-theme-surface,
+[data-theme="narasimha-jwala"].dark .bg-theme-surface {
+  background: linear-gradient(
+    145deg,
+    oklch(0.18 0.04 45 / 0.9) 0%,
+    oklch(0.13 0.03 40 / 0.86) 100%
+  ) !important;
+  border: 1px solid oklch(0.68 0.22 52 / 0.2) !important;
+  box-shadow:
+    0 4px 28px oklch(0 0 0 / 0.5),
+    0 0 20px oklch(0.68 0.22 52 / 0.1) !important;
+  backdrop-filter: blur(10px);
+}
+
+/* Surface Raised (Light) */
+[data-theme="narasimha-jwala"] .bg-theme-surface-raised {
+  background: linear-gradient(
+    145deg,
+    oklch(1 0 0 / 0.94) 0%,
+    oklch(0.98 0.02 65 / 0.9) 100%
+  ) !important;
+  border: 1px solid oklch(0.68 0.22 52 / 0.2) !important;
+  box-shadow:
+    0 8px 32px oklch(0.68 0.22 52 / 0.16),
+    0 0 0 1px oklch(0.74 0.24 38 / 0.1),
+    inset 0 1px 0 oklch(1 0 0 / 0.6) !important;
+}
+
+/* Surface Raised (Dark) */
+.dark[data-theme="narasimha-jwala"] .bg-theme-surface-raised,
+[data-theme="narasimha-jwala"].dark .bg-theme-surface-raised {
+  background: linear-gradient(
+    145deg,
+    oklch(0.18 0.04 45 / 0.94) 0%,
+    oklch(0.13 0.03 40 / 0.9) 100%
+  ) !important;
+  border: 1px solid oklch(0.68 0.22 52 / 0.24) !important;
+  box-shadow:
+    0 8px 36px oklch(0 0 0 / 0.6),
+    0 0 24px oklch(0.68 0.22 52 / 0.14) !important;
+  backdrop-filter: blur(14px);
+}
+
+/* Buttons (Light) */
+[data-theme="narasimha-jwala"] .bg-theme-primary {
+  background: linear-gradient(
+    145deg,
+    oklch(0.68 0.22 52) 0%,
+    oklch(0.62 0.2 42) 100%
+  ) !important;
+  border: 1px solid oklch(0.74 0.24 38 / 0.4) !important;
+  box-shadow:
+    0 4px 18px oklch(0.68 0.22 52 / 0.35),
+    0 0 18px oklch(0.74 0.24 38 / 0.15) !important;
+  color: oklch(0.12 0.04 42) !important;
+}
+
+/* Buttons (Dark) */
+.dark[data-theme="narasimha-jwala"] .bg-theme-primary,
+[data-theme="narasimha-jwala"].dark .bg-theme-primary {
+  background: linear-gradient(
+    145deg,
+    oklch(0.65 0.22 52) 0%,
+    oklch(0.58 0.2 42) 100%
+  ) !important;
+  border: 1px solid oklch(0.68 0.22 52 / 0.3) !important;
+  box-shadow:
+    0 4px 22px oklch(0 0 0 / 0.55),
+    0 0 22px oklch(0.68 0.22 52 / 0.22) !important;
+  color: oklch(0.12 0.04 42) !important;
+}
+
+/* Inputs (Light) */
+[data-theme="narasimha-jwala"] input,
+[data-theme="narasimha-jwala"] select,
+[data-theme="narasimha-jwala"] textarea {
+  border: 1px solid oklch(0.68 0.22 52 / 0.28) !important;
+  background: linear-gradient(
+    180deg,
+    oklch(1 0 0 / 0.95) 0%,
+    oklch(0.98 0.01 65 / 0.95) 100%
+  ) !important;
+}
+
+/* Inputs (Dark) */
+.dark[data-theme="narasimha-jwala"] input,
+[data-theme="narasimha-jwala"].dark input,
+.dark[data-theme="narasimha-jwala"] select,
+[data-theme="narasimha-jwala"].dark select,
+.dark[data-theme="narasimha-jwala"] textarea,
+[data-theme="narasimha-jwala"].dark textarea {
+  background: linear-gradient(
+    180deg,
+    oklch(0.18 0.03 42 / 0.95) 0%,
+    oklch(0.14 0.02 40 / 0.95) 100%
+  ) !important;
+  border: 1px solid oklch(0.68 0.22 52 / 0.28) !important;
+}
+
+/* Input Focus (Light) */
+[data-theme="narasimha-jwala"] input:focus,
+[data-theme="narasimha-jwala"] select:focus,
+[data-theme="narasimha-jwala"] textarea:focus {
+  border-color: oklch(0.68 0.22 52) !important;
+  box-shadow:
+    0 0 0 3px oklch(0.68 0.22 52 / 0.22),
+    0 0 15px oklch(0.74 0.24 38 / 0.15) !important;
+}
+
+/* Input Focus (Dark) */
+.dark[data-theme="narasimha-jwala"] input:focus,
+[data-theme="narasimha-jwala"].dark input:focus,
+.dark[data-theme="narasimha-jwala"] select:focus,
+[data-theme="narasimha-jwala"].dark select:focus,
+.dark[data-theme="narasimha-jwala"] textarea:focus,
+[data-theme="narasimha-jwala"].dark textarea:focus {
+  border-color: oklch(0.68 0.22 52) !important;
+  box-shadow:
+    0 0 0 3px oklch(0.68 0.22 52 / 0.22),
+    0 0 15px oklch(0.74 0.24 38 / 0.15) !important;
+}
+
+/* Headings (Light) */
+[data-theme="narasimha-jwala"] h1,
+[data-theme="narasimha-jwala"] h2 {
+  background: linear-gradient(
+    135deg,
+    oklch(0.48 0.22 32) 0%,
+    oklch(0.6 0.24 45) 30%,
+    oklch(0.72 0.2 62) 70%,
+    oklch(0.6 0.24 45) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Headings (Dark) */
+.dark[data-theme="narasimha-jwala"] h1,
+[data-theme="narasimha-jwala"].dark h1,
+.dark[data-theme="narasimha-jwala"] h2,
+[data-theme="narasimha-jwala"].dark h2 {
+  background: linear-gradient(
+    135deg,
+    oklch(0.68 0.22 38) 0%,
+    oklch(0.74 0.22 52) 40%,
+    oklch(0.82 0.18 66) 75%,
+    oklch(0.74 0.22 52) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Animations */
+
+@keyframes jwala-flicker {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 6px oklch(0.68 0.22 52 / 0.65));
+  }
+  35% {
+    transform: scale(1.04);
+    filter: drop-shadow(0 0 14px oklch(0.74 0.24 38 / 0.85));
+  }
+  70% {
+    transform: scale(0.98);
+    filter: drop-shadow(0 0 10px oklch(0.68 0.22 52 / 0.75));
+  }
+}
+
+@keyframes gold-fire {
+  0%,
+  100% {
+    filter: brightness(1) saturate(1);
+  }
+  50% {
+    filter: brightness(1.12) saturate(1.15);
+  }
+}
+
+/* Decorations (Light) */
+[data-theme="narasimha-jwala"] body::after {
+  content: "नृसिंह";
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  font-size: 70px;
+  font-weight: 300;
+  color: oklch(0.68 0.22 52 / 0.07);
+  pointer-events: none;
+  z-index: 0;
+  line-height: 1;
+  font-family: serif;
+}
+
+/* Decorations (Dark) */
+.dark[data-theme="narasimha-jwala"] body::after,
+[data-theme="narasimha-jwala"].dark body::after {
+  content: "नृसिंह";
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  font-size: 70px;
+  font-weight: 300;
+  color: oklch(0.68 0.22 52 / 0.1);
+  pointer-events: none;
+  z-index: 0;
+  line-height: 1;
+  font-family: serif;
+}
+
+/* Additional Styles */
+
+/* Fiery accent line under header */
+[data-theme="narasimha-jwala"] header::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 240px;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    oklch(0.74 0.24 38) 15%,
+    oklch(0.82 0.22 58) 50%,
+    oklch(0.74 0.24 38) 85%,
+    transparent 100%
+  );
+  border-radius: 2px;
+}
+
+/* Flame flicker on logo icon */
+[data-theme="narasimha-jwala"] header a:first-child span:first-child {
+  animation: jwala-flicker 2.5s ease-in-out infinite;
+}
+
+/* Fierce golden glow on primary text */
+[data-theme="narasimha-jwala"] .text-theme-primary {
+  animation: gold-fire 3.5s ease-in-out infinite;
+}
+
+/* Fire glow on headings */
+[data-theme="narasimha-jwala"] h1,
+[data-theme="narasimha-jwala"] h2 {
+  text-shadow: 0 0 28px oklch(0.68 0.22 52 / 0.28);
+}
+
+/* Keep hero date/time text white — prevent heading gradient override */
+[data-theme="narasimha-jwala"] .overflow-hidden.rounded-3xl h1 {
+  background: none !important;
+  -webkit-text-fill-color: white !important;
+  text-shadow: none !important;
+}
+
+/* Maanfases tijdlijn — vuurpalet (licht) */
+[data-theme="narasimha-jwala"] .from-indigo-50.via-purple-50.to-pink-50 {
+  background: linear-gradient(
+    to right,
+    oklch(0.95 0.05 60),
+    oklch(0.93 0.07 46),
+    oklch(0.94 0.05 36)
+  ) !important;
+}
+
+/* Dark mode overrides */
+.dark[data-theme="narasimha-jwala"],
+[data-theme="narasimha-jwala"].dark {
+  --theme-glass-bg: oklch(0.68 0.16 52 / 0.16);
+  --theme-glass-border: oklch(0.74 0.24 38 / 0.38);
+  /* Dark hero: fire glow top-right + twilight blue bottom-left + fire base */
+  --theme-hero-bg:
+    radial-gradient(
+      ellipse 55% 45% at 75% 15%,
+      oklch(0.62 0.22 52 / 0.52) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 50% 55% at 5% 85%,
+      oklch(0.12 0.06 228 / 0.88) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse 45% 55% at 45% 58%,
+      oklch(0.42 0.22 42 / 0.4) 0%,
+      transparent 50%
+    ),
+    linear-gradient(
+      150deg,
+      oklch(0.08 0.03 228) 0%,
+      oklch(0.18 0.14 35) 25%,
+      oklch(0.38 0.22 44) 55%,
+      oklch(0.52 0.22 52) 80%,
+      oklch(0.44 0.18 48) 100%
+    );
+  /* Almanac special days dark */
+  --theme-almanac-special-fg: oklch(0.88 0.2 55);
+  --theme-almanac-special-cell-bg: oklch(0.38 0.14 40 / 0.22);
+  --theme-almanac-special-cell-bg-hover: oklch(0.42 0.16 40 / 0.3);
+  --theme-almanac-special-card-bg: oklch(0.32 0.12 40 / 0.25);
+  --theme-almanac-special-heading: oklch(0.78 0.18 48);
+  --theme-almanac-special-badge-bg: oklch(0.4 0.14 38 / 0.28);
+  --theme-almanac-special-badge-fg: oklch(0.82 0.16 52);
+  /* Almanac events dark */
+  --theme-almanac-event-fg: oklch(0.86 0.18 52);
+  --theme-almanac-event-cell-bg: oklch(0.38 0.12 52 / 0.2);
+  --theme-almanac-event-cell-bg-hover: oklch(0.4 0.14 52 / 0.28);
+  --theme-almanac-event-icon: oklch(0.7 0.2 50);
+  --theme-almanac-event-major-bg: oklch(0.38 0.12 52 / 0.2);
+  --theme-almanac-event-major-bg-hover: oklch(0.4 0.14 52 / 0.28);
+  --theme-almanac-event-major-star: oklch(0.7 0.2 50);
+  /* Almanac moon phase dark */
+  --theme-almanac-moon-bg: oklch(0.4 0.14 55 / 0.25);
+  --theme-almanac-moon-fg: oklch(0.82 0.14 55);
+  --theme-almanac-moon-cell-bg: oklch(0.38 0.12 52 / 0.2);
+  --theme-almanac-moon-cell-bg-hover: oklch(0.4 0.14 52 / 0.3);
+  --theme-almanac-moon-card-from: oklch(0.38 0.12 55 / 0.22);
+  --theme-almanac-moon-card-to: oklch(0.35 0.12 48 / 0.22);
+  --theme-almanac-moon-icon: oklch(0.68 0.18 50);
+  --theme-almanac-moon-badge-bg: oklch(0.4 0.14 55 / 0.25);
+  --theme-almanac-moon-badge-fg: oklch(0.82 0.14 55);
+}
+
+/* Maanfases tijdlijn dark — vuurpalet */
+.dark[data-theme="narasimha-jwala"] .from-indigo-50.via-purple-50.to-pink-50,
+[data-theme="narasimha-jwala"].dark .from-indigo-50.via-purple-50.to-pink-50 {
+  background: linear-gradient(
+    to right,
+    oklch(0.22 0.1 58 / 0.5),
+    oklch(0.18 0.12 45 / 0.5),
+    oklch(0.16 0.1 36 / 0.5)
+  ) !important;
+}
+
+/* Reduced Motion — auto-generated, do not add manual @media blocks in additionalCss */
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="narasimha-jwala"] * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

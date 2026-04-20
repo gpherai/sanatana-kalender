@@ -1,0 +1,385 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   ✨ SPECIAL THEME:✨ Shri Ganesha
+   Divine blessings of the Remover of Obstacles
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Base colors */
+[data-theme="shri-ganesha"] {
+  --theme-primary: oklch(0.55 0.22 25);
+  --theme-secondary: oklch(0.75 0.14 85);
+  --theme-accent: oklch(0.55 0.15 145);
+  --ganesha-sindoor: oklch(0.55 0.25 30);
+  --ganesha-gold: oklch(0.78 0.14 85);
+  --ganesha-durva: oklch(0.55 0.18 145);
+  --ganesha-mooladhara: oklch(0.45 0.22 25);
+  --theme-stat-value: var(--theme-fg);
+  --theme-heatmap-4: var(--theme-accent);
+}
+
+/* Background (Light) */
+[data-theme="shri-ganesha"] body {
+  background:
+    radial-gradient(
+      ellipse 150% 60% at 50% -10%,
+      oklch(0.92 0.1 80 / 0.8) 0%,
+      oklch(0.95 0.06 70 / 0.4) 40%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 80% 70% at -10% 110%,
+      oklch(0.85 0.12 25 / 0.4) 0%,
+      oklch(0.9 0.08 30 / 0.2) 40%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 60% 50% at 110% 100%,
+      oklch(0.88 0.1 145 / 0.25) 0%,
+      transparent 50%
+    ),
+    linear-gradient(
+      180deg,
+      oklch(0.97 0.02 80) 0%,
+      oklch(0.95 0.03 70) 50%,
+      oklch(0.93 0.04 60) 100%
+    );
+  background-attachment: fixed;
+}
+
+/* Make main container transparent */
+[data-theme="shri-ganesha"] .min-h-screen {
+  background: transparent !important;
+}
+
+/* Background (Dark) */
+.dark[data-theme="shri-ganesha"] body,
+[data-theme="shri-ganesha"].dark body {
+  background:
+    radial-gradient(
+      ellipse 120% 50% at 50% -5%,
+      oklch(0.3 0.15 25 / 0.7) 0%,
+      oklch(0.2 0.1 30 / 0.4) 40%,
+      transparent 65%
+    ),
+    radial-gradient(
+      ellipse 70% 60% at -5% 105%,
+      oklch(0.35 0.12 85 / 0.5) 0%,
+      oklch(0.25 0.08 80 / 0.3) 40%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 50% 45% at 105% 95%,
+      oklch(0.25 0.1 145 / 0.35) 0%,
+      transparent 50%
+    ),
+    radial-gradient(circle at 50% 50%, oklch(0.18 0.04 85 / 0.2) 0%, transparent 50%),
+    linear-gradient(
+      180deg,
+      oklch(0.12 0.03 25) 0%,
+      oklch(0.1 0.02 30) 50%,
+      oklch(0.08 0.02 35) 100%
+    );
+  background-attachment: fixed;
+}
+
+/* Header (Light) */
+[data-theme="shri-ganesha"] header {
+  background: linear-gradient(
+    180deg,
+    oklch(0.98 0.03 80 / 0.95) 0%,
+    oklch(0.96 0.04 70 / 0.9) 100%
+  ) !important;
+  border-bottom: 2px solid oklch(0.78 0.14 85 / 0.5) !important;
+  box-shadow:
+    0 2px 20px oklch(0.78 0.14 85 / 0.2),
+    0 1px 0 oklch(0.78 0.14 85 / 0.3) inset;
+}
+
+/* Header (Dark) */
+.dark[data-theme="shri-ganesha"] header,
+[data-theme="shri-ganesha"].dark header {
+  background: linear-gradient(
+    180deg,
+    oklch(0.15 0.04 30 / 0.95) 0%,
+    oklch(0.12 0.03 25 / 0.92) 100%
+  ) !important;
+  border-bottom: 2px solid oklch(0.5 0.12 85 / 0.4) !important;
+  box-shadow:
+    0 2px 25px oklch(0.5 0.12 85 / 0.15),
+    0 1px 0 oklch(0.5 0.12 85 / 0.2) inset;
+}
+
+/* Surface (Light) */
+[data-theme="shri-ganesha"] .bg-theme-surface {
+  background: linear-gradient(
+    145deg,
+    oklch(1 0 0 / 0.92) 0%,
+    oklch(0.98 0.02 80 / 0.88) 100%
+  ) !important;
+  border: 1px solid oklch(0.78 0.14 85 / 0.3) !important;
+  box-shadow:
+    0 4px 20px oklch(0.78 0.14 85 / 0.15),
+    0 0 0 1px oklch(0.78 0.14 85 / 0.1),
+    inset 0 1px 0 oklch(1 0 0 / 0.5) !important;
+}
+
+/* Surface (Dark) */
+.dark[data-theme="shri-ganesha"] .bg-theme-surface,
+[data-theme="shri-ganesha"].dark .bg-theme-surface {
+  background: linear-gradient(
+    145deg,
+    oklch(0.18 0.03 30 / 0.92) 0%,
+    oklch(0.14 0.02 25 / 0.88) 100%
+  ) !important;
+  border: 1px solid oklch(0.5 0.12 85 / 0.25) !important;
+  box-shadow:
+    0 4px 25px oklch(0 0 0 / 0.4),
+    0 0 0 1px oklch(0.5 0.12 85 / 0.1),
+    inset 0 1px 0 oklch(0.25 0.04 85 / 0.2) !important;
+}
+
+/* Surface Raised (Light) */
+[data-theme="shri-ganesha"] .bg-theme-surface-raised {
+  background: linear-gradient(
+    145deg,
+    oklch(1 0 0 / 0.96) 0%,
+    oklch(0.98 0.02 80 / 0.92) 100%
+  ) !important;
+  border: 1px solid oklch(0.78 0.14 85 / 0.3) !important;
+  box-shadow:
+    0 8px 30px oklch(0.78 0.14 85 / 0.18),
+    0 0 0 1px oklch(0.78 0.14 85 / 0.12),
+    inset 0 1px 0 oklch(1 0 0 / 0.6) !important;
+}
+
+/* Surface Raised (Dark) */
+.dark[data-theme="shri-ganesha"] .bg-theme-surface-raised,
+[data-theme="shri-ganesha"].dark .bg-theme-surface-raised {
+  background: linear-gradient(
+    145deg,
+    oklch(0.18 0.03 30 / 0.96) 0%,
+    oklch(0.14 0.02 25 / 0.92) 100%
+  ) !important;
+  border: 1px solid oklch(0.5 0.12 85 / 0.3) !important;
+  box-shadow:
+    0 8px 35px oklch(0 0 0 / 0.5),
+    0 0 0 1px oklch(0.5 0.12 85 / 0.14),
+    inset 0 1px 0 oklch(0.25 0.04 85 / 0.2) !important;
+  backdrop-filter: blur(12px);
+}
+
+/* Buttons (Light) */
+[data-theme="shri-ganesha"] .bg-theme-primary {
+  background: linear-gradient(
+    145deg,
+    oklch(0.55 0.22 30) 0%,
+    oklch(0.48 0.2 25) 100%
+  ) !important;
+  box-shadow:
+    0 4px 15px oklch(0.5 0.2 25 / 0.4),
+    0 0 20px oklch(0.78 0.14 85 / 0.3),
+    inset 0 1px 0 oklch(0.65 0.18 35 / 0.5) !important;
+  border: 1px solid oklch(0.78 0.14 85 / 0.4) !important;
+}
+
+/* Buttons (Dark) */
+.dark[data-theme="shri-ganesha"] .bg-theme-primary,
+[data-theme="shri-ganesha"].dark .bg-theme-primary {
+  background: linear-gradient(
+    145deg,
+    oklch(0.5 0.2 25) 0%,
+    oklch(0.42 0.18 30) 100%
+  ) !important;
+  box-shadow:
+    0 4px 20px oklch(0.45 0.18 25 / 0.5),
+    0 0 25px oklch(0.5 0.12 85 / 0.25),
+    inset 0 1px 0 oklch(0.6 0.15 30 / 0.4) !important;
+}
+
+/* Inputs (Light) */
+[data-theme="shri-ganesha"] input,
+[data-theme="shri-ganesha"] select,
+[data-theme="shri-ganesha"] textarea {
+  border: 1px solid oklch(0.78 0.14 85 / 0.3) !important;
+  background: linear-gradient(
+    180deg,
+    oklch(1 0 0 / 0.95) 0%,
+    oklch(0.98 0.01 80 / 0.95) 100%
+  ) !important;
+}
+
+/* Inputs (Dark) */
+.dark[data-theme="shri-ganesha"] input,
+[data-theme="shri-ganesha"].dark input,
+.dark[data-theme="shri-ganesha"] select,
+[data-theme="shri-ganesha"].dark select,
+.dark[data-theme="shri-ganesha"] textarea,
+[data-theme="shri-ganesha"].dark textarea {
+  background: linear-gradient(
+    180deg,
+    oklch(0.18 0.02 30 / 0.95) 0%,
+    oklch(0.15 0.02 25 / 0.95) 100%
+  ) !important;
+  border: 1px solid oklch(0.5 0.12 85 / 0.3) !important;
+}
+
+/* Input Focus (Light) */
+[data-theme="shri-ganesha"] input:focus,
+[data-theme="shri-ganesha"] select:focus,
+[data-theme="shri-ganesha"] textarea:focus {
+  border-color: oklch(0.78 0.14 85) !important;
+  box-shadow:
+    0 0 0 3px oklch(0.78 0.14 85 / 0.2),
+    0 0 15px oklch(0.78 0.14 85 / 0.15) !important;
+}
+
+/* Input Focus (Dark) */
+.dark[data-theme="shri-ganesha"] input:focus,
+[data-theme="shri-ganesha"].dark input:focus,
+.dark[data-theme="shri-ganesha"] select:focus,
+[data-theme="shri-ganesha"].dark select:focus,
+.dark[data-theme="shri-ganesha"] textarea:focus,
+[data-theme="shri-ganesha"].dark textarea:focus {
+  border-color: oklch(0.78 0.14 85) !important;
+  box-shadow:
+    0 0 0 3px oklch(0.78 0.14 85 / 0.2),
+    0 0 15px oklch(0.78 0.14 85 / 0.15) !important;
+}
+
+/* Headings (Light) */
+[data-theme="shri-ganesha"] h1,
+[data-theme="shri-ganesha"] h2 {
+  background: linear-gradient(
+    135deg,
+    oklch(0.45 0.2 25) 0%,
+    oklch(0.55 0.22 30) 30%,
+    oklch(0.7 0.14 85) 70%,
+    oklch(0.55 0.22 30) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Headings (Dark) */
+.dark[data-theme="shri-ganesha"] h1,
+[data-theme="shri-ganesha"].dark h1,
+.dark[data-theme="shri-ganesha"] h2,
+[data-theme="shri-ganesha"].dark h2 {
+  background: linear-gradient(
+    135deg,
+    oklch(0.6 0.18 25) 0%,
+    oklch(0.7 0.2 30) 30%,
+    oklch(0.8 0.14 85) 70%,
+    oklch(0.7 0.2 30) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Animations */
+
+@keyframes divine-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 8px oklch(0.78 0.14 85 / 0.6));
+  }
+  50% {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 15px oklch(0.78 0.14 85 / 0.9));
+  }
+}
+
+@keyframes gold-shimmer {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.15);
+  }
+}
+
+/* Decorations (Light) */
+[data-theme="shri-ganesha"] body::after {
+  content: "ॐ";
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  font-size: 120px;
+  font-weight: 300;
+  color: oklch(0.78 0.14 85 / 0.08);
+  pointer-events: none;
+  z-index: 0;
+  line-height: 1;
+  font-family: serif;
+}
+
+/* Decorations (Dark) */
+.dark[data-theme="shri-ganesha"] body::after,
+[data-theme="shri-ganesha"].dark body::after {
+  content: "ॐ";
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  font-size: 120px;
+  font-weight: 300;
+  color: oklch(0.65 0.12 85 / 0.06);
+  pointer-events: none;
+  z-index: 0;
+  line-height: 1;
+  font-family: serif;
+}
+
+/* Additional Styles */
+
+/* Golden decorative line under header */
+[data-theme="shri-ganesha"] header::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    oklch(0.78 0.14 85) 20%,
+    oklch(0.85 0.16 85) 50%,
+    oklch(0.78 0.14 85) 80%,
+    transparent 100%
+  );
+  border-radius: 2px;
+}
+
+/* Divine pulsing glow on logo */
+[data-theme="shri-ganesha"] header a:first-child span:first-child {
+  animation: divine-pulse 3s ease-in-out infinite;
+}
+
+/* Subtle shimmer on gold text */
+[data-theme="shri-ganesha"] .text-theme-primary {
+  animation: gold-shimmer 4s ease-in-out infinite;
+}
+
+/* Title text shadows */
+[data-theme="shri-ganesha"] h1,
+[data-theme="shri-ganesha"] h2 {
+  text-shadow: 0 0 30px oklch(0.78 0.14 85 / 0.3);
+}
+
+/* Special badge glow */
+[data-theme="shri-ganesha"] .bg-gradient-to-r.from-amber-500 {
+  animation: divine-pulse 2s ease-in-out infinite;
+}
+
+/* Reduced Motion — auto-generated, do not add manual @media blocks in additionalCss */
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="shri-ganesha"] * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
