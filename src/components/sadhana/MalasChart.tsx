@@ -25,7 +25,7 @@ const MONTH_LABELS = [
 interface PracticeMonthTotal {
   practice_id: string;
   practice_name: string;
-  malas: number;
+  amount: number;
 }
 
 interface MonthData {
@@ -54,21 +54,21 @@ function buildMonthlyData(
     for (const s of sessionData) {
       if (!s.date.startsWith(key)) continue;
       for (const item of s.items) {
-        const malas =
+        const amount =
           item.unit === "malas"
             ? item.quantity
             : item.practice_type === "mantra_japa"
               ? item.quantity / 108
-              : 0;
-        if (malas === 0) continue;
+              : item.quantity;
+        if (amount === 0) continue;
         const existing = practiceMap.get(item.practice_id);
         if (existing) {
-          existing.malas += malas;
+          existing.amount += amount;
         } else {
           practiceMap.set(item.practice_id, {
             practice_id: item.practice_id,
             practice_name: item.practice_name,
-            malas,
+            amount,
           });
         }
       }
@@ -82,7 +82,7 @@ function buildMonthlyData(
       sessions: days.reduce((s, cd) => s + cd.session_count, 0),
       isCurrentMonth:
         d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear(),
-      practices: Array.from(practiceMap.values()).sort((a, b) => b.malas - a.malas),
+      practices: Array.from(practiceMap.values()).sort((a, b) => b.amount - a.amount),
     };
   });
 }
@@ -190,9 +190,9 @@ export function MalasChart({
                               {p.practice_name}
                             </span>
                             <span className="text-theme-fg text-[10px] font-medium tabular-nums">
-                              {p.malas % 1 === 0
-                                ? p.malas.toLocaleString("nl-NL")
-                                : p.malas.toLocaleString("nl-NL", {
+                              {p.amount % 1 === 0
+                                ? p.amount.toLocaleString("nl-NL")
+                                : p.amount.toLocaleString("nl-NL", {
                                     maximumFractionDigits: 1,
                                   })}
                             </span>

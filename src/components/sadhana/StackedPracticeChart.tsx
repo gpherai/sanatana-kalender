@@ -23,7 +23,7 @@ const MONTH_LABELS = [
 interface PracticeSegment {
   practice_id: string;
   practice_name: string;
-  malas: number;
+  amount: number;
 }
 
 interface MonthEntry {
@@ -47,33 +47,33 @@ function buildData(sessions: SessionData[]) {
     for (const s of sessions) {
       if (!s.date.startsWith(key)) continue;
       for (const item of s.items) {
-        const malas =
+        const amount =
           item.unit === "malas"
             ? item.quantity
             : item.practice_type === "mantra_japa"
               ? item.quantity / 108
-              : 0;
-        if (malas === 0) continue;
+              : item.quantity;
+        if (amount === 0) continue;
         const ex = map.get(item.practice_id);
         if (ex) {
-          ex.malas += malas;
+          ex.amount += amount;
         } else {
           map.set(item.practice_id, {
             practice_id: item.practice_id,
             practice_name: item.practice_name,
-            malas,
+            amount,
           });
         }
       }
     }
 
-    const practices = Array.from(map.values()).sort((a, b) => b.malas - a.malas);
+    const practices = Array.from(map.values()).sort((a, b) => b.amount - a.amount);
     return {
       key,
       label: MONTH_LABELS[d.getMonth()] ?? "",
       fullLabel,
       practices,
-      total: practices.reduce((s, p) => s + p.malas, 0),
+      total: practices.reduce((s, p) => s + p.amount, 0),
     };
   });
 
@@ -164,9 +164,9 @@ export function StackedPracticeChart({ sessions }: { sessions: SessionData[] }) 
                             </span>
                           </span>
                           <span className="text-theme-fg text-[10px] font-medium tabular-nums">
-                            {p.malas % 1 === 0
-                              ? p.malas.toLocaleString("nl-NL")
-                              : p.malas.toLocaleString("nl-NL", {
+                            {p.amount % 1 === 0
+                              ? p.amount.toLocaleString("nl-NL")
+                              : p.amount.toLocaleString("nl-NL", {
                                   maximumFractionDigits: 1,
                                 })}
                           </span>
@@ -189,12 +189,12 @@ export function StackedPracticeChart({ sessions }: { sessions: SessionData[] }) 
                   >
                     {/* Smallest at top, largest at bottom — sort ascending for flex-col */}
                     {[...m.practices]
-                      .sort((a, b) => a.malas - b.malas)
+                      .sort((a, b) => a.amount - b.amount)
                       .map((p) => (
                         <div
                           key={p.practice_id}
                           style={{
-                            flex: p.malas,
+                            flex: p.amount,
                             background: colorMap.get(p.practice_id)?.color,
                           }}
                         />
