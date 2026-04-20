@@ -1822,295 +1822,104 @@ useEffect(() => {
 
 ## 6. Theme System
 
-### 6.1 Architecture
+### 6.1 Architecture (Tailwind v4 Native)
 
-Het theme systeem is volledig TypeScript-driven:
+Het theme systeem draait volledig op Tailwind v4's native CSS-variabelen (oklch) en `@import` structuur. Er is geen CSS-generator script meer nodig.
 
-```
-┌─────────────────────┐     ┌─────────────────────┐     ┌─────────────────────┐
-│  config/themes.ts   │────▶│  generate-theme-css │────▶│   globals.css       │
-│  (Source of Truth)  │     │  (build script)     │     │   (CSS output)      │
-└─────────────────────┘     └─────────────────────┘     └─────────────────────┘
-          │
-          ▼
-┌─────────────────────┐     ┌─────────────────────┐
-│   ThemeProvider     │────▶│   data-theme attr   │
-│   (runtime)         │     │   + .dark class     │
-└─────────────────────┘     └─────────────────────┘
+```text
+┌─────────────────────┐     ┌────────────────────────┐
+│  config/themes.ts   │     │  src/styles/themes/*.css│
+│  (Metadata voor UI) │     │  (Styling definities)  │
+└─────────────────────┘     └────────┬───────────────┘
+                                     │ @import
+                                     ▼
+┌─────────────────────┐     ┌────────────────────────┐
+│   ThemeProvider     │────▶│   globals.css          │
+│   (runtime context) │     │   (Main entrypoint)    │
+└─────────────────────┘     └────────────────────────┘
 ```
 
 **Key files:**
-- `src/config/themes.ts` - Theme definities (THEME_CATALOG)
-- `src/scripts/generate-theme-css.ts` - CSS generator
-- `src/components/theme/ThemeProvider.tsx` - Runtime context
-- `src/app/globals.css` - Generated CSS + base styles
+- `src/config/themes.ts` - Theme metadata (naam, basiskleuren). Enige bron voor de Settings UI.
+- `src/styles/themes/*` - Losse CSS bestanden per thema (classic, revamped, special).
+- `src/app/globals.css` - Hoofdbestand dat de `@import` statements bevat.
+- `src/components/theme/ThemeProvider.tsx` - Runtime context die het `data-theme` attribuut zet op `<html>`.
 
-### 6.2 Theme Definition
+### 6.2 Theme Types & Categories
 
-```typescript
-// config/themes.ts
-export interface ThemeDefinition {
-  name: string;              // Unique slug (data-theme value)
-  displayName: string;       // Human-readable name
-  description: string;       // Short description
-  isDefault: boolean;        // Default theme?
-  category: "classic" | "revamped" | "special";
-  colors: {
-    primary: string;         // oklch format
-    secondary: string;
-    accent: string;
-  };
-  isSpecial?: boolean;       // Premium theme flag (special category)
-  background?: ThemeBackground;  // Body gradient (revamped + special themes)
-  glass?: GlassConfig;       // Glassmorphism config (revamped + special themes)
-  specialStyles?: ThemeSpecialStyles;  // Component-level CSS overrides (special themes)
+| Categorie | Beschrijving | Bestand |
+|-----------|--------------|---------|
+| **Classic** | Basis thema's met effen achtergrondkleuren | `src/styles/themes/standard.css` |
+| **Revamped** | Zelfde basis, maar met subtiele gradient achtergronden en glassmorphism | `src/styles/themes/standard.css` |
+| **Special** | Premium thema's met complexe visuele effecten, animaties en custom overrides | `src/styles/themes/special/*.css` |
+
+### 6.3 Theme CSS Structuur
+
+Elk thema wordt gedefinieerd onder een specifieke data-attribuut selector. Voor de `dark` mode wordt de `.dark` class (volgens Tailwind v4 conventies) toegevoegd.
+
+Voorbeeld van een schoon theme-bestand (`shri-ganesha.css`):
+```css
+/* Basis variabelen */
+[data-theme="shri-ganesha"] {
+  --theme-primary: oklch(0.55 0.22 25);
+  --theme-secondary: oklch(0.75 0.14 85);
+  /* Custom overrides */
+  --ganesha-sindoor: oklch(0.55 0.25 30);
+}
+
+/* Dark mode overrides */
+.dark[data-theme="shri-ganesha"],
+[data-theme="shri-ganesha"].dark {
+  --theme-primary: oklch(0.45 0.20 25);
+}
+
+/* Component overrides in CSS */
+[data-theme="shri-ganesha"] header::after {
+  content: '';
+  background: linear-gradient(90deg, transparent, var(--ganesha-sindoor), transparent);
 }
 ```
-
-**ThemeSpecialStyles** — component-level overrides voor special themes:
-
-```typescript
-export interface ThemeSpecialStyles {
-  customProperties?: Record<string, string>; // Extra CSS custom properties
-  moon?: MoonColors;            // Moon visualization colors
-  header?: ThemeBackground;     // Header styling
-  surface?: ThemeBackground;    // .bg-theme-surface (cards, panels)
-  surfaceRaised?: ThemeBackground; // .bg-theme-surface-raised (modals, dropdowns)
-  buttons?: ThemeBackground;    // .bg-theme-primary (knoppen)
-  inputs?: ThemeBackground;     // input, select, textarea
-  inputFocus?: ThemeBackground; // input:focus, select:focus, textarea:focus
-  headings?: ThemeBackground;   // h1, h2
-  animations?: Array<{ name: string; keyframes: string }>;
-  decorations?: ThemeBackground; // body::after decoratie
-  /** Raw extra CSS. Gebruik [[t]] als placeholder voor [data-theme="themename"] */
-  additionalCss?: string;
-}
-```
-
-**GlassConfig** — instelbare glassmorphism waarden per theme:
-
-```typescript
-export interface GlassConfig {
-  lightOpacity?: number;       // Surface opacity light mode (default: 0.70)
-  lightRaisedOpacity?: number; // Raised surface opacity light mode (default: 0.80)
-  darkOpacity?: number;        // Surface opacity dark mode (default: 0.75)
-  darkRaisedOpacity?: number;  // Raised surface opacity dark mode (default: 0.85)
-  blur?: number;               // Backdrop blur px (default: 12; raised = blur + 4)
-}
-```
-
-### 6.3 Beschikbare Thema's
-
-**Classic** — vaste kleuren, geen achtergrond-gradient:
-
-| Thema | Beschrijving |
-|-------|--------------|
-| `spiritual-minimal` | Clean, peaceful design (default) |
-| `traditional-rich` | Warm temple colors |
-| `cosmic-purple` | Deep cosmic tones |
-| `forest-green` | Natural, earthy vibes |
-| `sunrise-orange` | Energetic morning vibes |
-
-**Revamped** — dezelfde kleuren als classic, met glassmorphism body-gradient:
-
-| Thema | Beschrijving |
-|-------|--------------|
-| `spiritual-minimal-revamped` | Spiritual Minimal met gradient achtergrond |
-| `traditional-rich-revamped` | Traditional Rich met gradient achtergrond |
-| `cosmic-purple-revamped` | Cosmic Purple met gradient achtergrond |
-| `forest-green-revamped` | Forest Green met gradient achtergrond |
-| `sunrise-orange-revamped` | Sunrise Orange met gradient achtergrond |
-
-**Special** — premium themes met volledig aangepaste component-styling:
-
-| Thema | Beschrijving |
-|-------|--------------|
-| `bhairava-nocturne` | ✨ Midnight temple glow — indigo aurora, decoratieve SVG-animaties, gradient headings |
-| `shri-ganesha` | ✨ Divine blessings — golden animations, divine-pulse keyframes |
-| `narasimha-jwala` | ✨ Fierce lion-god fire — multi-radial hero gradient (sindoor→ember→amber), volledige almanac- en glass-overrides |
-
-**Totaal: 13 thema's (5 classic + 5 revamped + 3 special)**
-
-**Verschil revamped vs special:**
-- **Revamped:** body-gradient + glassmorphism cards via gedeelde `GlassConfig` defaults — geen `specialStyles`
-- **Special:** alles handmatig via `specialStyles` (header, surface, buttons, animations, etc.) — max controle
 
 ### 6.4 Color Mode
 
-Color mode werkt onafhankelijk van theme via:
-- `.dark` class op `<html>`
-- `system` volgt OS preference
-- Persisted in localStorage
+Color mode werkt onafhankelijk van het geselecteerde theme:
+- `.dark` class op `<html>` stuurt de thema-overrides en de `dark:` Tailwind classes aan.
+- `system` mode volgt OS preference (via `matchMedia`).
+- Status is persisted in `localStorage`.
 
 ### 6.5 Theme Utility Classes
 
+Alle utility classes zijn vooraf gedefinieerd en theme-aware in `src/styles/utilities.css`.
+
 ```css
-/* Background met opacity */
+/* Backgrounds met opacity (let op de hyphen-notatie!) */
 .bg-theme-primary      /* 100% */
-.bg-theme-primary-10   /* 10% opacity */
+.bg-theme-primary-10   /* 10% opacity (oklch mix) */
 .bg-theme-primary-15   /* 15% opacity */
 .bg-theme-primary-20   /* 20% opacity */
-.bg-theme-primary-30   /* 30% opacity */
 
-/* Text color */
+/* Text colors */
 .text-theme-primary
 .text-theme-secondary
 .text-theme-accent
-
-/* Gradients */
-.bg-theme-gradient-subtle
 ```
 
-### 6.5.1 TodayHero Glassmorphism Vars
+### 6.6 Semantic Token System
 
-TodayHero gebruikt speciale CSS custom properties voor zijn glassmorphism achtergrond. Special themes kunnen deze overschrijven via `customProperties`:
+Zie sectie 3.7. De architectuur schrijft voor dat je altijd de semantische tokens gebruikt (`var(--theme-surface)`, `.bg-theme-surface`) in plaats van hardcoded Tailwind kleuren (`bg-zinc-100`). Dit garandeert dat alle componenten automatisch mee-kleuren met élk (nieuw) thema.
 
-| Var | Doel | Fallback |
-|-----|------|---------|
-| `--theme-hero-bg` | Hero kaart achtergrond (gradient of solid) | `linear-gradient(135deg, color-mix(primary 95%, black), ...)` |
-| `--theme-glass-bg` | Achtergrondkleur van glass cards én decoratieve corner orbs | Transparant wit/zwart |
-| `--theme-glass-border` | Randkleur van alle glass cards | Transparant wit |
-| `--theme-hero-blob-color` | Centrale radiale blob (subtiele gloed) | `oklch(1 0 0 / 0.05)` |
+### 6.7 Theme Toevoegen
 
-**Gebruik in TodayHero.tsx:**
-```tsx
-// Hero wrapper
-style={{ background: "var(--theme-hero-bg, <fallback>)" }}
-
-// Glass cards (Zon, Maan, Maantijden, Yoga/Karana)
-className="border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] backdrop-blur-md"
-
-// Decoratieve corner orbs (absolute positioned, blur-3xl)
-className="bg-[var(--theme-glass-bg)] blur-3xl"
-
-// Centrale blob
-style={{ background: "radial-gradient(circle, var(--theme-hero-blob-color, ...) 0%, transparent 70%)" }}
-```
-
-**Let op:** `--theme-glass-bg` wordt zowel voor interactieve cards als decoratieve orbs gebruikt. Gebruik lage chroma (C ≤ 0.07) om te voorkomen dat de orbs een vivid kleurvlek geven over de hero.
-
-### 6.5.2 Almanac Category Vars
-
-De almanac pagina gebruikt een uitgebreide set CSS vars voor maanfase, speciale dagen en events, inzetbaar per theme:
-
-```css
-/* Moon phase cells/cards/badges */
---theme-almanac-moon-bg, --theme-almanac-moon-fg
---theme-almanac-moon-cell-bg, --theme-almanac-moon-cell-bg-hover
---theme-almanac-moon-card-from, --theme-almanac-moon-card-to
---theme-almanac-moon-icon
---theme-almanac-moon-badge-bg, --theme-almanac-moon-badge-fg
-
-/* Special days */
---theme-almanac-special-bg, --theme-almanac-special-fg
---theme-almanac-special-cell-bg, --theme-almanac-special-cell-bg-hover
---theme-almanac-special-card-bg, --theme-almanac-special-heading
---theme-almanac-special-badge-bg, --theme-almanac-special-badge-fg
-
-/* Events */
---theme-almanac-event-bg, --theme-almanac-event-fg
---theme-almanac-event-cell-bg, --theme-almanac-event-cell-bg-hover
---theme-almanac-event-icon
---theme-almanac-event-major-bg, --theme-almanac-event-major-bg-hover
---theme-almanac-event-major-star
-```
-
-Defaults worden gedefinieerd in de `:root` en `.dark` blokken van `globals.css`. Special themes overschrijven deze via `customProperties` (light) en `additionalCss` `.dark[[t]]` blok (dark).
-
-### 6.6 SPECIAL_THEME_COMPONENT_MAP
-
-De `SPECIAL_THEME_COMPONENT_MAP` is het **contract** tussen theme-definities en de CSS-generator. Hij staat in `config/themes.ts` en wordt door de generator geïmporteerd:
-
-```typescript
-export const SPECIAL_THEME_COMPONENT_MAP = [
-  { key: "header",      selector: "header",                           name: "Header"         },
-  { key: "surface",     selector: ".bg-theme-surface",                name: "Surface"        },
-  { key: "surfaceRaised", selector: ".bg-theme-surface-raised",       name: "Surface Raised" },
-  { key: "buttons",     selector: ".bg-theme-primary",                name: "Buttons"        },
-  { key: "inputs",      selector: "input, select, textarea",          name: "Inputs"         },
-  { key: "inputFocus",  selector: "input:focus, select:focus, textarea:focus", name: "Input Focus" },
-  { key: "headings",    selector: "h1, h2",                           name: "Headings"       },
-] as const;
-```
-
-**Hoe het werkt:**
-- Elke `key` correspondeert met een optioneel veld in `ThemeSpecialStyles`
-- De generator itereert over de map en genereert `[data-theme="x"] <selector>` CSS blokken
-- `surface` en `surfaceRaised` zijn aparte keys zodat elk oppervlak-niveau onafhankelijk instelbaar is
-- Een nieuw element toevoegen aan de map = automatisch beschikbaar in alle special themes
-
-### 6.7 Glassmorphism Code Paths
-
-Er zijn twee code paths voor glassmorphism, afhankelijk van het categorie-type:
-
-**Revamped themes** (`generateStandardThemes()` in de generator):
-- Automatisch glassmorphism op `.bg-theme-surface` en `.bg-theme-surface-raised`
-- Waarden worden gelezen uit `theme.glass` (met defaults als niet ingesteld)
-- Dark mode: tinted glassmorphism op basis van primary hue (extractie via regex uit oklch kleur)
-
-**Special themes** (`specialStyles.surface` + `specialStyles.surfaceRaised`):
-- Volledig handmatige CSS in de theme-definitie
-- `GlassConfig` optioneel beschikbaar maar niet automatisch toegepast
-- Geeft maximale controle over het uiterlijk
-
-**`[[t]]` placeholder in `additionalCss`:**
-```typescript
-// In theme definitie:
-additionalCss: `
-  [[t]] .some-element { color: red; }
-  [[t]] .other-element:hover { ... }
-`
-// Generator vervangt [[t]] met [data-theme="themename"]
-// Zodat je de theme-naam niet steeds hoeft te herhalen
-```
-
-### 6.8 Theme Toevoegen
+Om een nieuw thema toe te voegen:
 
 **Classic/Revamped theme:**
-1. Voeg entry toe aan `THEME_CATALOG` in `config/themes.ts`
-2. Kies `category: "classic"` of `"revamped"`
-3. Voor revamped: voeg `background: { light: "...", dark: "..." }` toe (body gradient)
-4. Optioneel: `glass: { ... }` voor custom glassmorphism waarden
-5. Draai `npm run generate:css` (of commit — pre-commit hook doet dit automatisch)
+1. Voeg een metadata-entry toe aan `THEME_CATALOG` in `src/config/themes.ts`.
+2. Voeg de bijbehorende CSS-regels toe in `src/styles/themes/standard.css`.
 
 **Special theme:**
-1. Voeg entry toe met `isSpecial: true, category: "special"`
-2. Voeg `background`, `glass` en `specialStyles` toe
-3. Gebruik `SPECIAL_THEME_COMPONENT_MAP` als referentie voor beschikbare keys
-4. Gebruik `[[t]]` als placeholder in `additionalCss`
-5. Draai `npm run generate:css` (of commit — pre-commit hook doet dit automatisch)
-
-**Belangrijk: Geen handmatige `@media (prefers-reduced-motion)` in `additionalCss`**
-
-De generator voegt automatisch een volledig `prefers-reduced-motion: reduce` blok toe voor elk special theme. Dit blok gebruikt het `0.01ms / iteration-count: 1` patroon zodat `animationend` events blijven vuren. Voeg **nooit** zelf `@media (prefers-reduced-motion)` blokken toe in `additionalCss` — die worden obsoleet en kunnen conflicteren.
-
-### 6.9 Pre-commit Hook: Automatische CSS-regeneratie
-
-De pre-commit hook (`.husky/pre-commit`) detecteert automatisch of `themes.ts` of `categories.ts` gestagd is, en draait dan `npm run generate:css` gevolgd door `git add src/app/globals.css`. Je hoeft `generate:css` dus nooit handmatig te draaien bij theme-wijzigingen als onderdeel van een commit — de hook regelt het.
-
-### 6.10 Category `colorDark` — Dark Mode Colors
-
-Categorieën met een donkere basiskleur (lightness L < 0.55 in oklch) krijgen verplicht een `colorDark` veld voor dark mode zichtbaarheid. Dit is gedefinieerd in:
-
-- **`src/config/categories.ts`**: `colorDark` per categorie (de bron)
-- **`prisma/schema.prisma`**: `colorDark String?` op het `Category` model
-- **`src/scripts/seed.ts`**: Wordt opgeslagen bij `db:seed`
-- **`src/types/calendar.ts`**: `colorDark: string | null` in de `Category` interface
-
-**Gebruik in components:**
-
-```typescript
-import { resolveCategoryColor } from "@/lib/category-styles";
-import { useTheme } from "@/components/theme/ThemeProvider";
-
-const { resolvedColorMode } = useTheme();
-const isDark = resolvedColorMode === "dark";
-
-const color = resolveCategoryColor(category.color, category.colorDark, isDark);
-// → geeft colorDark terug als isDark && colorDark bestaat, anders color
-```
-
-Dit patroon is verplicht in alle componenten die category-kleuren als inline style renderen (bijv. `eventStyleGetter` in `DharmaCalendar`, `DayDetailsPanel`, `EventDetailModal`). Voor CSS-class-gebaseerde kleur (utility classes) regelt Tailwind's `.dark` variant dit automatisch.
+1. Voeg een metadata-entry toe aan `THEME_CATALOG` in `src/config/themes.ts` (`category: "special"`).
+2. Maak een nieuw CSS-bestand aan (bijv. `src/styles/themes/special/mijn-thema.css`).
+3. Importeer dit nieuwe bestand in `src/app/globals.css` (`@import "../styles/themes/special/mijn-thema.css";`).
 
 ---
 
