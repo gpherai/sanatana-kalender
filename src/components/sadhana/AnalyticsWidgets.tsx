@@ -541,7 +541,7 @@ export function PracticeTrend({ sessions }: { sessions: SessionData[] }) {
     label: string;
     fullLabel: string;
     year: number;
-    practices: { id: string; name: string; malas: number }[];
+    practices: { id: string; name: string; amount: number }[];
     total: number;
   }[] = [];
 
@@ -552,29 +552,29 @@ export function PracticeTrend({ sessions }: { sessions: SessionData[] }) {
     const fullLabel = cur.toLocaleDateString("nl-NL", { month: "long", year: "numeric" });
     const year = cur.getFullYear();
 
-    const map = new Map<string, { name: string; malas: number }>();
+    const map = new Map<string, { name: string; amount: number }>();
     for (const s of sessions) {
       if (!s.date.startsWith(key)) continue;
       for (const item of s.items) {
-        const malas =
+        const amount =
           item.unit === "malas"
             ? item.quantity
             : item.practice_type === "mantra_japa"
               ? item.quantity / 108
-              : 0;
-        if (malas === 0) continue;
+              : item.quantity;
+        if (amount === 0) continue;
         const ex = map.get(item.practice_id);
         if (ex) {
-          ex.malas += malas;
+          ex.amount += amount;
         } else {
-          map.set(item.practice_id, { name: item.practice_name, malas });
+          map.set(item.practice_id, { name: item.practice_name, amount });
         }
       }
     }
 
     const practices = Array.from(map.entries())
-      .map(([id, v]) => ({ id, name: v.name, malas: v.malas }))
-      .sort((a, b) => b.malas - a.malas);
+      .map(([id, v]) => ({ id, name: v.name, amount: v.amount }))
+      .sort((a, b) => b.amount - a.amount);
 
     months.push({
       key,
@@ -582,7 +582,7 @@ export function PracticeTrend({ sessions }: { sessions: SessionData[] }) {
       fullLabel,
       year,
       practices,
-      total: practices.reduce((s, p) => s + p.malas, 0),
+      total: practices.reduce((s, p) => s + p.amount, 0),
     });
     cur.setMonth(cur.getMonth() + 1);
   }
@@ -679,12 +679,12 @@ export function PracticeTrend({ sessions }: { sessions: SessionData[] }) {
                         style={{ height: barH, opacity: isHov ? 0.8 : 1 }}
                       >
                         {[...m.practices]
-                          .sort((a, b) => a.malas - b.malas)
+                          .sort((a, b) => a.amount - b.amount)
                           .map((p) => (
                             <div
                               key={p.id}
                               style={{
-                                flex: p.malas,
+                                flex: p.amount,
                                 background: colorMap.get(p.id)?.color,
                               }}
                             />
@@ -755,9 +755,9 @@ export function PracticeTrend({ sessions }: { sessions: SessionData[] }) {
                     <span className="text-theme-fg-secondary text-xs">{p.name}</span>
                   </span>
                   <span className="text-theme-fg text-xs font-semibold tabular-nums">
-                    {p.malas % 1 === 0
-                      ? p.malas.toLocaleString("nl-NL")
-                      : p.malas.toLocaleString("nl-NL", { maximumFractionDigits: 1 })}
+                    {p.amount % 1 === 0
+                      ? p.amount.toLocaleString("nl-NL")
+                      : p.amount.toLocaleString("nl-NL", { maximumFractionDigits: 1 })}
                   </span>
                 </div>
               ))}
