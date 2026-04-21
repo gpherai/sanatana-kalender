@@ -18,7 +18,7 @@ Dharma Calendar is een persoonlijke web applicatie voor het bijhouden van Sanata
 - Visualisatie van maanfasen en zon/maan tijden
 - Panchang Almanac met speciale lunaire dagen
 - Eenvoudig events beheren (toevoegen, bewerken, verwijderen)
-- Sadhana tracker voor mantra japa, parayana en meditatie sessies
+- Sadhana tracker voor mantra japa, parayana, meditatie sessies en gepersonaliseerde routines
 - Encyclopedie van Sanatana Dharma met MDX-artikelen en zoekmogelijkheid
 - Meerdere visuele thema's voor persoonlijke voorkeur
 
@@ -150,6 +150,8 @@ dharma-calendar/
 │   │   ├── event-naming.ts    # Eventcatalogus (164 entries)
 │   │   ├── rule-config.types.ts  # Typed ruleConfig interfaces per ruleType
 │   │   └── themes.ts          # ENIGE bron voor thema-definities
+│   ├── content/               # Statische content (MDX)
+│   │   └── encyclopedia/      # Encyclopedie artikelen
 │   ├── engine/                # Pure recurrence helpers (geen DB-toegang)
 │   │   ├── index.ts           # Barrel: exporteert types + helpers
 │   │   ├── tithi-helpers.ts   # groupConsecutiveDays, computeTithiOccurrence, ...
