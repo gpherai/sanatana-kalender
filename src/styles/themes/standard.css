@@ -109,14 +109,14 @@
 /* Cards and surfaces - dark mode glassmorphism (tinted to theme hue) */
 .dark[data-theme="spiritual-minimal-revamped"] .bg-theme-surface,
 [data-theme="spiritual-minimal-revamped"].dark .bg-theme-surface {
-  background: oklch(0.18 0.015 45 / 0.75) !important;
+  background: oklch(0.18 0.015 45 / 0.65) !important;
   backdrop-filter: blur(12px);
   border-color: oklch(1 0 0 / 0.1) !important;
 }
 
 .dark[data-theme="spiritual-minimal-revamped"] .bg-theme-surface-raised,
 [data-theme="spiritual-minimal-revamped"].dark .bg-theme-surface-raised {
-  background: oklch(0.22 0.015 45 / 0.85) !important;
+  background: oklch(0.22 0.015 45 / 0.7) !important;
   backdrop-filter: blur(16px);
   border-color: oklch(1 0 0 / 0.15) !important;
 }
@@ -195,14 +195,14 @@
 /* Cards and surfaces - dark mode glassmorphism (tinted to theme hue) */
 .dark[data-theme="traditional-rich-revamped"] .bg-theme-surface,
 [data-theme="traditional-rich-revamped"].dark .bg-theme-surface {
-  background: oklch(0.18 0.015 30 / 0.75) !important;
+  background: oklch(0.18 0.015 30 / 0.65) !important;
   backdrop-filter: blur(12px);
   border-color: oklch(1 0 0 / 0.1) !important;
 }
 
 .dark[data-theme="traditional-rich-revamped"] .bg-theme-surface-raised,
 [data-theme="traditional-rich-revamped"].dark .bg-theme-surface-raised {
-  background: oklch(0.22 0.015 30 / 0.85) !important;
+  background: oklch(0.22 0.015 30 / 0.7) !important;
   backdrop-filter: blur(16px);
   border-color: oklch(1 0 0 / 0.15) !important;
 }
@@ -279,14 +279,14 @@
 /* Cards and surfaces - dark mode glassmorphism (tinted to theme hue) */
 .dark[data-theme="cosmic-purple-revamped"] .bg-theme-surface,
 [data-theme="cosmic-purple-revamped"].dark .bg-theme-surface {
-  background: oklch(0.18 0.015 280 / 0.75) !important;
+  background: oklch(0.18 0.015 280 / 0.65) !important;
   backdrop-filter: blur(12px);
   border-color: oklch(1 0 0 / 0.1) !important;
 }
 
 .dark[data-theme="cosmic-purple-revamped"] .bg-theme-surface-raised,
 [data-theme="cosmic-purple-revamped"].dark .bg-theme-surface-raised {
-  background: oklch(0.22 0.015 280 / 0.85) !important;
+  background: oklch(0.22 0.015 280 / 0.7) !important;
   backdrop-filter: blur(16px);
   border-color: oklch(1 0 0 / 0.15) !important;
 }
@@ -363,14 +363,14 @@
 /* Cards and surfaces - dark mode glassmorphism (tinted to theme hue) */
 .dark[data-theme="forest-green-revamped"] .bg-theme-surface,
 [data-theme="forest-green-revamped"].dark .bg-theme-surface {
-  background: oklch(0.18 0.015 145 / 0.75) !important;
+  background: oklch(0.18 0.015 145 / 0.65) !important;
   backdrop-filter: blur(12px);
   border-color: oklch(1 0 0 / 0.1) !important;
 }
 
 .dark[data-theme="forest-green-revamped"] .bg-theme-surface-raised,
 [data-theme="forest-green-revamped"].dark .bg-theme-surface-raised {
-  background: oklch(0.22 0.015 145 / 0.85) !important;
+  background: oklch(0.22 0.015 145 / 0.7) !important;
   backdrop-filter: blur(16px);
   border-color: oklch(1 0 0 / 0.15) !important;
 }
@@ -447,14 +447,14 @@
 /* Cards and surfaces - dark mode glassmorphism (tinted to theme hue) */
 .dark[data-theme="sunrise-orange-revamped"] .bg-theme-surface,
 [data-theme="sunrise-orange-revamped"].dark .bg-theme-surface {
-  background: oklch(0.18 0.015 50 / 0.75) !important;
+  background: oklch(0.18 0.015 50 / 0.65) !important;
   backdrop-filter: blur(12px);
   border-color: oklch(1 0 0 / 0.1) !important;
 }
 
 .dark[data-theme="sunrise-orange-revamped"] .bg-theme-surface-raised,
 [data-theme="sunrise-orange-revamped"].dark .bg-theme-surface-raised {
-  background: oklch(0.22 0.015 50 / 0.85) !important;
+  background: oklch(0.22 0.015 50 / 0.7) !important;
   backdrop-filter: blur(16px);
   border-color: oklch(1 0 0 / 0.15) !important;
 }

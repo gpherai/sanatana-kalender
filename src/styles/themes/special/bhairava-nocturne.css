@@ -195,13 +195,14 @@
 [data-theme="bhairava-nocturne"].dark .bg-theme-surface {
   background: linear-gradient(
     145deg,
-    oklch(0.16 0.034 278 / 0.9) 0%,
-    oklch(0.12 0.028 272 / 0.86) 100%
+    oklch(0.16 0.034 278 / 0.65) 0%,
+    oklch(0.12 0.028 272 / 0.55) 100%
   ) !important;
   border: 1px solid oklch(0.62 0.22 275 / 0.2) !important;
   box-shadow:
     0 4px 28px oklch(0 0 0 / 0.52),
-    0 0 20px oklch(0.62 0.22 275 / 0.12) !important;
+    0 0 20px oklch(0.62 0.22 275 / 0.12),
+    inset 0 1px 0 oklch(1 0 0 / 0.05) !important;
   backdrop-filter: blur(10px);
 }
 
@@ -224,13 +225,14 @@
 [data-theme="bhairava-nocturne"].dark .bg-theme-surface-raised {
   background: linear-gradient(
     145deg,
-    oklch(0.16 0.034 278 / 0.94) 0%,
-    oklch(0.12 0.028 272 / 0.9) 100%
+    oklch(0.16 0.034 278 / 0.7) 0%,
+    oklch(0.12 0.028 272 / 0.6) 100%
   ) !important;
   border: 1px solid oklch(0.62 0.22 275 / 0.24) !important;
   box-shadow:
     0 8px 36px oklch(0 0 0 / 0.62),
-    0 0 24px oklch(0.62 0.22 275 / 0.16) !important;
+    0 0 24px oklch(0.62 0.22 275 / 0.16),
+    inset 0 1px 0 oklch(1 0 0 / 0.05) !important;
   backdrop-filter: blur(14px);
 }
 

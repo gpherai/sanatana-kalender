@@ -172,13 +172,14 @@
 [data-theme="narasimha-jwala"].dark .bg-theme-surface {
   background: linear-gradient(
     145deg,
-    oklch(0.18 0.04 45 / 0.9) 0%,
-    oklch(0.13 0.03 40 / 0.86) 100%
+    oklch(0.18 0.04 45 / 0.65) 0%,
+    oklch(0.13 0.03 40 / 0.55) 100%
   ) !important;
   border: 1px solid oklch(0.68 0.22 52 / 0.2) !important;
   box-shadow:
     0 4px 28px oklch(0 0 0 / 0.5),
-    0 0 20px oklch(0.68 0.22 52 / 0.1) !important;
+    0 0 20px oklch(0.68 0.22 52 / 0.1),
+    inset 0 1px 0 oklch(1 0 0 / 0.05) !important;
   backdrop-filter: blur(10px);
 }
 
