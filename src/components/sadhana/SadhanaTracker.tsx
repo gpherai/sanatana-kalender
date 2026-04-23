@@ -61,8 +61,8 @@ export function SadhanaTracker() {
   const activeTab: TabId = VALID_TABS.has(rawTab) ? (rawTab as TabId) : "tracker";
 
   const setTab = useCallback(
-    (id: TabId) => router.push(`/sadhana?tab=${id}`, { scroll: false }),
-    [router]
+    (id: TabId) => window.history.replaceState(null, "", `/sadhana?tab=${id}`),
+    []
   );
 
   // ── Data state ──────────────────────────────────────────────────────────────

@@ -162,9 +162,9 @@ export function useFilters() {
     (newParams: URLSearchParams) => {
       const query = newParams.toString();
       const url = query ? `${pathname}?${query}` : pathname;
-      router.push(url, { scroll: false });
+      window.history.pushState(null, "", url);
     },
-    [router, pathname]
+    [pathname]
   );
 
   // Set a single filter value
@@ -218,8 +218,8 @@ export function useFilters() {
 
   // Clear all filters
   const clearFilters = useCallback(() => {
-    router.push(pathname, { scroll: false });
-  }, [router, pathname]);
+    window.history.pushState(null, "", pathname);
+  }, [pathname]);
 
   /**
    * Count active filter GROUPS (not individual items)
