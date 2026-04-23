@@ -11,7 +11,7 @@ interface WeatherErrorStateProps {
 export function WeatherErrorState({ error, onRetry }: WeatherErrorStateProps) {
   return (
     <PageLayout width="narrow">
-      <div className="bg-theme-surface border-theme-border mt-16 rounded-2xl border p-10 text-center shadow-sm">
+      <div className="theme-card mt-16 p-10 text-center">
         <Cloud className="text-theme-fg-muted mx-auto mb-4 h-10 w-10" />
         <h2 className="text-theme-fg mb-2 text-lg font-semibold">
           Weerdata niet beschikbaar

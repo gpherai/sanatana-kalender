@@ -20,7 +20,7 @@ export function WeatherSkeleton() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_272px]">
-        <div className="bg-theme-surface border-theme-border rounded-2xl border p-5 shadow-sm md:p-6">
+        <div className="theme-card p-5 md:p-6">
           <div className="mb-4 flex justify-between">
             <Pulse className="h-3 w-20" />
             <Pulse className="h-6 w-28 rounded-full" />
@@ -45,10 +45,7 @@ export function WeatherSkeleton() {
 
         <div className="grid grid-cols-3 gap-3 lg:flex lg:flex-col lg:gap-4">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div
-              key={i}
-              className="bg-theme-surface border-theme-border rounded-2xl border p-4 shadow-sm"
-            >
+            <div key={i} className="theme-card p-4">
               <div className="mb-3 flex items-center gap-2">
                 <Pulse className="h-7 w-7 rounded-lg" />
                 <Pulse className="h-4 w-16" />
@@ -65,7 +62,7 @@ export function WeatherSkeleton() {
 
       <div>
         <Pulse className="mb-3 h-3 w-28" />
-        <div className="bg-theme-surface border-theme-border rounded-2xl border p-5 shadow-sm">
+        <div className="theme-card p-5">
           <div className="mb-4 flex items-center gap-3">
             <Pulse className="h-3 w-3 rounded-full" />
             <Pulse className="h-7 w-20 rounded-full" />
@@ -81,17 +78,17 @@ export function WeatherSkeleton() {
 
       <div>
         <Pulse className="mb-3 h-3 w-32" />
-        <div className="bg-theme-surface border-theme-border h-40 rounded-2xl border shadow-sm" />
+        <div className="theme-card h-40" />
       </div>
 
       <div>
         <Pulse className="mb-3 h-3 w-48" />
-        <div className="bg-theme-surface border-theme-border h-52 rounded-2xl border shadow-sm" />
+        <div className="theme-card h-52" />
       </div>
 
       <div>
         <Pulse className="mb-3 h-3 w-36" />
-        <div className="bg-theme-surface border-theme-border overflow-hidden rounded-2xl border shadow-sm">
+        <div className="theme-card overflow-hidden">
           {Array.from({ length: 5 }).map((_, i) => (
             <div
               key={i}

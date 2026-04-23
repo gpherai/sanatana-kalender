@@ -21,7 +21,7 @@ export function WeatherAstronomyCards({
 
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:flex lg:flex-col lg:gap-4">
-      <div className="bg-theme-surface border-theme-border rounded-2xl border p-4 shadow-sm">
+      <div className="theme-card p-4">
         <div className="mb-3 flex items-center gap-2">
           <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[var(--theme-almanac-sun-card-from)]">
             <Sunrise className="h-4 w-4 text-[var(--theme-almanac-sun-rise-icon)]" />
@@ -45,7 +45,7 @@ export function WeatherAstronomyCards({
         </div>
       </div>
 
-      <div className="bg-theme-surface border-theme-border rounded-2xl border p-4 shadow-sm">
+      <div className="theme-card p-4">
         <div className="mb-3 flex items-center gap-2">
           <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[var(--theme-almanac-moon-bg)]">
             <MoonStar className="text-theme-icon-moon h-4 w-4" />
@@ -65,7 +65,7 @@ export function WeatherAstronomyCards({
         </div>
       </div>
 
-      <div className="bg-theme-surface border-theme-border col-span-2 rounded-2xl border p-4 shadow-sm sm:col-span-1">
+      <div className="theme-card col-span-2 p-4 sm:col-span-1">
         <div className="mb-3 flex items-center gap-2">
           <div className="bg-theme-primary-10 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg">
             <Gauge className="text-theme-primary h-4 w-4" />

@@ -82,7 +82,7 @@ export function Section({
   const colors = ICON_COLOR_CLASSES[iconColor];
 
   return (
-    <section className={cn("bg-theme-surface rounded-2xl p-6 shadow-lg", className)}>
+    <section className={cn("theme-card p-6", className)}>
       {/* Header */}
       <div className="mb-6 flex items-center gap-3">
         <div className={cn("rounded-lg p-2", colors.bg)}>
@@ -92,7 +92,7 @@ export function Section({
           <div className="flex items-center gap-2">
             <h2 className="text-theme-fg text-lg font-semibold">{title}</h2>
             {count !== undefined && (
-              <span className="bg-theme-surface-hover text-theme-fg-muted rounded-full px-2 py-0.5 text-xs font-medium tabular-nums">
+              <span className="theme-chip px-2 py-0.5 text-xs font-medium tabular-nums">
                 {count}
               </span>
             )}

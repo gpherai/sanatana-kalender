@@ -434,8 +434,9 @@ CSS variables from src/styles/** control rendering
 5. **CSS variables blijven de runtime truth**: `[data-theme]` selectors wijzigen `--theme-*` waarden; Tailwind utilities verwijzen via `--color-theme-*` naar die runtime variabelen.
 6. **App-level theme hooks sturen globale effecten**: pagina-achtergrond, headerstijl, body-decoratie, brand-animatie en surface blur lopen via tokens zoals `--theme-app-background`, `--theme-page-shell-background`, `--theme-header-background` en `--theme-surface-backdrop-filter`.
 7. **Component effect hooks sturen rijke theme-varianten**: als een special theme meer nodig heeft dan alleen een kleurwaarde, gebruik tokens zoals `--theme-surface-*-background`, `--theme-surface-*-border-rule`, `--theme-surface-*-shadow`, `--theme-primary-action-*` inclusief action tekstkleur, `--theme-control-*`, `--theme-heading-*` en `--theme-primary-text-animation`.
-8. **`utilities.css` is aanvullend**: gebruik dit bestand voor category utilities, complexe gradients, forms, buttons en animaties; niet voor nieuwe simpele kleurutilities die via `@theme inline` kunnen lopen.
-9. **Theme CSS blijft selector-arm**: standard en special themes zetten tokens onder `[data-theme="theme-name"]`; geen directe overrides op `body`, `header`, `h1`, `.min-h-screen`, `.bg-theme-*`, inputs of andere brede selectors.
+8. **Reusable primitives blijven theme-neutraal**: veelvoorkomende patronen gebruiken stabiele classes zoals `theme-card`, `theme-card-raised`, `theme-interactive`, `theme-interactive-selected`, `theme-chip`, `theme-chip-primary`, `theme-overlay` en `theme-focus-ring`. De classes leven in `base.css`; themes vullen alleen de bijbehorende `--theme-card-*`, `--theme-interactive-*`, `--theme-chip-*`, `--theme-overlay-*` en `--theme-focus-*` tokens in.
+9. **`utilities.css` is aanvullend**: gebruik dit bestand voor category utilities, complexe gradients, forms, buttons en animaties; niet voor nieuwe simpele kleurutilities die via `@theme inline` kunnen lopen.
+10. **Theme CSS blijft selector-arm**: standard en special themes zetten tokens onder `[data-theme="theme-name"]`; geen directe overrides op `body`, `header`, `h1`, `.min-h-screen`, `.bg-theme-*`, inputs of andere brede selectors.
 
 ### 6.4 Nieuwe Theme Toevoegen
 

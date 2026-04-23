@@ -17,7 +17,7 @@ export function FutureHourlySection({ items, timezoneOffset }: FutureHourlySecti
   return (
     <div>
       <SectionTitle>Per 3 uur · komende dagen</SectionTitle>
-      <div className="bg-theme-surface border-theme-border rounded-2xl border shadow-sm">
+      <div className="theme-card">
         <div className="overflow-x-auto p-3">
           <div
             className="flex items-stretch gap-1"

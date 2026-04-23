@@ -224,7 +224,7 @@ export function EventDetailModal({
           aria-labelledby="modal-title"
           tabIndex={-1}
           className={cn(
-            "bg-theme-surface relative w-full shadow-2xl outline-none",
+            "theme-overlay relative w-full outline-none",
             "rounded-t-3xl sm:max-w-lg sm:rounded-3xl",
             "max-h-[90vh] overflow-hidden",
             "transition-all duration-300",

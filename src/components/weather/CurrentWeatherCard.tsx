@@ -20,7 +20,7 @@ export function CurrentWeatherCard({ current: c, today }: CurrentWeatherCardProp
         : "Normaal";
 
   return (
-    <div className="bg-theme-surface border-theme-border relative overflow-hidden rounded-2xl border p-5 shadow-sm md:p-6">
+    <div className="theme-card relative overflow-hidden p-5 md:p-6">
       {c.weather[0] && (
         <Image
           src={owmIcon(c.weather[0].icon, 4)}
@@ -37,7 +37,7 @@ export function CurrentWeatherCard({ current: c, today }: CurrentWeatherCardProp
           Huidig weer
         </span>
         {c.weather[0] && (
-          <span className="bg-theme-hover text-theme-fg-secondary rounded-full px-3 py-1 text-xs font-medium capitalize">
+          <span className="theme-chip px-3 py-1 text-xs font-medium capitalize">
             {c.weather[0].description}
           </span>
         )}

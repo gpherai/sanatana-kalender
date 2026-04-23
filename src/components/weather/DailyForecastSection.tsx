@@ -33,7 +33,7 @@ export function DailyForecastSection({
   return (
     <div>
       <SectionTitle>5-daagse verwachting</SectionTitle>
-      <div className="bg-theme-surface border-theme-border overflow-hidden rounded-2xl border shadow-sm">
+      <div className="theme-card overflow-hidden">
         <div
           className="border-theme-border text-theme-fg-muted hidden border-b px-5 py-2 text-[10px] font-semibold tracking-widest uppercase lg:grid"
           style={{ gridTemplateColumns: "140px 36px 1fr 90px 160px 110px 36px" }}

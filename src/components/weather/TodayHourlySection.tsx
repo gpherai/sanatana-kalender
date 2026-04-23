@@ -21,7 +21,7 @@ export function TodayHourlySection({ hourly, timezoneOffset }: TodayHourlySectio
           (lineair geïnterpoleerd uit 3u-sloten)
         </span>
       </div>
-      <div className="bg-theme-surface border-theme-border rounded-2xl border shadow-sm">
+      <div className="theme-card">
         <div className="overflow-x-auto p-3">
           <div
             className="flex gap-1.5 [&>*]:snap-start"

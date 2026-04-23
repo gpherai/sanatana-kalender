@@ -91,7 +91,7 @@ export function TemperatureChart({
   return (
     <div>
       <SectionTitle>Temperatuurverloop · komende 5 dagen</SectionTitle>
-      <div className="bg-theme-surface border-theme-border overflow-hidden rounded-2xl border shadow-sm">
+      <div className="theme-card overflow-hidden">
         <svg
           viewBox={`0 0 ${W} ${H}`}
           className="w-full"

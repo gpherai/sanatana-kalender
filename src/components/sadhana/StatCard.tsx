@@ -16,7 +16,7 @@ export function StatCard({
   accent?: boolean;
 }) {
   return (
-    <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
+    <div className="theme-card-raised p-5">
       <div className="mb-3 flex items-center gap-2">
         <div
           className={cn(

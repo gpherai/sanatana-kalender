@@ -15,7 +15,7 @@ export function AirQualityCard({ aq }: { aq: AirQuality }) {
   return (
     <div>
       <SectionTitle>Luchtkwaliteit</SectionTitle>
-      <div className="bg-theme-surface border-theme-border rounded-2xl border p-5 shadow-sm">
+      <div className="theme-card p-5">
         <div className="mb-4 flex items-center gap-4">
           <div className="flex items-center gap-3">
             <span

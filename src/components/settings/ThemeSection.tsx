@@ -107,9 +107,9 @@ export function ThemeSection({
                       type="button"
                       onClick={() => onThemeChange(theme.name)}
                       className={cn(
-                        "relative rounded-xl border-2 p-4 text-left transition-all",
+                        "theme-interactive theme-focus-ring relative rounded-xl border-2 p-4 text-left",
                         isSelected
-                          ? "border-theme-primary bg-theme-primary-10 shadow-lg"
+                          ? "theme-interactive-selected"
                           : "border-theme-border hover:border-theme-border-strong hover:shadow-md"
                       )}
                     >
@@ -181,9 +181,9 @@ export function ThemeSection({
                       type="button"
                       onClick={() => onThemeChange(theme.name)}
                       className={cn(
-                        "relative rounded-xl border-2 p-4 text-left transition-all",
+                        "theme-interactive theme-focus-ring relative rounded-xl border-2 p-4 text-left",
                         isSelected
-                          ? "border-theme-primary bg-theme-primary-10 ring-theme-primary/20 shadow-lg ring-2"
+                          ? "theme-interactive-selected"
                           : "border-theme-border hover:border-theme-border-strong hover:shadow-md"
                       )}
                     >

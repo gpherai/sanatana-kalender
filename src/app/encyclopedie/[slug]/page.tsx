@@ -184,7 +184,7 @@ export default async function TermPage({
         <article className="border-theme-border-subtle bg-theme-surface overflow-hidden rounded-[2rem] border shadow-xl">
           <div className="bg-theme-bg-subtle border-theme-border-subtle border-b p-8 md:p-12">
             <div className="mb-6 flex items-center gap-3">
-              <span className="bg-theme-primary/10 text-theme-primary inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-semibold">
+              <span className="theme-chip-primary px-3 py-1 text-sm font-semibold">
                 <Book className="h-4 w-4" />
                 {term.category}
               </span>

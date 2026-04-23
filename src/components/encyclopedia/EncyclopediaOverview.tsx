@@ -51,7 +51,7 @@ function TermCard({
   return (
     <Link
       href={`/encyclopedie/${item.slug}`}
-      className="group border-theme-border bg-theme-surface hover:border-theme-primary-30 focus:ring-theme-primary focus:ring-offset-theme-bg relative flex flex-col rounded-2xl border p-6 transition-all duration-500 hover:-translate-y-1 hover:shadow-lg focus:ring-2 focus:ring-offset-2 focus:outline-none"
+      className="theme-card theme-interactive theme-focus-ring group relative flex flex-col p-6 duration-500 hover:-translate-y-1"
     >
       <div className="bg-theme-primary-20 group-hover:bg-theme-primary-40 absolute top-0 left-0 h-1.5 w-full rounded-t-2xl transition-colors duration-300" />
       <div className="space-y-2">

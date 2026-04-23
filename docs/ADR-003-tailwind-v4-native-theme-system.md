@@ -100,9 +100,16 @@ of the project.
    `--theme-surface-*-border-rule`, `--theme-surface-*-shadow`,
    `--theme-primary-action-*` (including action text color), `--theme-control-*`,
    `--theme-heading-*`, and `--theme-primary-text-animation`.
-8. Use `src/styles/utilities.css` for category utilities, complex gradients,
+8. Use reusable primitive classes for common cross-page UI roles:
+   `theme-card`, `theme-card-raised`, `theme-interactive`,
+   `theme-interactive-selected`, `theme-chip`, `theme-chip-primary`,
+   `theme-overlay`, and `theme-focus-ring`. These classes are theme-neutral
+   consumers in `base.css`; theme files only override their `--theme-card-*`,
+   `--theme-interactive-*`, `--theme-chip-*`, `--theme-overlay-*`, and
+   `--theme-focus-*` tokens.
+9. Use `src/styles/utilities.css` for category utilities, complex gradients,
    forms, buttons, and animations that are not simple color-token utilities.
-9. Keep standard and special theme files selector-light: set tokens under
+10. Keep standard and special theme files selector-light: set tokens under
    `[data-theme="..."]`; do not target `body`, `header`, `h1`, `.min-h-screen`,
    `.bg-theme-*`, form elements, or other broad selectors from theme files.
 

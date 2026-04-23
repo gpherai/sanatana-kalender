@@ -104,17 +104,75 @@
   --theme-brand-label-animation: none;
   --theme-primary-action-background: var(--theme-primary);
   --theme-primary-action-color: var(--theme-primary-fg, white);
+  --theme-primary-action-border-rule: 1px solid
+    color-mix(in oklch, var(--theme-primary) 35%, transparent);
   --theme-primary-action-shadow:
     var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000),
     var(--tw-shadow, 0 0 #0000);
   --theme-surface-background: var(--theme-surface);
+  --theme-surface-border-rule: 1px solid var(--theme-border);
   --theme-surface-raised-background: var(--theme-surface-raised);
+  --theme-surface-raised-border-rule: 1px solid var(--theme-border);
   --theme-surface-shadow:
     var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000),
     var(--tw-shadow, 0 0 #0000);
   --theme-surface-raised-shadow: var(--theme-surface-shadow);
   --theme-surface-backdrop-filter: none;
   --theme-surface-raised-backdrop-filter: var(--theme-surface-backdrop-filter);
+  --theme-control-background: var(--theme-surface);
+  --theme-control-border-rule: 1px solid var(--theme-border);
+  --theme-control-shadow: none;
+  --theme-control-focus-border: var(--theme-primary);
+  --theme-control-focus-shadow: 0 0 0 3px
+    color-mix(in oklch, var(--theme-primary) 20%, transparent);
+  --theme-heading-background: none;
+  --theme-heading-text-fill-color: currentColor;
+  --theme-heading-text-shadow: none;
+  --theme-primary-text-animation: none;
+
+  /* Reusable component primitives. Themes may override these hooks, while
+     components keep using stable role classes instead of theme-specific CSS. */
+  --theme-card-radius: 1rem;
+  --theme-card-background: var(--theme-surface-background);
+  --theme-card-border-rule: var(--theme-surface-border-rule);
+  --theme-card-shadow: 0 1px 2px 0 oklch(0 0 0 / 0.05);
+  --theme-card-backdrop-filter: var(--theme-surface-backdrop-filter);
+  --theme-card-raised-background: var(--theme-surface-raised-background);
+  --theme-card-raised-border-rule: var(--theme-surface-raised-border-rule);
+  --theme-card-raised-shadow:
+    0 10px 15px -3px oklch(0 0 0 / 0.1), 0 4px 6px -4px oklch(0 0 0 / 0.1);
+  --theme-card-raised-backdrop-filter: var(--theme-surface-raised-backdrop-filter);
+  --theme-interactive-hover-background: var(--theme-hover);
+  --theme-interactive-hover-border-color: var(--theme-border-strong);
+  --theme-interactive-hover-shadow:
+    0 10px 15px -3px color-mix(in oklch, var(--theme-primary) 12%, transparent),
+    0 4px 6px -4px oklch(0 0 0 / 0.1);
+  --theme-interactive-selected-background: color-mix(
+    in oklch,
+    var(--theme-primary) 12%,
+    var(--theme-surface)
+  );
+  --theme-interactive-selected-border-rule: 1px solid var(--theme-primary);
+  --theme-interactive-selected-shadow: 0 0 0 2px
+    color-mix(in oklch, var(--theme-primary) 22%, transparent);
+  --theme-chip-background: var(--theme-hover);
+  --theme-chip-color: var(--theme-fg-secondary);
+  --theme-chip-border-rule: 1px solid transparent;
+  --theme-chip-primary-background: color-mix(
+    in oklch,
+    var(--theme-primary) 15%,
+    transparent
+  );
+  --theme-chip-primary-color: var(--theme-primary);
+  --theme-chip-primary-border-rule: 1px solid
+    color-mix(in oklch, var(--theme-primary) 20%, transparent);
+  --theme-overlay-background: var(--theme-surface-overlay);
+  --theme-overlay-border-rule: 1px solid var(--theme-border);
+  --theme-overlay-shadow:
+    0 25px 50px -12px oklch(0 0 0 / 0.25), 0 0 0 1px oklch(1 0 0 / 0.05);
+  --theme-overlay-backdrop-filter: var(--theme-surface-raised-backdrop-filter);
+  --theme-focus-ring-shadow: 0 0 0 3px
+    color-mix(in oklch, var(--theme-primary) 25%, transparent);
 
   /* Icon colors (celestial & UI) */
   --theme-icon-sun: oklch(0.85 0.18 60); /* Bright yellow */
@@ -485,6 +543,82 @@ body.app-body::after {
   color: var(--theme-primary-action-color);
   border: var(--theme-primary-action-border-rule);
   box-shadow: var(--theme-primary-action-shadow);
+}
+
+.theme-card {
+  background: var(--theme-card-background);
+  border: var(--theme-card-border-rule);
+  border-radius: var(--theme-card-radius);
+  box-shadow: var(--theme-card-shadow);
+  backdrop-filter: var(--theme-card-backdrop-filter);
+}
+
+.theme-card-raised {
+  background: var(--theme-card-raised-background);
+  border: var(--theme-card-raised-border-rule);
+  border-radius: var(--theme-card-radius);
+  box-shadow: var(--theme-card-raised-shadow);
+  backdrop-filter: var(--theme-card-raised-backdrop-filter);
+}
+
+.theme-interactive {
+  cursor: pointer;
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease,
+    box-shadow 200ms ease,
+    opacity 200ms ease,
+    transform 200ms ease;
+}
+
+.theme-interactive:hover {
+  background: var(--theme-interactive-hover-background);
+  border-color: var(--theme-interactive-hover-border-color);
+  box-shadow: var(--theme-interactive-hover-shadow);
+}
+
+.theme-interactive-selected {
+  background: var(--theme-interactive-selected-background);
+  border: var(--theme-interactive-selected-border-rule);
+  box-shadow: var(--theme-interactive-selected-shadow);
+}
+
+.theme-interactive-selected:hover {
+  background: var(--theme-interactive-selected-background);
+  border: var(--theme-interactive-selected-border-rule);
+  box-shadow: var(--theme-interactive-selected-shadow);
+}
+
+.theme-chip,
+.theme-chip-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 999px;
+  border: var(--theme-chip-border-rule);
+}
+
+.theme-chip {
+  background: var(--theme-chip-background);
+  color: var(--theme-chip-color);
+}
+
+.theme-chip-primary {
+  background: var(--theme-chip-primary-background);
+  color: var(--theme-chip-primary-color);
+  border: var(--theme-chip-primary-border-rule);
+}
+
+.theme-overlay {
+  background: var(--theme-overlay-background);
+  border: var(--theme-overlay-border-rule);
+  box-shadow: var(--theme-overlay-shadow);
+  backdrop-filter: var(--theme-overlay-backdrop-filter);
+}
+
+.theme-focus-ring:focus-visible {
+  outline: none;
+  box-shadow: var(--theme-focus-ring-shadow);
 }
 
 .panchanga-yoga-card {
