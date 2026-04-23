@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import {
   Flame,
   Loader2,
@@ -55,7 +55,6 @@ const VALID_TABS = new Set<string>(TABS.map((t) => t.id));
 
 export function SadhanaTracker() {
   const searchParams = useSearchParams();
-  const router = useRouter();
 
   const rawTab = searchParams.get("tab") ?? "tracker";
   const activeTab: TabId = VALID_TABS.has(rawTab) ? (rawTab as TabId) : "tracker";

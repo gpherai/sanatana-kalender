@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo } from "react";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useSearchParams, usePathname } from "next/navigation";
 import {
   CATEGORIES,
   EVENT_TYPES,
@@ -131,7 +131,6 @@ function filterValidValues(values: string[], validSet: Set<string>): string[] {
  * clearFilters();
  */
 export function useFilters() {
-  const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
