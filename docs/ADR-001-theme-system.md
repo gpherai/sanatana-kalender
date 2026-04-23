@@ -1,8 +1,12 @@
 # ADR-001: Theme System Architecture
 
-**Status:** Updated  
+**Status:** Superseded by [ADR-003](ADR-003-tailwind-v4-native-theme-system.md)
 **Date:** 2025-12-05 (Updated from 2025-12-03)  
 **Deciders:** Gerald (Project Owner)
+
+> This ADR documents the previous generated-CSS approach. It is kept for history only.
+> The current theme architecture is Tailwind v4 native modular CSS; do not follow
+> the `generate:css` workflow described below.
 
 ## Context
 

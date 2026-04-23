@@ -15,9 +15,128 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  /* Brand/theme colors. These make classes like bg-theme-primary,
+     text-theme-primary/80, hover:bg-theme-primary/10, and ring-theme-primary/50
+     native Tailwind v4 utilities instead of plain handwritten CSS classes. */
   --color-primary: var(--theme-primary);
   --color-secondary: var(--theme-secondary);
   --color-accent: var(--theme-accent);
+  --color-theme-primary: var(--theme-primary);
+  --color-theme-secondary: var(--theme-secondary);
+  --color-theme-accent: var(--theme-accent);
+  --color-theme-primary-fg: var(--theme-primary-fg, white);
+
+  /* Compatibility aliases for existing hyphen-opacity classes.
+     New code may prefer slash opacity, e.g. bg-theme-primary/15. */
+  --color-theme-primary-10: color-mix(in oklch, var(--theme-primary) 10%, transparent);
+  --color-theme-primary-15: color-mix(in oklch, var(--theme-primary) 15%, transparent);
+  --color-theme-primary-20: color-mix(in oklch, var(--theme-primary) 20%, transparent);
+  --color-theme-primary-25: color-mix(in oklch, var(--theme-primary) 25%, transparent);
+  --color-theme-primary-30: color-mix(in oklch, var(--theme-primary) 30%, transparent);
+  --color-theme-primary-40: color-mix(in oklch, var(--theme-primary) 40%, transparent);
+  --color-theme-primary-50: color-mix(in oklch, var(--theme-primary) 50%, transparent);
+  --color-theme-primary-80: color-mix(in oklch, var(--theme-primary) 80%, transparent);
+  --color-theme-secondary-10: color-mix(
+    in oklch,
+    var(--theme-secondary) 10%,
+    transparent
+  );
+  --color-theme-secondary-15: color-mix(
+    in oklch,
+    var(--theme-secondary) 15%,
+    transparent
+  );
+  --color-theme-secondary-20: color-mix(
+    in oklch,
+    var(--theme-secondary) 20%,
+    transparent
+  );
+  --color-theme-secondary-30: color-mix(
+    in oklch,
+    var(--theme-secondary) 30%,
+    transparent
+  );
+  --color-theme-secondary-40: color-mix(
+    in oklch,
+    var(--theme-secondary) 40%,
+    transparent
+  );
+  --color-theme-secondary-50: color-mix(
+    in oklch,
+    var(--theme-secondary) 50%,
+    transparent
+  );
+  --color-theme-accent-10: color-mix(in oklch, var(--theme-accent) 10%, transparent);
+  --color-theme-accent-15: color-mix(in oklch, var(--theme-accent) 15%, transparent);
+  --color-theme-accent-20: color-mix(in oklch, var(--theme-accent) 20%, transparent);
+  --color-theme-accent-30: color-mix(in oklch, var(--theme-accent) 30%, transparent);
+  --color-theme-accent-40: color-mix(in oklch, var(--theme-accent) 40%, transparent);
+  --color-theme-accent-50: color-mix(in oklch, var(--theme-accent) 50%, transparent);
+  --color-theme-fg-4: color-mix(in oklch, var(--theme-fg) 4%, transparent);
+  --color-theme-fg-8: color-mix(in oklch, var(--theme-fg) 8%, transparent);
+
+  /* Semantic surfaces and typography */
+  --color-theme-bg: var(--theme-bg);
+  --color-theme-bg-subtle: var(--theme-bg-subtle);
+  --color-theme-bg-muted: var(--theme-bg-subtle);
+  --color-theme-surface: var(--theme-surface);
+  --color-theme-surface-raised: var(--theme-surface-raised);
+  --color-theme-surface-overlay: var(--theme-surface-overlay);
+  --color-theme-hover: var(--theme-hover);
+  --color-theme-surface-hover: var(--theme-hover);
+  --color-theme-active: var(--theme-active);
+  --color-theme-disabled: var(--theme-disabled);
+  --color-theme-fg: var(--theme-fg);
+  --color-theme-fg-secondary: var(--theme-fg-secondary);
+  --color-theme-fg-muted: var(--theme-fg-muted);
+  --color-theme-fg-subtle: var(--theme-fg-subtle);
+  --color-theme-stat-value: var(--theme-stat-value);
+
+  /* Borders, rings, overlays */
+  --color-theme-border: var(--theme-border);
+  --color-theme-border-subtle: var(--theme-border-subtle);
+  --color-theme-border-strong: var(--theme-border-strong);
+  --color-theme-divider: var(--theme-divider);
+  --color-theme-ring: var(--theme-ring);
+  --color-theme-modal-backdrop: var(--theme-modal-backdrop);
+
+  /* Status colors */
+  --color-theme-success: var(--theme-success);
+  --color-theme-success-subtle: var(--theme-success-bg);
+  --color-theme-success-bg: var(--theme-success-bg);
+  --color-theme-success-fg: var(--theme-success-fg);
+  --color-theme-success-border: var(--theme-success-border);
+  --color-theme-warning: var(--theme-warning);
+  --color-theme-warning-subtle: var(--theme-warning-bg);
+  --color-theme-warning-bg: var(--theme-warning-bg);
+  --color-theme-warning-fg: var(--theme-warning-fg);
+  --color-theme-warning-border: var(--theme-warning-border);
+  --color-theme-error: var(--theme-error);
+  --color-theme-error-subtle: var(--theme-error-bg);
+  --color-theme-error-bg: var(--theme-error-bg);
+  --color-theme-error-fg: var(--theme-error-fg);
+  --color-theme-error-border: var(--theme-error-border);
+  --color-theme-info: var(--theme-info);
+  --color-theme-info-subtle: var(--theme-info-bg);
+  --color-theme-info-bg: var(--theme-info-bg);
+  --color-theme-info-fg: var(--theme-info-fg);
+  --color-theme-info-border: var(--theme-info-border);
+
+  /* Icon colors */
+  --color-theme-icon-sun: var(--theme-icon-sun);
+  --color-theme-icon-sunrise: var(--theme-icon-sunrise);
+  --color-theme-icon-sunset: var(--theme-icon-sunset);
+  --color-theme-icon-moon: var(--theme-icon-moon);
+  --color-theme-icon-event-special: var(--theme-icon-event-special);
+  --color-theme-icon-mode-sun: var(--theme-icon-mode-sun);
+  --color-theme-icon-mode-moon: var(--theme-icon-mode-moon);
+
+  --shadow-theme-primary: 0 4px 14px 0
+    color-mix(in oklch, var(--theme-primary) 25%, transparent);
+  --shadow-theme-primary-lg: 0 10px 25px -3px
+    color-mix(in oklch, var(--theme-primary) 30%, transparent);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }

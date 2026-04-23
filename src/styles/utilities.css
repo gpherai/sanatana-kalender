@@ -1,254 +1,19 @@
 /* =============================================================================
-   THEME UTILITY CLASSES
-   
-   IMPORTANT: Use HYPHEN notation for opacity variants!
-   ✅ Correct: .bg-theme-primary-10
-   ❌ Wrong:   .bg-theme-primary/10
+   CUSTOM NON-COLOR UTILITIES
+
+   Theme color, border, ring, text, opacity, and shadow utilities are generated
+   by Tailwind v4 from src/app/globals.css @theme inline tokens.
    ============================================================================= */
 
-/* === SOLID BACKGROUNDS === */
-.bg-theme-primary {
-  background-color: var(--theme-primary);
-}
-.bg-theme-secondary {
-  background-color: var(--theme-secondary);
-}
-.bg-theme-accent {
-  background-color: var(--theme-accent);
-}
-
-/* === BACKGROUND WITH OPACITY (hyphen notation) === */
-.bg-theme-primary-10 {
-  background-color: color-mix(in oklch, var(--theme-primary) 10%, transparent);
-}
-.bg-theme-primary-15 {
-  background-color: color-mix(in oklch, var(--theme-primary) 15%, transparent);
-}
-.bg-theme-primary-20 {
-  background-color: color-mix(in oklch, var(--theme-primary) 20%, transparent);
-}
-.bg-theme-primary-30 {
-  background-color: color-mix(in oklch, var(--theme-primary) 30%, transparent);
-}
-.bg-theme-primary-50 {
-  background-color: color-mix(in oklch, var(--theme-primary) 50%, transparent);
-}
-
-.bg-theme-secondary-10 {
-  background-color: color-mix(in oklch, var(--theme-secondary) 10%, transparent);
-}
-.bg-theme-secondary-15 {
-  background-color: color-mix(in oklch, var(--theme-secondary) 15%, transparent);
-}
-.bg-theme-secondary-20 {
-  background-color: color-mix(in oklch, var(--theme-secondary) 20%, transparent);
-}
-
-.bg-theme-accent-10 {
-  background-color: color-mix(in oklch, var(--theme-accent) 10%, transparent);
-}
-.bg-theme-accent-15 {
-  background-color: color-mix(in oklch, var(--theme-accent) 15%, transparent);
-}
-.bg-theme-accent-20 {
-  background-color: color-mix(in oklch, var(--theme-accent) 20%, transparent);
-}
-
-.bg-theme-fg-4 {
-  background-color: color-mix(in oklch, var(--theme-fg) 4%, transparent);
-}
-.bg-theme-fg-8 {
-  background-color: color-mix(in oklch, var(--theme-fg) 8%, transparent);
-}
-.text-theme-stat-value {
-  color: var(--theme-stat-value);
-}
-
-/* === TEXT COLORS === */
-.text-theme-primary {
-  color: var(--theme-primary);
-}
-.text-theme-secondary {
-  color: var(--theme-secondary);
-}
-.text-theme-accent {
-  color: var(--theme-accent);
-}
-
-/* === BORDER COLORS === */
-.border-theme-primary {
-  border-color: var(--theme-primary);
-}
-.border-theme-secondary {
-  border-color: var(--theme-secondary);
-}
-.border-theme-accent {
-  border-color: var(--theme-accent);
-}
-.border-theme-primary-30 {
-  border-color: color-mix(in oklch, var(--theme-primary) 30%, transparent);
-}
-.border-theme-primary-50 {
-  border-color: color-mix(in oklch, var(--theme-primary) 50%, transparent);
-}
-
-/* === RING COLORS === */
-.ring-theme-primary {
-  --tw-ring-color: var(--theme-primary);
-}
-.ring-theme-primary-30 {
-  --tw-ring-color: color-mix(in oklch, var(--theme-primary) 30%, transparent);
-}
-.ring-theme-primary-50 {
-  --tw-ring-color: color-mix(in oklch, var(--theme-primary) 50%, transparent);
-}
-
-/* === SHADOWS === */
-.shadow-theme-primary {
-  box-shadow: 0 4px 14px 0 color-mix(in oklch, var(--theme-primary) 25%, transparent);
-}
-.shadow-theme-primary-lg {
-  box-shadow: 0 10px 25px -3px color-mix(in oklch, var(--theme-primary) 30%, transparent);
-}
-
-/* === SEMANTIC BACKGROUNDS === */
-.bg-theme-bg {
-  background-color: var(--theme-bg);
-}
-.bg-theme-bg-subtle {
-  background-color: var(--theme-bg-subtle);
-}
-.bg-theme-surface {
-  background-color: var(--theme-surface);
-}
-.bg-theme-surface-raised {
-  background-color: var(--theme-surface-raised);
-}
-.bg-theme-surface-overlay {
-  background-color: var(--theme-surface-overlay);
-}
-.bg-theme-hover {
-  background-color: var(--theme-hover);
-}
-.bg-theme-surface-hover {
-  background-color: var(--theme-hover);
-}
-.bg-theme-active {
-  background-color: var(--theme-active);
-}
-
-/* === SEMANTIC TEXT === */
-.text-theme-fg {
-  color: var(--theme-fg);
-}
-.text-theme-fg-secondary {
-  color: var(--theme-fg-secondary);
-}
-.text-theme-fg-muted {
-  color: var(--theme-fg-muted);
-}
-.text-theme-fg-subtle {
-  color: var(--theme-fg-subtle);
-}
-
-/* === SEMANTIC BORDERS === */
-.border-theme-border {
-  border-color: var(--theme-border);
-}
-.border-theme-border-subtle {
-  border-color: var(--theme-border-subtle);
-}
-.border-theme-border-strong {
-  border-color: var(--theme-border-strong);
-}
-.divide-theme-divider > :not([hidden]) ~ :not([hidden]) {
-  border-color: var(--theme-divider);
-}
-
-/* === STATUS COLORS === */
-.bg-theme-success {
-  background-color: var(--theme-success);
-}
-.bg-theme-success-subtle {
-  background-color: var(--theme-success-bg);
-}
-.text-theme-success {
-  color: var(--theme-success);
-}
-.border-theme-success {
-  border-color: var(--theme-success);
-}
-
-.bg-theme-warning {
-  background-color: var(--theme-warning);
-}
-.bg-theme-warning-subtle {
-  background-color: var(--theme-warning-bg);
-}
-.text-theme-warning {
-  color: var(--theme-warning);
-}
-.border-theme-warning {
-  border-color: var(--theme-warning);
-}
-
-.bg-theme-error {
-  background-color: var(--theme-error);
-}
-.bg-theme-error-subtle {
-  background-color: var(--theme-error-bg);
-}
-.text-theme-error {
-  color: var(--theme-error);
-}
-.border-theme-error {
-  border-color: var(--theme-error);
-}
-
-.bg-theme-info {
-  background-color: var(--theme-info);
-}
-.bg-theme-info-subtle {
-  background-color: var(--theme-info-bg);
-}
-.text-theme-info {
-  color: var(--theme-info);
-}
-.border-theme-info {
-  border-color: var(--theme-info);
-}
-
-/* === ICON COLORS === */
-.text-theme-icon-sun {
-  color: var(--theme-icon-sun);
-}
-.text-theme-icon-sunrise {
-  color: var(--theme-icon-sunrise);
-}
-.text-theme-icon-sunset {
-  color: var(--theme-icon-sunset);
-}
-.text-theme-icon-moon {
-  color: var(--theme-icon-moon);
-}
-.text-theme-icon-event-special {
-  color: var(--theme-icon-event-special);
-}
-.text-theme-icon-mode-sun {
-  color: var(--theme-icon-mode-sun);
-}
-.text-theme-icon-mode-moon {
-  color: var(--theme-icon-mode-moon);
-}
-
-/* === GRADIENTS === */
-.bg-theme-gradient {
+@utility bg-theme-gradient {
   background: linear-gradient(135deg, var(--theme-primary), var(--theme-accent));
 }
-.bg-theme-gradient-to-r {
+
+@utility bg-theme-gradient-to-r {
   background: linear-gradient(to right, var(--theme-primary), var(--theme-accent));
 }
-.bg-theme-gradient-subtle {
+
+@utility bg-theme-gradient-subtle {
   background: linear-gradient(
     135deg,
     color-mix(in oklch, var(--theme-primary) 10%, transparent),
@@ -256,32 +21,10 @@
   );
 }
 
-/* === HOVER STATES === */
-.hover-bg-theme-primary:hover {
-  background-color: var(--theme-primary);
-}
-.hover-bg-theme-primary-20:hover {
-  background-color: color-mix(in oklch, var(--theme-primary) 20%, transparent);
-}
-.hover-text-theme-primary:hover {
-  color: var(--theme-primary);
-}
-.hover-border-theme-primary:hover {
-  border-color: var(--theme-primary);
-}
-
-/* === FOCUS STATES === */
-.focus-ring-theme-primary:focus {
-  --tw-ring-color: var(--theme-primary);
-}
-.focus-border-theme-primary:focus {
-  border-color: var(--theme-primary);
-}
-
 /* =============================================================================
    CATEGORY COLOR UTILITIES (Hybrid Approach)
 
-   Pre-generated classes for standard opacity levels (10%, 15%, 20%, 30%)
+   Explicit classes for standard opacity levels (10%, 15%, 20%, 30%)
    Fallback custom property for dynamic/edge cases
    ============================================================================= */
 

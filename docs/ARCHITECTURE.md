@@ -1,7 +1,7 @@
 # 🗏️ Dharma Calendar - Architecture Document
 
-> **Versie:** 4.9
-> **Laatst bijgewerkt:** 20 april 2026
+> **Versie:** 5.0
+> **Laatst bijgewerkt:** 23 april 2026
 
 ---
 
@@ -124,7 +124,7 @@ dharma-calendar/
 │   ├── app/                   # Next.js App Router
 │   │   ├── layout.tsx         # Root layout + theme init script + providers
 │   │   ├── page.tsx           # Homepage (TodayHero + kalender + sidebar)
-│   │   ├── globals.css        # Gegenereerde theme CSS + base styles
+│   │   ├── globals.css        # Tailwind import hub + CSS module imports
 │   │   ├── api/               # API routes (/events, /daily-info, /weer, etc.)
 │   │   │   └── sadhana/       # Sadhana CRUD API (/practices, /sessions, /goals, /stats/*)
 │   │   ├── almanac/           # Almanac route (layout + page)
@@ -149,7 +149,7 @@ dharma-calendar/
 │   │   ├── categories.ts
 │   │   ├── event-naming.ts    # Eventcatalogus (164 entries)
 │   │   ├── rule-config.types.ts  # Typed ruleConfig interfaces per ruleType
-│   │   └── themes.ts          # ENIGE bron voor thema-definities
+│   │   └── themes.ts          # Theme catalog + metadata voor runtime/UI
 │   ├── content/               # Statische content (MDX)
 │   │   └── encyclopedia/      # Encyclopedie artikelen
 │   ├── engine/                # Pure recurrence helpers (geen DB-toegang)
@@ -186,6 +186,10 @@ dharma-calendar/
 │   │   │   └── birth-chart-service.ts      # Jyotisha geboortehoroscoop
 │   │   └── utils/
 │   │       └── astro.ts       # calculateSunriseSunset, findEventEnd, ...
+│   ├── styles/                # Tailwind v4 native theme CSS modules
+│   │   ├── base.css           # Root tokens, semantic tokens, base styling
+│   │   ├── utilities.css      # Custom theme/category utilities + animations
+│   │   └── themes/            # Standard + special theme CSS
 │   ├── services/              # Businesslogica & Orchestratie (server-only)
 │   │   ├── index.ts           # Barrel export
 │   │   ├── panchanga.service.ts   # LRU-cached wrapper voor PanchangaSwissService
@@ -362,13 +366,76 @@ Het project gebruikt een **pragmatisch gelaagd systeem**:
 
 ## 5. Frontend Architecture
 
-(Zie §5 in vorige versie voor volledige routing en component hiërarchie)
+De frontend gebruikt de Next.js App Router met Server Components als default en Client Components alleen waar browser-state of interactie nodig is.
+
+### 5.1 Layout Layers
+
+| Layer | Bestand/Map | Verantwoordelijkheid |
+|-------|-------------|----------------------|
+| Root layout | `src/app/layout.tsx` | Fonts, global providers, theme init script, globale documentstructuur |
+| Page shell | `src/components/layout/PageLayout.tsx` | Consistente pagina-achtergrond, containerbreedtes en verticale spacing |
+| Shared UI | `src/components/ui/` | Herbruikbare UI-bouwstenen zoals `Header`, `Section`, `Toast`, `TodayHero` |
+| Feature UI | `src/components/{feature}/` | Almanac, Calendar, Events, Sadhana, Weather, Settings, etc. |
+| Feature routes | `src/app/{route}/` | Route-specifieke data orchestration en compositie |
+
+### 5.2 Component Boundary Rules
+
+1. **Pages composeren, componenten renderen**: route files houden data-ophaling/orchestratie zo dun mogelijk en delegeren UI naar componenten.
+2. **Client Components zijn expliciet**: gebruik `"use client"` alleen voor local state, effects, browser APIs of event handlers.
+3. **Gedeelde layout eerst**: nieuwe pagina's gebruiken standaard `PageLayout` voordat ze eigen spacing/background patronen introduceren.
+4. **Theme tokens boven hardcoded kleuren**: UI gebruikt `bg-theme-*`, `text-theme-*`, `border-theme-*` of `var(--theme-*)` tenzij een domeinkleur bewust buiten het thema valt.
 
 ---
 
 ## 6. Theme System
 
-(Zie §6 in vorige versie voor Tailwind v4 Native architecture)
+Het theme system is sinds de Tailwind v4 migratie **CSS-native**. Er is geen CSS generator meer en `globals.css` wordt niet gegenereerd.
+
+### 6.1 Bronnen En Verantwoordelijkheden
+
+| Bestand | Verantwoordelijkheid |
+|---------|----------------------|
+| `src/config/themes.ts` | Type-safe catalog met theme namen, metadata, categorieën en preview-kleuren voor Settings/runtime validatie |
+| `src/app/globals.css` | Importhub voor Tailwind, base CSS, utilities en theme CSS; bevat `@theme inline` mappings voor semantic `theme-*` utilities |
+| `src/styles/base.css` | Root variables, default theme tokens, dark mode tokens, semantic UI tokens en domeintokens |
+| `src/styles/utilities.css` | Aanvullende custom utilities zoals gradients, category colors, forms, buttons en animaties die niet puur uit `@theme` komen |
+| `src/styles/themes/standard.css` | Classic en revamped themes via `[data-theme="..."]` selectors |
+| `src/styles/themes/special/*.css` | Special theme overrides/effects per theme |
+| `src/components/theme/ThemeProvider.tsx` | Runtime theme/color-mode context, validatie en localStorage persistence |
+| `src/app/layout.tsx` | Inline init script dat `data-theme` en `.dark` zet voor hydration om theme flash te beperken |
+
+### 6.2 Runtime Flow
+
+```
+THEME_CATALOG metadata
+        ↓
+ThemeProvider validates selected theme
+        ↓
+localStorage persists { themeName, colorMode }
+        ↓
+<html data-theme="..." class="dark?">
+        ↓
+CSS variables from src/styles/** control rendering
+```
+
+`ThemeProvider` haalt thema's niet uit de database. De `/api/themes` route kan de catalog tonen aan externe callers, maar is niet nodig voor runtime theming.
+
+### 6.3 Styling Contract
+
+1. **Theme metadata in TypeScript**: voeg nieuwe theme namen, labels, categorieën en preview-kleuren toe in `src/config/themes.ts`.
+2. **Theme styling in CSS**: voeg de bijbehorende CSS variables/selectors toe in `src/styles/themes/standard.css` of een bestand onder `src/styles/themes/special/`.
+3. **Geen generator workflow**: er is geen `npm run generate:css`; wijzig CSS direct in de modulaire CSS-bestanden.
+4. **Theme utilities komen uit `@theme inline`**: componenten gebruiken Tailwind utilities zoals `bg-theme-surface`, `text-theme-fg-muted`, `hover:bg-theme-hover`, `border-theme-primary/20` en `ring-theme-primary/50`.
+5. **CSS variables blijven de runtime truth**: `[data-theme]` selectors wijzigen `--theme-*` waarden; Tailwind utilities verwijzen via `--color-theme-*` naar die runtime variabelen.
+6. **`utilities.css` is aanvullend**: gebruik dit bestand voor category utilities, complexe gradients, forms, buttons en animaties; niet voor nieuwe simpele kleurutilities die via `@theme inline` kunnen lopen.
+7. **Special themes blijven scoped**: nieuwe special theme styling hoort bij voorkeur onder `[data-theme="theme-name"]` en mag geen generieke selectors introduceren als dat niet nodig is.
+
+### 6.4 Nieuwe Theme Toevoegen
+
+1. Voeg metadata toe aan `THEME_CATALOG` in `src/config/themes.ts`.
+2. Voeg CSS variables toe aan `src/styles/themes/standard.css`, of maak een nieuw bestand in `src/styles/themes/special/`.
+3. Importeer een nieuw special theme bestand in `src/app/globals.css`.
+4. Test minimaal theme switching, light/dark mode, Settings preview, en een pagina met kaarten/forms.
 
 ---
 

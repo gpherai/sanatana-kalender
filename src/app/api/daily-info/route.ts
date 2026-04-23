@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
 import { errorResponse, serverError } from "@/lib/api-response";
 import { logError } from "@/lib/utils";
 import { panchangaService } from "@/services/panchanga.service";
-import { DEFAULT_LOCATION, DEFAULT_PREFERENCES_ID } from "@/lib/domain";
+import { DEFAULT_LOCATION } from "@/lib/domain";
 import { getMoonPhaseType, getMoonPhaseEmoji, getMoonPhaseName } from "@/lib/moon-phases";
 import { detectSpecialDay } from "@/lib/panchanga-helpers";
+import { findPreferences } from "@/repositories/preference.repository";
 import type { DailyPanchangaFull } from "@/server/panchanga";
 import { DateTime } from "luxon";
 
@@ -292,9 +292,7 @@ export async function GET(request: NextRequest) {
     // =========================================================================
     // STEP 1: Get user preferences for location and timezone
     // =========================================================================
-    const preferences = await prisma.userPreference.findUnique({
-      where: { id: DEFAULT_PREFERENCES_ID },
-    });
+    const preferences = await findPreferences();
 
     const location = preferences
       ? {

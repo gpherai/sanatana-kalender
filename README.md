@@ -80,7 +80,6 @@ npm run build        # Production build
 npm run start        # Start production server
 npm run test         # Run unit tests
 npm run validate     # Format check + lint + type check
-npm run generate:css # Regenereer globals.css na thema-wijzigingen
 ```
 
 ### Database
@@ -145,13 +144,16 @@ De service delegeert core logica aan `src/engine/` — pure functies zonder DB-t
 
 ### Thema-systeem
 
-`src/config/themes.ts` is de enige bron voor thema-definities. Na elke wijziging wordt `globals.css` geregenereerd via:
+Het theme system is Tailwind v4 native en gebruikt modulaire CSS:
 
-```bash
-npm run generate:css
-```
+- `src/config/themes.ts` bevat theme metadata voor Settings/runtime validatie.
+- `src/app/globals.css` importeert Tailwind, base styles, utilities en theme CSS, en mappt semantic tokens naar Tailwind v4 `theme-*` utilities via `@theme inline`.
+- `src/styles/base.css` bevat root variables, semantic tokens en dark-mode tokens.
+- `src/styles/utilities.css` bevat aanvullende custom utilities zoals gradients,
+  category utilities, forms, buttons en animaties.
+- `src/styles/themes/standard.css` en `src/styles/themes/special/*.css` bevatten de echte theme styling.
 
-Nooit `globals.css` direct aanpassen.
+Er is geen `generate:css` workflow meer. Wijzig theme styling direct in `src/styles/**` en houd metadata in `src/config/themes.ts` synchroon wanneer namen, labels of preview-kleuren veranderen.
 
 ## Project Structuur
 
@@ -181,6 +183,7 @@ sanatana-kalender/
 │   ├── scripts/             # TypeScript scripts (seed, generate, check)
 │   ├── server/panchanga/    # Swiss Ephemeris engine + services
 │   ├── services/            # Business logic (recurrence, panchanga service)
+│   ├── styles/              # Tailwind v4 native theme CSS modules
 │   └── types/               # TypeScript types
 ├── docker-compose.yml
 ├── docker-compose.prod.yml

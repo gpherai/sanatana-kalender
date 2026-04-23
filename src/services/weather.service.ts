@@ -20,6 +20,7 @@ export class WeatherServiceError extends Error {
 }
 
 interface CurrentResponse {
+  coord: { lon: number; lat: number };
   dt: number;
   weather: WeatherCondition[];
   main: {
@@ -109,6 +110,7 @@ function calculateMoonPhase(unixTs: number): number {
 function mapCurrent(w: CurrentResponse) {
   const dewPoint = w.main.temp - (100 - w.main.humidity) * 0.2;
   return {
+    coord: w.coord,
     dt: w.dt,
     sunrise: w.sys.sunrise,
     sunset: w.sys.sunset,
@@ -206,7 +208,37 @@ function mapAirQuality(data: AirPollutionResponse): AirQuality | null {
   };
 }
 
-export async function getWeatherDashboard(): Promise<WeatherApiResponse> {
+export async function searchLocation(
+  query: string
+): Promise<import("@/types/weather").LocationSearchResult[]> {
+  const apiKey = process.env.OPENWEATHER_API_KEY;
+  if (!apiKey) {
+    throw new WeatherServiceError(
+      "missing_api_key",
+      "OpenWeather API sleutel niet geconfigureerd",
+      503
+    );
+  }
+  const res = await fetch(
+    `http://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(query)}&limit=5&appid=${apiKey}`,
+    { next: { revalidate: 86400 } }
+  );
+  if (!res.ok) {
+    if (res.status === 401)
+      throw new WeatherServiceError("invalid_api_key", "Ongeldige API sleutel", 503);
+    throw new WeatherServiceError(
+      "upstream",
+      `OpenWeather Geocoding fout: ${res.status}`
+    );
+  }
+  return (await res.json()) as import("@/types/weather").LocationSearchResult[];
+}
+
+export async function getWeatherDashboard(
+  customLat?: string,
+  customLon?: string,
+  customLocationName?: string
+): Promise<WeatherApiResponse> {
   const apiKey = process.env.OPENWEATHER_API_KEY;
 
   if (!apiKey) {
@@ -217,8 +249,13 @@ export async function getWeatherDashboard(): Promise<WeatherApiResponse> {
     );
   }
 
-  const params = `lat=${LAT}&lon=${LON}&units=metric&lang=nl&appid=${apiKey}`;
-  const airParams = `lat=${LAT}&lon=${LON}&appid=${apiKey}`;
+  const lat = customLat ?? LAT;
+  const lon = customLon ?? LON;
+  const locationName = customLocationName ?? LOCATION_NAME;
+
+  const params = `lat=${lat}&lon=${lon}&units=metric&lang=nl&appid=${apiKey}`;
+  const airParams = `lat=${lat}&lon=${lon}&appid=${apiKey}`;
+
   const opts = { next: { revalidate: 600 } } as const;
 
   const [weatherRes, forecastRes, airRes] = await Promise.all([
@@ -247,7 +284,7 @@ export async function getWeatherDashboard(): Promise<WeatherApiResponse> {
     : null;
 
   return {
-    location: LOCATION_NAME,
+    location: locationName,
     country: weather.sys.country,
     timezone_offset: tzOffset,
     current: mapCurrent(weather),

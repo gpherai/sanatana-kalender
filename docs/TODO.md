@@ -54,7 +54,7 @@
 ## ✅ Session 34 - Semantic Tokens & Ganesha Events (19 december 2025)
 
 - [x] Semantic token systeem (bg-theme-*, text-theme-*, border-theme-*, etc.)
-- [x] CSS generator (`generate-theme-css.ts`)
+- [x] CSS generator (`generate-theme-css.ts`) destijds toegevoegd; inmiddels vervangen door Tailwind v4 native CSS, zie ADR-003
 - [x] Semantic token migratie voltooid in alle componenten
 - [x] Ganesha events (Ganesh Jayanti, Sakat Chauth, Angaraki, Vinayaka, Sankashti, Ganesha Visarjan)
 
@@ -128,7 +128,7 @@ curl -X POST http://localhost:3000/api/events/generate-occurrences \
   -d '{"replace": true}'
 
 # Theme
-npm run generate:css     # Genereer theme CSS vanuit TypeScript
+# Theme CSS is Tailwind v4 native: edit src/styles/** directly.
 ```
 
 ---

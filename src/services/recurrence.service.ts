@@ -15,11 +15,25 @@
  */
 
 import type { Event, RecurrenceType, Tithi } from "@prisma/client";
-import { Sankranti, EventType } from "@prisma/client";
-import { prisma } from "@/lib/db";
+import { EventType, Nakshatra, Sankranti } from "@prisma/client";
 import { DEFAULT_LOCATION } from "@/lib/domain";
 import { logDebug, logWarn } from "@/lib/utils";
 import { formatDateNL } from "@/lib/date-utils";
+import {
+  findDailyInfoAllSankrantiOccurrences,
+  findDailyInfoKshayaCandidates,
+  findDailyInfoMoonPhaseCandidates,
+  findDailyInfoNakshatraCandidates,
+  findDailyInfoPradoshCandidates,
+  findDailyInfoPreviousDayTimingRows,
+  findDailyInfoSankrantiOccurrences,
+  findDailyInfoSunriseByDates,
+  findDailyInfoSunTimesByDates,
+  findDailyInfoTithiByDates,
+  findDailyInfoTithiTimingCandidates,
+  findDailyInfoYearlyLunarCandidates,
+  type DailyInfoAdhikaFilter,
+} from "@/repositories/daily-info.repository";
 import {
   calculateTimingWindow,
   parseTimeToMinutes,
@@ -111,6 +125,12 @@ export interface RecurrenceOptions {
 // =============================================================================
 
 const DEFAULT_MAX_OCCURRENCES = 1000; // Safety limit
+
+function getAdhikaFilter(event: Event): DailyInfoAdhikaFilter {
+  if (event.isAdhikaOnly) return "only";
+  if (!event.includeAdhika) return "exclude";
+  return "include";
+}
 
 // =============================================================================
 // STRATEGY REGISTRIES
@@ -296,16 +316,9 @@ async function applyDynamicTiming(
   }
 
   // Batch query DailyInfo for all needed dates
-  const dailyInfoRows = await prisma.dailyInfo.findMany({
-    where: {
-      date: { in: Array.from(datesToFetch).map((d) => new Date(d)) },
-    },
-    select: {
-      date: true,
-      sunrise: true,
-      sunset: true,
-    },
-  });
+  const dailyInfoRows = await findDailyInfoSunTimesByDates(
+    Array.from(datesToFetch).map((date) => new Date(date))
+  );
 
   // Index by ISO date string for fast lookup
   const byDate = new Map<string, { sunrise: string | null; sunset: string | null }>();
@@ -381,22 +394,10 @@ async function generateSolarRuleOccurrences(
   }
 
   // Query DailyInfo for days when this Sankranti occurs
-  const dailyData = await prisma.dailyInfo.findMany({
-    where: {
-      date: {
-        gte: startDate,
-        lte: endDate,
-      },
-      sankranti: sankrantiName as Sankranti,
-    },
-    select: {
-      date: true,
-      sankrantiTime: true,
-    },
-    orderBy: {
-      date: "asc",
-    },
-  });
+  const dailyData = await findDailyInfoSankrantiOccurrences(
+    { startDate, endDate },
+    sankrantiName as Sankranti
+  );
 
   return dailyData.map((day) => ({
     date: day.date,
@@ -460,14 +461,7 @@ async function correctToAstronomicalPhaseDay(
   );
   const allDates = [...candidates.map((c) => c.date), ...neighborDates];
 
-  const phaseRows = await prisma.dailyInfo.findMany({
-    where: {
-      date: { in: allDates },
-      moonPhaseType: targetPhase,
-    },
-    orderBy: { moonPhasePercent: "desc" }, // highest = peak phase day
-    select: { date: true, moonPhasePercent: true },
-  });
+  const phaseRows = await findDailyInfoMoonPhaseCandidates(allDates, targetPhase);
 
   // Build a map: ISO date string → moonPhasePercent for O(1) lookup.
   const phaseMap = new Map<string, number>(
@@ -510,36 +504,14 @@ async function generateYearlyLunarOccurrences(
     return [];
   }
 
-  // Build where clause with Adhika support
-  const where: Record<string, unknown> = {
-    date: {
-      gte: startDate,
-      lte: endDate,
-    },
-    tithi: event.tithi,
-  };
-
-  // Handle Adhika matching
-  if (event.isAdhikaOnly) {
-    where.isAdhika = true; // Only Adhika months
-  } else if (!event.includeAdhika) {
-    where.isAdhika = false; // Only regular months (default)
-  }
-  // If includeAdhika=true, don't filter isAdhika
+  const adhikaFilter = getAdhikaFilter(event);
 
   // Fetch daily lunar info from database (with end times)
-  const dailyData = await prisma.dailyInfo.findMany({
-    where,
-    orderBy: {
-      date: "asc",
-    },
-    select: {
-      date: true,
-      tithiEndTime: true,
-      maas: true,
-      isAdhika: true,
-    },
-  });
+  const dailyData = await findDailyInfoYearlyLunarCandidates(
+    { startDate, endDate },
+    event.tithi,
+    adhikaFilter
+  );
 
   // Build maas filter: ruleConfig.maas (array or single) takes priority over event.maas
   const rcMaas = (event.ruleConfig as Record<string, unknown>)?.maas;
@@ -574,27 +546,11 @@ async function generateYearlyLunarOccurrences(
 
   const predecessorTithi = TITHI_PREDECESSOR[event.tithi];
   if (predecessorTithi) {
-    const kshayaWhere: Record<string, unknown> = {
-      date: { gte: startDate, lte: endDate },
-      tithi: predecessorTithi,
-    };
-    if (event.isAdhikaOnly) {
-      kshayaWhere.isAdhika = true;
-    } else if (!event.includeAdhika) {
-      kshayaWhere.isAdhika = false;
-    }
-
-    const kshayaCandidates = await prisma.dailyInfo.findMany({
-      where: kshayaWhere as never,
-      select: {
-        date: true,
-        tithiEndTime: true,
-        sunrise: true,
-        maas: true,
-        isAdhika: true,
-      },
-      orderBy: { date: "asc" },
-    });
+    const kshayaCandidates = await findDailyInfoKshayaCandidates(
+      { startDate, endDate },
+      predecessorTithi,
+      adhikaFilter
+    );
 
     const kshayaNextDay =
       (event.ruleConfig as Record<string, unknown>)?.kshayaNextDay === true;
@@ -667,10 +623,9 @@ async function generateYearlyLunarOccurrences(
   if (nishitakalDateRule) {
     const prevDayMap = await fetchPreviousDayData(selectedDays.map((d) => d.date));
     // Also need current-day sunrise (the far end of each night for Nishitakal calc)
-    const currentDayRows = await prisma.dailyInfo.findMany({
-      where: { date: { in: selectedDays.map((d) => d.date) } },
-      select: { date: true, sunrise: true },
-    });
+    const currentDayRows = await findDailyInfoSunriseByDates(
+      selectedDays.map((d) => d.date)
+    );
     const currentSunriseMap = new Map(
       currentDayRows.map((r) => [r.date.toISOString().split("T")[0]!, r.sunrise])
     );
@@ -728,15 +683,18 @@ async function generateNakshatraRuleOccurrences(
     return [];
   }
 
-  const dailyData = await prisma.dailyInfo.findMany({
-    where: {
-      date: { gte: startDate, lte: endDate },
-      nakshatra: nakshatraValue as never,
-      isAdhika: false,
-    },
-    orderBy: { date: "asc" },
-    select: { date: true, nakshatraEndTime: true, maas: true },
-  });
+  const validNakshatraValues = Object.values(Nakshatra) as string[];
+  if (!validNakshatraValues.includes(nakshatraValue)) {
+    logWarn(
+      `Nakshatra event "${event.name}" has invalid nakshatra value: "${nakshatraValue}"`
+    );
+    return [];
+  }
+
+  const dailyData = await findDailyInfoNakshatraCandidates(
+    { startDate, endDate },
+    nakshatraValue as Nakshatra
+  );
 
   // Maargazhi rule: ARDRA within the Dhanu solar month (Dec 14 – Jan 15 window).
   // No per-year deduplication — 0 or 2 occurrences per calendar year are valid.
@@ -809,15 +767,11 @@ async function generateWeekdayTithiOccurrences(
     return [];
   }
 
-  const dailyData = await prisma.dailyInfo.findMany({
-    where: {
-      date: { gte: startDate, lte: endDate },
-      tithi: event.tithi,
-      isAdhika: false,
-    },
-    orderBy: { date: "asc" },
-    select: { date: true, tithiEndTime: true },
-  });
+  const dailyData = await findDailyInfoTithiTimingCandidates(
+    { startDate, endDate },
+    event.tithi,
+    { excludeAdhika: true }
+  );
 
   // Fetch prevDay data for ALL tithi days before filtering by weekday.
   // computeTithiOccurrence may shift the effective date back one day when the
@@ -893,18 +847,16 @@ async function generatePradoshOccurrences(
   );
 
   // Case 1: Trayodashi is the udaya tithi
-  const trayodashiDays = await prisma.dailyInfo.findMany({
-    where: { date: { gte: startDate, lte: endDate }, tithi: { in: trayodashiTithis } },
-    orderBy: { date: "asc" },
-    select: { date: true, tithiEndTime: true, sunrise: true, sunset: true },
-  });
+  const trayodashiDays = await findDailyInfoPradoshCandidates(
+    { startDate, endDate },
+    trayodashiTithis
+  );
 
   // Case 2: Dwadashi is the udaya tithi (catches kshaya Trayodashi and early-start cases)
-  const dwadasiDays = await prisma.dailyInfo.findMany({
-    where: { date: { gte: startDate, lte: endDate }, tithi: { in: dwadasiTithis } },
-    orderBy: { date: "asc" },
-    select: { date: true, tithiEndTime: true, sunrise: true, sunset: true },
-  });
+  const dwadasiDays = await findDailyInfoPradoshCandidates(
+    { startDate, endDate },
+    dwadasiTithis
+  );
 
   const validDates = new Map<string, Date>();
 
@@ -1017,14 +969,10 @@ async function generateYearlySolarOccurrences(
     return [];
   }
 
-  const dailyData = await prisma.dailyInfo.findMany({
-    where: {
-      date: { gte: startDate, lte: endDate },
-      sankranti: event.sankranti as Sankranti,
-    },
-    select: { date: true, sankrantiTime: true },
-    orderBy: { date: "asc" },
-  });
+  const dailyData = await findDailyInfoSankrantiOccurrences(
+    { startDate, endDate },
+    event.sankranti as Sankranti
+  );
 
   return dailyData.map((day) => ({
     date: day.date,
@@ -1055,14 +1003,10 @@ async function generateMonthlyLunarOccurrences(
   }
 
   // Fetch ALL dates matching the target tithi from database (with end times)
-  const dailyData = await prisma.dailyInfo.findMany({
-    where: {
-      date: { gte: startDate, lte: endDate },
-      tithi: event.tithi,
-    },
-    orderBy: { date: "asc" },
-    select: { date: true, tithiEndTime: true },
-  });
+  const dailyData = await findDailyInfoTithiTimingCandidates(
+    { startDate, endDate },
+    event.tithi
+  );
 
   // Batch-fetch previous day data to detect actual tithi start times
   const prevDayMap = await fetchPreviousDayData(dailyData.map((d) => d.date));
@@ -1093,14 +1037,8 @@ async function generateMonthlyLunarOccurrences(
     });
 
     const [sunriseRows, prevTithiRows] = await Promise.all([
-      prisma.dailyInfo.findMany({
-        where: { date: { in: firstDayDates } },
-        select: { date: true, sunrise: true },
-      }),
-      prisma.dailyInfo.findMany({
-        where: { date: { in: prevDayDates } },
-        select: { date: true, tithi: true },
-      }),
+      findDailyInfoSunriseByDates(firstDayDates),
+      findDailyInfoTithiByDates(prevDayDates),
     ]);
 
     const firstDaySunriseMap = new Map(
@@ -1147,14 +1085,10 @@ async function generateMonthlyLunarOccurrences(
   // calendar day and must be covered by an occurrence on that day.
   const predecessorTithi = TITHI_PREDECESSOR[event.tithi as Tithi];
   if (predecessorTithi) {
-    const kshayaCandidates = await prisma.dailyInfo.findMany({
-      where: {
-        date: { gte: startDate, lte: endDate },
-        tithi: predecessorTithi,
-      },
-      orderBy: { date: "asc" },
-      select: { date: true, tithiEndTime: true, sunrise: true },
-    });
+    const kshayaCandidates = await findDailyInfoKshayaCandidates(
+      { startDate, endDate },
+      predecessorTithi
+    );
 
     const WINDOW_MS = 20 * 24 * 60 * 60 * 1000; // 20 days — each lunar month ~29.5 days
     for (const candidate of kshayaCandidates) {
@@ -1207,16 +1141,7 @@ async function fetchPreviousDayData(
 ): Promise<Map<string, { tithiEndTime: string | null; sunrise: string | null }>> {
   if (dates.length === 0) return new Map();
 
-  const prevDates = dates.map((d) => {
-    const prev = new Date(d);
-    prev.setUTCDate(prev.getUTCDate() - 1);
-    return prev;
-  });
-
-  const rows = await prisma.dailyInfo.findMany({
-    where: { date: { in: prevDates } },
-    select: { date: true, tithiEndTime: true, sunrise: true, sunset: true },
-  });
+  const rows = await findDailyInfoPreviousDayTimingRows(dates);
 
   // Key by the NEXT day (the original date) → prev day data
   const map = new Map<
@@ -1253,13 +1178,9 @@ async function generateMonthlySolarOccurrences(
   startDate: Date,
   endDate: Date
 ): Promise<GeneratedOccurrence[]> {
-  const dailyData = await prisma.dailyInfo.findMany({
-    where: {
-      date: { gte: startDate, lte: endDate },
-      sankranti: { not: null },
-    },
-    select: { date: true, sankranti: true, sankrantiTime: true },
-    orderBy: { date: "asc" },
+  const dailyData = await findDailyInfoAllSankrantiOccurrences({
+    startDate,
+    endDate,
   });
 
   return dailyData.map((day) => ({

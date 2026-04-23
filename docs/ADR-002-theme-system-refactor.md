@@ -1,8 +1,12 @@
 # ADR-002: Theme System Refactoring
 
-**Status:** Accepted  
+**Status:** Superseded by [ADR-003](ADR-003-tailwind-v4-native-theme-system.md)
 **Date:** 2025-12-10  
 **Decision Maker:** Gerald
+
+> This ADR documents the previous TypeScript-driven CSS generator refactor.
+> It is kept for history only. The current theme architecture is Tailwind v4
+> native modular CSS; do not follow the `generate:css` workflow described below.
 
 ## Context
 

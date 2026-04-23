@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/db";
 import { ArrowLeft } from "lucide-react";
 import { EventForm } from "@/components/events/EventForm";
 import { PageLayout } from "@/components/layout";
 import { formatDateForInput } from "@/lib/date-utils";
 import type { EventFormData } from "@/lib/validations";
+import { findEventByIdBasic, findEventForUpdate } from "@/repositories/event.repository";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -14,27 +14,14 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
-  const event = await prisma.event.findUnique({ where: { id }, select: { name: true } });
+  const event = await findEventByIdBasic(id);
   return { title: event ? `${event.name} bewerken` : "Event bewerken" };
 }
 
 export default async function EditEventPage({ params }: PageProps) {
   const { id } = await params;
 
-  const event = await prisma.event.findUnique({
-    where: { id },
-    include: {
-      categories: {
-        include: { category: true },
-        orderBy: { sortOrder: "asc" as const },
-        take: 1,
-      },
-      occurrences: {
-        orderBy: { date: "asc" },
-        take: 1,
-      },
-    },
-  });
+  const event = await findEventForUpdate(id);
 
   if (!event) {
     notFound();

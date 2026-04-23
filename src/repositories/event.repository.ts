@@ -225,6 +225,22 @@ export async function findUpcomingOccurrences(daysWindow = 7) {
 }
 
 /**
+ * Find all occurrences needed to generate an iCal export.
+ */
+export async function findOccurrencesForIcalExport() {
+  return prisma.eventOccurrence.findMany({
+    include: {
+      event: {
+        include: {
+          categories: eventCategoryInclude,
+        },
+      },
+    },
+    orderBy: { date: "asc" },
+  });
+}
+
+/**
  * Find a single event by ID with all relations needed for the detail endpoint.
  */
 export async function findEventById(id: string) {
@@ -241,8 +257,12 @@ export async function findEventForUpdate(id: string) {
   return prisma.event.findUnique({
     where: { id },
     include: {
+      categories: {
+        ...eventCategoryInclude,
+        take: 1,
+      },
       occurrences: {
-        orderBy: { date: "asc" },
+        orderBy: { date: "asc" as const },
         take: 1,
       },
     },

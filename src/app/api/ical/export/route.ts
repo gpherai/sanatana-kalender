@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
 import ical from "ical-generator";
 import { DateTime } from "luxon";
+import { findOccurrencesForIcalExport } from "@/repositories/event.repository";
+import { findPreferences } from "@/repositories/preference.repository";
 
 export const dynamic = "force-dynamic";
 
@@ -10,23 +11,12 @@ export async function GET() {
     const calendar = ical({ name: "Sanatana Kalender" });
 
     // Fetch user preference to get timezone, defaulting to Europe/Amsterdam
-    const prefs = await prisma.userPreference.findUnique({ where: { id: "default" } });
+    const prefs = await findPreferences();
     const timezone = prefs?.timezone || "Europe/Amsterdam";
 
     calendar.timezone({ name: timezone });
 
-    const occurrences = await prisma.eventOccurrence.findMany({
-      include: {
-        event: {
-          include: {
-            categories: {
-              include: { category: true },
-            },
-          },
-        },
-      },
-      orderBy: { date: "asc" },
-    });
+    const occurrences = await findOccurrencesForIcalExport();
 
     for (const occ of occurrences) {
       const { event, date, endDate: occEndDate, startTime, endTime, notes } = occ;

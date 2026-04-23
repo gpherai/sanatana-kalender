@@ -14,10 +14,26 @@ import { WeatherHeader } from "@/components/weather/WeatherHeader";
 import { WeatherSkeleton } from "@/components/weather/WeatherSkeleton";
 import { useWeather } from "@/hooks/useWeather";
 import { prepareWeatherDashboardData } from "@/lib/weather";
+import dynamic from "next/dynamic";
+
+const WeatherMap = dynamic(() => import("@/components/weather/WeatherMap"), {
+  ssr: false,
+  loading: () => (
+    <div className="border-theme-border bg-theme-bg-muted h-64 w-full animate-pulse rounded-3xl border" />
+  ),
+});
 
 export function WeatherDashboard() {
-  const { weather, loading, error, lastUpdated, refreshing, refresh, retry } =
-    useWeather();
+  const {
+    weather,
+    loading,
+    error,
+    lastUpdated,
+    refreshing,
+    refresh,
+    retry,
+    setLocation,
+  } = useWeather();
 
   if (loading) return <WeatherSkeleton />;
   if (error) return <WeatherErrorState error={error} onRetry={retry} />;
@@ -46,6 +62,7 @@ export function WeatherDashboard() {
         lastUpdated={lastUpdated}
         refreshing={refreshing}
         onRefresh={refresh}
+        onLocationSelect={setLocation}
       />
 
       <WeatherAlerts alerts={alerts} timezoneOffset={timezoneOffset} />
@@ -59,7 +76,17 @@ export function WeatherDashboard() {
         />
       </div>
 
-      {airQuality && <AirQualityCard aq={airQuality} />}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        {airQuality && <AirQualityCard aq={airQuality} />}
+        <div className="relative z-0 min-h-[300px] w-full">
+          <WeatherMap
+            lat={current.coord.lat}
+            lon={current.coord.lon}
+            layer="precipitation_new"
+            className="absolute inset-0"
+          />
+        </div>
+      </div>
 
       <TodayHourlySection hourly={todayHourlyInterp} timezoneOffset={timezoneOffset} />
 

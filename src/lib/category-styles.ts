@@ -1,17 +1,17 @@
 /**
  * Category Styling Utilities
  *
- * Helper functions for applying category colors using pre-generated CSS classes.
+ * Helper functions for applying category colors using explicit CSS utility classes.
  * Part of the hybrid theming approach for category colors.
  *
- * @see src/scripts/generate-theme-css.ts - Where category classes are generated
- * @see src/app/globals.css - Generated category utility classes
+ * @see src/styles/utilities.css - Category utility classes
+ * @see src/app/globals.css - CSS import hub
  */
 
 import type { CSSProperties } from "react";
 
 /**
- * Standard opacity levels available as pre-generated classes.
+ * Standard opacity levels available as explicit utility classes.
  * Using these values gives best performance (no runtime color-mix).
  */
 export type OpacityLevel = 10 | 15 | 20 | 30;
@@ -23,7 +23,7 @@ export type OpacityLevel = 10 | 15 | 20 | 30;
 export const FALLBACK_CATEGORY_COLOR = "oklch(0.6 0.15 250)";
 
 /**
- * Get category background className for pre-generated utilities.
+ * Get category background className for category utility classes.
  *
  * @param categoryName - Category slug (e.g., "ganesha", "shiva")
  * @param opacity - Opacity level (10, 15, 20, or 30)

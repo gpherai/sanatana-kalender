@@ -17,6 +17,7 @@ export interface WeatherCondition {
 }
 
 export interface CurrentWeather {
+  coord: { lat: number; lon: number };
   dt: number;
   sunrise: number;
   sunset: number;
@@ -134,4 +135,12 @@ export interface WeatherApiResponse {
   alerts: WeatherAlert[];
   /** Air quality from OWM Air Pollution API — null if unavailable */
   air_quality: AirQuality | null;
+}
+
+export interface LocationSearchResult {
+  name: string;
+  lat: number;
+  lon: number;
+  country: string;
+  state?: string;
 }
