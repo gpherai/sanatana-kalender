@@ -135,7 +135,7 @@ export function TodayHero() {
                 {sanskritDay.icon} {dailyInfo?.vara?.name ?? sanskritDay.name}
               </span>
             </div>
-            <h1 className="mb-0 text-4xl font-bold text-white md:text-5xl">
+            <h1 className="theme-heading-reset mb-0 text-4xl font-bold text-white md:text-5xl">
               {formatDate(today)}
             </h1>
           </div>

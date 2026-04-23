@@ -59,9 +59,10 @@ of the project.
   opacity work consistently.
 - Build and validation do not require a generator step.
 - Special themes can be split into dedicated files.
-- Global theme effects are explicit variables consumed by stable app hooks
-  (`.app-body`, `.app-page-shell`, `.app-header`) instead of ad-hoc broad
-  selectors.
+- Global and recurring theme effects are explicit variables consumed by stable
+  app hooks (`.app-body`, `.app-page-shell`, `.app-header`, semantic surface
+  utilities, primary actions, form controls, and headings) instead of ad-hoc
+  broad selectors in individual theme files.
 
 ### Negative
 
@@ -94,9 +95,14 @@ of the project.
    `--theme-header-background`, `--theme-header-border`,
    `--theme-body-decoration-*`, `--theme-brand-*-animation`, and
    `--theme-surface-*-backdrop-filter`.
-7. Use `src/styles/utilities.css` for category utilities, complex gradients,
+7. Use component effect hook tokens when a theme needs richer treatment than a
+   simple color utility can express: `--theme-surface-*-background`,
+   `--theme-surface-*-border-rule`, `--theme-surface-*-shadow`,
+   `--theme-primary-action-*`, `--theme-control-*`,
+   `--theme-heading-*`, and `--theme-primary-text-animation`.
+8. Use `src/styles/utilities.css` for category utilities, complex gradients,
    forms, buttons, and animations that are not simple color-token utilities.
-8. Keep standard and special theme files selector-light: set tokens under
+9. Keep standard and special theme files selector-light: set tokens under
    `[data-theme="..."]`; do not target `body`, `header`, `h1`, `.min-h-screen`,
    `.bg-theme-*`, form elements, or other broad selectors from theme files.
 

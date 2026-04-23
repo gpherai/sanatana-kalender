@@ -87,10 +87,12 @@
   --theme-page-shell-background: var(--theme-bg-subtle);
   --theme-header-background: var(--theme-surface-overlay);
   --theme-header-border: var(--theme-border);
+  --theme-header-border-width: 1px;
   --theme-header-shadow: none;
   --theme-header-accent-display: none;
   --theme-header-accent-width: 0;
   --theme-header-accent-height: 0;
+  --theme-header-accent-radius: 999px;
   --theme-header-accent-background: transparent;
   --theme-body-decoration-display: none;
   --theme-body-decoration-content: "";
@@ -100,6 +102,16 @@
   --theme-body-decoration-bottom: 1.25rem;
   --theme-brand-mark-animation: none;
   --theme-brand-label-animation: none;
+  --theme-primary-action-background: var(--theme-primary);
+  --theme-primary-action-shadow:
+    var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000),
+    var(--tw-shadow, 0 0 #0000);
+  --theme-surface-background: var(--theme-surface);
+  --theme-surface-raised-background: var(--theme-surface-raised);
+  --theme-surface-shadow:
+    var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000),
+    var(--tw-shadow, 0 0 #0000);
+  --theme-surface-raised-shadow: var(--theme-surface-shadow);
   --theme-surface-backdrop-filter: none;
   --theme-surface-raised-backdrop-filter: var(--theme-surface-backdrop-filter);
 
@@ -454,11 +466,23 @@ body.app-body::after {
 }
 
 .bg-theme-surface {
+  background: var(--theme-surface-background);
+  border: var(--theme-surface-border-rule);
+  box-shadow: var(--theme-surface-shadow);
   backdrop-filter: var(--theme-surface-backdrop-filter);
 }
 
 .bg-theme-surface-raised {
+  background: var(--theme-surface-raised-background);
+  border: var(--theme-surface-raised-border-rule);
+  box-shadow: var(--theme-surface-raised-shadow);
   backdrop-filter: var(--theme-surface-raised-backdrop-filter);
+}
+
+.bg-theme-primary {
+  background: var(--theme-primary-action-background);
+  border: var(--theme-primary-action-border-rule);
+  box-shadow: var(--theme-primary-action-shadow);
 }
 
 .panchanga-yoga-card {
@@ -481,6 +505,7 @@ body.app-body::after {
   position: relative;
   background: var(--theme-header-background);
   border-bottom-color: var(--theme-header-border);
+  border-bottom-width: var(--theme-header-border-width);
   box-shadow: var(--theme-header-shadow);
 }
 
@@ -493,7 +518,7 @@ body.app-body::after {
   width: var(--theme-header-accent-width);
   height: var(--theme-header-accent-height);
   transform: translateX(-50%);
-  border-radius: 999px;
+  border-radius: var(--theme-header-accent-radius);
   background: var(--theme-header-accent-background);
   pointer-events: none;
 }
@@ -505,6 +530,45 @@ body.app-body::after {
 
 .app-brand-label {
   animation: var(--theme-brand-label-animation);
+}
+
+.text-theme-primary:not(.animate-spin) {
+  animation: var(--theme-primary-text-animation);
+}
+
+h1:not(.theme-heading-reset),
+h2:not(.theme-heading-reset) {
+  background: var(--theme-heading-background);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: var(--theme-heading-text-fill-color);
+  text-shadow: var(--theme-heading-text-shadow);
+}
+
+.theme-heading-reset {
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  text-shadow: none;
+}
+
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  background: var(--theme-control-background);
+  box-shadow: var(--theme-control-shadow);
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not(.border-theme-error),
+select:not(.border-theme-error),
+textarea:not(.border-theme-error) {
+  border: var(--theme-control-border-rule);
+}
+
+input:not([type="checkbox"]):not([type="radio"]):focus,
+select:focus,
+textarea:focus {
+  border-color: var(--theme-control-focus-border);
+  box-shadow: var(--theme-control-focus-shadow);
 }
 
 html {

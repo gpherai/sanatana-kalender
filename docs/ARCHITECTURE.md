@@ -402,7 +402,7 @@ Het theme system is sinds de Tailwind v4 migratie **CSS-native**. Er is geen CSS
 |---------|----------------------|
 | `src/config/themes.ts` | Type-safe catalog met theme namen, metadata, categorieën en preview-kleuren voor Settings/runtime validatie |
 | `src/app/globals.css` | Importhub voor Tailwind, base CSS, utilities en theme CSS; bevat `@theme inline` mappings voor semantic `theme-*` utilities |
-| `src/styles/base.css` | Root variables, default theme tokens, dark mode tokens, semantic UI tokens, domeintokens en app-level theme hooks |
+| `src/styles/base.css` | Root variables, default theme tokens, dark mode tokens, semantic UI tokens, domeintokens en stabiele theme hook consumers |
 | `src/styles/utilities.css` | Aanvullende custom utilities zoals gradients, category colors, forms, buttons en animaties die niet puur uit `@theme` komen |
 | `src/styles/themes/standard.css` | Classic en revamped themes via `[data-theme="..."]` selectors |
 | `src/styles/themes/special/*.css` | Special theme tokens en effect-tokens per theme |
@@ -433,8 +433,9 @@ CSS variables from src/styles/** control rendering
 4. **Theme utilities komen uit `@theme inline`**: componenten gebruiken Tailwind utilities zoals `bg-theme-surface`, `text-theme-fg-muted`, `hover:bg-theme-hover`, `border-theme-primary/20` en `ring-theme-primary/50`.
 5. **CSS variables blijven de runtime truth**: `[data-theme]` selectors wijzigen `--theme-*` waarden; Tailwind utilities verwijzen via `--color-theme-*` naar die runtime variabelen.
 6. **App-level theme hooks sturen globale effecten**: pagina-achtergrond, headerstijl, body-decoratie, brand-animatie en surface blur lopen via tokens zoals `--theme-app-background`, `--theme-page-shell-background`, `--theme-header-background` en `--theme-surface-backdrop-filter`.
-7. **`utilities.css` is aanvullend**: gebruik dit bestand voor category utilities, complexe gradients, forms, buttons en animaties; niet voor nieuwe simpele kleurutilities die via `@theme inline` kunnen lopen.
-8. **Theme CSS blijft selector-arm**: standard en special themes zetten tokens onder `[data-theme="theme-name"]`; geen directe overrides op `body`, `header`, `h1`, `.min-h-screen`, `.bg-theme-*`, inputs of andere brede selectors.
+7. **Component effect hooks sturen rijke theme-varianten**: als een special theme meer nodig heeft dan alleen een kleurwaarde, gebruik tokens zoals `--theme-surface-*-background`, `--theme-surface-*-border-rule`, `--theme-surface-*-shadow`, `--theme-primary-action-*`, `--theme-control-*`, `--theme-heading-*` en `--theme-primary-text-animation`.
+8. **`utilities.css` is aanvullend**: gebruik dit bestand voor category utilities, complexe gradients, forms, buttons en animaties; niet voor nieuwe simpele kleurutilities die via `@theme inline` kunnen lopen.
+9. **Theme CSS blijft selector-arm**: standard en special themes zetten tokens onder `[data-theme="theme-name"]`; geen directe overrides op `body`, `header`, `h1`, `.min-h-screen`, `.bg-theme-*`, inputs of andere brede selectors.
 
 ### 6.4 Nieuwe Theme Toevoegen
 
