@@ -5,8 +5,8 @@
  * These represent the *mapped output* of the route (not the raw OpenWeatherMap
  * response shapes, which are internal implementation details of the route).
  *
- * Consumer: src/app/weer/page.tsx
- * Producer: src/app/api/weer/route.ts
+ * Consumer: src/components/weather/*
+ * Producer: src/services/weather.service.ts via src/app/api/weer/route.ts
  */
 
 export interface WeatherCondition {
