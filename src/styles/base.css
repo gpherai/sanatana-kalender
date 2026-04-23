@@ -302,6 +302,13 @@
   --theme-heatmap-3: color-mix(in oklch, var(--theme-primary) 75%, transparent);
   --theme-heatmap-4: var(--theme-primary);
 
+  /* Weather chart */
+  --theme-weather-temp: oklch(0.75 0.18 50);
+  --theme-weather-feels: oklch(0.62 0.04 264);
+  --theme-weather-cold: oklch(0.68 0.16 240);
+  --theme-weather-temp-area-start: oklch(0.75 0.18 50 / 0.22);
+  --theme-weather-temp-area-end: oklch(0.75 0.18 50 / 0.02);
+
   /* Legacy aliases (for compatibility) */
   --color-success: var(--theme-success);
   --color-warning: var(--theme-warning);
@@ -493,6 +500,13 @@
   --theme-panchanga-yoga-label: oklch(0.75 0.1 278);
   --theme-panchanga-karana-bg: oklch(0.28 0.06 295 / 0.4);
   --theme-panchanga-karana-label: oklch(0.75 0.1 290);
+
+  /* Weather chart (dark mode) */
+  --theme-weather-temp: oklch(0.8 0.18 50);
+  --theme-weather-feels: oklch(0.68 0.05 264);
+  --theme-weather-cold: oklch(0.72 0.16 240);
+  --theme-weather-temp-area-start: oklch(0.8 0.18 50 / 0.28);
+  --theme-weather-temp-area-end: oklch(0.8 0.18 50 / 0.03);
 }
 
 /* =============================================================================

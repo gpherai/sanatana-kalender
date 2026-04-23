@@ -14,7 +14,7 @@ import {
   computePracticeStats,
   dateStr,
   formatGoal,
-} from "@/app/api/sadhana/_helpers";
+} from "@/services/sadhana-formatters";
 
 function isOnOrBefore(date: Date, end: Date) {
   return date.getTime() <= end.getTime();

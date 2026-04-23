@@ -101,8 +101,16 @@ export function TemperatureChart({
         >
           <defs>
             <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#f97316" stopOpacity="0.22" />
-              <stop offset="100%" stopColor="#f97316" stopOpacity="0.02" />
+              <stop
+                offset="0%"
+                stopColor="var(--theme-weather-temp)"
+                stopOpacity="0.22"
+              />
+              <stop
+                offset="100%"
+                stopColor="var(--theme-weather-temp)"
+                stopOpacity="0.02"
+              />
             </linearGradient>
           </defs>
 
@@ -160,7 +168,7 @@ export function TemperatureChart({
           <polyline
             points={feelsPts}
             fill="none"
-            stroke="#94a3b8"
+            stroke="var(--theme-weather-feels)"
             strokeWidth="1.5"
             strokeDasharray="5 3"
             strokeLinecap="round"
@@ -170,7 +178,7 @@ export function TemperatureChart({
           <polyline
             points={tempPts}
             fill="none"
-            stroke="#f97316"
+            stroke="var(--theme-weather-temp)"
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -182,14 +190,14 @@ export function TemperatureChart({
                 cx={xi.toFixed(1)}
                 cy={yMax.toFixed(1)}
                 r="3"
-                fill="#f97316"
+                fill="var(--theme-weather-temp)"
                 opacity="0.7"
               />
               <text
                 x={xi.toFixed(1)}
                 y={(yMax - 7).toFixed(1)}
                 textAnchor="middle"
-                fill="#f97316"
+                fill="var(--theme-weather-temp)"
                 style={{ fontSize: 10, fontWeight: 600 }}
                 opacity="0.85"
               >
@@ -199,14 +207,14 @@ export function TemperatureChart({
                 cx={xi.toFixed(1)}
                 cy={yMin.toFixed(1)}
                 r="3"
-                fill="#60a5fa"
+                fill="var(--theme-weather-cold)"
                 opacity="0.7"
               />
               <text
                 x={xi.toFixed(1)}
                 y={(yMin + 13).toFixed(1)}
                 textAnchor="middle"
-                fill="#60a5fa"
+                fill="var(--theme-weather-cold)"
                 style={{ fontSize: 10, fontWeight: 600 }}
                 opacity="0.85"
               >
@@ -218,7 +226,10 @@ export function TemperatureChart({
 
         <div className="border-theme-border text-theme-fg-muted flex flex-wrap gap-x-5 gap-y-1 border-t px-4 py-2.5 text-xs">
           <span className="flex items-center gap-2">
-            <span className="block h-0.5 w-5 rounded-full bg-orange-400" />
+            <span
+              className="block h-0.5 w-5 rounded-full"
+              style={{ background: "var(--theme-weather-temp)" }}
+            />
             Temperatuur
           </span>
           <span className="flex items-center gap-2">
@@ -228,7 +239,7 @@ export function TemperatureChart({
                 y1="3"
                 x2="20"
                 y2="3"
-                stroke="#94a3b8"
+                stroke="var(--theme-weather-feels)"
                 strokeWidth="1.5"
                 strokeDasharray="4 3"
               />
@@ -236,11 +247,17 @@ export function TemperatureChart({
             Gevoelstemperatuur
           </span>
           <span className="flex items-center gap-2">
-            <span className="inline-block h-2.5 w-2.5 rounded-full bg-orange-400 opacity-70" />
+            <span
+              className="inline-block h-2.5 w-2.5 rounded-full opacity-70"
+              style={{ background: "var(--theme-weather-temp)" }}
+            />
             Dagmax
           </span>
           <span className="flex items-center gap-2">
-            <span className="inline-block h-2.5 w-2.5 rounded-full bg-blue-400 opacity-70" />
+            <span
+              className="inline-block h-2.5 w-2.5 rounded-full opacity-70"
+              style={{ background: "var(--theme-weather-cold)" }}
+            />
             Dagmin
           </span>
         </div>

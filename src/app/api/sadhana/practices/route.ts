@@ -1,14 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
-import { formatPractice } from "../_helpers";
+import { formatPractice } from "@/services/sadhana-formatters";
 import * as sadhanaRepo from "@/repositories/sadhana.repository";
-
-const createPracticeSchema = z.object({
-  name: z.string().min(1).max(100),
-  type: z.enum(["mantra_japa", "parayana", "other"]),
-  mantra_text: z.string().max(2000).nullable().optional(),
-  notes: z.string().max(500).nullable().optional(),
-});
+import { serverError, validationError } from "@/lib/api-response";
+import { logError } from "@/lib/utils";
+import { createSadhanaPracticeSchema } from "@/lib/validations";
 
 export async function GET(req: NextRequest) {
   try {
@@ -16,16 +11,15 @@ export async function GET(req: NextRequest) {
     const practices = await sadhanaRepo.findAllPractices(activeOnly);
     return NextResponse.json(practices.map(formatPractice));
   } catch (error) {
-    console.error("[SADHANA_PRACTICES_GET]", error);
-    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+    logError("[SADHANA_PRACTICES_GET]", error);
+    return serverError("Kon beoefeningen niet ophalen");
   }
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const parsed = createPracticeSchema.safeParse(await req.json());
-    if (!parsed.success)
-      return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+    const parsed = createSadhanaPracticeSchema.safeParse(await req.json());
+    if (!parsed.success) return validationError(parsed.error);
 
     const { name, type, mantra_text, notes } = parsed.data;
     const practice = await sadhanaRepo.createPractice({
@@ -36,7 +30,7 @@ export async function POST(req: NextRequest) {
     });
     return NextResponse.json(formatPractice(practice), { status: 201 });
   } catch (error) {
-    console.error("[SADHANA_PRACTICES_POST]", error);
-    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+    logError("[SADHANA_PRACTICES_POST]", error);
+    return serverError("Kon beoefening niet aanmaken");
   }
 }

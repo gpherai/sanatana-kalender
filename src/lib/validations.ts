@@ -339,3 +339,99 @@ export const eventQuerySchema = z.object({
 });
 
 export type EventQueryParams = z.infer<typeof eventQuerySchema>;
+
+// =============================================================================
+// SADHANA SCHEMAS
+// =============================================================================
+
+const sadhanaSessionItemSchema = z.object({
+  practice_id: z.string().min(1),
+  quantity: z.number().int().positive(),
+  unit: z.enum(["malas", "count"]).optional(),
+  duration_minutes: z.number().int().positive().nullable().optional(),
+  notes: z.string().max(500).nullable().optional(),
+});
+
+export const createSadhanaSessionSchema = z.object({
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  started_at: z.string().nullable().optional(),
+  duration_minutes: z.number().int().positive().nullable().optional(),
+  notes: z.string().max(1000).nullable().optional(),
+  items: z.array(sadhanaSessionItemSchema).min(1),
+});
+
+export const patchSadhanaSessionSchema = z.object({
+  date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
+  started_at: z.string().nullable().optional(),
+  duration_minutes: z.number().int().positive().nullable().optional(),
+  notes: z.string().max(1000).nullable().optional(),
+  items: z.array(sadhanaSessionItemSchema).min(1).optional(),
+});
+
+export const createSadhanaGoalSchema = z.object({
+  type: z.enum(["daily", "weekly", "lifetime"]),
+  name: z.string().min(1).max(100).optional(),
+  target_malas: z.number().int().positive(),
+  target_minutes: z.number().int().positive().nullable().optional(),
+  practice_ids: z.array(z.string().min(1)).optional(),
+});
+
+export const patchSadhanaGoalSchema = z.object({
+  name: z.string().min(1).max(100).optional(),
+  target_malas: z.number().int().positive().optional(),
+  target_minutes: z.number().int().positive().nullable().optional(),
+  active: z.boolean().optional(),
+  practice_ids: z.array(z.string().min(1)).optional(),
+});
+
+export const createSadhanaPracticeSchema = z.object({
+  name: z.string().min(1).max(100),
+  type: z.enum(["mantra_japa", "parayana", "other"]),
+  mantra_text: z.string().max(2000).nullable().optional(),
+  notes: z.string().max(500).nullable().optional(),
+});
+
+export const patchSadhanaPracticeSchema = z.object({
+  name: z.string().min(1).max(100).optional(),
+  type: z.enum(["mantra_japa", "parayana", "other"]).optional(),
+  mantra_text: z.string().max(2000).nullable().optional(),
+  notes: z.string().max(500).nullable().optional(),
+  active: z.boolean().optional(),
+});
+
+const sadhanaRoutineItemSchema = z.object({
+  practice_id: z.string().min(1),
+  quantity: z.number().int().min(1),
+  unit: z.enum(["malas", "count"]).default("malas"),
+  sort_order: z.number().int().default(0),
+});
+
+export const createSadhanaRoutineSchema = z.object({
+  name: z.string().min(1).max(80),
+  items: z.array(sadhanaRoutineItemSchema).min(1),
+});
+
+export const patchSadhanaRoutineSchema = z.object({
+  name: z.string().min(1).max(80).optional(),
+  active: z.boolean().optional(),
+  items: z.array(sadhanaRoutineItemSchema).min(1).optional(),
+});
+
+// =============================================================================
+// WEATHER QUERY SCHEMA
+// =============================================================================
+
+export const weerQuerySchema = z.object({
+  lat: z
+    .string()
+    .regex(/^-?\d+\.?\d*$/, "Ongeldige breedtegraad")
+    .optional(),
+  lon: z
+    .string()
+    .regex(/^-?\d+\.?\d*$/, "Ongeldige lengtegraad")
+    .optional(),
+  name: z.string().max(100).optional(),
+});

@@ -11,28 +11,15 @@ import {
   Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  type TodayStats,
-  type StreakStats,
-  type OverviewStats,
-  type CalendarDay,
-  type SessionData,
-  type Practice,
-  type Goal,
-  type Routine,
-  type DayInfoMap,
-  apiFetch,
-  fetchDayInfoMap,
-  localDateString,
-  todayString,
-} from "./types";
-import type { CalendarEventResponse, CalendarEvent } from "@/types/calendar";
+import { todayString } from "./types";
+import type { CalendarEvent, CalendarEventResponse } from "@/types/calendar";
 import { parseCalendarEvent } from "@/types/calendar";
 import { EventDetailModal } from "@/components/calendar/EventDetailModal";
 import { TrackerTab } from "./tabs/TrackerTab";
 import { DashboardTab } from "./tabs/DashboardTab";
 import { AnalyticsTab } from "./tabs/AnalyticsTab";
 import { InstellingenTab } from "./tabs/InstellingenTab";
+import { useSadhanaData } from "@/hooks/useSadhanaData";
 
 // =============================================================================
 // TYPES
@@ -55,7 +42,6 @@ const VALID_TABS = new Set<string>(TABS.map((t) => t.id));
 
 export function SadhanaTracker() {
   const searchParams = useSearchParams();
-
   const rawTab = searchParams.get("tab") ?? "tracker";
   const activeTab: TabId = VALID_TABS.has(rawTab) ? (rawTab as TabId) : "tracker";
 
@@ -64,25 +50,23 @@ export function SadhanaTracker() {
     []
   );
 
-  // ── Data state ──────────────────────────────────────────────────────────────
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [todayStats, setTodayStats] = useState<TodayStats | null>(null);
-  const [streak, setStreak] = useState<StreakStats | null>(null);
-  const [overview, setOverview] = useState<OverviewStats | null>(null);
-  const [calDays, setCalDays] = useState<CalendarDay[]>([]);
-  const [sessions, setSessions] = useState<SessionData[]>([]);
-  const [allPractices, setAllPractices] = useState<Practice[]>([]);
-  const [goals, setGoals] = useState<Goal[]>([]);
-  const [routines, setRoutines] = useState<Routine[]>([]);
-  const [dayInfoMap, setDayInfoMap] = useState<DayInfoMap>(new Map());
-  const [heatmapEventsByDate, setHeatmapEventsByDate] = useState<
-    Map<string, Array<{ id: string; title: string }>>
-  >(new Map());
-  const [heatmapEventsRaw, setHeatmapEventsRaw] = useState<CalendarEventResponse[]>([]);
-  const [selectedHeatmapEvent, setSelectedHeatmapEvent] = useState<CalendarEvent | null>(
-    null
-  );
+  // ── Data via hook ────────────────────────────────────────────────────────────
+  const {
+    loading,
+    error,
+    todayStats,
+    streak,
+    overview,
+    calDays,
+    sessions,
+    activePractices,
+    goals,
+    routines,
+    dayInfoMap,
+    heatmapEventsByDate,
+    heatmapEventsRaw,
+    loadAll,
+  } = useSadhanaData();
 
   // ── UI state ────────────────────────────────────────────────────────────────
   const [showAddSession, setShowAddSession] = useState(false);
@@ -91,94 +75,12 @@ export function SadhanaTracker() {
   );
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const initialLoadDone = useRef(false);
   const prevGoalProgressRef = useRef<Map<string, number>>(new Map());
+  const [selectedHeatmapEvent, setSelectedHeatmapEvent] = useState<CalendarEvent | null>(
+    null
+  );
 
-  const activePractices = allPractices.filter((p) => p.active);
-
-  // ── Data loading ─────────────────────────────────────────────────────────────
-  const loadAll = useCallback(async () => {
-    if (!initialLoadDone.current) setLoading(true);
-    try {
-      setError(null);
-      const fromDate = new Date("2026-01-01T00:00:00");
-      const yearAgo = new Date();
-      yearAgo.setDate(yearAgo.getDate() - 364);
-      const minDate = new Date("2026-01-01T00:00:00");
-      const effectiveStart = yearAgo < minDate ? minDate : yearAgo;
-
-      const heatmapEventsUrl = `/api/events?start=${localDateString(effectiveStart)}&end=${todayString()}&sortBy=date&order=asc`;
-
-      const results = await Promise.allSettled([
-        apiFetch<TodayStats>("/stats/today"),
-        apiFetch<StreakStats>("/stats/streak"),
-        apiFetch<OverviewStats>("/stats/overview"),
-        apiFetch<CalendarDay[]>("/stats/calendar"),
-        apiFetch<SessionData[]>(`/sessions?from=${localDateString(fromDate)}`),
-        apiFetch<Practice[]>("/practices?active_only=false"),
-        apiFetch<Goal[]>("/goals"),
-        apiFetch<Routine[]>("/routines"),
-        fetchDayInfoMap(localDateString(effectiveStart), todayString()),
-        fetch(heatmapEventsUrl).then((r) => r.json() as Promise<CalendarEventResponse[]>),
-      ]);
-
-      const failed = results.filter(
-        (r) => r.status === "rejected"
-      ) as PromiseRejectedResult[];
-      if (failed.length > 0) {
-        const errors = failed.map((f) => f.reason?.message || "Onbekende fout");
-        console.error("Sommige API calls zijn gefaald:", errors);
-        throw new Error(errors[0]);
-      }
-
-      const [ts, st, ov, cal, sess, pracs, gl, rout, dim, heatmapEvents] = results.map(
-        (r) => (r as PromiseFulfilledResult<unknown>).value
-      ) as [
-        TodayStats,
-        StreakStats,
-        OverviewStats,
-        CalendarDay[],
-        SessionData[],
-        Practice[],
-        Goal[],
-        Routine[],
-        DayInfoMap,
-        CalendarEventResponse[],
-      ];
-
-      setTodayStats(ts);
-      setStreak(st);
-      setOverview(ov);
-      setCalDays(cal);
-      setSessions(sess);
-      setAllPractices(pracs);
-      setGoals(gl);
-      setRoutines(rout);
-      setDayInfoMap(dim);
-
-      const rawEvs = heatmapEvents ?? [];
-      setHeatmapEventsRaw(rawEvs);
-      const evMap = new Map<string, Array<{ id: string; title: string }>>();
-      for (const ev of rawEvs) {
-        const dateKey = ev.start.slice(0, 10);
-        const arr = evMap.get(dateKey) ?? [];
-        arr.push({ id: ev.id, title: ev.title });
-        evMap.set(dateKey, arr);
-      }
-      setHeatmapEventsByDate(evMap);
-    } catch (err: unknown) {
-      const msg =
-        err instanceof Error
-          ? err.message
-          : "Onbekende fout bij het laden van de gegevens.";
-      console.error("Sadhana load error:", err);
-      setError(msg);
-    } finally {
-      setLoading(false);
-      initialLoadDone.current = true;
-    }
-  }, []);
-
+  // ── Initial load ─────────────────────────────────────────────────────────────
   useEffect(() => {
     requestAnimationFrame(() => {
       void loadAll();
@@ -230,7 +132,7 @@ export function SadhanaTracker() {
 
   const handleHeatmapEventClick = useCallback(
     (id: string) => {
-      const raw = heatmapEventsRaw.find((e) => e.id === id);
+      const raw = (heatmapEventsRaw as CalendarEventResponse[]).find((e) => e.id === id);
       if (raw) setSelectedHeatmapEvent(parseCalendarEvent(raw));
     },
     [heatmapEventsRaw]
@@ -271,7 +173,6 @@ export function SadhanaTracker() {
           </p>
         </div>
 
-        {/* Tab navigatie — pill stijl */}
         <div className="bg-theme-surface-raised flex items-center rounded-xl p-1 shadow-sm">
           {TABS.map(({ id, label, Icon }) => (
             <button
@@ -334,12 +235,11 @@ export function SadhanaTracker() {
         <InstellingenTab
           routines={routines}
           goals={goals}
-          allPractices={allPractices}
+          allPractices={activePractices}
           loadAll={loadAll}
         />
       )}
 
-      {/* Event detail modal (vanuit heatmap in dashboard tab) */}
       {selectedHeatmapEvent && (
         <EventDetailModal
           event={selectedHeatmapEvent}
@@ -348,7 +248,6 @@ export function SadhanaTracker() {
         />
       )}
 
-      {/* Toast */}
       {toast && (
         <div className="bg-theme-primary fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full px-5 py-2.5 text-sm font-medium text-white shadow-lg">
           {toast}

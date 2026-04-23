@@ -101,6 +101,10 @@ export async function createGoal(data: Prisma.SadhanaGoalCreateInput) {
   });
 }
 
+export async function findGoalById(id: string) {
+  return prisma.sadhanaGoal.findUnique({ where: { id }, include: { practices: true } });
+}
+
 export async function updateGoal(id: string, data: Prisma.SadhanaGoalUpdateInput) {
   return prisma.sadhanaGoal.update({
     where: { id },
@@ -249,6 +253,15 @@ export async function findAllRoutines() {
       },
     },
     orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+  });
+}
+
+export async function findRoutineById(id: string) {
+  return prisma.sadhanaRoutine.findUnique({
+    where: { id },
+    include: {
+      items: { include: { practice: true }, orderBy: { sortOrder: "asc" } },
+    },
   });
 }
 

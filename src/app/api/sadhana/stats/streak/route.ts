@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { serverError } from "@/lib/api-response";
+import { logError } from "@/lib/utils";
 import { getSadhanaStreak } from "@/services/sadhana.service";
 
 export async function GET() {
@@ -6,7 +8,7 @@ export async function GET() {
     const streak = await getSadhanaStreak();
     return NextResponse.json(streak);
   } catch (error) {
-    console.error("[SADHANA_STREAK_GET]", error);
-    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+    logError("[SADHANA_STREAK_GET]", error);
+    return serverError("Kon streakgegevens niet ophalen");
   }
 }

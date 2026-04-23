@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { serverError } from "@/lib/api-response";
+import { logError } from "@/lib/utils";
 import { getSadhanaCalendar } from "@/services/sadhana.service";
 
 export async function GET() {
@@ -6,7 +8,7 @@ export async function GET() {
     const calendar = await getSadhanaCalendar();
     return NextResponse.json(calendar);
   } catch (error) {
-    console.error("[SADHANA_CALENDAR_GET]", error);
-    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+    logError("[SADHANA_CALENDAR_GET]", error);
+    return serverError("Kon kalendergegevens niet ophalen");
   }
 }

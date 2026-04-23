@@ -1,25 +1,17 @@
 import { NextResponse } from "next/server";
-import { z } from "zod";
+import { formatGoal } from "@/services/sadhana-formatters";
 import * as sadhanaRepo from "@/repositories/sadhana.repository";
-import { formatGoal } from "../../_helpers";
+import { serverError, validationError, notFoundError } from "@/lib/api-response";
+import { logError } from "@/lib/utils";
+import { patchSadhanaGoalSchema } from "@/lib/validations";
 
-const patchGoalSchema = z.object({
-  name: z.string().min(1).max(100).optional(),
-  target_malas: z.number().int().positive().optional(),
-  target_minutes: z.number().int().positive().nullable().optional(),
-  active: z.boolean().optional(),
-  practice_ids: z.array(z.string().min(1)).optional(),
-});
+type Params = { params: Promise<{ id: string }> };
 
-export async function PATCH(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(req: Request, { params }: Params) {
   try {
     const { id } = await params;
-    const parsed = patchGoalSchema.safeParse(await req.json());
-    if (!parsed.success)
-      return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+    const parsed = patchSadhanaGoalSchema.safeParse(await req.json());
+    if (!parsed.success) return validationError(parsed.error);
 
     const { name, target_malas, target_minutes, active, practice_ids } = parsed.data;
     const goal = await sadhanaRepo.updateGoal(id, {
@@ -33,21 +25,21 @@ export async function PATCH(
     });
     return NextResponse.json(formatGoal(goal));
   } catch (error) {
-    console.error("[SADHANA_GOAL_PATCH]", error);
-    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+    logError("[SADHANA_GOAL_PATCH]", error);
+    return serverError("Kon doel niet bijwerken");
   }
 }
 
-export async function DELETE(
-  _req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(_req: Request, { params }: Params) {
   try {
     const { id } = await params;
+    const existing = await sadhanaRepo.findGoalById(id);
+    if (!existing) return notFoundError("Doel");
+
     await sadhanaRepo.deleteGoal(id);
     return new NextResponse(null, { status: 204 });
   } catch (error) {
-    console.error("[SADHANA_GOAL_DELETE]", error);
-    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+    logError("[SADHANA_GOAL_DELETE]", error);
+    return serverError("Kon doel niet verwijderen");
   }
 }

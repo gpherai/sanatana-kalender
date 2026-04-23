@@ -1,40 +1,27 @@
 import { NextResponse } from "next/server";
-import { z } from "zod";
 import * as sadhanaRepo from "@/repositories/sadhana.repository";
+import { serverError, validationError, notFoundError } from "@/lib/api-response";
+import { logError } from "@/lib/utils";
+import { patchSadhanaRoutineSchema } from "@/lib/validations";
 
-const patchSchema = z.object({
-  name: z.string().min(1).max(80).optional(),
-  active: z.boolean().optional(),
-  items: z
-    .array(
-      z.object({
-        practice_id: z.string().min(1),
-        quantity: z.number().int().min(1),
-        unit: z.enum(["malas", "count"]).default("malas"),
-        sort_order: z.number().int().default(0),
-      })
-    )
-    .min(1)
-    .optional(),
-});
+type Params = { params: Promise<{ id: string }> };
 
-export async function PATCH(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(req: Request, { params }: Params) {
   try {
     const { id } = await params;
-    const body = patchSchema.safeParse(await req.json());
-    if (!body.success)
-      return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+    const parsed = patchSadhanaRoutineSchema.safeParse(await req.json());
+    if (!parsed.success) return validationError(parsed.error);
 
-    const { name, active, items } = body.data;
+    const existing = await sadhanaRepo.findRoutineById(id);
+    if (!existing) return notFoundError("Routine");
+
+    const { name, active, items } = parsed.data;
 
     let routine;
     if (items !== undefined) {
       routine = await sadhanaRepo.updateRoutineWithItems(
         id,
-        name ?? "", // This is a bit weak, but if name is undefined we should fetch existing first
+        name ?? existing.name,
         items
       );
     } else {
@@ -59,21 +46,21 @@ export async function PATCH(
       })),
     });
   } catch (error) {
-    console.error("[SADHANA_ROUTINE_PATCH]", error);
-    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+    logError("[SADHANA_ROUTINE_PATCH]", error);
+    return serverError("Kon routine niet bijwerken");
   }
 }
 
-export async function DELETE(
-  _req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(_req: Request, { params }: Params) {
   try {
     const { id } = await params;
+    const existing = await sadhanaRepo.findRoutineById(id);
+    if (!existing) return notFoundError("Routine");
+
     await sadhanaRepo.deleteRoutine(id);
     return new NextResponse(null, { status: 204 });
   } catch (error) {
-    console.error("[SADHANA_ROUTINE_DELETE]", error);
-    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+    logError("[SADHANA_ROUTINE_DELETE]", error);
+    return serverError("Kon routine niet verwijderen");
   }
 }

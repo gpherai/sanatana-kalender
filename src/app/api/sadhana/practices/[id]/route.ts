@@ -1,27 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
+import { formatPractice } from "@/services/sadhana-formatters";
 import * as sadhanaRepo from "@/repositories/sadhana.repository";
-import { formatPractice } from "../../_helpers";
+import { serverError, validationError, notFoundError } from "@/lib/api-response";
+import { logError } from "@/lib/utils";
+import { patchSadhanaPracticeSchema } from "@/lib/validations";
 
 type Params = { params: Promise<{ id: string }> };
-
-const patchPracticeSchema = z.object({
-  name: z.string().min(1).max(100).optional(),
-  type: z.enum(["mantra_japa", "parayana", "other"]).optional(),
-  mantra_text: z.string().max(2000).nullable().optional(),
-  notes: z.string().max(500).nullable().optional(),
-  active: z.boolean().optional(),
-});
 
 export async function PATCH(req: NextRequest, { params }: Params) {
   try {
     const { id } = await params;
-    const parsed = patchPracticeSchema.safeParse(await req.json());
-    if (!parsed.success)
-      return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+    const parsed = patchSadhanaPracticeSchema.safeParse(await req.json());
+    if (!parsed.success) return validationError(parsed.error);
 
     const practice = await sadhanaRepo.findPracticeById(id);
-    if (!practice) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    if (!practice) return notFoundError("Beoefening");
 
     const { name, type, mantra_text, notes, active } = parsed.data;
     const updated = await sadhanaRepo.updatePractice(id, {
@@ -33,24 +26,21 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     });
     return NextResponse.json(formatPractice(updated));
   } catch (error) {
-    console.error("[SADHANA_PRACTICE_PATCH]", error);
-    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+    logError("[SADHANA_PRACTICE_PATCH]", error);
+    return serverError("Kon beoefening niet bijwerken");
   }
 }
 
 export async function DELETE(_req: NextRequest, { params }: Params) {
   try {
     const { id } = await params;
-
     const practice = await sadhanaRepo.findPracticeById(id);
-    if (!practice) {
-      return NextResponse.json({ error: "Not found" }, { status: 404 });
-    }
+    if (!practice) return notFoundError("Beoefening");
 
     await sadhanaRepo.deletePractice(id);
     return new NextResponse(null, { status: 204 });
   } catch (error) {
-    console.error("[SADHANA_PRACTICE_DELETE]", error);
-    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+    logError("[SADHANA_PRACTICE_DELETE]", error);
+    return serverError("Kon beoefening niet verwijderen");
   }
 }
