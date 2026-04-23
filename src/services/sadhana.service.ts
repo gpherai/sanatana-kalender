@@ -16,6 +16,15 @@ import {
   formatGoal,
 } from "@/app/api/sadhana/_helpers";
 
+function isOnOrBefore(date: Date, end: Date) {
+  return date.getTime() <= end.getTime();
+}
+
+function isWithinInclusiveRange(date: Date, start: Date, end: Date) {
+  const time = date.getTime();
+  return time >= start.getTime() && time <= end.getTime();
+}
+
 /**
  * Computes totals for a given set of sessions.
  */
@@ -58,10 +67,21 @@ export async function getSadhanaOverview() {
   );
 
   const allSessions = await sadhanaRepo.findAllSessions();
+  const completedSessions = allSessions.filter((s) =>
+    isOnOrBefore(s.date as Date, todayDate)
+  );
 
-  const all = computeTotals(allSessions);
-  const week = computeTotals(allSessions.filter((s) => (s.date as Date) >= weekStart));
-  const month = computeTotals(allSessions.filter((s) => (s.date as Date) >= monthStart));
+  const all = computeTotals(completedSessions);
+  const week = computeTotals(
+    completedSessions.filter((s) =>
+      isWithinInclusiveRange(s.date as Date, weekStart, todayDate)
+    )
+  );
+  const month = computeTotals(
+    completedSessions.filter((s) =>
+      isWithinInclusiveRange(s.date as Date, monthStart, todayDate)
+    )
+  );
 
   return {
     total_sessions: all.sessions,
@@ -84,8 +104,10 @@ export async function getSadhanaOverview() {
  */
 export async function getSadhanaStreak() {
   const rows = await sadhanaRepo.findUniqueSessionDates();
+  const today = todayStr();
+  const dates = rows.map((r) => dateStr(r.date as Date)).filter((date) => date <= today);
 
-  if (rows.length === 0) {
+  if (dates.length === 0) {
     return {
       current_streak: 0,
       longest_streak: 0,
@@ -93,8 +115,6 @@ export async function getSadhanaStreak() {
     };
   }
 
-  const dates = rows.map((r) => dateStr(r.date as Date));
-  const today = todayStr();
   const d = new Date();
   d.setDate(d.getDate() - 1);
   const yesterday = dateStr(d);
@@ -143,10 +163,8 @@ export async function getSadhanaStreak() {
 export async function getSadhanaToday() {
   const today = todayStr();
   const todayDate = utcDate(today);
-  const tomorrow = new Date(todayDate);
-  tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
 
-  const sessions = await sadhanaRepo.findSessionsByDateRange(todayDate, tomorrow);
+  const sessions = await sadhanaRepo.findSessionsByDateRange(todayDate, todayDate);
 
   let totalMalas = 0;
   let totalMantras = 0;
@@ -237,9 +255,6 @@ export async function getGoalsWithProgress() {
   const diff = day === 0 ? 6 : day - 1;
   startOfWeek.setUTCDate(todayDate.getUTCDate() - diff);
 
-  const tomorrow = new Date(todayDate);
-  tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
-
   return Promise.all(
     goals.map(async (goal) => {
       let progressMalas = 0;
@@ -251,19 +266,22 @@ export async function getGoalsWithProgress() {
 
       if (goal.type === "daily") {
         start = todayDate;
-        end = tomorrow;
+        end = todayDate;
       } else if (goal.type === "weekly") {
         start = startOfWeek;
-        end = tomorrow;
+        end = todayDate;
       }
 
       const sessions =
         start && end
           ? await sadhanaRepo.findSessionsByDateRange(start, end)
           : await sadhanaRepo.findAllSessions();
+      const completedSessions = sessions.filter((s) =>
+        isOnOrBefore(s.date as Date, todayDate)
+      );
 
       // Filter sessions by linked practices if any
-      for (const s of sessions) {
+      for (const s of completedSessions) {
         // If goal has specific practices, we only count items from those practices.
         // If not, we count everything.
         const items =

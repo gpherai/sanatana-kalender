@@ -48,6 +48,7 @@ const MOCK_EVENT = {
 describe("API Events by ID", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    prismaMock.event.findUniqueOrThrow.mockResolvedValue(MOCK_EVENT as never);
   });
 
   it("rejects invalid event IDs", async () => {

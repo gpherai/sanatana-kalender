@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { formatSession, utcDate } from "../_helpers";
+import { formatSession, todayStr, utcDate } from "../_helpers";
 import * as sadhanaRepo from "@/repositories/sadhana.repository";
 
 const sessionItemSchema = z.object({
@@ -28,10 +28,13 @@ export async function GET(req: NextRequest) {
     let sessions;
     if (fromStr || toStr) {
       const fromDate = fromStr ? utcDate(fromStr) : new Date(0);
-      const toDate = toStr ? utcDate(toStr) : new Date();
+      const toDate = toStr ? utcDate(toStr) : utcDate(todayStr());
       sessions = await sadhanaRepo.findSessionsByDateRange(fromDate, toDate);
     } else {
-      sessions = await sadhanaRepo.findAllSessions();
+      sessions = await sadhanaRepo.findSessionsByDateRange(
+        new Date(0),
+        utcDate(todayStr())
+      );
     }
 
     return NextResponse.json(sessions.map(formatSession));

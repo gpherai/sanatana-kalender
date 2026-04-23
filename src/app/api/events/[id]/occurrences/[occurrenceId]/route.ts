@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
 import { updateOccurrenceSchema, cuidSchema } from "@/lib/validations";
 import {
   errorResponse,
@@ -8,7 +7,12 @@ import {
   validationError,
 } from "@/lib/api-response";
 import { logError } from "@/lib/utils";
-import { parseCalendarDate } from "@/lib/date-utils";
+import {
+  OccurrenceConflictError,
+  OccurrenceNotFoundError,
+  OccurrenceOwnershipError,
+  updateEventOccurrence,
+} from "@/services/event.service";
 
 interface RouteParams {
   params: Promise<{ id: string; occurrenceId: string }>;
@@ -38,55 +42,25 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       return validationError(result.error);
     }
 
-    // Verify occurrence exists and belongs to this event
-    const occurrence = await prisma.eventOccurrence.findUnique({
-      where: { id: occurrenceId },
-    });
-
-    if (!occurrence) {
-      return notFoundError("Occurrence");
-    }
-
-    if (occurrence.eventId !== id) {
-      return errorResponse("Occurrence behoort niet tot dit event", 403);
-    }
-
-    const data = result.data;
-
-    // If date changes, check for unique constraint (eventId + date)
-    if (data.date !== undefined) {
-      const newDate = parseCalendarDate(data.date);
-      const conflict = await prisma.eventOccurrence.findFirst({
-        where: {
-          eventId: id,
-          date: newDate,
-          NOT: { id: occurrenceId },
-        },
-      });
-
-      if (conflict) {
-        return errorResponse(
-          "Er bestaat al een occurrence op deze datum voor dit event",
-          409
-        );
-      }
-    }
-
-    const updated = await prisma.eventOccurrence.update({
-      where: { id: occurrenceId },
-      data: {
-        ...(data.date !== undefined && { date: parseCalendarDate(data.date) }),
-        ...(data.endDate !== undefined && {
-          endDate: data.endDate ? parseCalendarDate(data.endDate) : null,
-        }),
-        ...(data.startTime !== undefined && { startTime: data.startTime }),
-        ...(data.endTime !== undefined && { endTime: data.endTime }),
-        ...(data.notes !== undefined && { notes: data.notes }),
-      },
-    });
+    const updated = await updateEventOccurrence(id, occurrenceId, result.data);
 
     return NextResponse.json(updated);
   } catch (error) {
+    if (error instanceof OccurrenceNotFoundError) {
+      return notFoundError("Occurrence");
+    }
+
+    if (error instanceof OccurrenceOwnershipError) {
+      return errorResponse("Occurrence behoort niet tot dit event", 403);
+    }
+
+    if (error instanceof OccurrenceConflictError) {
+      return errorResponse(
+        "Er bestaat al een occurrence op deze datum voor dit event",
+        409
+      );
+    }
+
     logError("[API] PUT /api/events/[id]/occurrences/[occurrenceId] error:", error);
     return serverError("Kon occurrence niet bijwerken");
   }

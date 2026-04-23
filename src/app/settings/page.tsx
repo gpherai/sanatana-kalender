@@ -63,13 +63,16 @@ const AUTO_SAVE_DELAY = 800; // ms
 function useAutoSave<T>(
   data: T,
   saveFn: (data: T) => Promise<void>,
-  delay: number = AUTO_SAVE_DELAY
+  delay: number = AUTO_SAVE_DELAY,
+  enabled: boolean = true,
+  resetKey: number = 0
 ) {
   const [status, setStatus] = useState<SaveStatus>("idle");
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isMountedRef = useRef(true);
   const isFirstRender = useRef(true);
   const lastSavedData = useRef<string>("");
+  const lastResetKey = useRef(resetKey);
 
   // Track mounted state to prevent setState after unmount
   useEffect(() => {
@@ -81,15 +84,38 @@ function useAutoSave<T>(
   }, []);
 
   useEffect(() => {
+    const currentData = JSON.stringify(data);
+
+    if (!enabled) {
+      isFirstRender.current = false;
+      lastSavedData.current = currentData;
+      lastResetKey.current = resetKey;
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+      return;
+    }
+
+    if (lastResetKey.current !== resetKey) {
+      isFirstRender.current = false;
+      lastSavedData.current = currentData;
+      lastResetKey.current = resetKey;
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+      return;
+    }
+
     // Skip first render
     if (isFirstRender.current) {
       isFirstRender.current = false;
-      lastSavedData.current = JSON.stringify(data);
+      lastSavedData.current = currentData;
       return;
     }
 
     // Check if data actually changed
-    const currentData = JSON.stringify(data);
     if (currentData === lastSavedData.current) {
       return;
     }
@@ -123,7 +149,7 @@ function useAutoSave<T>(
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [data, saveFn, delay]);
+  }, [data, saveFn, delay, enabled, resetKey]);
 
   return status;
 }
@@ -137,6 +163,7 @@ export default function SettingsPage() {
   const { showToast } = useToast();
   const { themeName, colorMode, setTheme, setColorMode, themes, resolvedColorMode } =
     useTheme();
+  const [autoSaveResetKey, setAutoSaveResetKey] = useState(0);
 
   // Fetch initial data
   const { loading: prefsLoading } = useFetch<Preferences>("/api/preferences", {
@@ -150,10 +177,12 @@ export default function SettingsPage() {
         locationLat: prefs.locationLat,
         locationLon: prefs.locationLon,
       });
+      setAutoSaveResetKey((key) => key + 1);
       // Sync ThemeProvider with DB value (new browser/device won't have localStorage)
       setTheme(prefs.currentTheme);
     },
     onError: (error) => {
+      setAutoSaveResetKey((key) => key + 1);
       logError("Failed to load settings", error);
       showToast("Kon instellingen niet laden", "error");
     },
@@ -204,7 +233,13 @@ export default function SettingsPage() {
     [router]
   );
 
-  const saveStatus = useAutoSave(formData, savePreferences);
+  const saveStatus = useAutoSave(
+    formData,
+    savePreferences,
+    AUTO_SAVE_DELAY,
+    !prefsLoading,
+    autoSaveResetKey
+  );
 
   useEffect(() => {
     if (saveStatus === "error") {

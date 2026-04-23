@@ -1,19 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
 import { createEventSchema, eventQuerySchema } from "@/lib/validations";
 import { errorResponse, serverError, validationError } from "@/lib/api-response";
 import { logError } from "@/lib/utils";
-import { parseCalendarDate, addDayForDisplay, formatDateLocal } from "@/lib/date-utils";
-import {
-  Prisma,
-  Tithi,
-  Nakshatra,
-  Maas,
-  Sankranti,
-  EventType,
-  RecurrenceType,
-} from "@prisma/client";
+import { addDayForDisplay, formatDateLocal } from "@/lib/date-utils";
+import { Prisma } from "@prisma/client";
 import { findEventOccurrences } from "@/repositories/event.repository";
+import { CategoryNotFoundError, createEvent } from "@/services/event.service";
 
 // ============================================================================
 // Helper: Parse Query Parameters
@@ -105,58 +97,23 @@ export async function POST(request: NextRequest) {
     }
 
     const data = result.data;
-
-    // Validate categoryId exists if provided
-    if (data.categoryId) {
-      const category = await prisma.category.findUnique({
-        where: { id: data.categoryId },
-      });
-      if (!category) {
-        return errorResponse("Categorie niet gevonden", 400, [
-          { field: "categoryId", message: "Categorie bestaat niet" },
-        ]);
-      }
-    }
-
-    // Create event and occurrence in a transaction
-    const event = await prisma.$transaction(async (tx) => {
-      const newEvent = await tx.event.create({
-        data: {
-          name: data.name,
-          description: data.description ?? null,
-          eventType: data.eventType as EventType,
-          recurrenceType: data.recurrenceType as RecurrenceType,
-          tithi: (data.tithi as Tithi) ?? null,
-          nakshatra: (data.nakshatra as Nakshatra) ?? null,
-          maas: (data.maas as Maas) ?? null,
-          sankranti: (data.sankranti as Sankranti) ?? null,
-          tags: data.tags ?? [],
-        },
-      });
-
-      if (data.categoryId) {
-        await tx.eventCategory.create({
-          data: { eventId: newEvent.id, categoryId: data.categoryId, sortOrder: 0 },
-        });
-      }
-
-      await tx.eventOccurrence.create({
-        data: {
-          eventId: newEvent.id,
-          date: parseCalendarDate(data.date),
-          endDate: data.endDate ? parseCalendarDate(data.endDate) : null,
-          startTime: data.startTime ?? null,
-          endTime: data.endTime ?? null,
-          notes: data.notes ?? null,
-        },
-      });
-
-      return newEvent;
+    const event = await createEvent({
+      ...data,
+      endDate: data.endDate ?? null,
+      startTime: data.startTime ?? null,
+      endTime: data.endTime ?? null,
+      notes: data.notes ?? null,
     });
 
     return NextResponse.json(event, { status: 201 });
   } catch (error) {
     logError("[API] POST /api/events error:", error);
+
+    if (error instanceof CategoryNotFoundError) {
+      return errorResponse("Categorie niet gevonden", 400, [
+        { field: "categoryId", message: "Categorie bestaat niet" },
+      ]);
+    }
 
     // Handle specific Prisma errors
     if (error instanceof Prisma.PrismaClientKnownRequestError) {

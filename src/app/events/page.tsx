@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense, useMemo, useEffect, useCallback, useRef } from "react";
+import { useState, Suspense, useMemo, useCallback, useRef } from "react";
 import { useFetch } from "@/hooks/useFetch";
 import Link from "next/link";
 import {
@@ -24,6 +24,7 @@ import {
 } from "@/types/calendar";
 import { parseLocalDate } from "@/lib/date-utils";
 import { cn } from "@/lib/utils";
+import { useOverlayHistory } from "@/hooks/useOverlayHistory";
 
 type ViewMode = "grid" | "list";
 
@@ -121,14 +122,11 @@ function EventsContent() {
   const [showFilters, setShowFilters] = useState(false);
 
   const handleCloseFilters = useCallback(() => setShowFilters(false), []);
-
-  // Back button closes the mobile filter sheet
-  useEffect(() => {
-    if (!showFilters) return;
-    history.pushState({ filters: true }, "");
-    window.addEventListener("popstate", handleCloseFilters);
-    return () => window.removeEventListener("popstate", handleCloseFilters);
-  }, [showFilters, handleCloseFilters]);
+  const { requestClose: requestCloseFilters } = useOverlayHistory({
+    isOpen: showFilters,
+    onClose: handleCloseFilters,
+    stateKey: "events-filter-sheet",
+  });
 
   // Swipe down to dismiss filter sheet
   const filterTouchStartY = useRef(0);
@@ -138,9 +136,9 @@ function EventsContent() {
   const handleFilterTouchEnd = useCallback(
     (e: React.TouchEvent) => {
       const dy = e.changedTouches[0]!.clientY - filterTouchStartY.current;
-      if (dy > 80) handleCloseFilters();
+      if (dy > 80) requestCloseFilters();
     },
-    [handleCloseFilters]
+    [requestCloseFilters]
   );
 
   const {
@@ -233,7 +231,14 @@ function EventsContent() {
 
           {/* Filter Toggle (mobile) */}
           <button
-            onClick={() => setShowFilters(!showFilters)}
+            onClick={() => {
+              if (showFilters) {
+                requestCloseFilters();
+                return;
+              }
+
+              setShowFilters(true);
+            }}
             className={cn(
               "flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 transition-colors lg:hidden",
               showFilters
@@ -268,7 +273,7 @@ function EventsContent() {
             ? "pointer-events-auto opacity-100"
             : "pointer-events-none opacity-0"
         )}
-        onClick={handleCloseFilters}
+        onClick={() => requestCloseFilters()}
       />
       <div
         className={cn(

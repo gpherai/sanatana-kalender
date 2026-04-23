@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useRef, useCallback } from "react";
 import { Sun, Sunrise, Sunset, Moon, Sparkles, Star, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FALLBACK_CATEGORY_COLOR, resolveCategoryColor } from "@/lib/category-styles";
@@ -10,6 +10,7 @@ import { isToday, formatDateLocal, formatLongDate } from "@/lib/date-utils";
 import type { SpecialDay } from "@/lib/panchanga-helpers";
 import type { DailyInfoResponse } from "@/types";
 import type { CalendarEventResponse } from "@/types/calendar";
+import { useOverlayHistory } from "@/hooks/useOverlayHistory";
 
 interface DayDetailsPanelProps {
   selectedDate: Date;
@@ -97,15 +98,11 @@ export function DayDetailsPanel({
     : undefined;
   const selectedHinduMonth = selectedDayInfo?.maas?.name;
   const selectedDateStr = formatDateLocal(selectedDate);
-
-  // Back button: push history state on open, close on popstate
-  useEffect(() => {
-    if (!isOpen) return;
-    history.pushState({ panel: true }, "");
-    const handlePopState = () => onClose?.();
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, [isOpen, onClose]);
+  const { requestClose } = useOverlayHistory({
+    isOpen,
+    onClose: onClose ?? (() => {}),
+    stateKey: "almanac-day-details",
+  });
 
   // Swipe down to dismiss
   const touchStartY = useRef(0);
@@ -115,9 +112,9 @@ export function DayDetailsPanel({
   const handleTouchEnd = useCallback(
     (e: React.TouchEvent) => {
       const dy = e.changedTouches[0]!.clientY - touchStartY.current;
-      if (dy > 80) onClose?.();
+      if (dy > 80) requestClose();
     },
-    [onClose]
+    [requestClose]
   );
 
   return (
@@ -128,7 +125,7 @@ export function DayDetailsPanel({
           "fixed inset-0 z-40 bg-black/50 transition-opacity duration-300 lg:hidden",
           isOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
         )}
-        onClick={onClose}
+        onClick={() => requestClose()}
       />
 
       {/* Panel */}

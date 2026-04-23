@@ -40,13 +40,7 @@ const navItems = [
 ] as const;
 
 export function Header() {
-  let pathname = "";
-  try {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    pathname = usePathname();
-  } catch {
-    // Fallback for SSR/Prerendering where navigation context might be missing
-  }
+  const pathname = usePathname();
 
   return (
     <header className="border-theme-border bg-theme-surface-overlay sticky top-0 z-40 w-full border-b backdrop-blur-sm">

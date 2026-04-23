@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
-import { updateEventSchema, cuidSchema } from "@/lib/validations";
+import { createEventSchema, updateEventSchema, cuidSchema } from "@/lib/validations";
 import {
   errorResponse,
   notFoundError,
@@ -8,16 +7,16 @@ import {
   validationError,
 } from "@/lib/api-response";
 import { logError } from "@/lib/utils";
-import { parseCalendarDate } from "@/lib/date-utils";
+import { formatDateLocal } from "@/lib/date-utils";
 import { Prisma } from "@prisma/client";
+import { findEventForUpdate } from "@/repositories/event.repository";
 import {
-  EventType,
-  RecurrenceType,
-  Tithi,
-  Nakshatra,
-  Maas,
-  Sankranti,
-} from "@prisma/client";
+  CategoryNotFoundError,
+  deleteEvent,
+  EventNotFoundError,
+  getEventDetails,
+  updateEvent,
+} from "@/services/event.service";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -37,56 +36,11 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
       return errorResponse("Ongeldig event ID formaat", 400);
     }
 
-    const eventRaw = await prisma.event.findUnique({
-      where: { id },
-      include: {
-        categories: {
-          include: { category: true },
-          orderBy: { sortOrder: "asc" as const },
-        },
-        occurrences: {
-          orderBy: { date: "asc" },
-        },
-        seriesParentEntries: {
-          include: {
-            child: { select: { id: true, name: true } },
-          },
-          orderBy: { sortOrder: "asc" },
-        },
-        seriesChildEntries: {
-          include: {
-            parent: { select: { id: true, name: true } },
-          },
-        },
-      },
-    });
+    const event = await getEventDetails(id);
 
-    if (!eventRaw) {
+    if (!event) {
       return notFoundError("Event");
     }
-
-    // Transform junction table entries to flat arrays, deduplicating by event id
-    const { seriesParentEntries, seriesChildEntries, ...rest } = eventRaw;
-    // seriesParentEntries = entries where this event IS the parent → gives child events
-    const childEventMap = new Map<
-      string,
-      { id: string; name: string; dayNumber: number | null }
-    >();
-    for (const e of seriesParentEntries) {
-      if (!childEventMap.has(e.child.id)) {
-        childEventMap.set(e.child.id, { ...e.child, dayNumber: e.dayNumber });
-      }
-    }
-    // seriesChildEntries = entries where this event IS a child → gives parent events
-    const parentEventMap = new Map<string, { id: string; name: string }>();
-    for (const e of seriesChildEntries) {
-      parentEventMap.set(e.parent.id, e.parent);
-    }
-    const event = {
-      ...rest,
-      parentEvents: [...parentEventMap.values()],
-      childEvents: [...childEventMap.values()],
-    };
 
     return NextResponse.json(event);
   } catch (error) {
@@ -111,21 +65,6 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
     const body = await request.json();
 
-    // Check if event exists
-    const existingEvent = await prisma.event.findUnique({
-      where: { id },
-      include: {
-        occurrences: {
-          orderBy: { date: "asc" },
-          take: 1,
-        },
-      },
-    });
-
-    if (!existingEvent) {
-      return notFoundError("Event");
-    }
-
     // Validate with Zod
     const result = updateEventSchema.safeParse(body);
     if (!result.success) {
@@ -133,86 +72,56 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     }
 
     const data = result.data;
+    const existingEvent = await findEventForUpdate(id);
 
-    // Validate categoryId exists if provided
-    if (data.categoryId) {
-      const category = await prisma.category.findUnique({
-        where: { id: data.categoryId },
-      });
-      if (!category) {
-        return errorResponse("Categorie niet gevonden", 400, [
-          { field: "categoryId", message: "Categorie bestaat niet" },
-        ]);
-      }
+    if (!existingEvent) {
+      return notFoundError("Event");
     }
 
-    // Update event and occurrence in a transaction
-    const event = await prisma.$transaction(async (tx) => {
-      const updatedEvent = await tx.event.update({
-        where: { id },
-        data: {
-          ...(data.name !== undefined && { name: data.name }),
-          ...(data.description !== undefined && { description: data.description }),
-          ...(data.eventType !== undefined && { eventType: data.eventType as EventType }),
-          ...(data.recurrenceType !== undefined && {
-            recurrenceType: data.recurrenceType as RecurrenceType,
-          }),
-          ...(data.tithi !== undefined && { tithi: data.tithi as Tithi | null }),
-          ...(data.nakshatra !== undefined && {
-            nakshatra: data.nakshatra as Nakshatra | null,
-          }),
-          ...(data.maas !== undefined && { maas: data.maas as Maas | null }),
-          ...(data.sankranti !== undefined && {
-            sankranti: data.sankranti as Sankranti | null,
-          }),
-          ...(data.tags !== undefined && { tags: data.tags }),
-        },
-        include: {
-          categories: {
-            include: { category: true },
-            orderBy: { sortOrder: "asc" as const },
-          },
-        },
-      });
-
-      // Update primary category (sortOrder=0) if provided
-      if (data.categoryId !== undefined) {
-        await tx.eventCategory.deleteMany({ where: { eventId: id, sortOrder: 0 } });
-        if (data.categoryId) {
-          await tx.eventCategory.upsert({
-            where: { eventId_categoryId: { eventId: id, categoryId: data.categoryId } },
-            create: { eventId: id, categoryId: data.categoryId, sortOrder: 0 },
-            update: { sortOrder: 0 },
-          });
-        }
-      }
-
-      // Update first occurrence whenever any occurrence field is provided
-      const firstOccurrence = existingEvent.occurrences[0];
-      if (firstOccurrence) {
-        const occurrenceData = {
-          ...(data.date !== undefined && { date: parseCalendarDate(data.date) }),
-          ...(data.endDate !== undefined && {
-            endDate: data.endDate ? parseCalendarDate(data.endDate) : null,
-          }),
-          ...(data.startTime !== undefined && { startTime: data.startTime }),
-          ...(data.endTime !== undefined && { endTime: data.endTime }),
-          ...(data.notes !== undefined && { notes: data.notes }),
-        };
-        if (Object.keys(occurrenceData).length > 0) {
-          await tx.eventOccurrence.update({
-            where: { id: firstOccurrence.id },
-            data: occurrenceData,
-          });
-        }
-      }
-
-      return updatedEvent;
+    const firstOccurrence = existingEvent.occurrences[0];
+    const mergedValidationResult = createEventSchema.safeParse({
+      name: data.name ?? existingEvent.name,
+      description:
+        data.description !== undefined ? data.description : existingEvent.description,
+      eventType: data.eventType ?? existingEvent.eventType,
+      categoryId: data.categoryId !== undefined ? data.categoryId : undefined,
+      recurrenceType: data.recurrenceType ?? existingEvent.recurrenceType,
+      tithi: data.tithi !== undefined ? data.tithi : existingEvent.tithi,
+      nakshatra: data.nakshatra !== undefined ? data.nakshatra : existingEvent.nakshatra,
+      maas: data.maas !== undefined ? data.maas : existingEvent.maas,
+      sankranti: data.sankranti !== undefined ? data.sankranti : existingEvent.sankranti,
+      tags: data.tags ?? existingEvent.tags,
+      date: data.date ?? (firstOccurrence ? formatDateLocal(firstOccurrence.date) : ""),
+      endDate:
+        data.endDate !== undefined
+          ? data.endDate
+          : firstOccurrence?.endDate
+            ? formatDateLocal(firstOccurrence.endDate)
+            : null,
+      startTime:
+        data.startTime !== undefined
+          ? data.startTime
+          : (firstOccurrence?.startTime ?? null),
+      endTime:
+        data.endTime !== undefined ? data.endTime : (firstOccurrence?.endTime ?? null),
+      notes: data.notes !== undefined ? data.notes : (firstOccurrence?.notes ?? null),
     });
+
+    if (!mergedValidationResult.success) {
+      return validationError(mergedValidationResult.error);
+    }
+
+    const event = await updateEvent(id, data, firstOccurrence?.id);
 
     return NextResponse.json(event);
   } catch (error) {
     logError("[API] PUT /api/events/[id] error:", error);
+
+    if (error instanceof CategoryNotFoundError) {
+      return errorResponse("Categorie niet gevonden", 400, [
+        { field: "categoryId", message: "Categorie bestaat niet" },
+      ]);
+    }
 
     // Handle specific Prisma errors
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -247,23 +156,15 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
       return errorResponse("Ongeldig event ID formaat", 400);
     }
 
-    // Check if event exists
-    const event = await prisma.event.findUnique({
-      where: { id },
-    });
-
-    if (!event) {
-      return notFoundError("Event");
-    }
-
-    // Delete event (occurrences are cascade deleted)
-    await prisma.event.delete({
-      where: { id },
-    });
+    await deleteEvent(id);
 
     return new NextResponse(null, { status: 204 });
   } catch (error) {
     logError("[API] DELETE /api/events/[id] error:", error);
+
+    if (error instanceof EventNotFoundError) {
+      return notFoundError("Event");
+    }
 
     // Handle Prisma errors
     if (error instanceof Prisma.PrismaClientKnownRequestError) {

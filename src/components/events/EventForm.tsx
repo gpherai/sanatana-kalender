@@ -365,12 +365,19 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
               className="text-theme-fg-secondary mb-1 block text-sm font-medium"
             >
               Tithi
+              {(formData.recurrenceType === "YEARLY_LUNAR" ||
+                formData.recurrenceType === "MONTHLY_LUNAR") && (
+                <span className="text-theme-error"> *</span>
+              )}
             </label>
             <select
               id="tithi"
               value={formData.tithi}
               onChange={(e) => updateField("tithi", e.target.value)}
-              className={cn(inputClasses, "border-theme-border")}
+              className={cn(
+                inputClasses,
+                errors.tithi ? "border-theme-error" : "border-theme-border"
+              )}
             >
               <option value="">Selecteer tithi...</option>
               <optgroup label="Shukla Paksha (Wassende maan)">
@@ -388,6 +395,9 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
                 ))}
               </optgroup>
             </select>
+            {errors.tithi && (
+              <p className="text-theme-error mt-1 text-sm">{errors.tithi}</p>
+            )}
           </div>
 
           {/* Nakshatra */}
@@ -455,7 +465,10 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
               id="sankranti"
               value={formData.sankranti}
               onChange={(e) => updateField("sankranti", e.target.value)}
-              className={cn(inputClasses, "border-theme-border")}
+              className={cn(
+                inputClasses,
+                errors.sankranti ? "border-theme-error" : "border-theme-border"
+              )}
             >
               <option value="">Selecteer sankranti...</option>
               {SANKRANTIS.map((s) => (
@@ -467,6 +480,9 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
             <p className="text-theme-fg-subtle mt-1 text-xs">
               Welke Sankranti (zonsovergang) valt dit evenement op?
             </p>
+            {errors.sankranti && (
+              <p className="text-theme-error mt-1 text-sm">{errors.sankranti}</p>
+            )}
           </div>
         </div>
       )}

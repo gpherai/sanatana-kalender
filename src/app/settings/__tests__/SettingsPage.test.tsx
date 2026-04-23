@@ -71,6 +71,7 @@ describe("SettingsPage", () => {
   });
 
   afterEach(() => {
+    vi.useRealTimers();
     vi.unstubAllGlobals();
   });
 
@@ -136,6 +137,44 @@ describe("SettingsPage", () => {
       errorCb(new Error("fail"));
     });
     expect(mockToast.showToast).toHaveBeenCalled();
+  });
+
+  it("does not autosave immediately after loading initial preferences", async () => {
+    vi.useFakeTimers();
+
+    let successCb: any;
+    mockUseFetch.mockImplementation((url, options) => {
+      if (url === "/api/preferences") {
+        successCb = options?.onSuccess;
+      }
+      return { data: null, loading: false, refetch: vi.fn() };
+    });
+
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue({ ok: true, json: async () => ({}) } as any);
+    vi.stubGlobal("fetch", fetchMock);
+
+    render(<SettingsPage />);
+
+    act(() => {
+      successCb({
+        currentTheme: "ocean",
+        defaultView: "month",
+        timezone: "Europe/Amsterdam",
+        locationName: "Den Haag",
+        locationLat: 52.08,
+        locationLon: 4.31,
+      });
+    });
+
+    await act(async () => {
+      vi.advanceTimersByTime(2000);
+    });
+
+    expect(fetchMock).not.toHaveBeenCalled();
+
+    vi.useRealTimers();
   });
 
   it("handles save failure", async () => {

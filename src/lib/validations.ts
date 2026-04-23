@@ -89,6 +89,41 @@ export const optionalTimeStringSchema = timeStringSchema.nullable().optional();
 /** Optional time string (for forms - only string or empty) */
 export const formTimeStringSchema = timeStringSchema.optional().or(z.literal(""));
 
+const RECURRENCE_VALIDATION_MESSAGES = {
+  LUNAR_TITHI_REQUIRED:
+    "Kies een tithi voor maandelijkse of jaarlijkse lunaire herhaling",
+  SOLAR_SANKRANTI_REQUIRED: "Kies een sankranti voor jaarlijkse solaire herhaling",
+} as const;
+
+function withEventRecurrenceValidation<TShape extends z.ZodRawShape>(
+  schema: z.ZodObject<TShape>
+) {
+  return schema.superRefine((data: Record<string, unknown>, ctx: z.RefinementCtx) => {
+    const recurrenceType = data.recurrenceType as string | undefined | null;
+    const tithi = data.tithi as string | undefined | null;
+    const sankranti = data.sankranti as string | undefined | null;
+
+    if (
+      (recurrenceType === "YEARLY_LUNAR" || recurrenceType === "MONTHLY_LUNAR") &&
+      !tithi
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["tithi"],
+        message: RECURRENCE_VALIDATION_MESSAGES.LUNAR_TITHI_REQUIRED,
+      });
+    }
+
+    if (recurrenceType === "YEARLY_SOLAR" && !sankranti) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["sankranti"],
+        message: RECURRENCE_VALIDATION_MESSAGES.SOLAR_SANKRANTI_REQUIRED,
+      });
+    }
+  });
+}
+
 // =============================================================================
 // EVENT FORM SCHEMA (Client-side)
 // =============================================================================
@@ -98,46 +133,52 @@ export const formTimeStringSchema = timeStringSchema.optional().or(z.literal("")
  * Used in EventForm component for client-side validation.
  * More lenient to support form UX (empty strings allowed).
  */
-export const eventFormSchema = z.object({
-  name: z
-    .string()
-    .min(1, ERROR_MESSAGES.REQUIRED_NAME)
-    .max(100, ERROR_MESSAGES.NAME_TOO_LONG),
+export const eventFormSchema = withEventRecurrenceValidation(
+  z.object({
+    name: z
+      .string()
+      .min(1, ERROR_MESSAGES.REQUIRED_NAME)
+      .max(100, ERROR_MESSAGES.NAME_TOO_LONG),
 
-  description: z
-    .string()
-    .max(500, ERROR_MESSAGES.DESCRIPTION_TOO_LONG)
-    .optional()
-    .or(z.literal("")),
+    description: z
+      .string()
+      .max(500, ERROR_MESSAGES.DESCRIPTION_TOO_LONG)
+      .optional()
+      .or(z.literal("")),
 
-  eventType: eventTypeEnum,
+    eventType: eventTypeEnum,
 
-  categoryId: optionalCuidSchema,
+    categoryId: optionalCuidSchema,
 
-  recurrenceType: recurrenceEnum.default("NONE"),
+    recurrenceType: recurrenceEnum.default("NONE"),
 
-  // Date fields
-  date: z.string().min(1, ERROR_MESSAGES.REQUIRED_DATE),
-  endDate: z.string().optional().or(z.literal("")),
+    // Date fields
+    date: z.string().min(1, ERROR_MESSAGES.REQUIRED_DATE),
+    endDate: z.string().optional().or(z.literal("")),
 
-  // Time fields (form uses string only, no null)
-  startTime: formTimeStringSchema,
-  endTime: formTimeStringSchema,
+    // Time fields (form uses string only, no null)
+    startTime: formTimeStringSchema,
+    endTime: formTimeStringSchema,
 
-  // Lunar info (all optional)
-  tithi: tithiEnum.optional().or(z.literal("")),
-  nakshatra: nakshatraEnum.optional().or(z.literal("")),
-  maas: maasEnum.optional().or(z.literal("")),
+    // Lunar info (all optional)
+    tithi: tithiEnum.optional().or(z.literal("")),
+    nakshatra: nakshatraEnum.optional().or(z.literal("")),
+    maas: maasEnum.optional().or(z.literal("")),
 
-  // Solar info (for YEARLY_SOLAR recurrence)
-  sankranti: sankrantiEnum.optional().or(z.literal("")),
+    // Solar info (for YEARLY_SOLAR recurrence)
+    sankranti: sankrantiEnum.optional().or(z.literal("")),
 
-  // Tags as comma-separated string
-  tags: z.string().optional().or(z.literal("")),
+    // Tags as comma-separated string
+    tags: z.string().optional().or(z.literal("")),
 
-  // Notes
-  notes: z.string().max(500, ERROR_MESSAGES.NOTES_TOO_LONG).optional().or(z.literal("")),
-});
+    // Notes
+    notes: z
+      .string()
+      .max(500, ERROR_MESSAGES.NOTES_TOO_LONG)
+      .optional()
+      .or(z.literal("")),
+  })
+);
 
 export type EventFormData = z.infer<typeof eventFormSchema>;
 
@@ -182,7 +223,7 @@ export function transformFormToApi(data: EventFormData) {
  * Create event API schema.
  * Stricter validation for API requests.
  */
-export const createEventSchema = z.object({
+const createEventBaseSchema = z.object({
   name: z.string().min(1).max(100),
   description: z.string().max(500).nullable().optional(),
   eventType: eventTypeEnum,
@@ -200,11 +241,13 @@ export const createEventSchema = z.object({
   notes: z.string().max(500).nullable().optional(),
 });
 
+export const createEventSchema = withEventRecurrenceValidation(createEventBaseSchema);
+
 /**
  * Update event API schema.
  * All fields optional for partial updates.
  */
-export const updateEventSchema = createEventSchema.partial();
+export const updateEventSchema = createEventBaseSchema.partial();
 
 // =============================================================================
 // USER PREFERENCES SCHEMAS

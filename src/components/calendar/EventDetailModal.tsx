@@ -34,6 +34,7 @@ import { useToast } from "@/components/ui/Toast";
 import { MoonPhase } from "@/components/ui/MoonPhase";
 import { resolveCategoryColor } from "@/lib/category-styles";
 import { useTheme } from "@/components/theme/ThemeProvider";
+import { useOverlayHistory } from "@/hooks/useOverlayHistory";
 // Note: Inline color-mix styles used here for edge cases (gradients, mixing with white)
 
 interface EventDetailModalProps {
@@ -63,6 +64,11 @@ export function EventDetailModal({
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const { requestClose } = useOverlayHistory({
+    isOpen,
+    onClose,
+    stateKey: "event-detail-modal",
+  });
   interface EventRelations {
     parentEvents: { id: string; name: string }[];
     childEvents: { id: string; name: string; dayNumber?: number | null }[];
@@ -90,15 +96,6 @@ export function EventDetailModal({
     }
   }, [isOpen]);
 
-  // Back button support: push history state on open, close on popstate
-  useEffect(() => {
-    if (!isOpen) return;
-    history.pushState({ modal: true }, "");
-    const handlePopState = () => onClose();
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, [isOpen, onClose]);
-
   // Close on ESC key
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -106,21 +103,21 @@ export function EventDetailModal({
         if (showDeleteConfirm) {
           setShowDeleteConfirm(false);
         } else {
-          onClose();
+          requestClose();
         }
       }
     },
-    [onClose, showDeleteConfirm]
+    [requestClose, showDeleteConfirm]
   );
 
   // Close on click outside modal
   const handleBackdropClick = useCallback(
     (e: React.MouseEvent) => {
       if (e.target === e.currentTarget) {
-        onClose();
+        requestClose();
       }
     },
-    [onClose]
+    [requestClose]
   );
 
   useEffect(() => {
@@ -135,8 +132,15 @@ export function EventDetailModal({
   }, [isOpen, handleKeyDown]);
 
   const handleEdit = () => {
-    onClose();
-    router.push(`/events/${event.eventId}/edit`);
+    requestClose(() => router.push(`/events/${event.eventId}/edit`));
+  };
+
+  const handleOpenEventPage = () => {
+    requestClose(() => router.push(`/events/${event.eventId}`));
+  };
+
+  const handleNavigateToRelatedEvent = (eventId: string) => {
+    requestClose(() => router.push(`/events/${eventId}`));
   };
 
   const handleDelete = async () => {
@@ -150,8 +154,7 @@ export function EventDetailModal({
         throw new Error("Failed to delete event");
       }
 
-      onClose();
-      onDeleted?.();
+      requestClose(() => onDeleted?.());
     } catch (error) {
       logError("Failed to delete event", error);
       showError("Kon event niet verwijderen");
@@ -251,7 +254,7 @@ export function EventDetailModal({
 
             {/* Close button */}
             <button
-              onClick={onClose}
+              onClick={() => requestClose()}
               className={cn(
                 "absolute top-4 right-4 rounded-full p-2.5",
                 "bg-theme-surface-hover/60 hover:bg-theme-surface-hover",
@@ -461,7 +464,10 @@ export function EventDetailModal({
                     <Link
                       key={parent.id}
                       href={`/events/${parent.id}`}
-                      onClick={onClose}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleNavigateToRelatedEvent(parent.id);
+                      }}
                       className="hover:text-theme-primary text-theme-fg block text-sm font-medium transition-colors"
                     >
                       {parent.name}
@@ -485,7 +491,10 @@ export function EventDetailModal({
                     <Link
                       key={child.id}
                       href={`/events/${child.id}`}
-                      onClick={onClose}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleNavigateToRelatedEvent(child.id);
+                      }}
                       className="hover:bg-theme-hover text-theme-fg-secondary hover:text-theme-fg -mx-1 flex items-center gap-2 rounded-lg px-1 py-0.5 text-sm transition-colors"
                     >
                       {child.dayNumber != null && (
@@ -544,7 +553,7 @@ export function EventDetailModal({
                   Bewerken
                 </button>
                 <button
-                  onClick={() => router.push(`/events/${event.eventId}`)}
+                  onClick={handleOpenEventPage}
                   className={cn(
                     "flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium",
                     "bg-theme-active hover:bg-theme-hover",
