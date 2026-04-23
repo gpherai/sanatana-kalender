@@ -103,6 +103,7 @@
   --theme-brand-mark-animation: none;
   --theme-brand-label-animation: none;
   --theme-primary-action-background: var(--theme-primary);
+  --theme-primary-action-color: var(--theme-primary-fg, white);
   --theme-primary-action-shadow:
     var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000),
     var(--tw-shadow, 0 0 #0000);
@@ -481,6 +482,7 @@ body.app-body::after {
 
 .bg-theme-primary {
   background: var(--theme-primary-action-background);
+  color: var(--theme-primary-action-color);
   border: var(--theme-primary-action-border-rule);
   box-shadow: var(--theme-primary-action-shadow);
 }

@@ -98,7 +98,7 @@ of the project.
 7. Use component effect hook tokens when a theme needs richer treatment than a
    simple color utility can express: `--theme-surface-*-background`,
    `--theme-surface-*-border-rule`, `--theme-surface-*-shadow`,
-   `--theme-primary-action-*`, `--theme-control-*`,
+   `--theme-primary-action-*` (including action text color), `--theme-control-*`,
    `--theme-heading-*`, and `--theme-primary-text-animation`.
 8. Use `src/styles/utilities.css` for category utilities, complex gradients,
    forms, buttons, and animations that are not simple color-token utilities.

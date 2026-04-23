@@ -29,8 +29,53 @@
   --theme-stat-value: var(--theme-fg);
   --theme-heatmap-4: var(--theme-accent);
   --theme-app-background-attachment: fixed;
-  --theme-surface-backdrop-filter: blur(10px);
-  --theme-surface-raised-backdrop-filter: blur(14px);
+
+  --theme-surface-background: linear-gradient(
+    145deg,
+    oklch(1 0 0 / 0.9) 0%,
+    oklch(0.98 0.02 65 / 0.86) 100%
+  );
+  --theme-surface-border-rule: 1px solid oklch(0.68 0.22 52 / 0.2);
+  --theme-surface-shadow:
+    0 4px 20px oklch(0.68 0.22 52 / 0.12), 0 0 0 1px oklch(0.74 0.24 38 / 0.07),
+    inset 0 1px 0 oklch(1 0 0 / 0.5);
+  --theme-surface-raised-background: linear-gradient(
+    145deg,
+    oklch(1 0 0 / 0.94) 0%,
+    oklch(0.98 0.02 65 / 0.9) 100%
+  );
+  --theme-surface-raised-border-rule: 1px solid oklch(0.68 0.22 52 / 0.2);
+  --theme-surface-raised-shadow:
+    0 8px 32px oklch(0.68 0.22 52 / 0.16), 0 0 0 1px oklch(0.74 0.24 38 / 0.1),
+    inset 0 1px 0 oklch(1 0 0 / 0.6);
+  --theme-primary-action-background: linear-gradient(
+    145deg,
+    oklch(0.68 0.22 52) 0%,
+    oklch(0.62 0.2 42) 100%
+  );
+  --theme-primary-action-color: oklch(0.12 0.04 42);
+  --theme-primary-action-border-rule: 1px solid oklch(0.74 0.24 38 / 0.4);
+  --theme-primary-action-shadow:
+    0 4px 18px oklch(0.68 0.22 52 / 0.35), 0 0 18px oklch(0.74 0.24 38 / 0.15);
+  --theme-control-background: linear-gradient(
+    180deg,
+    oklch(1 0 0 / 0.95) 0%,
+    oklch(0.98 0.01 65 / 0.95) 100%
+  );
+  --theme-control-border-rule: 1px solid oklch(0.68 0.22 52 / 0.28);
+  --theme-control-focus-border: oklch(0.68 0.22 52);
+  --theme-control-focus-shadow:
+    0 0 0 3px oklch(0.68 0.22 52 / 0.22), 0 0 15px oklch(0.74 0.24 38 / 0.15);
+  --theme-heading-background: linear-gradient(
+    135deg,
+    oklch(0.48 0.22 32) 0%,
+    oklch(0.6 0.24 45) 30%,
+    oklch(0.72 0.2 62) 70%,
+    oklch(0.6 0.24 45) 100%
+  );
+  --theme-heading-text-fill-color: transparent;
+  --theme-heading-text-shadow: 0 0 28px oklch(0.68 0.22 52 / 0.28);
+  --theme-primary-text-animation: gold-fire 3.5s ease-in-out infinite;
 
   --theme-app-background:
     radial-gradient(
@@ -63,11 +108,13 @@
     oklch(0.96 0.05 58 / 0.9) 100%
   );
   --theme-header-border: oklch(0.68 0.22 52 / 0.32);
+  --theme-header-border-width: 2px;
   --theme-header-shadow:
     0 2px 20px oklch(0.68 0.22 52 / 0.16), 0 1px 0 oklch(0.74 0.24 38 / 0.18) inset;
   --theme-header-accent-display: block;
   --theme-header-accent-width: 240px;
   --theme-header-accent-height: 3px;
+  --theme-header-accent-radius: 2px;
   --theme-header-accent-background: linear-gradient(
     90deg,
     transparent 0%,
@@ -152,6 +199,49 @@
   --theme-border-strong: oklch(0.68 0.22 52 / 0.32);
   --theme-glass-bg: oklch(0.68 0.16 52 / 0.16);
   --theme-glass-border: oklch(0.74 0.24 38 / 0.38);
+  --theme-surface-background: linear-gradient(
+    145deg,
+    oklch(0.18 0.04 45 / 0.65) 0%,
+    oklch(0.13 0.03 40 / 0.55) 100%
+  );
+  --theme-surface-border-rule: 1px solid oklch(0.68 0.22 52 / 0.2);
+  --theme-surface-shadow:
+    0 4px 28px oklch(0 0 0 / 0.5), 0 0 20px oklch(0.68 0.22 52 / 0.1),
+    inset 0 1px 0 oklch(1 0 0 / 0.05);
+  --theme-surface-raised-background: linear-gradient(
+    145deg,
+    oklch(0.18 0.04 45 / 0.94) 0%,
+    oklch(0.13 0.03 40 / 0.9) 100%
+  );
+  --theme-surface-raised-border-rule: 1px solid oklch(0.68 0.22 52 / 0.24);
+  --theme-surface-raised-shadow:
+    0 8px 36px oklch(0 0 0 / 0.6), 0 0 24px oklch(0.68 0.22 52 / 0.14);
+  --theme-primary-action-background: linear-gradient(
+    145deg,
+    oklch(0.65 0.22 52) 0%,
+    oklch(0.58 0.2 42) 100%
+  );
+  --theme-primary-action-border-rule: 1px solid oklch(0.68 0.22 52 / 0.3);
+  --theme-primary-action-shadow:
+    0 4px 22px oklch(0 0 0 / 0.55), 0 0 22px oklch(0.68 0.22 52 / 0.22);
+  --theme-control-background: linear-gradient(
+    180deg,
+    oklch(0.18 0.03 42 / 0.95) 0%,
+    oklch(0.14 0.02 40 / 0.95) 100%
+  );
+  --theme-control-border-rule: 1px solid oklch(0.68 0.22 52 / 0.28);
+  --theme-control-focus-border: oklch(0.68 0.22 52);
+  --theme-control-focus-shadow:
+    0 0 0 3px oklch(0.68 0.22 52 / 0.22), 0 0 15px oklch(0.74 0.24 38 / 0.15);
+  --theme-heading-background: linear-gradient(
+    135deg,
+    oklch(0.68 0.22 38) 0%,
+    oklch(0.74 0.22 52) 40%,
+    oklch(0.82 0.18 66) 75%,
+    oklch(0.74 0.22 52) 100%
+  );
+  --theme-surface-backdrop-filter: blur(10px);
+  --theme-surface-raised-backdrop-filter: blur(14px);
 
   --theme-app-background:
     radial-gradient(
@@ -276,5 +366,6 @@
   [data-theme="narasimha-jwala"] {
     --theme-brand-mark-animation: none;
     --theme-brand-label-animation: none;
+    --theme-primary-text-animation: none;
   }
 }
