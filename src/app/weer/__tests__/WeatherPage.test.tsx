@@ -47,6 +47,7 @@ describe("WeatherPage 100% Coverage", () => {
         visibility: 10000,
         wind_speed: 5.5,
         wind_deg: 180,
+        coord: { lat: 52.0705, lon: 4.3007 },
         weather: [{ icon: "01d", description: "onbewolkt" }],
         sunrise: now - 3600,
         sunset: now + 3600,

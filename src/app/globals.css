@@ -6,8 +6,8 @@
 /* Themes */
 @import "../styles/themes/standard.css";
 @import "../styles/themes/special/bhairava-nocturne.css";
-@import "../styles/themes/special/shri-ganesha.css";
 @import "../styles/themes/special/narasimha-jwala.css";
+@import "../styles/themes/special/shri-ganesha.css";
 
 /* =============================================================================
    TAILWIND INTEGRATION

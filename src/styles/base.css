@@ -80,6 +80,29 @@
   --theme-glass-border: oklch(1 0 0 / 0.2);
   --theme-modal-backdrop: oklch(0 0 0 / 0.6);
 
+  /* App-level theme hooks.
+     Theme files set these variables instead of targeting body/header/etc. */
+  --theme-app-background: var(--theme-bg);
+  --theme-app-background-attachment: scroll;
+  --theme-page-shell-background: var(--theme-bg-subtle);
+  --theme-header-background: var(--theme-surface-overlay);
+  --theme-header-border: var(--theme-border);
+  --theme-header-shadow: none;
+  --theme-header-accent-display: none;
+  --theme-header-accent-width: 0;
+  --theme-header-accent-height: 0;
+  --theme-header-accent-background: transparent;
+  --theme-body-decoration-display: none;
+  --theme-body-decoration-content: "";
+  --theme-body-decoration-size: 0;
+  --theme-body-decoration-color: transparent;
+  --theme-body-decoration-right: 1.25rem;
+  --theme-body-decoration-bottom: 1.25rem;
+  --theme-brand-mark-animation: none;
+  --theme-brand-label-animation: none;
+  --theme-surface-backdrop-filter: none;
+  --theme-surface-raised-backdrop-filter: var(--theme-surface-backdrop-filter);
+
   /* Icon colors (celestial & UI) */
   --theme-icon-sun: oklch(0.85 0.18 60); /* Bright yellow */
   --theme-icon-sunrise: oklch(0.75 0.2 45); /* Vibrant orange */
@@ -405,9 +428,83 @@
    BASE STYLES
    ============================================================================= */
 body {
-  background: var(--background);
+  background: var(--theme-app-background);
+  background-attachment: var(--theme-app-background-attachment);
   color: var(--foreground);
   min-height: 100vh;
+}
+
+body.app-body::after {
+  content: var(--theme-body-decoration-content);
+  display: var(--theme-body-decoration-display);
+  position: fixed;
+  right: var(--theme-body-decoration-right);
+  bottom: var(--theme-body-decoration-bottom);
+  z-index: 0;
+  color: var(--theme-body-decoration-color);
+  font-family: serif;
+  font-size: var(--theme-body-decoration-size);
+  font-weight: 300;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.app-page-shell {
+  background: var(--theme-page-shell-background);
+}
+
+.bg-theme-surface {
+  backdrop-filter: var(--theme-surface-backdrop-filter);
+}
+
+.bg-theme-surface-raised {
+  backdrop-filter: var(--theme-surface-raised-backdrop-filter);
+}
+
+.panchanga-yoga-card {
+  background: var(--theme-panchanga-yoga-bg);
+}
+
+.panchanga-yoga-label {
+  color: var(--theme-panchanga-yoga-label);
+}
+
+.panchanga-karana-card {
+  background: var(--theme-panchanga-karana-bg);
+}
+
+.panchanga-karana-label {
+  color: var(--theme-panchanga-karana-label);
+}
+
+.app-header {
+  position: relative;
+  background: var(--theme-header-background);
+  border-bottom-color: var(--theme-header-border);
+  box-shadow: var(--theme-header-shadow);
+}
+
+.app-header::after {
+  content: "";
+  display: var(--theme-header-accent-display);
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  width: var(--theme-header-accent-width);
+  height: var(--theme-header-accent-height);
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: var(--theme-header-accent-background);
+  pointer-events: none;
+}
+
+.app-brand-mark {
+  display: inline-block;
+  animation: var(--theme-brand-mark-animation);
+}
+
+.app-brand-label {
+  animation: var(--theme-brand-label-animation);
 }
 
 html {

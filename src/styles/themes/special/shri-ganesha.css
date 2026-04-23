@@ -1,28 +1,51 @@
-/* ═══════════════════════════════════════════════════════════════════════════
-   ✨ SPECIAL THEME:✨ Shri Ganesha
-   Divine blessings of the Remover of Obstacles
-   ═══════════════════════════════════════════════════════════════════════════ */
+/* =============================================================================
+   SPECIAL THEME: Shri Ganesha
 
-/* Base colors & Tokens */
-:root,
+   Token-driven special theme. Do not target body/header/headings directly here;
+   set app-level theme hooks and semantic tokens instead.
+   ============================================================================= */
+
 [data-theme="shri-ganesha"] {
   --theme-primary: oklch(0.55 0.22 25);
   --theme-secondary: oklch(0.75 0.14 85);
   --theme-accent: oklch(0.55 0.15 145);
+  --theme-primary-fg: white;
+
   --ganesha-sindoor: oklch(0.55 0.25 30);
   --ganesha-gold: oklch(0.78 0.14 85);
   --ganesha-durva: oklch(0.55 0.18 145);
   --ganesha-mooladhara: oklch(0.45 0.22 25);
+
+  --theme-bg: oklch(0.96 0.035 76);
+  --theme-bg-subtle: oklch(0.94 0.045 70);
+  --theme-surface: oklch(1 0 0 / 0.78);
+  --theme-surface-raised: oklch(1 0 0 / 0.86);
+  --theme-surface-overlay: oklch(0.99 0.03 78 / 0.92);
+  --theme-fg: oklch(0.22 0.08 35);
+  --theme-fg-secondary: oklch(0.38 0.08 45);
+  --theme-fg-muted: oklch(0.5 0.06 55);
+  --theme-fg-subtle: oklch(0.64 0.05 65);
+  --theme-border: oklch(0.78 0.12 82 / 0.3);
+  --theme-border-subtle: oklch(0.84 0.08 78 / 0.2);
+  --theme-border-strong: oklch(0.58 0.18 35 / 0.42);
+  --theme-divider: oklch(0.82 0.08 78 / 0.24);
+  --theme-hover: oklch(0.92 0.055 72 / 0.72);
+  --theme-active: oklch(0.88 0.07 68 / 0.78);
+  --theme-disabled: oklch(0.88 0.035 72 / 0.7);
+  --theme-ring: var(--ganesha-gold);
+  --theme-glass-bg: oklch(0.96 0.055 78 / 0.2);
+  --theme-glass-border: oklch(0.78 0.14 85 / 0.3);
   --theme-stat-value: var(--theme-fg);
+  --theme-heatmap-empty: oklch(0.82 0.07 82 / 0.18);
+  --theme-heatmap-1: oklch(0.78 0.12 85 / 0.32);
+  --theme-heatmap-2: oklch(0.67 0.16 75 / 0.52);
+  --theme-heatmap-3: oklch(0.58 0.2 45 / 0.74);
   --theme-heatmap-4: var(--theme-accent);
-}
+  --theme-app-background-attachment: fixed;
+  --theme-surface-backdrop-filter: blur(12px);
+  --theme-surface-raised-backdrop-filter: blur(16px);
 
-/* ─── BACKGROUNDS ────────────────────────────────────────────────────────── */
-
-/* Force global body background (Light) */
-html[data-theme="shri-ganesha"] body,
-[data-theme="shri-ganesha"] body {
-  background:
+  --theme-app-background:
     radial-gradient(
       ellipse 150% 60% at 50% -10%,
       oklch(0.92 0.1 80 / 0.8) 0%,
@@ -45,14 +68,189 @@ html[data-theme="shri-ganesha"] body,
       oklch(0.97 0.02 80) 0%,
       oklch(0.95 0.03 70) 50%,
       oklch(0.93 0.04 60) 100%
-    ) !important;
-  background-attachment: fixed !important;
+    );
+  --theme-page-shell-background: transparent;
+
+  --theme-header-background: linear-gradient(
+    180deg,
+    oklch(0.98 0.03 80 / 0.95) 0%,
+    oklch(0.96 0.04 70 / 0.9) 100%
+  );
+  --theme-header-border: oklch(0.78 0.14 85 / 0.5);
+  --theme-header-shadow: 0 4px 25px oklch(0.78 0.14 85 / 0.25);
+  --theme-header-accent-display: block;
+  --theme-header-accent-width: 200px;
+  --theme-header-accent-height: 3px;
+  --theme-header-accent-background: linear-gradient(
+    90deg,
+    transparent,
+    oklch(0.78 0.14 85),
+    transparent
+  );
+
+  --theme-body-decoration-display: block;
+  --theme-body-decoration-content: "ॐ";
+  --theme-body-decoration-size: 120px;
+  --theme-body-decoration-color: oklch(0.78 0.14 85 / 0.08);
+  --theme-brand-mark-animation: divine-pulse 3s ease-in-out infinite;
+  --theme-brand-label-animation: ganesha-gold-shimmer 4s ease-in-out infinite;
+
+  --theme-hero-bg:
+    radial-gradient(
+      ellipse 62% 45% at 78% 12%,
+      oklch(0.78 0.14 85 / 0.58) 0%,
+      transparent 58%
+    ),
+    radial-gradient(
+      ellipse 48% 58% at 8% 88%,
+      oklch(0.4 0.16 145 / 0.42) 0%,
+      transparent 54%
+    ),
+    radial-gradient(
+      ellipse 50% 42% at 44% 55%,
+      oklch(0.7 0.16 62 / 0.28) 0%,
+      transparent 52%
+    ),
+    linear-gradient(
+      145deg,
+      oklch(0.28 0.12 24) 0%,
+      oklch(0.42 0.2 28) 34%,
+      oklch(0.55 0.18 48) 68%,
+      oklch(0.42 0.14 108) 100%
+    );
+  --theme-hero-blob-color: oklch(0.78 0.14 85 / 0.08);
+
+  --theme-moon-surface-light: oklch(0.99 0.018 82);
+  --theme-moon-surface-mid: oklch(0.95 0.028 78);
+  --theme-moon-surface-dark: oklch(0.88 0.045 72);
+  --theme-moon-shadow-light: oklch(0.18 0.06 38);
+  --theme-moon-shadow-deep: oklch(0.1 0.035 32);
+  --theme-moon-glow: oklch(0.92 0.08 88 / 0.72);
+  --theme-moon-rim: oklch(1 0 0 / 0.18);
+
+  --theme-almanac-moon-bg: oklch(0.91 0.075 82);
+  --theme-almanac-moon-fg: oklch(0.38 0.14 44);
+  --theme-almanac-moon-focus: oklch(0.58 0.18 52);
+  --theme-almanac-moon-cell-bg: oklch(0.93 0.055 82);
+  --theme-almanac-moon-cell-bg-hover: oklch(0.9 0.075 78);
+  --theme-almanac-moon-card-from: oklch(0.94 0.055 86);
+  --theme-almanac-moon-card-to: oklch(0.9 0.075 66);
+  --theme-almanac-moon-icon: oklch(0.58 0.18 52);
+  --theme-almanac-moon-rise-icon: oklch(0.62 0.17 70);
+  --theme-almanac-moon-set-icon: oklch(0.5 0.16 35);
+  --theme-almanac-moon-badge-bg: oklch(0.91 0.075 82);
+  --theme-almanac-moon-badge-fg: oklch(0.38 0.14 44);
+  --theme-almanac-moon-timeline-bg: linear-gradient(
+    to right,
+    oklch(0.95 0.06 88),
+    oklch(0.93 0.07 68),
+    oklch(0.92 0.06 48)
+  );
+
+  --theme-almanac-special-bg: oklch(0.86 0.12 42);
+  --theme-almanac-special-fg: oklch(0.28 0.13 30);
+  --theme-almanac-special-focus: oklch(0.55 0.22 25);
+  --theme-almanac-special-cell-bg: oklch(0.94 0.055 44);
+  --theme-almanac-special-cell-bg-hover: oklch(0.91 0.075 40);
+  --theme-almanac-special-card-bg: oklch(0.93 0.055 45);
+  --theme-almanac-special-heading: oklch(0.42 0.19 28);
+  --theme-almanac-special-badge-bg: oklch(0.9 0.085 38);
+  --theme-almanac-special-badge-fg: oklch(0.3 0.14 30);
+  --theme-almanac-special-pill-bg: oklch(0.9 0.08 40);
+
+  --theme-almanac-event-bg: oklch(0.9 0.11 82);
+  --theme-almanac-event-fg: oklch(0.36 0.13 58);
+  --theme-almanac-event-focus: oklch(0.68 0.16 82);
+  --theme-almanac-event-cell-bg: oklch(0.95 0.06 82);
+  --theme-almanac-event-cell-bg-hover: oklch(0.92 0.08 78);
+  --theme-almanac-event-icon: oklch(0.62 0.17 76);
+  --theme-almanac-event-major-bg: oklch(0.95 0.06 82);
+  --theme-almanac-event-major-bg-hover: oklch(0.92 0.08 78);
+  --theme-almanac-event-major-star: oklch(0.62 0.17 76);
+  --theme-almanac-event-pill-bg: oklch(0.92 0.08 78);
+  --theme-almanac-event-time-start-bg: oklch(0.91 0.075 82);
+  --theme-almanac-event-time-start-fg: oklch(0.38 0.14 44);
+  --theme-almanac-event-time-end-bg: oklch(0.92 0.08 78);
+  --theme-almanac-event-time-end-fg: oklch(0.36 0.13 58);
+
+  --theme-almanac-sun-card-from: oklch(0.94 0.095 58);
+  --theme-almanac-sun-card-to: oklch(0.93 0.075 88);
+  --theme-almanac-sun-icon: oklch(0.64 0.18 55);
+  --theme-almanac-sun-rise-icon: oklch(0.68 0.18 50);
+  --theme-almanac-sun-set-icon: oklch(0.56 0.2 28);
+
+  --theme-almanac-warning-border: oklch(0.55 0.22 25);
+  --theme-almanac-warning-bg: oklch(0.94 0.065 28);
+  --theme-almanac-warning-heading: oklch(0.46 0.2 25);
+  --theme-almanac-warning-text: oklch(0.34 0.16 22);
+  --theme-almanac-day-header-bg: linear-gradient(
+    135deg,
+    oklch(0.42 0.2 28),
+    oklch(0.68 0.16 74),
+    oklch(0.44 0.14 128)
+  );
+
+  --theme-panchanga-yoga-bg: oklch(0.9 0.075 126);
+  --theme-panchanga-yoga-label: oklch(0.36 0.13 138);
+  --theme-panchanga-karana-bg: oklch(0.92 0.07 76);
+  --theme-panchanga-karana-label: oklch(0.42 0.14 58);
+
+  --theme-icon-sun: oklch(0.8 0.17 64);
+  --theme-icon-sunrise: oklch(0.72 0.19 46);
+  --theme-icon-sunset: oklch(0.58 0.22 25);
+  --theme-icon-moon: oklch(0.58 0.16 70);
+  --theme-icon-event-special: var(--ganesha-sindoor);
+  --theme-icon-mode-sun: oklch(0.82 0.17 64);
+  --theme-icon-mode-moon: oklch(0.55 0.12 68);
+
+  --theme-calendar-header-text: oklch(0.42 0.13 48);
+  --theme-calendar-date-text: oklch(0.35 0.08 42);
+  --theme-calendar-today-bg: color-mix(in oklch, var(--theme-primary) 16%, transparent);
+  --theme-calendar-today-text: white;
+  --theme-calendar-off-range-text: oklch(0.68 0.04 64);
+  --theme-calendar-off-range-bg: oklch(0.97 0.02 78 / 0.58);
+  --theme-calendar-weekend-bg: oklch(0.94 0.04 82 / 0.74);
+  --theme-calendar-popup-bg: oklch(0.99 0.02 78);
+  --theme-calendar-agenda-text: var(--theme-fg-secondary);
+  --theme-calendar-border: oklch(0.82 0.08 78 / 0.5);
+  --theme-calendar-border-subtle: oklch(0.88 0.05 78 / 0.42);
+  --theme-calendar-full-moon-bg-start: oklch(0.96 0.055 88);
+  --theme-calendar-full-moon-bg-end: oklch(0.93 0.075 74);
+  --theme-calendar-full-moon-glow: oklch(0.78 0.14 85 / 0.36);
+  --theme-calendar-new-moon-bg-start: oklch(0.92 0.04 56);
+  --theme-calendar-new-moon-bg-end: oklch(0.89 0.055 40);
 }
 
-/* Force global body background (Dark) */
-html[data-theme="shri-ganesha"].dark body,
-.dark[data-theme="shri-ganesha"] body {
-  background:
+.dark[data-theme="shri-ganesha"],
+[data-theme="shri-ganesha"].dark {
+  --theme-primary: oklch(0.64 0.22 28);
+  --theme-secondary: oklch(0.78 0.14 85);
+  --theme-accent: oklch(0.63 0.16 145);
+  --theme-fg: oklch(0.95 0.035 82);
+  --theme-fg-secondary: oklch(0.82 0.055 72);
+  --theme-fg-muted: oklch(0.68 0.045 66);
+  --theme-fg-subtle: oklch(0.54 0.04 58);
+  --theme-bg: oklch(0.12 0.03 25);
+  --theme-bg-subtle: oklch(0.1 0.02 30);
+  --theme-surface: oklch(0.18 0.03 30 / 0.65);
+  --theme-surface-raised: oklch(0.18 0.03 30 / 0.7);
+  --theme-surface-overlay: oklch(0.15 0.04 30 / 0.95);
+  --theme-hover: oklch(0.24 0.05 30 / 0.62);
+  --theme-active: oklch(0.3 0.07 30 / 0.68);
+  --theme-disabled: oklch(0.22 0.03 30 / 0.62);
+  --theme-border: oklch(0.5 0.12 85 / 0.25);
+  --theme-border-subtle: oklch(0.5 0.12 85 / 0.16);
+  --theme-border-strong: oklch(0.5 0.12 85 / 0.4);
+  --theme-divider: oklch(0.5 0.12 85 / 0.18);
+  --theme-glass-bg: oklch(0.78 0.14 85 / 0.12);
+  --theme-glass-border: oklch(0.78 0.14 85 / 0.24);
+  --theme-heatmap-empty: oklch(0.5 0.08 85 / 0.16);
+  --theme-heatmap-1: oklch(0.48 0.13 86 / 0.3);
+  --theme-heatmap-2: oklch(0.56 0.15 72 / 0.48);
+  --theme-heatmap-3: oklch(0.58 0.2 42 / 0.68);
+  --theme-heatmap-4: var(--theme-accent);
+
+  --theme-app-background:
     radial-gradient(
       ellipse 120% 50% at 50% -5%,
       oklch(0.3 0.15 25 / 0.7) 0%,
@@ -76,116 +274,134 @@ html[data-theme="shri-ganesha"].dark body,
       oklch(0.12 0.03 25) 0%,
       oklch(0.1 0.02 30) 50%,
       oklch(0.08 0.02 35) 100%
-    ) !important;
-  background-attachment: fixed !important;
-}
-
-/* Transparency for main container */
-[data-theme="shri-ganesha"] .min-h-screen,
-[data-theme="shri-ganesha"] main {
-  background: transparent !important;
-}
-
-/* ─── UI ELEMENTS ────────────────────────────────────────────────────────── */
-
-/* Specialized Header Styling (Strong Selectors) */
-html[data-theme="shri-ganesha"] header.bg-theme-surface-overlay {
-  background: linear-gradient(
-    180deg,
-    oklch(0.98 0.03 80 / 0.95) 0%,
-    oklch(0.96 0.04 70 / 0.9) 100%
-  ) !important;
-  border-bottom: 2px solid oklch(0.78 0.14 85 / 0.5) !important;
-  box-shadow: 0 4px 25px oklch(0.78 0.14 85 / 0.25) !important;
-}
-
-html[data-theme="shri-ganesha"].dark header.bg-theme-surface-overlay {
-  background: linear-gradient(
+    );
+  --theme-header-background: linear-gradient(
     180deg,
     oklch(0.15 0.04 30 / 0.95) 0%,
     oklch(0.12 0.03 25 / 0.92) 100%
-  ) !important;
-  border-bottom: 2px solid oklch(0.5 0.12 85 / 0.4) !important;
-  box-shadow: 0 4px 30px oklch(0.5 0.12 85 / 0.2) !important;
-}
+  );
+  --theme-header-border: oklch(0.5 0.12 85 / 0.4);
+  --theme-header-shadow: 0 4px 30px oklch(0.5 0.12 85 / 0.2);
+  --theme-body-decoration-color: oklch(0.78 0.14 85 / 0.1);
+  --theme-surface-backdrop-filter: blur(10px);
+  --theme-surface-raised-backdrop-filter: blur(14px);
 
-/* Surface (Dark) */
-.dark[data-theme="shri-ganesha"] .bg-theme-surface,
-[data-theme="shri-ganesha"].dark .bg-theme-surface {
-  background: linear-gradient(
-    145deg,
-    oklch(0.18 0.03 30 / 0.65) 0%,
-    oklch(0.14 0.02 25 / 0.55) 100%
-  ) !important;
-  border: 1px solid oklch(0.5 0.12 85 / 0.25) !important;
-  box-shadow:
-    0 4px 25px oklch(0 0 0 / 0.4),
-    inset 0 1px 0 oklch(1 0 0 / 0.05) !important;
-  backdrop-filter: blur(10px) !important;
-}
+  --theme-hero-bg:
+    radial-gradient(
+      ellipse 58% 42% at 78% 12%,
+      oklch(0.72 0.16 78 / 0.42) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 52% 58% at 8% 88%,
+      oklch(0.24 0.13 145 / 0.55) 0%,
+      transparent 54%
+    ),
+    radial-gradient(
+      ellipse 46% 48% at 48% 55%,
+      oklch(0.48 0.2 32 / 0.4) 0%,
+      transparent 52%
+    ),
+    linear-gradient(
+      150deg,
+      oklch(0.08 0.025 28) 0%,
+      oklch(0.18 0.1 28) 30%,
+      oklch(0.32 0.17 32) 58%,
+      oklch(0.27 0.12 95) 100%
+    );
+  --theme-hero-blob-color: oklch(0.78 0.14 85 / 0.1);
 
-/* Surface Raised (Dark) */
-.dark[data-theme="shri-ganesha"] .bg-theme-surface-raised,
-[data-theme="shri-ganesha"].dark .bg-theme-surface-raised {
-  background: linear-gradient(
-    145deg,
-    oklch(0.18 0.03 30 / 0.7) 0%,
-    oklch(0.14 0.02 25 / 0.6) 100%
-  ) !important;
-  border: 1px solid oklch(0.5 0.12 85 / 0.3) !important;
-  box-shadow:
-    0 8px 35px oklch(0 0 0 / 0.5),
-    inset 0 1px 0 oklch(1 0 0 / 0.05) !important;
-  backdrop-filter: blur(14px) !important;
-}
+  --theme-moon-surface-light: oklch(0.99 0.015 86);
+  --theme-moon-surface-mid: oklch(0.94 0.025 80);
+  --theme-moon-surface-dark: oklch(0.87 0.038 72);
+  --theme-moon-shadow-light: oklch(0.12 0.035 34);
+  --theme-moon-shadow-deep: oklch(0.06 0.02 28);
+  --theme-moon-glow: oklch(0.84 0.08 86 / 0.58);
+  --theme-moon-rim: oklch(1 0 0 / 0.14);
 
-/* ─── TYPOGRAPHY ─────────────────────────────────────────────────────────── */
+  --theme-almanac-moon-bg: oklch(0.36 0.12 78 / 0.28);
+  --theme-almanac-moon-fg: oklch(0.82 0.12 82);
+  --theme-almanac-moon-cell-bg: oklch(0.34 0.11 76 / 0.22);
+  --theme-almanac-moon-cell-bg-hover: oklch(0.4 0.13 72 / 0.32);
+  --theme-almanac-moon-card-from: oklch(0.32 0.11 82 / 0.68);
+  --theme-almanac-moon-card-to: oklch(0.28 0.1 48 / 0.68);
+  --theme-almanac-moon-icon: oklch(0.74 0.16 74);
+  --theme-almanac-moon-rise-icon: oklch(0.76 0.15 82);
+  --theme-almanac-moon-set-icon: oklch(0.66 0.16 42);
+  --theme-almanac-moon-badge-bg: oklch(0.36 0.12 78 / 0.28);
+  --theme-almanac-moon-badge-fg: oklch(0.82 0.12 82);
+  --theme-almanac-moon-timeline-bg: linear-gradient(
+    to right,
+    oklch(0.24 0.1 82 / 0.5),
+    oklch(0.2 0.12 48 / 0.5),
+    oklch(0.18 0.09 30 / 0.5)
+  );
 
-/* Headings (Gradients) */
-[data-theme="shri-ganesha"] h1,
-[data-theme="shri-ganesha"] h2 {
-  background: linear-gradient(
+  --theme-almanac-special-fg: oklch(0.88 0.14 48);
+  --theme-almanac-special-cell-bg: oklch(0.36 0.14 34 / 0.24);
+  --theme-almanac-special-cell-bg-hover: oklch(0.42 0.16 34 / 0.34);
+  --theme-almanac-special-card-bg: oklch(0.28 0.11 34 / 0.72);
+  --theme-almanac-special-heading: oklch(0.82 0.15 52);
+  --theme-almanac-special-badge-bg: oklch(0.38 0.14 38 / 0.3);
+  --theme-almanac-special-badge-fg: oklch(0.86 0.14 50);
+  --theme-almanac-special-pill-bg: oklch(0.36 0.14 38 / 0.28);
+
+  --theme-almanac-event-fg: oklch(0.86 0.13 82);
+  --theme-almanac-event-cell-bg: oklch(0.36 0.12 78 / 0.22);
+  --theme-almanac-event-cell-bg-hover: oklch(0.42 0.14 76 / 0.32);
+  --theme-almanac-event-icon: oklch(0.76 0.15 78);
+  --theme-almanac-event-major-bg: oklch(0.36 0.12 78 / 0.22);
+  --theme-almanac-event-major-bg-hover: oklch(0.42 0.14 76 / 0.32);
+  --theme-almanac-event-major-star: oklch(0.76 0.15 78);
+  --theme-almanac-event-pill-bg: oklch(0.36 0.12 78 / 0.28);
+  --theme-almanac-event-time-start-bg: oklch(0.36 0.12 78 / 0.28);
+  --theme-almanac-event-time-start-fg: oklch(0.82 0.12 82);
+  --theme-almanac-event-time-end-bg: oklch(0.36 0.12 60 / 0.28);
+  --theme-almanac-event-time-end-fg: oklch(0.86 0.13 82);
+
+  --theme-almanac-sun-card-from: oklch(0.34 0.14 50 / 0.7);
+  --theme-almanac-sun-card-to: oklch(0.24 0.1 82 / 0.7);
+  --theme-almanac-sun-icon: oklch(0.76 0.16 64);
+  --theme-almanac-sun-rise-icon: oklch(0.74 0.18 48);
+  --theme-almanac-sun-set-icon: oklch(0.66 0.2 28);
+  --theme-almanac-warning-bg: oklch(0.3 0.16 24 / 0.42);
+  --theme-almanac-warning-border: oklch(0.6 0.22 25);
+  --theme-almanac-warning-heading: oklch(0.78 0.16 36);
+  --theme-almanac-warning-text: oklch(0.84 0.12 42);
+  --theme-almanac-day-header-bg: linear-gradient(
     135deg,
-    oklch(0.45 0.2 25) 0%,
-    oklch(0.7 0.14 85) 50%,
-    oklch(0.45 0.2 25) 100%
-  ) !important;
-  -webkit-background-clip: text !important;
-  background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
+    oklch(0.26 0.16 28),
+    oklch(0.42 0.16 62),
+    oklch(0.22 0.12 132)
+  );
+
+  --theme-panchanga-yoga-bg: oklch(0.24 0.1 132 / 0.5);
+  --theme-panchanga-yoga-label: oklch(0.74 0.13 138);
+  --theme-panchanga-karana-bg: oklch(0.28 0.1 76 / 0.5);
+  --theme-panchanga-karana-label: oklch(0.78 0.12 78);
+  --theme-icon-sun: oklch(0.78 0.16 64);
+  --theme-icon-sunrise: oklch(0.72 0.18 48);
+  --theme-icon-sunset: oklch(0.66 0.2 25);
+  --theme-icon-moon: oklch(0.76 0.14 78);
+  --theme-icon-event-special: oklch(0.78 0.17 42);
+  --theme-icon-mode-sun: oklch(0.82 0.17 64);
+  --theme-icon-mode-moon: oklch(0.78 0.12 82);
+
+  --theme-calendar-header-text: oklch(0.78 0.12 78);
+  --theme-calendar-date-text: oklch(0.86 0.06 76);
+  --theme-calendar-off-range-text: oklch(0.52 0.04 58);
+  --theme-calendar-off-range-bg: oklch(0.12 0.03 30 / 0.6);
+  --theme-calendar-weekend-bg: oklch(0.22 0.07 50 / 0.45);
+  --theme-calendar-popup-bg: oklch(0.16 0.035 30);
+  --theme-calendar-agenda-text: oklch(0.86 0.06 76);
+  --theme-calendar-border: oklch(0.5 0.12 85 / 0.32);
+  --theme-calendar-border-subtle: oklch(0.5 0.12 85 / 0.2);
+  --theme-calendar-full-moon-bg-start: oklch(0.32 0.11 82);
+  --theme-calendar-full-moon-bg-end: oklch(0.25 0.1 58);
+  --theme-calendar-full-moon-glow: oklch(0.78 0.14 85 / 0.28);
+  --theme-calendar-new-moon-bg-start: oklch(0.17 0.06 35);
+  --theme-calendar-new-moon-bg-end: oklch(0.12 0.04 28);
 }
-
-/* ─── DECORATIONS ────────────────────────────────────────────────────────── */
-
-[data-theme="shri-ganesha"] body::after {
-  content: "ॐ" !important;
-  position: fixed !important;
-  bottom: 20px !important;
-  right: 20px !important;
-  font-size: 120px !important;
-  color: oklch(0.78 0.14 85 / 0.08) !important;
-  pointer-events: none !important;
-  z-index: 0 !important;
-}
-
-/* Header Line */
-[data-theme="shri-ganesha"] header::after {
-  content: "" !important;
-  position: absolute !important;
-  bottom: -2px !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-  width: 200px !important;
-  height: 3px !important;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    oklch(0.78 0.14 85),
-    transparent
-  ) !important;
-}
-
-/* ─── ANIMATIONS ─────────────────────────────────────────────────────────── */
 
 @keyframes divine-pulse {
   0%,
@@ -199,15 +415,19 @@ html[data-theme="shri-ganesha"].dark header.bg-theme-surface-overlay {
   }
 }
 
-/* Logo icon animatie */
-[data-theme="shri-ganesha"] header a span:first-child {
-  animation: divine-pulse 3s ease-in-out infinite !important;
-  display: inline-block !important;
+@keyframes ganesha-gold-shimmer {
+  0%,
+  100% {
+    text-shadow: 0 0 0 transparent;
+  }
+  50% {
+    text-shadow: 0 0 16px oklch(0.78 0.14 85 / 0.42);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  [data-theme="shri-ganesha"] * {
-    animation: none !important;
-    transition: none !important;
+  [data-theme="shri-ganesha"] {
+    --theme-brand-mark-animation: none;
+    --theme-brand-label-animation: none;
   }
 }

@@ -1,6 +1,6 @@
 # 🗏️ Dharma Calendar - Architecture Document
 
-> **Versie:** 5.0
+> **Versie:** 5.1
 > **Laatst bijgewerkt:** 23 april 2026
 
 ---
@@ -58,7 +58,7 @@ Dharma Calendar is een persoonlijke web applicatie voor het bijhouden van Sanata
 │                             │                                    │
 │  ┌──────────────────────────▼──────────────────────────────┐    │
 │  │                   Service Layer                          │    │
-│  │     panchangaService + recurrenceService + sadhanaService│    │
+│  │ panchanga + recurrence + event + sadhana + weather        │    │
 │  └──────────────────────────┬───────────────────────────────┘    │
 │                             │                                    │
 │  ┌──────────────────────────▼──────────────────────────────┐    │
@@ -88,7 +88,7 @@ Dharma Calendar is een persoonlijke web applicatie voor het bijhouden van Sanata
 | **Styling** | Tailwind CSS | 4.2.x | Utility-first CSS |
 | **Kalender** | react-big-calendar | 1.19.x | Kalender weergave |
 | **Database** | PostgreSQL | 17+ | Data opslag |
-| **ORM** | Prisma (+ adapter-pg) | 7.5.x | Database toegang |
+| **ORM** | Prisma (+ adapter-pg) | 7.7.x | Database toegang |
 | **Validatie** | Zod | 4.3.x | Schema validatie |
 | **Datum/Tijd** | date-fns, luxon | 4.1.x, 3.7.x | Datum manipulatie |
 | **Astronomie** | Swiss Ephemeris (swisseph) | 0.5.x | Vedische astronomie (Tithi, Nakshatra, Yoga, Karana) |
@@ -174,6 +174,7 @@ dharma-calendar/
 │   ├── repositories/          # Data Access Layer (Single Source of Truth voor DB queries)
 │   │   ├── event.repository.ts
 │   │   ├── category.repository.ts
+│   │   ├── daily-info.repository.ts
 │   │   ├── preference.repository.ts
 │   │   └── sadhana.repository.ts
 │   ├── scripts/               # Applicatie build/seed scripts
@@ -333,7 +334,9 @@ De service layer wordt gebruikt voor complexe business logica en orchestratie.
 |---------|---------|----------------------|
 | `panchangaService` | `/services/panchanga.service.ts` | Wrapper voor astronomische berekeningen, LRU caching |
 | `recurrenceService` | `/services/recurrence.service.ts` | Event recurrence generation en rule dispatching |
+| `eventService` | `/services/event.service.ts` | Event mutations, occurrence ownership, category validatie en conflictregels |
 | `sadhanaService` | `/services/sadhana.service.ts` | Berekenen van streaks, goals progress, en aggregatie van sessiedata naar statistieken |
+| `weatherService` | `/services/weather.service.ts` | OpenWeather orchestratie, foutnormalisatie en dashboard-response mapping |
 
 ### 4.4 Repository Layer (Data Access)
 
@@ -344,6 +347,7 @@ De Repository layer is de **enige** plek in de applicatie die direct communiceer
 | `EventRepository` | Ophalen van occurrences met complexe datum-filters en event details |
 | `SadhanaRepository` | CRUD operaties voor sessies, doelen, praktijken en routines (inclusief transactions) |
 | `CategoryRepository` | Ophalen en beheren van Godheden/categorieën |
+| `DailyInfoRepository` | Batch queries voor DailyInfo/tithi/nakshatra/sankranti data voor recurrence-regels |
 | `PreferenceRepository` | Beheren van de single-user voorkeuren (upsert pattern) |
 
 ### 4.3.1 API Routes vs Services: Decision Framework
@@ -384,6 +388,7 @@ De frontend gebruikt de Next.js App Router met Server Components als default en 
 2. **Client Components zijn expliciet**: gebruik `"use client"` alleen voor local state, effects, browser APIs of event handlers.
 3. **Gedeelde layout eerst**: nieuwe pagina's gebruiken standaard `PageLayout` voordat ze eigen spacing/background patronen introduceren.
 4. **Theme tokens boven hardcoded kleuren**: UI gebruikt `bg-theme-*`, `text-theme-*`, `border-theme-*` of `var(--theme-*)` tenzij een domeinkleur bewust buiten het thema valt.
+5. **Mobiele layout expliciet ontwerpen**: globale navigatie mag niet afhankelijk zijn van toevallig passende desktop-ruimte; gebruik wrap, horizontale overflow of een dedicated mobile nav patroon.
 
 ---
 
@@ -397,10 +402,10 @@ Het theme system is sinds de Tailwind v4 migratie **CSS-native**. Er is geen CSS
 |---------|----------------------|
 | `src/config/themes.ts` | Type-safe catalog met theme namen, metadata, categorieën en preview-kleuren voor Settings/runtime validatie |
 | `src/app/globals.css` | Importhub voor Tailwind, base CSS, utilities en theme CSS; bevat `@theme inline` mappings voor semantic `theme-*` utilities |
-| `src/styles/base.css` | Root variables, default theme tokens, dark mode tokens, semantic UI tokens en domeintokens |
+| `src/styles/base.css` | Root variables, default theme tokens, dark mode tokens, semantic UI tokens, domeintokens en app-level theme hooks |
 | `src/styles/utilities.css` | Aanvullende custom utilities zoals gradients, category colors, forms, buttons en animaties die niet puur uit `@theme` komen |
 | `src/styles/themes/standard.css` | Classic en revamped themes via `[data-theme="..."]` selectors |
-| `src/styles/themes/special/*.css` | Special theme overrides/effects per theme |
+| `src/styles/themes/special/*.css` | Special theme tokens en effect-tokens per theme |
 | `src/components/theme/ThemeProvider.tsx` | Runtime theme/color-mode context, validatie en localStorage persistence |
 | `src/app/layout.tsx` | Inline init script dat `data-theme` en `.dark` zet voor hydration om theme flash te beperken |
 
@@ -427,8 +432,9 @@ CSS variables from src/styles/** control rendering
 3. **Geen generator workflow**: er is geen `npm run generate:css`; wijzig CSS direct in de modulaire CSS-bestanden.
 4. **Theme utilities komen uit `@theme inline`**: componenten gebruiken Tailwind utilities zoals `bg-theme-surface`, `text-theme-fg-muted`, `hover:bg-theme-hover`, `border-theme-primary/20` en `ring-theme-primary/50`.
 5. **CSS variables blijven de runtime truth**: `[data-theme]` selectors wijzigen `--theme-*` waarden; Tailwind utilities verwijzen via `--color-theme-*` naar die runtime variabelen.
-6. **`utilities.css` is aanvullend**: gebruik dit bestand voor category utilities, complexe gradients, forms, buttons en animaties; niet voor nieuwe simpele kleurutilities die via `@theme inline` kunnen lopen.
-7. **Special themes blijven scoped**: nieuwe special theme styling hoort bij voorkeur onder `[data-theme="theme-name"]` en mag geen generieke selectors introduceren als dat niet nodig is.
+6. **App-level theme hooks sturen globale effecten**: pagina-achtergrond, headerstijl, body-decoratie, brand-animatie en surface blur lopen via tokens zoals `--theme-app-background`, `--theme-page-shell-background`, `--theme-header-background` en `--theme-surface-backdrop-filter`.
+7. **`utilities.css` is aanvullend**: gebruik dit bestand voor category utilities, complexe gradients, forms, buttons en animaties; niet voor nieuwe simpele kleurutilities die via `@theme inline` kunnen lopen.
+8. **Theme CSS blijft selector-arm**: standard en special themes zetten tokens onder `[data-theme="theme-name"]`; geen directe overrides op `body`, `header`, `h1`, `.min-h-screen`, `.bg-theme-*`, inputs of andere brede selectors.
 
 ### 6.4 Nieuwe Theme Toevoegen
 

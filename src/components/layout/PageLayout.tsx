@@ -16,7 +16,7 @@ interface PageLayoutProps {
 
   /**
    * Maximum content width
-   * - full: No max-width (default for content pages)
+   * - full: Default responsive container width without extra max-width
    * - medium: max-w-4xl (for settings, wide forms)
    * - narrow: max-w-2xl (for single-column forms)
    */
@@ -65,7 +65,7 @@ const WIDTH_CLASSES: Record<LayoutWidth, string> = {
  *
  * Provides consistent:
  * - Full-height background (min-h-screen)
- * - Theme-aware background color (bg-theme-bg-subtle)
+ * - Theme-aware page shell background via app-level theme hooks
  * - Responsive container with padding
  * - Optional max-width constraints
  * - Optional vertical spacing
@@ -102,7 +102,7 @@ export function PageLayout({
   className,
 }: PageLayoutProps) {
   return (
-    <div className="bg-theme-bg-subtle min-h-screen">
+    <div className="app-page-shell min-h-screen">
       {loading ? (
         <div className="flex min-h-screen items-center justify-center">
           <div className="text-center">

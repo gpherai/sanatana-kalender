@@ -24,10 +24,10 @@ Use a Tailwind v4 native, modular CSS theme architecture.
 |------|----------------|
 | `src/config/themes.ts` | Theme metadata, names, categories, preview colors, runtime validation |
 | `src/app/globals.css` | Tailwind import hub, CSS module imports, `@theme inline` mappings for semantic `theme-*` utilities |
-| `src/styles/base.css` | Root variables, semantic tokens, dark mode, base element styles |
+| `src/styles/base.css` | Root variables, semantic tokens, dark mode, base element styles, app-level theme hooks |
 | `src/styles/utilities.css` | Custom gradients, category utilities, forms, buttons, animations |
 | `src/styles/themes/standard.css` | Classic and revamped `[data-theme]` theme variables |
-| `src/styles/themes/special/*.css` | Special theme overrides and effects |
+| `src/styles/themes/special/*.css` | Special theme tokens and effect tokens |
 | `src/components/theme/ThemeProvider.tsx` | Runtime state, validation, localStorage persistence |
 | `src/app/layout.tsx` | Inline pre-hydration theme initialization script |
 
@@ -59,6 +59,9 @@ of the project.
   opacity work consistently.
 - Build and validation do not require a generator step.
 - Special themes can be split into dedicated files.
+- Global theme effects are explicit variables consumed by stable app hooks
+  (`.app-body`, `.app-page-shell`, `.app-header`) instead of ad-hoc broad
+  selectors.
 
 ### Negative
 
@@ -86,11 +89,16 @@ of the project.
 5. Keep runtime theme values in CSS variables. Theme selectors override
    `--theme-*`; `@theme inline` maps those variables to Tailwind's
    `--color-theme-*` utility namespace.
-6. Use `src/styles/utilities.css` for category utilities, complex gradients,
+6. Use app-level hook tokens for global visual effects:
+   `--theme-app-background`, `--theme-page-shell-background`,
+   `--theme-header-background`, `--theme-header-border`,
+   `--theme-body-decoration-*`, `--theme-brand-*-animation`, and
+   `--theme-surface-*-backdrop-filter`.
+7. Use `src/styles/utilities.css` for category utilities, complex gradients,
    forms, buttons, and animations that are not simple color-token utilities.
-7. Keep special theme overrides scoped to `[data-theme="..."]` whenever possible
-   and avoid broad selectors like `header`, `h1`, or `.min-h-screen` unless the
-   effect is intentionally global for that theme.
+8. Keep standard and special theme files selector-light: set tokens under
+   `[data-theme="..."]`; do not target `body`, `header`, `h1`, `.min-h-screen`,
+   `.bg-theme-*`, form elements, or other broad selectors from theme files.
 
 ## Supersedes
 
