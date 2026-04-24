@@ -1,7 +1,7 @@
 # 🚀 Dharma Calendar - Deployment Guide
 
-> **Versie:** 1.3  
-> **Laatst bijgewerkt:** 19 april 2026
+> **Versie:** 1.5<br>
+> **Laatst bijgewerkt:** 24 april 2026
 
 Dit document beschrijft hoe je Dharma Calendar deployt op een VPS met Docker.
 
@@ -51,18 +51,18 @@ git clone https://github.com/your-repo/dharma-calendar.git
 cd dharma-calendar
 
 # 2. Create environment file
-cp .env.example .env.production
-nano .env.production  # Edit with your settings
+cp .env.example .env
+nano .env  # Edit with your settings
 
-# 3. Build and start
-docker compose up -d --build
+# 3. Build and start safely (maakt eerst een database-backup)
+./scripts/deploy-prod.sh
 
 # 4. Check status
 docker compose ps
 docker compose logs -f app
 ```
 
-De applicatie is nu beschikbaar op `http://your-server:${APP_PORT}` (standaard 3000).
+De applicatie is nu beschikbaar op `http://your-server:${APP_PORT}` (standaard 53100).
 
 ---
 
@@ -118,13 +118,13 @@ git clone https://github.com/your-repo/dharma-calendar.git .
 
 ### Environment Variables
 
-Maak een productie environment file:
+Maak een productie environment file. Docker Compose leest `.env` automatisch:
 
 ```bash
-cp .env.example .env.production
+cp .env.example .env
 ```
 
-Edit `.env.production`:
+Edit `.env`:
 
 ```bash
 # =============================================================================
@@ -143,6 +143,8 @@ APP_PORT=53100
 COMPOSE_FILE=docker-compose.yml:docker-compose.prod.yml
 ```
 
+Als je toch `.env.production` wilt gebruiken, start de deploy dan met `ENV_FILE=.env.production ./scripts/deploy-prod.sh`.
+
 ### Secrets Genereren
 
 ```bash
@@ -159,8 +161,8 @@ openssl rand -base64 32
 ```bash
 cd /opt/dharma-calendar
 
-# Build images en start
-docker compose up -d --build
+# Build images en start veilig
+./scripts/deploy-prod.sh
 
 # Check status
 docker compose ps
@@ -170,6 +172,8 @@ docker compose logs -f
 ```
 
 > **Migraties:** De `migrate` service (`dharma-migrate`) draait automatisch vóór de app en past openstaande database-migraties toe.
+>
+> **Database-veiligheid:** Gebruik op productie `./scripts/deploy-prod.sh` in plaats van direct `docker compose up -d --build`. Dat script maakt eerst een PostgreSQL-backup in `./backups` en stopt de deploy als die backup faalt.
 
 > **Prod-overrides:** `docker-compose.prod.yml` sluit DB-poort 5432 extern af en voegt resource limits + log rotation toe. Zorg dat `.env` de volgende regel bevat zodat beide bestanden automatisch worden geladen:
 > ```
@@ -294,7 +298,7 @@ sudo certbot renew --dry-run
 mkdir -p /opt/dharma-calendar/backups
 
 # Run backup manually
-docker compose --profile backup run backup
+docker compose --profile backup run --rm backup
 
 # Setup cron job for daily backups at 2 AM
 crontab -e
@@ -302,8 +306,10 @@ crontab -e
 
 Add to crontab:
 ```cron
-0 2 * * * cd /opt/dharma-calendar && docker compose --env-file .env.production --profile backup run --rm backup
+0 2 * * * cd /opt/dharma-calendar && docker compose --profile backup run --rm backup >> backups/backup.log 2>&1
 ```
+
+Backups worden standaard 30 dagen bewaard. Zet `BACKUP_RETENTION_DAYS=60` in `.env` als je ze langer wilt bewaren.
 
 ### Restore from Backup
 
@@ -317,6 +323,29 @@ gunzip -c backups/dharma_calendar_20251128_020000.sql.gz | \
 
 # Start app
 docker compose start app
+```
+
+### Productie-data Lokaal Halen
+
+Om de live database naar je lokale omgeving te kopiëren (bijv. voor debuggen):
+
+```bash
+# Trek een dump van de VPS (standaard: gerald@10.0.0.30 poort 53001)
+npm run db:pull-prod
+
+# Importeer de dump lokaal (vraagt om bevestiging voordat het overschrijft)
+npm run db:import-dump
+```
+
+Omgevingsvariabelen zijn al correct als standaard ingesteld voor deze VPS:
+- `VPS_HOST` — moet je zelf instellen (bv. `export VPS_HOST=10.0.0.30`)
+- `VPS_SSH_PORT` — standaard `22`; voor deze VPS `53001`
+- `VPS_PATH` — standaard `/opt/dharma-calendar` ✓
+- `DB_USER` — standaard `dharma` ✓
+
+Snelste aanroep:
+```bash
+VPS_HOST=10.0.0.30 VPS_SSH_PORT=53001 npm run db:pull-prod
 ```
 
 ### Backup Offsite
@@ -383,15 +412,15 @@ cd /opt/dharma-calendar
 # 1. Pull latest code
 git pull origin main
 
-# 2. Backup database first!
-docker compose --profile backup run --rm backup
+# 2. Backup + rebuild + restart (migraties draaien automatisch)
+./scripts/deploy-prod.sh
 
-# 3. Rebuild and restart (migraties draaien automatisch)
-docker compose up -d --build
+# Bij een volledige no-cache rebuild:
+# ./scripts/deploy-prod.sh --no-cache
 
-# 4. Sync event-catalog als event-naming.ts gewijzigd is (zie hieronder)
+# 3. Sync event-catalog als event-naming.ts gewijzigd is (zie hieronder)
 
-# 5. Verify
+# 4. Verify
 docker compose ps
 curl http://localhost:${APP_PORT:-3000}/api/health
 ```
@@ -422,7 +451,7 @@ docker compose run --rm migrate node_modules/.bin/tsx \
 ```bash
 # Rollback to previous version
 git checkout <previous-commit-hash>
-docker compose up -d --build
+./scripts/deploy-prod.sh
 ```
 
 ---
@@ -466,9 +495,9 @@ docker compose ps db
 # Check DB logs
 docker compose logs db
 
-# Test connection from app container
-docker compose exec app sh
-nc -z db 5432 && echo "OK" || echo "FAIL"
+# Test DB bereikbaarheid via de migrate container (heeft wel psql)
+docker compose run --rm migrate sh -c \
+  "psql \$DATABASE_URL -c 'SELECT 1' && echo OK || echo FAIL"
 ```
 
 ### Port Already in Use
@@ -485,10 +514,17 @@ sudo kill -9 <PID>
 ### Reset Everything
 
 ```bash
-# ⚠️ WARNING: This deletes all data!
+# ⚠️ WAARSCHUWING: Dit verwijdert ALLE database-data — events, sadhana, alles.
+# Maak eerst een handmatige backup:
+docker compose --profile backup run --rm backup
+
+# Dan pas resetten:
 docker compose down -v
-docker compose --env-file .env.production up -d --build
+./scripts/deploy-prod.sh
 ```
+
+> `deploy-prod.sh` blokkeert `-v` en `down` als argumenten om ongelukken te voorkomen.
+> `docker compose down -v` mag je alleen direct uitvoeren na een expliciete backup.
 
 ### View Resource Usage
 
@@ -514,6 +550,7 @@ docker system df
 ├── scripts/
 │   ├── docker-entrypoint.sh
 │   ├── backup-db.sh
+│   ├── deploy-prod.sh
 │   └── health-check.sh
 └── ... (source code)
 ```

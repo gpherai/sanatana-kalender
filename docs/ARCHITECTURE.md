@@ -1,7 +1,7 @@
 # 🗏️ Dharma Calendar - Architecture Document
 
-> **Versie:** 5.1
-> **Laatst bijgewerkt:** 23 april 2026
+> **Versie:** 5.2
+> **Laatst bijgewerkt:** 24 april 2026
 
 ---
 
@@ -140,10 +140,13 @@ dharma-calendar/
 │   │   ├── events/            # EventCard, EventForm
 │   │   ├── filters/           # FilterSidebar + index.ts barrel
 │   │   ├── layout/            # PageLayout + index.ts barrel
-│   │   ├── sadhana/           # Sadhana Tracker module
+│   │   ├── sadhana/           # SadhanaTracker + tabs/ (TrackerTab, DashboardTab, AnalyticsTab, InstellingenTab)
 │   │   ├── settings/          # ThemeSection, CalendarSection, LocationSection
 │   │   │   │                  #   + index.ts barrel
 │   │   ├── theme/             # ThemeProvider, ColorModeToggle
+│   │   ├── weather/           # 16 componenten: CurrentWeatherCard, TemperatureChart, DailyForecastSection,
+│   │   │                  #   HourlyCards, WeatherMap, AirQualityCard, WeatherAstronomyCards,
+│   │   │                  #   WeatherPrimitives, WeatherSkeleton, WeatherErrorState, ...
 │   │   └── ui/                # Header, Toast, Section, MoonPhase, TodayHero
 │   ├── config/                # Type-safe configuratie
 │   │   ├── categories.ts
@@ -156,7 +159,7 @@ dharma-calendar/
 │   │   ├── index.ts           # Barrel: exporteert types + helpers
 │   │   ├── tithi-helpers.ts   # groupConsecutiveDays, computeTithiOccurrence, ...
 │   │   └── types.ts           # DailyInfoRow, GeneratedOccurrence, PrevDayInfo
-│   ├── hooks/                 # useFetch, useDebounce, useFilters
+│   ├── hooks/                 # useSadhanaData, useWeather, useFetch, useDebounce, useFilters, useOverlayHistory
 │   ├── lib/                   # Utilities + domeinconstanten
 │   │   ├── api-response.ts    # Gestandaardiseerde API responses
 │   │   ├── category-styles.ts # Kleur/icoon mapping voor categorieën
@@ -193,9 +196,12 @@ dharma-calendar/
 │   │   └── themes/            # Standard + special theme CSS
 │   ├── services/              # Businesslogica & Orchestratie (server-only)
 │   │   ├── index.ts           # Barrel export
+│   │   ├── event.service.ts       # Event mutations, occurrence ownership, category validatie
 │   │   ├── panchanga.service.ts   # LRU-cached wrapper voor PanchangaSwissService
 │   │   ├── recurrence.service.ts  # Recurrence generatie (strategy registry)
-│   │   └── sadhana.service.ts     # Sadhana stats, streaks en aggregaties
+│   │   ├── sadhana-formatters.ts  # DTO-formatting voor sadhana (formatSession, formatGoal, ...)
+│   │   ├── sadhana.service.ts     # Sadhana stats, streaks en aggregaties
+│   │   └── weather.service.ts     # OpenWeather orchestratie en dashboard-response mapping
 │   └── types/                 # Gedeelde TypeScript types
 │       ├── index.ts           # Barrel export
 │       ├── api.ts             # API response types
@@ -324,7 +330,35 @@ Vanaf versie 4.9 hanteert het project een strikte scheiding tussen de datalaag e
 
 ### 4.2 API Endpoints
 
-(Zie §4.2 in vorige versie voor volledige lijst)
+| Endpoint | Methoden | Verantwoordelijkheid |
+|----------|----------|----------------------|
+| `/api/health` | GET | Health check + DB latency |
+| `/api/events` | GET | Events met occurrences (gefilterd op datum, categorie, type, tithi) |
+| `/api/events/[id]` | GET / PUT / DELETE | Individueel event |
+| `/api/events/generate-occurrences` | POST | Genereer/vervang EventOccurrence records |
+| `/api/categories` | GET | Alle categorieën |
+| `/api/daily-info` | GET | Dagelijkse panchanga data (tithi, nakshatra, etc.) |
+| `/api/preferences` | GET / PUT | Single-user voorkeuren (upsert) |
+| `/api/themes` | GET | Theme catalog voor externe callers |
+| `/api/kundali` | POST | Jyotisha geboortehoroscoop (9 navagrahas + lagna, Lahiri ayanamsa) |
+| `/api/ical/export` | GET | iCal export (.ics) van alle events |
+| `/api/weer` | GET | Weerdashboard (huidig, uurlijks, dagelijks, lucht, astronomie) |
+| `/api/weer/search` | GET | Locatiezoekfunctie (OpenWeatherMap geocoding) |
+| `/api/weer/map/[layer]/[z]/[x]/[y]` | GET | Proxy voor OpenWeatherMap kaarttegels |
+| `/api/sadhana/sessions` | GET / POST | Sadhana sessies lijst + aanmaken |
+| `/api/sadhana/sessions/[id]` | GET / PATCH / DELETE | Individuele sessie |
+| `/api/sadhana/practices` | GET / POST | Praktijken (mantra, parayana, overig) |
+| `/api/sadhana/practices/[id]` | GET / PATCH / DELETE | Individuele praktijk |
+| `/api/sadhana/goals` | GET / POST | Doelen (dagelijks, wekelijks, lifetime) |
+| `/api/sadhana/goals/[id]` | GET / PATCH / DELETE | Individueel doel |
+| `/api/sadhana/routines` | GET / POST | Routines met geordende items |
+| `/api/sadhana/routines/[id]` | GET / PATCH / DELETE | Individuele routine (atomair update via transactie) |
+| `/api/sadhana/stats/today` | GET | Statistieken voor vandaag |
+| `/api/sadhana/stats/streak` | GET | Huidige + langste streak |
+| `/api/sadhana/stats/overview` | GET | Totale aggregaten (malas, minuten, sessies) |
+| `/api/sadhana/stats/calendar` | GET | Dagelijkse heatmap data voor het huidige jaar |
+
+Alle routes gebruiken gecentraliseerde response helpers (`serverError`, `validationError`, `notFoundError` uit `src/lib/api-response.ts`) en Zod schemas uit `src/lib/validations.ts`.
 
 ### 4.3 Service Layer
 
@@ -337,6 +371,7 @@ De service layer wordt gebruikt voor complexe business logica en orchestratie.
 | `eventService` | `/services/event.service.ts` | Event mutations, occurrence ownership, category validatie en conflictregels |
 | `sadhanaService` | `/services/sadhana.service.ts` | Berekenen van streaks, goals progress, en aggregatie van sessiedata naar statistieken |
 | `weatherService` | `/services/weather.service.ts` | OpenWeather orchestratie, foutnormalisatie en dashboard-response mapping |
+| `sadhanaFormatters` | `/services/sadhana-formatters.ts` | DTO-formatting: `formatSession`, `formatGoal`, `formatPractice`, `computePracticeStats` |
 
 ### 4.4 Repository Layer (Data Access)
 
@@ -382,7 +417,33 @@ De frontend gebruikt de Next.js App Router met Server Components als default en 
 | Feature UI | `src/components/{feature}/` | Almanac, Calendar, Events, Sadhana, Weather, Settings, etc. |
 | Feature routes | `src/app/{route}/` | Route-specifieke data orchestration en compositie |
 
-### 5.2 Component Boundary Rules
+### 5.2 Custom Hooks
+
+Data-fetching logica wordt gescheiden van UI-logica via custom hooks in `src/hooks/`.
+
+| Hook | Verantwoordelijkheid |
+|------|----------------------|
+| `useSadhanaData` | Laadt alle sadhana-data parallel (`Promise.allSettled`); SadhanaTracker component is puur UI-logica |
+| `useWeather` | Weerdata ophalen + locatiestate; WeatherDashboard is puur renderlogica |
+| `useFilters` | Filterstate (types, categories, search) voor kalender en events |
+| `useFetch` | Generieke loading/error/data state voor REST-calls |
+| `useDebounce` | Debounce voor input-gedreven API calls |
+| `useOverlayHistory` | Browser history integratie voor modals/overlays |
+
+**Patroon**: hooks retourneren data + callbacks; componenten ontvangen deze als props of via de hook — nooit directe `fetch()` in componenten.
+
+### 5.3 Error Boundaries
+
+Elke major route heeft een `error.tsx` (`"use client"`) als Next.js error boundary:
+
+- `src/app/events/error.tsx`
+- `src/app/sadhana/error.tsx`
+- `src/app/weer/error.tsx`
+- `src/app/kundali/error.tsx`
+
+Ze tonen een Dutch-language foutmelding met een retry-knop (`reset()` vanuit Next.js error boundary API).
+
+### 5.4 Component Boundary Rules
 
 1. **Pages composeren, componenten renderen**: route files houden data-ophaling/orchestratie zo dun mogelijk en delegeren UI naar componenten.
 2. **Client Components zijn expliciet**: gebruik `"use client"` alleen voor local state, effects, browser APIs of event handlers.
@@ -449,7 +510,39 @@ CSS variables from src/styles/** control rendering
 
 ## 7. Validation System
 
-(Zie §7 in vorige versie voor Zod validatie lagen)
+Alle Zod schemas zijn gecentraliseerd in `src/lib/validations.ts`. Nooit inline `z.object({...})` in routes.
+
+### 7.1 Schema Lagen
+
+| Schema | Gebruik |
+|--------|---------|
+| `eventFormSchema` | Client-side formulier validatie (leeg string toegestaan) |
+| `createEventSchema` / `updateEventSchema` | Server-side API validatie (strikt) |
+| `eventQuerySchema` | GET /api/events query parameters |
+| `generateOccurrencesSchema` | POST /api/events/generate-occurrences |
+| `updatePreferencesSchema` | PUT /api/preferences |
+| `updateOccurrenceSchema` | PATCH occurrence |
+| `createSadhanaSessionSchema` / `patchSadhanaSessionSchema` | Sadhana sessies |
+| `createSadhanaPracticeSchema` / `patchSadhanaPracticeSchema` | Sadhana praktijken |
+| `createSadhanaGoalSchema` / `patchSadhanaGoalSchema` | Sadhana doelen |
+| `createSadhanaRoutineSchema` / `patchSadhanaRoutineSchema` | Sadhana routines |
+| `weerQuerySchema` | GET /api/weer query parameters |
+
+### 7.2 Enum Schemas
+
+Enum schemas worden dynamisch gegenereerd vanuit de constanten in `src/lib/domain.ts` via `createEnumFromConstants()`. Dit garandeert dat validatie en UI-opties altijd synchroon zijn.
+
+### 7.3 Cross-Field Validatie
+
+`withEventRecurrenceValidation()` is een `superRefine` wrapper die controleert:
+- `YEARLY_LUNAR` / `MONTHLY_LUNAR` → tithi is verplicht
+- `YEARLY_SOLAR` → sankranti is verplicht
+
+### 7.4 Form → API Transform
+
+`transformFormToApi(data: EventFormData)` converteert formulierdata naar API payload:
+- Leeg strings → `null`
+- Tags string → `string[]` (split, trim, lowercase)
 
 ---
 
@@ -489,3 +582,4 @@ CSS variables from src/styles/** control rendering
 | Handmatige event invoer | Geen externe Panchang API-integratie | Handmatig invoeren via EventForm |
 | Locatie vast (Den Haag default) | Configureerbaar maar niet multi-locatie | Instelbaar via Settings → Locatie |
 | Weerdata externe afhankelijkheid | OpenWeatherMap API key vereist | Degradeert graceful zonder weerdata |
+| Geen server-side caching voor weer | Elke request roept OpenWeatherMap aan | Uitbreidbaar met Redis/ISR later |

@@ -11,10 +11,13 @@ Een Next.js applicatie voor het bijhouden van Hindu festivals, puja's, ekadashi'
 - Volledig Vedisch panchanga (tithi, nakshatra, yoga, karana, vara) via Swiss Ephemeris
 - Eerstvolgende maanopkomst en -ondergang op basis van huidige tijd
 - **Kundali** — Jyotisha geboortehoroscoop met alle 9 navagrahas, lagna en nakshatra (Lahiri ayanamsa, Whole Sign huizen, Mean Node)
+- **Sadhana tracker** — mantra japa, parayana en meditatie bijhouden; gepersonaliseerde routines, streaks, doelen en analytics
+- **Encyclopedie** — MDX-artikelen over Sanatana Dharma met zoekfunctie
+- **Weermodule** — vijfdaagse prognose, interactieve kaart, luchtkwaliteit en astronomische tijden
 - iCal export — abonneer op de kalender vanuit Google Calendar, Apple Calendar etc.
 - Categorisatie per godheid (Ganesha, Shiva, Krishna, etc.)
 - Geavanceerd filteren en zoeken
-- Meerdere thema's met dark mode — waaronder Bhairava Nocturne
+- Meerdere thema's met dark mode — waaronder Bhairava Nocturne, Narasimha Jwala en Shri Ganesha
 - Locatie-gebaseerde astronomische berekeningen (Swiss Ephemeris)
 - Parent-child event series (bijv. Navratri → 9 Navadurga dagen)
 
@@ -30,8 +33,10 @@ cd sanatana-kalender
 # Voeg toe voor prod-overrides (resource limits, log rotation, gesloten DB-poort):
 #   COMPOSE_FILE=docker-compose.yml:docker-compose.prod.yml
 
-docker compose up -d --build
+./scripts/deploy-prod.sh
 ```
+
+Gebruik op productie `./scripts/deploy-prod.sh` in plaats van direct `docker compose up -d --build`; het script maakt eerst een database-backup in `./backups`.
 
 ### Optie 2: Lokale Development
 
@@ -80,6 +85,8 @@ npm run build        # Production build
 npm run start        # Start production server
 npm run test         # Run unit tests
 npm run validate     # Format check + lint + type check
+npm run deploy:prod  # Productie deploy met verplichte DB-backup vooraf
+npm run backup:db    # Handmatige PostgreSQL backup via Docker Compose
 ```
 
 ### Database
@@ -144,16 +151,28 @@ De service delegeert core logica aan `src/engine/` — pure functies zonder DB-t
 
 ### Thema-systeem
 
-Het theme system is Tailwind v4 native en gebruikt modulaire CSS:
+Het theme system is Tailwind v4 native en gebruikt modulaire CSS. Er is geen generator of pre-commit hook meer.
 
-- `src/config/themes.ts` bevat theme metadata voor Settings/runtime validatie.
-- `src/app/globals.css` importeert Tailwind, base styles, utilities en theme CSS, en mappt semantic tokens naar Tailwind v4 `theme-*` utilities via `@theme inline`.
-- `src/styles/base.css` bevat root variables, semantic tokens en dark-mode tokens.
-- `src/styles/utilities.css` bevat aanvullende custom utilities zoals gradients,
-  category utilities, forms, buttons en animaties.
-- `src/styles/themes/standard.css` en `src/styles/themes/special/*.css` bevatten de echte theme styling.
+| Bestand | Rol |
+|---------|-----|
+| `src/config/themes.ts` | Metadata (naam, label, preview-kleuren) voor Settings/runtime validatie |
+| `src/app/globals.css` | Import-hub: Tailwind + base + utilities + themes; `@theme inline` voor semantic utilities |
+| `src/styles/base.css` | Root tokens, dark-mode tokens, semantic tokens, oklch kleurvariabelen |
+| `src/styles/utilities.css` | Aanvullende utilities (gradients, category colors, animaties) |
+| `src/styles/themes/standard.css` | Standaard themes via `[data-theme="..."]` selectors |
+| `src/styles/themes/special/*.css` | Speciale themes: Bhairava Nocturne, Narasimha Jwala, Shri Ganesha |
 
-Er is geen `generate:css` workflow meer. Wijzig theme styling direct in `src/styles/**` en houd metadata in `src/config/themes.ts` synchroon wanneer namen, labels of preview-kleuren veranderen.
+Voeg theme styling direct toe in `src/styles/**` en hou metadata in `src/config/themes.ts` synchroon.
+
+### Custom Hooks
+
+| Hook | Bestand | Verantwoordelijkheid |
+|------|---------|----------------------|
+| `useSadhanaData` | `src/hooks/useSadhanaData.ts` | Laadt alle sadhana-data parallel via `Promise.allSettled` |
+| `useWeather` | `src/hooks/useWeather.ts` | Weerdata ophalen en location state beheren |
+| `useFilters` | `src/hooks/useFilters.ts` | Filterstate voor de kalender en events pagina |
+| `useFetch` | `src/hooks/useFetch.ts` | Generieke data-fetching hook met loading/error state |
+| `useDebounce` | `src/hooks/useDebounce.ts` | Debounce voor zoekopdrachten |
 
 ## Project Structuur
 
@@ -162,27 +181,41 @@ sanatana-kalender/
 ├── docs/                    # Documentatie & ADRs
 ├── prisma/
 │   └── schema.prisma        # Database schema
-├── scripts/                 # Shell scripts (backup)
+├── scripts/                 # Shell scripts (backup, deploy)
 ├── src/
 │   ├── app/                 # Next.js App Router
-│   │   ├── api/             # API endpoints
+│   │   ├── api/
+│   │   │   ├── events/      # CRUD voor events en occurrences
+│   │   │   ├── sadhana/     # CRUD: sessions, practices, goals, routines, stats/*
+│   │   │   ├── weer/        # Weerdata + /map/[layer]/... + /search
+│   │   │   ├── kundali/     # Geboortehoroscoop berekening
+│   │   │   ├── daily-info/  # Dagelijkse panchanga data
+│   │   │   ├── preferences/ # Gebruikersvoorkeuren
+│   │   │   ├── categories/  # Godheden/categorieën
+│   │   │   ├── ical/        # iCal export
+│   │   │   └── themes/      # Theme catalog
 │   │   ├── almanac/         # Almanac maandoverzicht
-│   │   ├── events/          # Events overzichtspagina
-│   │   ├── kundali/         # Jyotisha geboortehoroscoop
+│   │   ├── encyclopedie/    # Encyclopedie + [slug] artikelen
+│   │   ├── events/          # Events overzichtspagina + error.tsx
+│   │   ├── kundali/         # Jyotisha geboortehoroscoop + error.tsx
+│   │   ├── sadhana/         # Sadhana tracker + error.tsx
 │   │   ├── settings/        # Instellingen
-│   │   └── weer/            # Weerpagina
+│   │   └── weer/            # Weerpagina + error.tsx
 │   ├── components/
 │   │   ├── almanac/         # MonthGrid, DayDetailsPanel, AlmanacFilters, MoonPhasesTimeline
-│   │   ├── calendar/        # DharmaCalendar, EventDetailModal, EventCard
-│   │   ├── events/          # EventCard, EventCardCompact
+│   │   ├── calendar/        # DharmaCalendar, EventDetailModal
+│   │   ├── events/          # EventCard, EventForm
+│   │   ├── sadhana/         # SadhanaTracker + tabs (tracker, dashboard, analytics, instellingen)
+│   │   ├── weather/         # 16 componenten: CurrentWeatherCard, TemperatureChart, WeatherMap, ...
 │   │   └── ui/              # TodayHero, MoonPhase, gedeelde componenten
 │   ├── config/              # Configuratie (events, categorieën, thema's)
-│   ├── hooks/               # Custom hooks
-│   ├── lib/                 # Utilities
-│   ├── repositories/        # Data access layer (complexe query-constructie)
+│   ├── engine/              # Pure recurrence helpers (geen DB, unit-testbaar)
+│   ├── hooks/               # useSadhanaData, useWeather, useFilters, useFetch, useDebounce
+│   ├── lib/                 # Utilities + api-response helpers + validations
+│   ├── repositories/        # Data access layer: event, sadhana, category, daily-info, preference
 │   ├── scripts/             # TypeScript scripts (seed, generate, check)
 │   ├── server/panchanga/    # Swiss Ephemeris engine + services
-│   ├── services/            # Business logic (recurrence, panchanga service)
+│   ├── services/            # Business logic: panchanga, recurrence, event, sadhana, weather, sadhana-formatters
 │   ├── styles/              # Tailwind v4 native theme CSS modules
 │   └── types/               # TypeScript types
 ├── docker-compose.yml
@@ -204,6 +237,21 @@ sanatana-kalender/
 | `/api/themes` | GET | Beschikbare thema's |
 | `/api/kundali` | POST | Jyotisha geboortehoroscoop (alle 9 navagrahas + lagna) |
 | `/api/ical/export` | GET | iCal export van alle events (.ics) |
+| `/api/weer` | GET | Weerdashboard data (huidig, uurlijks, dagelijks, lucht, astronomie) |
+| `/api/weer/search` | GET | Locatiezoekfunctie voor weermodule |
+| `/api/weer/map/[layer]/[z]/[x]/[y]` | GET | Proxy voor OpenWeatherMap kaarttegels |
+| `/api/sadhana/sessions` | GET/POST | Sadhana sessies |
+| `/api/sadhana/sessions/[id]` | GET/PATCH/DELETE | Individuele sessie |
+| `/api/sadhana/practices` | GET/POST | Praktijken |
+| `/api/sadhana/practices/[id]` | GET/PATCH/DELETE | Individuele praktijk |
+| `/api/sadhana/goals` | GET/POST | Doelen |
+| `/api/sadhana/goals/[id]` | GET/PATCH/DELETE | Individueel doel |
+| `/api/sadhana/routines` | GET/POST | Routines |
+| `/api/sadhana/routines/[id]` | GET/PATCH/DELETE | Individuele routine |
+| `/api/sadhana/stats/today` | GET | Statistieken voor vandaag |
+| `/api/sadhana/stats/streak` | GET | Huidige en langste streak |
+| `/api/sadhana/stats/overview` | GET | Totale statistieken (malas, minuten, sessies) |
+| `/api/sadhana/stats/calendar` | GET | Dagelijkse heatmap data voor het jaar |
 
 ## Tech Stack
 
@@ -233,4 +281,4 @@ Private project — Alle rechten voorbehouden.
 
 ---
 
-**Versie:** 0.12.0 | **Laatst bijgewerkt:** 11 april 2026
+**Versie:** 0.10.0 | **Laatst bijgewerkt:** 24 april 2026
