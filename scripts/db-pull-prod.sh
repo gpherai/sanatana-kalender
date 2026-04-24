@@ -21,8 +21,8 @@ set -euo pipefail
 
 VPS_HOST="${VPS_HOST:-}"
 VPS_SSH_PORT="${VPS_SSH_PORT:-22}"
-VPS_PATH="${VPS_PATH:-~/app}"
-DB_USER="${DB_USER:-postgres}"
+VPS_PATH="${VPS_PATH:-/opt/dharma-calendar}"
+DB_USER="${DB_USER:-dharma}"
 
 # Lees DB_NAME uit lokale .env als niet opgegeven
 if [ -z "${DB_NAME:-}" ]; then
@@ -52,11 +52,28 @@ if [ -z "$VPS_HOST" ]; then
 fi
 
 DUMP_FILE="sadhana-prod-$(date +%Y%m%d-%H%M).sql"
+TEMP_DUMP_FILE="${DUMP_FILE}.tmp"
+
+cleanup_temp_dump() {
+  rm -f "$TEMP_DUMP_FILE"
+}
+
+trap cleanup_temp_dump EXIT INT TERM
 
 echo "📦  Dump maken op VPS ($VPS_HOST:$VPS_SSH_PORT) — database: $DB_NAME"
-ssh -p "$VPS_SSH_PORT" "$VPS_HOST" \
+if ! ssh -p "$VPS_SSH_PORT" "$VPS_HOST" \
   "cd ${VPS_PATH} && docker compose exec -T db pg_dump -U ${DB_USER} --no-owner --no-acl --clean --if-exists ${DB_NAME}" \
-  > "$DUMP_FILE"
+  > "$TEMP_DUMP_FILE"; then
+  echo "❌  pg_dump op de VPS is mislukt; geen dump opgeslagen."
+  exit 1
+fi
+
+if [ ! -s "$TEMP_DUMP_FILE" ]; then
+  echo "❌  Dumpbestand is leeg; geen dump opgeslagen."
+  exit 1
+fi
+
+mv "$TEMP_DUMP_FILE" "$DUMP_FILE"
 
 SIZE=$(du -sh "$DUMP_FILE" | cut -f1)
 echo "✅  Opgeslagen: $DUMP_FILE ($SIZE)"
