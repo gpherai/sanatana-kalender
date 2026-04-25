@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { findEventOccurrences } from "../event.repository";
+import { findEventOccurrences, findUpcomingOccurrences } from "../event.repository";
 
 // vi.mock is hoisted — the factory runs lazily, capturing prismaMock from closure
 const prismaMock = vi.hoisted(() => ({
@@ -122,5 +122,33 @@ describe("findEventOccurrences", () => {
   it("applies desc order when order=desc", async () => {
     await findEventOccurrences({ order: "desc" });
     expect(getOrderByArg()).toEqual([{ date: "desc" }]);
+  });
+});
+
+describe("findUpcomingOccurrences", () => {
+  beforeEach(() => {
+    prismaMock.eventOccurrence.findMany.mockResolvedValue([]);
+    vi.clearAllMocks();
+  });
+
+  function getWhereArg() {
+    const [arg] = prismaMock.eventOccurrence.findMany.mock.calls[0] as [
+      { where: Record<string, unknown>; orderBy: unknown[] },
+    ];
+    return arg.where as Record<string, unknown>;
+  }
+
+  it("uses OR query to support multi-day overlap logic", async () => {
+    await findUpcomingOccurrences(7);
+    const where = getWhereArg();
+    expect(Array.isArray(where.OR)).toBe(true);
+  });
+
+  it("second OR branch catches multi-day events with endDate", async () => {
+    await findUpcomingOccurrences(7);
+    const where = getWhereArg();
+    const orClauses = where.OR as Array<Record<string, unknown>>;
+    const hasEndDateBranch = orClauses.some((branch) => "endDate" in branch);
+    expect(hasEndDateBranch).toBe(true);
   });
 });

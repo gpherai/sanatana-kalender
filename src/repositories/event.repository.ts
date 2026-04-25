@@ -193,23 +193,28 @@ export async function findEventOccurrences(params: EventQueryParams) {
 
 /**
  * Find upcoming event occurrences within a specific day window.
- * Starting from today (UTC midnight).
+ * Starting from today in Europe/Amsterdam timezone (DEFAULT_LOCATION.timezone).
+ * Includes multi-day events that started before today but end within window.
  */
 export async function findUpcomingOccurrences(daysWindow = 7) {
-  const now = new Date();
-  const today = new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
-  );
-  const futureDate = new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + daysWindow)
-  );
+  const { DateTime } = await import("luxon");
+  const { DEFAULT_LOCATION } = await import("@/lib/domain");
+
+  const tz = DEFAULT_LOCATION.timezone;
+  const todayStart = DateTime.now().setZone(tz).startOf("day").toUTC().toJSDate();
+  const futureEnd = DateTime.now()
+    .setZone(tz)
+    .startOf("day")
+    .plus({ days: daysWindow })
+    .toUTC()
+    .toJSDate();
 
   return prisma.eventOccurrence.findMany({
     where: {
-      date: {
-        gte: today,
-        lte: futureDate,
-      },
+      OR: [
+        { date: { gte: todayStart, lte: futureEnd }, endDate: null },
+        { date: { lte: futureEnd }, endDate: { gte: todayStart } },
+      ],
     },
     include: {
       event: {
