@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
-import { formatGoal } from "@/services/sadhana-formatters";
-import * as sadhanaRepo from "@/repositories/sadhana.repository";
 import { serverError, validationError, notFoundError } from "@/lib/api-response";
 import { logError } from "@/lib/utils";
 import { patchSadhanaGoalSchema } from "@/lib/validations";
+import {
+  deleteSadhanaGoal,
+  SadhanaNotFoundError,
+  updateSadhanaGoal,
+} from "@/services/sadhana.service";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -14,7 +17,7 @@ export async function PATCH(req: Request, { params }: Params) {
     if (!parsed.success) return validationError(parsed.error);
 
     const { name, target_malas, target_minutes, active, practice_ids } = parsed.data;
-    const goal = await sadhanaRepo.updateGoal(id, {
+    const goal = await updateSadhanaGoal(id, {
       ...(name !== undefined && { name }),
       ...(target_malas !== undefined && { targetMalas: target_malas }),
       ...(target_minutes !== undefined && { targetMinutes: target_minutes }),
@@ -23,8 +26,9 @@ export async function PATCH(req: Request, { params }: Params) {
         practices: { set: practice_ids.map((pid) => ({ id: pid })) },
       }),
     });
-    return NextResponse.json(formatGoal(goal));
+    return NextResponse.json(goal);
   } catch (error) {
+    if (error instanceof SadhanaNotFoundError) return notFoundError("Doel");
     logError("[SADHANA_GOAL_PATCH]", error);
     return serverError("Kon doel niet bijwerken");
   }
@@ -33,12 +37,10 @@ export async function PATCH(req: Request, { params }: Params) {
 export async function DELETE(_req: Request, { params }: Params) {
   try {
     const { id } = await params;
-    const existing = await sadhanaRepo.findGoalById(id);
-    if (!existing) return notFoundError("Doel");
-
-    await sadhanaRepo.deleteGoal(id);
+    await deleteSadhanaGoal(id);
     return new NextResponse(null, { status: 204 });
   } catch (error) {
+    if (error instanceof SadhanaNotFoundError) return notFoundError("Doel");
     logError("[SADHANA_GOAL_DELETE]", error);
     return serverError("Kon doel niet verwijderen");
   }

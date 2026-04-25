@@ -65,8 +65,9 @@ export async function updatePractice(
 }
 
 export async function deletePractice(id: string) {
-  return prisma.sadhanaPractice.delete({
+  return prisma.sadhanaPractice.update({
     where: { id },
+    data: { active: false },
   });
 }
 

@@ -11,7 +11,7 @@ import {
   Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { todayString } from "./types";
+import { goalProgressRatio, isGoalComplete, todayString } from "./types";
 import type { CalendarEvent, CalendarEventResponse } from "@/types/calendar";
 import { parseCalendarEvent } from "@/types/calendar";
 import { EventDetailModal } from "@/components/calendar/EventDetailModal";
@@ -59,6 +59,7 @@ export function SadhanaTracker() {
     overview,
     calDays,
     sessions,
+    allPractices,
     activePractices,
     goals,
     routines,
@@ -96,8 +97,7 @@ export function SadhanaTracker() {
       for (const g of goals) {
         if (!g.active) continue;
         const prev = prevGoalProgressRef.current.get(g.id);
-        const curr = (g.progress_malas || 0) / g.target_malas;
-        if (curr >= 1 && (prev === undefined || prev < 1)) {
+        if (isGoalComplete(g) && (prev === undefined || prev < 1)) {
           hasNewCompletion = true;
           break;
         }
@@ -105,7 +105,7 @@ export function SadhanaTracker() {
     }
     const newMap = new Map<string, number>();
     for (const g of goals) {
-      newMap.set(g.id, (g.progress_malas || 0) / g.target_malas);
+      newMap.set(g.id, goalProgressRatio(g));
     }
     prevGoalProgressRef.current = newMap;
     if (hasNewCompletion) {
@@ -235,7 +235,7 @@ export function SadhanaTracker() {
         <InstellingenTab
           routines={routines}
           goals={goals}
-          allPractices={activePractices}
+          allPractices={allPractices}
           loadAll={loadAll}
         />
       )}

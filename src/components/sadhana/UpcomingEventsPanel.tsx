@@ -8,7 +8,8 @@ import type { CalendarEventResponse, CalendarEvent } from "@/types/calendar";
 import { parseCalendarEvent } from "@/types/calendar";
 import { resolveCategoryColor } from "@/lib/category-styles";
 import { useTheme } from "@/components/theme/ThemeProvider";
-import { todayString, localDateString } from "./types";
+import { todayString } from "./types";
+import { addDaysDateOnly } from "@/lib/default-location-date";
 
 const DAYS_NL = ["zo", "ma", "di", "wo", "do", "vr", "za"];
 const MONTHS_SHORT = [
@@ -28,14 +29,21 @@ const MONTHS_SHORT = [
 
 function formatUpcomingDate(dateStr: string): string {
   const d = new Date(dateStr + "T00:00:00");
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  if (dateStr === localDateString(tomorrow)) return "Morgen";
+  if (dateStr === addDaysDateOnly(todayString(), 1)) return "Morgen";
   return `${DAYS_NL[d.getDay()]} ${d.getDate()} ${MONTHS_SHORT[d.getMonth()]}`;
 }
 
 function isSeries(e: CalendarEventResponse) {
   return e.resource.seriesParentEventIds.length > 0;
+}
+
+function eventEndDate(e: CalendarEventResponse) {
+  return e.resource.originalEndDate?.slice(0, 10) ?? e.start.slice(0, 10);
+}
+
+function eventOverlapsDate(e: CalendarEventResponse, date: string) {
+  const start = e.start.slice(0, 10);
+  return start <= date && eventEndDate(e) >= date;
 }
 
 export function UpcomingEventsPanel() {
@@ -44,18 +52,14 @@ export function UpcomingEventsPanel() {
   const isDark = resolvedColorMode === "dark";
 
   const today = todayString();
-  const endDate = useMemo(() => {
-    const d = new Date();
-    d.setDate(d.getDate() + 14);
-    return localDateString(d);
-  }, []);
+  const endDate = useMemo(() => addDaysDateOnly(today, 14), [today]);
 
   const { data: rawEvents } = useFetch<CalendarEventResponse[]>(
     `/api/events?start=${today}&end=${endDate}&sortBy=date&order=asc`
   );
 
   const todayEvents = useMemo(
-    () => rawEvents?.filter((e) => e.start === today) ?? [],
+    () => rawEvents?.filter((e) => eventOverlapsDate(e, today)) ?? [],
     [rawEvents, today]
   );
 

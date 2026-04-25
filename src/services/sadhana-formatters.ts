@@ -3,8 +3,14 @@ import type {
   SadhanaSession,
   SadhanaSessionItem,
   SadhanaGoal,
+  SadhanaRoutine,
+  SadhanaRoutineItem,
 } from "@prisma/client";
-import { formatDateLocal } from "@/lib/date-utils";
+import {
+  dateOnlyFromUtcDate,
+  defaultLocationDate,
+  utcDateFromDateOnly,
+} from "@/lib/default-location-date";
 
 // =============================================================================
 // TYPES
@@ -12,6 +18,10 @@ import { formatDateLocal } from "@/lib/date-utils";
 
 export type SessionWithItems = SadhanaSession & {
   items: (SadhanaSessionItem & { practice: SadhanaPractice })[];
+};
+
+export type RoutineWithItems = SadhanaRoutine & {
+  items: (SadhanaRoutineItem & { practice: SadhanaPractice })[];
 };
 
 // =============================================================================
@@ -56,6 +66,9 @@ export function formatSessionItem(
 
 export function formatSession(session: SessionWithItems) {
   const japaItems = session.items.filter((i) => i.practice.type === "mantra_japa");
+  const nonJapaCount = session.items
+    .filter((i) => i.practice.type !== "mantra_japa" && i.unit === "count")
+    .reduce((s, i) => s + i.quantity, 0);
   const totalMalas = japaItems
     .filter((i) => i.unit === "malas")
     .reduce((s, i) => s + i.quantity, 0);
@@ -70,6 +83,7 @@ export function formatSession(session: SessionWithItems) {
     duration_minutes: session.durationMinutes,
     total_malas: totalMalas,
     total_mantras: totalMantras,
+    total_count: nonJapaCount,
     notes: session.notes,
     created_at: session.createdAt.toISOString(),
     items: session.items.map(formatSessionItem),
@@ -82,17 +96,17 @@ export function formatSession(session: SessionWithItems) {
 
 /** UTC midnight for a YYYY-MM-DD string */
 export function utcDate(dateStr: string): Date {
-  return new Date(dateStr + "T00:00:00.000Z");
+  return utcDateFromDateOnly(dateStr);
 }
 
 /** YYYY-MM-DD from a Date (UTC) */
 export function dateStr(d: Date): string {
-  return d.toISOString().split("T")[0]!;
+  return dateOnlyFromUtcDate(d);
 }
 
-/** Today as YYYY-MM-DD (local time) */
+/** Today as YYYY-MM-DD in the fixed application timezone */
 export function todayStr(): string {
-  return formatDateLocal(new Date());
+  return defaultLocationDate();
 }
 
 // =============================================================================
@@ -109,6 +123,24 @@ export function formatGoal(g: SadhanaGoal & { practices?: SadhanaPractice[] }) {
     active: g.active,
     created_at: g.createdAt.toISOString(),
     practices: g.practices ? g.practices.map((p) => ({ id: p.id, name: p.name })) : [],
+  };
+}
+
+export function formatRoutine(routine: RoutineWithItems) {
+  return {
+    id: routine.id,
+    name: routine.name,
+    active: routine.active,
+    created_at: routine.createdAt.toISOString(),
+    items: routine.items.map((item) => ({
+      id: item.id,
+      practice_id: item.practiceId,
+      practice_name: item.practice.name,
+      practice_type: item.practice.type,
+      quantity: item.quantity,
+      unit: item.unit,
+      sort_order: item.sortOrder,
+    })),
   };
 }
 

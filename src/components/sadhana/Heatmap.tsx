@@ -19,7 +19,7 @@ export function buildHeatmap(
   days = 364,
   fromDate?: Date
 ): HeatmapCell[][] {
-  const map = new Map(calendarDays.map((d) => [d.date, d.total_malas]));
+  const map = new Map(calendarDays.map((d) => [d.date, d]));
   const todayDate = new Date();
   todayDate.setHours(0, 0, 0, 0);
 
@@ -47,7 +47,13 @@ export function buildHeatmap(
         week.push(null);
       } else {
         const ds = localDateString(cur);
-        week.push({ date: ds, malas: map.get(ds) ?? 0 });
+        const day = map.get(ds);
+        week.push({
+          date: ds,
+          malas: day?.total_malas ?? 0,
+          count: day?.total_count ?? 0,
+          activity: day?.activity_score ?? 0,
+        });
       }
       cur.setDate(cur.getDate() + 1);
     }
@@ -56,11 +62,18 @@ export function buildHeatmap(
   return weeks;
 }
 
-function heatColor(malas: number): string {
-  if (malas < 4) return "var(--theme-heatmap-1)";
-  if (malas < 8) return "var(--theme-heatmap-2)";
-  if (malas < 12) return "var(--theme-heatmap-3)";
+function heatColor(activity: number): string {
+  if (activity < 4) return "var(--theme-heatmap-1)";
+  if (activity < 8) return "var(--theme-heatmap-2)";
+  if (activity < 12) return "var(--theme-heatmap-3)";
   return "var(--theme-heatmap-4)";
+}
+
+function activityLabel(cell: Exclude<HeatmapCell, null>) {
+  const parts: string[] = [];
+  if (cell.malas > 0) parts.push(`${cell.malas} malas`);
+  if (cell.count > 0) parts.push(`${cell.count}×`);
+  return parts.length > 0 ? parts.join(" · ") : "geen activiteit";
 }
 
 const MONTH_LABELS = [
@@ -98,7 +111,7 @@ export function Heatmap({
   eventsByDate?: Map<string, HeatmapEvent[]>;
   onEventClick?: (id: string) => void;
 }) {
-  const [tapped, setTapped] = useState<{ date: string; malas: number } | null>(null);
+  const [tapped, setTapped] = useState<Exclude<HeatmapCell, null> | null>(null);
 
   const fill = cellSize === undefined;
   const cs = cellSize ?? 12; // used only for legend + dot sizing when fill=false
@@ -185,17 +198,13 @@ export function Heatmap({
                     style={{
                       aspectRatio: "1 / 1",
                       background:
-                        cell.malas === 0
+                        cell.activity === 0
                           ? "var(--theme-heatmap-empty)"
-                          : heatColor(cell.malas),
+                          : heatColor(cell.activity),
                     }}
-                    title={`${formatDate(cell.date)}: ${cell.malas} malas${label ? ` · ${label}` : ""}${eventsTip}`}
+                    title={`${formatDate(cell.date)}: ${activityLabel(cell)}${label ? ` · ${label}` : ""}${eventsTip}`}
                     onClick={() =>
-                      setTapped((prev) =>
-                        prev?.date === cell.date
-                          ? null
-                          : { date: cell.date, malas: cell.malas }
-                      )
+                      setTapped((prev) => (prev?.date === cell.date ? null : cell))
                     }
                   >
                     {isSpecial && (
@@ -227,7 +236,7 @@ export function Heatmap({
         {tapped && (
           <div className="text-theme-fg-secondary mt-2 text-xs">
             {formatDate(tapped.date)}:{" "}
-            <span className="text-theme-fg font-medium">{tapped.malas} malas</span>
+            <span className="text-theme-fg font-medium">{activityLabel(tapped)}</span>
             {tappedLabel && <span className="text-theme-fg-muted"> · {tappedLabel}</span>}
             {tappedEvents.length > 0 && (
               <span>
@@ -357,17 +366,13 @@ export function Heatmap({
                       width: cs,
                       height: cs,
                       background:
-                        cell.malas === 0
+                        cell.activity === 0
                           ? "var(--theme-heatmap-empty)"
-                          : heatColor(cell.malas),
+                          : heatColor(cell.activity),
                     }}
-                    title={`${formatDate(cell.date)}: ${cell.malas} malas${label ? ` · ${label}` : ""}${eventsTip}`}
+                    title={`${formatDate(cell.date)}: ${activityLabel(cell)}${label ? ` · ${label}` : ""}${eventsTip}`}
                     onClick={() =>
-                      setTapped((prev) =>
-                        prev?.date === cell.date
-                          ? null
-                          : { date: cell.date, malas: cell.malas }
-                      )
+                      setTapped((prev) => (prev?.date === cell.date ? null : cell))
                     }
                   >
                     {isSpecial && (
@@ -398,7 +403,7 @@ export function Heatmap({
         {tapped && (
           <div className="text-theme-fg-secondary mt-2 text-xs">
             {formatDate(tapped.date)}:{" "}
-            <span className="text-theme-fg font-medium">{tapped.malas} malas</span>
+            <span className="text-theme-fg font-medium">{activityLabel(tapped)}</span>
             {tappedLabel && <span className="text-theme-fg-muted"> · {tappedLabel}</span>}
             {tappedEvents.length > 0 && (
               <span>

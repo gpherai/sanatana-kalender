@@ -2,6 +2,8 @@
 // CONFIG
 // =============================================================================
 
+import { defaultLocationDate } from "@/lib/default-location-date";
+
 export const API = "/api/sadhana";
 
 // =============================================================================
@@ -39,6 +41,7 @@ export interface SessionData {
   duration_minutes: number | null;
   total_malas: number;
   total_mantras: number;
+  total_count: number;
   notes: string | null;
   items: SessionItemData[];
 }
@@ -56,6 +59,7 @@ export interface TodayStats {
   total_malas: number;
   total_minutes: number;
   total_mantras: number;
+  total_count: number;
   goal_malas_target: number | null;
   goal_malas_progress: number | null;
   goal_minutes_target: number | null;
@@ -72,6 +76,9 @@ export interface StreakStats {
 export interface CalendarDay {
   date: string;
   total_malas: number;
+  total_mantras: number;
+  total_count: number;
+  activity_score: number;
   total_minutes: number;
   session_count: number;
 }
@@ -126,7 +133,12 @@ export interface FormItem {
   unit: ItemUnit;
 }
 
-export type HeatmapCell = { date: string; malas: number } | null;
+export type HeatmapCell = {
+  date: string;
+  malas: number;
+  count: number;
+  activity: number;
+} | null;
 
 export interface DayInfo {
   tithi?: { name: string; paksha: "Shukla" | "Krishna" };
@@ -221,14 +233,27 @@ export async function fetchDayInfoMap(start: string, end: string): Promise<DayIn
 // =============================================================================
 
 export function localDateString(d: Date) {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
+  return defaultLocationDate(d);
 }
 
 export function todayString() {
-  return localDateString(new Date());
+  return defaultLocationDate();
+}
+
+export function isGoalComplete(goal: Goal) {
+  const malasDone = (goal.progress_malas ?? 0) >= goal.target_malas;
+  const minutesDone =
+    goal.target_minutes === null ||
+    goal.target_minutes === undefined ||
+    (goal.progress_minutes ?? 0) >= goal.target_minutes;
+  return malasDone && minutesDone;
+}
+
+export function goalProgressRatio(goal: Goal) {
+  const malasProgress = Math.min(1, (goal.progress_malas ?? 0) / goal.target_malas);
+  if (!goal.target_minutes) return malasProgress;
+  const minutesProgress = Math.min(1, (goal.progress_minutes ?? 0) / goal.target_minutes);
+  return Math.min(malasProgress, minutesProgress);
 }
 
 export function formatDuration(minutes: number) {

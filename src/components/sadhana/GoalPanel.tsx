@@ -14,7 +14,14 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { type Goal, type GoalType, type Practice, apiFetch } from "./types";
+import {
+  type Goal,
+  type GoalType,
+  type Practice,
+  apiFetch,
+  goalProgressRatio,
+  isGoalComplete,
+} from "./types";
 
 const GOAL_TYPE_LABELS: Record<GoalType, string> = {
   daily: "Dagdoel",
@@ -277,9 +284,8 @@ export function GoalPanel({
           <p className="text-theme-fg-muted text-sm">Geen doelen ingesteld.</p>
         )}
         {visible.map((g) => {
-          const isCompleted =
-            (g.progress_malas || 0) >= g.target_malas &&
-            (!g.target_minutes || (g.progress_minutes || 0) >= g.target_minutes);
+          const isCompleted = isGoalComplete(g);
+          const progressPct = goalProgressRatio(g) * 100;
           return editingId === g.id ? (
             <div key={g.id} className="bg-theme-surface space-y-2 rounded-xl p-3">
               <div className="text-theme-fg-secondary text-xs font-medium">
@@ -414,12 +420,12 @@ export function GoalPanel({
                             : "bg-[var(--theme-success)]"
                       )}
                       style={{
-                        width: `${Math.min(100, Math.max(0, ((g.progress_malas || 0) / g.target_malas) * 100))}%`,
+                        width: `${Math.min(100, Math.max(0, progressPct))}%`,
                       }}
                     />
                   </div>
                   <span className="text-theme-fg-muted text-xs whitespace-nowrap">
-                    {(((g.progress_malas || 0) / g.target_malas) * 100).toFixed(1)}%
+                    {progressPct.toFixed(1)}%
                   </span>
                   {g.target_minutes ? (
                     <span className="text-theme-fg-muted text-xs whitespace-nowrap">

@@ -105,6 +105,18 @@ export function SessionCard({
   }
 
   const isToday = session.date === todayString();
+  const primarySummary =
+    session.total_malas > 0
+      ? `${session.total_malas} malas`
+      : session.total_mantras > 0
+        ? `${session.total_mantras.toLocaleString("nl-NL")} mantras`
+        : `${session.total_count.toLocaleString("nl-NL")}× recitatie`;
+  const detailSummary =
+    session.total_mantras > 0
+      ? `${session.total_mantras.toLocaleString("nl-NL")} mantras`
+      : session.total_count > 0
+        ? `${session.total_count.toLocaleString("nl-NL")}× recitatie`
+        : "Geen telling";
 
   return (
     <div
@@ -124,9 +136,7 @@ export function SessionCard({
           </div>
           <div className="min-w-0 flex-1">
             <div className="text-theme-fg-secondary text-sm font-medium">
-              {session.total_malas > 0
-                ? `${session.total_malas} malas`
-                : `${session.total_mantras.toLocaleString("nl-NL")} mantras`}
+              {primarySummary}
               {session.started_at && (
                 <span className="text-theme-fg-muted ml-1.5 text-xs font-normal">
                   {formatTime(session.started_at)}
@@ -134,7 +144,7 @@ export function SessionCard({
               )}
             </div>
             <div className="text-theme-fg-muted text-xs">
-              {session.total_mantras.toLocaleString("nl-NL")} mantras
+              {detailSummary}
               {session.duration_minutes
                 ? ` · ${formatDuration(session.duration_minutes)}`
                 : ""}

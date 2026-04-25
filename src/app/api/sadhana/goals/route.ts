@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
-import { formatGoal } from "@/services/sadhana-formatters";
-import * as sadhanaRepo from "@/repositories/sadhana.repository";
-import { getGoalsWithProgress } from "@/services/sadhana.service";
+import { createSadhanaGoal, getGoalsWithProgress } from "@/services/sadhana.service";
 import { serverError, validationError } from "@/lib/api-response";
 import { logError } from "@/lib/utils";
 import { createSadhanaGoalSchema } from "@/lib/validations";
@@ -22,7 +20,7 @@ export async function POST(req: Request) {
     if (!parsed.success) return validationError(parsed.error);
 
     const { type, name, target_malas, target_minutes, practice_ids } = parsed.data;
-    const goal = await sadhanaRepo.createGoal({
+    const goal = await createSadhanaGoal({
       type,
       name: name ?? null,
       targetMalas: target_malas,
@@ -34,7 +32,7 @@ export async function POST(req: Request) {
         }),
     });
     return NextResponse.json(
-      { ...formatGoal(goal), progress_malas: 0, progress_minutes: 0 },
+      { ...goal, progress_malas: 0, progress_minutes: 0 },
       { status: 201 }
     );
   } catch (error) {

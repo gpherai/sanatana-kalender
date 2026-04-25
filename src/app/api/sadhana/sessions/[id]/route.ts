@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { formatSession } from "@/services/sadhana-formatters";
-import * as sadhanaRepo from "@/repositories/sadhana.repository";
 import { serverError, validationError, notFoundError } from "@/lib/api-response";
 import { logError } from "@/lib/utils";
 import { patchSadhanaSessionSchema } from "@/lib/validations";
+import {
+  deleteSadhanaSession,
+  SadhanaNotFoundError,
+  updateSadhanaSession,
+} from "@/services/sadhana.service";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -13,29 +16,11 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     const parsed = patchSadhanaSessionSchema.safeParse(await req.json());
     if (!parsed.success) return validationError(parsed.error);
 
-    const existing = await sadhanaRepo.findSessionById(id);
-    if (!existing) return notFoundError("Sessie");
+    const session = await updateSadhanaSession(id, parsed.data);
 
-    const { date, started_at, duration_minutes, notes, items } = parsed.data;
-
-    const session = await sadhanaRepo.updateSessionWithItems(
-      id,
-      date ?? (existing.date as Date).toISOString().split("T")[0]!,
-      started_at !== undefined ? started_at : existing.startedAt?.toISOString(),
-      duration_minutes !== undefined ? duration_minutes : existing.durationMinutes,
-      notes !== undefined ? notes : existing.notes,
-      items ??
-        existing.items.map((i) => ({
-          practice_id: i.practiceId,
-          quantity: i.quantity,
-          unit: i.unit,
-          duration_minutes: i.durationMinutes,
-          notes: i.notes,
-        }))
-    );
-
-    return NextResponse.json(formatSession(session));
+    return NextResponse.json(session);
   } catch (error) {
+    if (error instanceof SadhanaNotFoundError) return notFoundError("Sessie");
     logError("[SADHANA_SESSION_PATCH]", error);
     return serverError("Kon sessie niet bijwerken");
   }
@@ -44,12 +29,10 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 export async function DELETE(_req: NextRequest, { params }: Params) {
   try {
     const { id } = await params;
-    const existing = await sadhanaRepo.findSessionById(id);
-    if (!existing) return notFoundError("Sessie");
-
-    await sadhanaRepo.deleteSession(id);
+    await deleteSadhanaSession(id);
     return new NextResponse(null, { status: 204 });
   } catch (error) {
+    if (error instanceof SadhanaNotFoundError) return notFoundError("Sessie");
     logError("[SADHANA_SESSION_DELETE]", error);
     return serverError("Kon sessie niet verwijderen");
   }

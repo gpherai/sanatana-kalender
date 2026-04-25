@@ -367,6 +367,11 @@ export const patchSadhanaSessionSchema = z.object({
   items: z.array(sadhanaSessionItemSchema).min(1).optional(),
 });
 
+export const sadhanaCalendarQuerySchema = z.object({
+  start: dateQuerySchema.optional(),
+  end: dateQuerySchema.optional(),
+});
+
 export const createSadhanaGoalSchema = z.object({
   type: z.enum(["daily", "weekly", "lifetime"]),
   name: z.string().min(1).max(100).optional(),

@@ -17,6 +17,33 @@ import {
   todayString,
 } from "@/components/sadhana/types";
 import type { CalendarEventResponse } from "@/types/calendar";
+import { addDaysDateOnly } from "@/lib/default-location-date";
+
+async function fetchCalendarEvents(url: string): Promise<CalendarEventResponse[]> {
+  const response = await fetch(url);
+  if (!response.ok) return [];
+  const json = (await response.json()) as unknown;
+  return Array.isArray(json) ? (json as CalendarEventResponse[]) : [];
+}
+
+function addEventToDates(
+  map: Map<string, Array<{ id: string; title: string }>>,
+  event: CalendarEventResponse,
+  start: string,
+  end: string
+) {
+  let current = event.start.slice(0, 10);
+  const last = event.resource.originalEndDate?.slice(0, 10) ?? current;
+
+  while (current <= last) {
+    if (current >= start && current <= end) {
+      const arr = map.get(current) ?? [];
+      arr.push({ id: event.id, title: event.title });
+      map.set(current, arr);
+    }
+    current = addDaysDateOnly(current, 1);
+  }
+}
 
 export interface SadhanaData {
   loading: boolean;
@@ -65,19 +92,23 @@ export function useSadhanaData(): SadhanaData {
       const minDate = new Date("2026-01-01T00:00:00");
       const effectiveStart = yearAgo < minDate ? minDate : yearAgo;
       const fromDate = new Date("2026-01-01T00:00:00");
-      const heatmapEventsUrl = `/api/events?start=${localDateString(effectiveStart)}&end=${todayString()}&sortBy=date&order=asc`;
+      const heatmapStart = localDateString(effectiveStart);
+      const heatmapEnd = todayString();
+      const heatmapEventsUrl = `/api/events?start=${heatmapStart}&end=${heatmapEnd}&sortBy=date&order=asc`;
 
       const results = await Promise.allSettled([
         apiFetch<TodayStats>("/stats/today"),
         apiFetch<StreakStats>("/stats/streak"),
         apiFetch<OverviewStats>("/stats/overview"),
-        apiFetch<CalendarDay[]>("/stats/calendar"),
+        apiFetch<CalendarDay[]>(
+          `/stats/calendar?start=${heatmapStart}&end=${heatmapEnd}`
+        ),
         apiFetch<SessionData[]>(`/sessions?from=${localDateString(fromDate)}`),
         apiFetch<Practice[]>("/practices?active_only=false"),
         apiFetch<Goal[]>("/goals"),
         apiFetch<Routine[]>("/routines"),
         fetchDayInfoMap(localDateString(effectiveStart), todayString()),
-        fetch(heatmapEventsUrl).then((r) => r.json() as Promise<CalendarEventResponse[]>),
+        fetchCalendarEvents(heatmapEventsUrl),
       ]);
 
       const failed = results.filter(
@@ -119,10 +150,7 @@ export function useSadhanaData(): SadhanaData {
       setHeatmapEventsRaw(rawEvs);
       const evMap = new Map<string, Array<{ id: string; title: string }>>();
       for (const ev of rawEvs) {
-        const dateKey = ev.start.slice(0, 10);
-        const arr = evMap.get(dateKey) ?? [];
-        arr.push({ id: ev.id, title: ev.title });
-        evMap.set(dateKey, arr);
+        addEventToDates(evMap, ev, heatmapStart, heatmapEnd);
       }
       setHeatmapEventsByDate(evMap);
     } catch (err: unknown) {
