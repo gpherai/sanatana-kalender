@@ -1,12 +1,6 @@
 import { Target, CheckCircle2, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { goalProgressRatio, isGoalComplete, type Goal, type GoalType } from "./types";
-
-const GOAL_TYPE_LABELS: Record<GoalType, string> = {
-  daily: "Dagdoel",
-  weekly: "Weekdoel",
-  lifetime: "Totaal doel",
-};
+import { goalProgressRatio, isGoalComplete, type Goal } from "./types";
 
 export function GoalProgressWidget({
   goals,
@@ -41,9 +35,6 @@ export function GoalProgressWidget({
           const progress = goalProgressRatio(g);
           const pct = Math.round(progress * 100);
           const done = isGoalComplete(g);
-          const minutesLabel = g.target_minutes
-            ? ` · ${g.progress_minutes ?? 0} / ${g.target_minutes} min`
-            : "";
 
           return (
             <div key={g.id}>
@@ -60,10 +51,7 @@ export function GoalProgressWidget({
                       done ? "text-theme-success" : "text-theme-fg"
                     )}
                   >
-                    {g.name ?? GOAL_TYPE_LABELS[g.type]}
-                  </span>
-                  <span className="text-theme-fg-muted shrink-0 text-xs">
-                    ({GOAL_TYPE_LABELS[g.type]})
+                    {g.name ?? g.type}
                   </span>
                 </div>
                 <span
@@ -72,7 +60,7 @@ export function GoalProgressWidget({
                     done ? "text-theme-success" : "text-theme-fg-muted"
                   )}
                 >
-                  {g.progress_malas ?? 0} / {g.target_malas} malas{minutesLabel}
+                  {pct}%
                 </span>
               </div>
 
