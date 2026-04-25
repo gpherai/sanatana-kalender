@@ -11,7 +11,11 @@ import {
   getCategoryTextClass,
   FALLBACK_CATEGORY_COLOR,
 } from "@/lib/category-styles";
-import { findEventById } from "@/repositories/event.repository";
+import {
+  findEventByIdBasic,
+  findEventByIdForDisplay,
+} from "@/repositories/event.repository";
+import { DEFAULT_LOCATION } from "@/lib/domain";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -19,14 +23,14 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
-  const event = await findEventById(id);
+  const event = await findEventByIdBasic(id);
   return { title: event?.name ?? "Event" };
 }
 
 export default async function EventDetailPage({ params }: PageProps) {
   const { id } = await params;
 
-  const event = await findEventById(id);
+  const event = await findEventByIdForDisplay(id);
 
   if (!event) {
     notFound();
@@ -116,11 +120,11 @@ export default async function EventDetailPage({ params }: PageProps) {
             <div className="flex items-center gap-2 text-sm">
               <Calendar className="text-theme-accent h-4 w-4 shrink-0" />
               <span className="text-theme-fg font-medium">
-                {formatDateNL(startDate)}
+                {formatDateNL(startDate, { timeZone: DEFAULT_LOCATION.timezone })}
                 {endDate && durationDays > 1 && (
                   <span className="text-theme-fg-muted">
                     {" "}
-                    → {formatDateNL(endDate)}
+                    → {formatDateNL(endDate, { timeZone: DEFAULT_LOCATION.timezone })}
                     <span className="text-theme-accent ml-1.5 font-medium">
                       ({durationDays} dagen)
                     </span>

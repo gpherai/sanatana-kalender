@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Calendar, Clock, Tag, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { getEventType } from "@/lib/domain";
+import { getEventType, DEFAULT_LOCATION } from "@/lib/domain";
 import { formatShortDate } from "@/lib/date-utils";
 import {
   getCategoryBgClass,
@@ -70,6 +70,7 @@ export function EventCard({
       weekday: "short",
       day: "numeric",
       month: "short",
+      timeZone: DEFAULT_LOCATION.timezone,
     };
 
     if (endDate && durationDays > 1) {

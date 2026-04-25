@@ -79,7 +79,10 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     }
 
     const firstOccurrence = existingEvent.occurrences[0];
-    const mergedValidationResult = createEventSchema.safeParse({
+    // Guard: validate the full resulting state after merging partial update with existing values.
+    // Enforces cross-field rules (e.g. YEARLY_LUNAR requires tithi) without using the merged
+    // data itself — only the changed fields in `data` are passed to the service below.
+    const mergedStateCheck = createEventSchema.safeParse({
       name: data.name ?? existingEvent.name,
       description:
         data.description !== undefined ? data.description : existingEvent.description,
@@ -107,8 +110,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       notes: data.notes !== undefined ? data.notes : (firstOccurrence?.notes ?? null),
     });
 
-    if (!mergedValidationResult.success) {
-      return validationError(mergedValidationResult.error);
+    if (!mergedStateCheck.success) {
+      return validationError(mergedStateCheck.error);
     }
 
     const event = await updateEvent(id, data, firstOccurrence?.id);

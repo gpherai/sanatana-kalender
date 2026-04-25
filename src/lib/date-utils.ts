@@ -99,8 +99,9 @@ export function formatShortDate(date: Date | string): string {
 }
 
 /**
- * Format date for input fields (YYYY-MM-DD via toISOString)
- * Returns empty string for invalid dates
+ * Format date for input fields (YYYY-MM-DD).
+ * Uses local date components — safe for both UTC-midnight (Prisma) and local-midnight dates.
+ * Returns empty string for invalid dates.
  */
 export function formatDateForInput(date: Date | string | null | undefined): string {
   if (!date) return "";
@@ -111,8 +112,7 @@ export function formatDateForInput(date: Date | string | null | undefined): stri
     return "";
   }
 
-  const parts = d.toISOString().split("T");
-  return parts[0] ?? "";
+  return formatDateLocal(d);
 }
 
 /**
@@ -368,8 +368,8 @@ export function formatDateISO(date: Date): string {
  * // => "15 januari"
  * ```
  */
-export function formatDateNL(date: Date): string {
-  return date.toLocaleDateString("nl-NL", { day: "numeric", month: "long" });
+export function formatDateNL(date: Date, options?: Intl.DateTimeFormatOptions): string {
+  return date.toLocaleDateString("nl-NL", { day: "numeric", month: "long", ...options });
 }
 
 /**
