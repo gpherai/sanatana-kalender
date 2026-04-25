@@ -64,6 +64,8 @@ export interface CalendarEventResource {
   seriesDayNumber: number | null;
   /** Whether this event has series children (i.e. it is a parent) */
   hasSeriesChildren: boolean;
+  /** Recurrence type — "NONE" for one-time events */
+  recurrenceType: string;
 }
 
 /**
@@ -85,6 +87,7 @@ export interface CalendarEventResourceResponse {
   seriesParentEventIds: string[];
   seriesDayNumber: number | null;
   hasSeriesChildren: boolean;
+  recurrenceType: string;
 }
 
 // =============================================================================
@@ -168,6 +171,7 @@ export function parseCalendarEvent(event: CalendarEventResponse): CalendarEvent 
       seriesParentEventIds: event.resource.seriesParentEventIds,
       seriesDayNumber: event.resource.seriesDayNumber,
       hasSeriesChildren: event.resource.hasSeriesChildren,
+      recurrenceType: event.resource.recurrenceType,
     },
   };
 }

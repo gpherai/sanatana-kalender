@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { NextRequest } from "next/server";
 import { prismaMock } from "@/__tests__/helpers/prisma-mock";
-import { PUT } from "../events/[id]/occurrences/[occurrenceId]/route";
+import { PUT, DELETE } from "../events/[id]/occurrences/[occurrenceId]/route";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -230,5 +230,92 @@ describe("PUT /api/events/[id]/occurrences/[occurrenceId]", () => {
         }),
       })
     );
+  });
+});
+
+describe("DELETE /api/events/[id]/occurrences/[occurrenceId]", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("rejects invalid event ID", async () => {
+    const req = new NextRequest(
+      `http://localhost/api/events/bad/occurrences/${VALID_OCCURRENCE_ID}`,
+      { method: "DELETE" }
+    );
+    const res = await DELETE(req, {
+      params: Promise.resolve({ id: "bad", occurrenceId: VALID_OCCURRENCE_ID }),
+    });
+    expect(res.status).toBe(400);
+  });
+
+  it("rejects invalid occurrence ID", async () => {
+    const req = new NextRequest(
+      `http://localhost/api/events/${VALID_ID}/occurrences/bad`,
+      { method: "DELETE" }
+    );
+    const res = await DELETE(req, {
+      params: Promise.resolve({ id: VALID_ID, occurrenceId: "bad" }),
+    });
+    expect(res.status).toBe(400);
+  });
+
+  it("returns 404 when occurrence not found", async () => {
+    prismaMock.eventOccurrence.findUnique.mockResolvedValue(null);
+    const req = new NextRequest(
+      `http://localhost/api/events/${VALID_ID}/occurrences/${VALID_OCCURRENCE_ID}`,
+      { method: "DELETE" }
+    );
+    const res = await DELETE(req, {
+      params: Promise.resolve({ id: VALID_ID, occurrenceId: VALID_OCCURRENCE_ID }),
+    });
+    expect(res.status).toBe(404);
+  });
+
+  it("returns 403 when occurrence belongs to different event", async () => {
+    prismaMock.eventOccurrence.findUnique.mockResolvedValue({
+      id: VALID_OCCURRENCE_ID,
+      eventId: "other-event-id",
+      date: new Date("2025-01-01"),
+      endDate: null,
+      startTime: null,
+      endTime: null,
+      notes: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as any);
+    const req = new NextRequest(
+      `http://localhost/api/events/${VALID_ID}/occurrences/${VALID_OCCURRENCE_ID}`,
+      { method: "DELETE" }
+    );
+    const res = await DELETE(req, {
+      params: Promise.resolve({ id: VALID_ID, occurrenceId: VALID_OCCURRENCE_ID }),
+    });
+    expect(res.status).toBe(403);
+  });
+
+  it("returns 204 on success", async () => {
+    prismaMock.eventOccurrence.findUnique.mockResolvedValue({
+      id: VALID_OCCURRENCE_ID,
+      eventId: VALID_ID,
+      date: new Date("2025-01-01"),
+      endDate: null,
+      startTime: null,
+      endTime: null,
+      notes: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as any);
+    prismaMock.eventOccurrence.delete = vi
+      .fn()
+      .mockResolvedValue({ id: VALID_OCCURRENCE_ID });
+    const req = new NextRequest(
+      `http://localhost/api/events/${VALID_ID}/occurrences/${VALID_OCCURRENCE_ID}`,
+      { method: "DELETE" }
+    );
+    const res = await DELETE(req, {
+      params: Promise.resolve({ id: VALID_ID, occurrenceId: VALID_OCCURRENCE_ID }),
+    });
+    expect(res.status).toBe(204);
   });
 });

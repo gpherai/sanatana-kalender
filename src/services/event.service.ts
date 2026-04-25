@@ -11,6 +11,7 @@ import { findCategoryById } from "@/repositories/category.repository";
 import {
   createEventWithInitialOccurrence,
   deleteEventById,
+  deleteOccurrenceById,
   findEventById,
   findEventByIdBasic,
   findEventsWithRecurrence,
@@ -275,6 +276,20 @@ export async function updateEventOccurrence(
     ...(input.endTime !== undefined && { endTime: input.endTime ?? null }),
     ...(input.notes !== undefined && { notes: input.notes ?? null }),
   });
+}
+
+export async function deleteEventOccurrence(eventId: string, occurrenceId: string) {
+  const occurrence = await findOccurrenceById(occurrenceId);
+
+  if (!occurrence) {
+    throw new OccurrenceNotFoundError("Occurrence niet gevonden");
+  }
+
+  if (occurrence.eventId !== eventId) {
+    throw new OccurrenceOwnershipError("Occurrence behoort niet tot dit event");
+  }
+
+  await deleteOccurrenceById(occurrenceId);
 }
 
 // ============================================================================

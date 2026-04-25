@@ -71,6 +71,7 @@ export async function GET(request: NextRequest) {
           seriesParentEventIds: occ.event.seriesChildEntries.map((e) => e.parentEventId),
           seriesDayNumber: occ.event.seriesChildEntries[0]?.dayNumber ?? null,
           hasSeriesChildren: occ.event.seriesParentEntries.length > 0,
+          recurrenceType: occ.event.recurrenceType,
         },
       };
     });

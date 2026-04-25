@@ -164,7 +164,31 @@ export function EventDetailModal({
     }
   };
 
+  const handleDeleteOccurrence = async () => {
+    setIsDeleting(true);
+    try {
+      const response = await fetch(
+        `/api/events/${event.eventId}/occurrences/${event.id}`,
+        { method: "DELETE" }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete occurrence");
+      }
+
+      requestClose(() => onDeleted?.());
+    } catch (error) {
+      logError("Failed to delete occurrence", error);
+      showError("Kon occurrence niet verwijderen");
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteConfirm(false);
+    }
+  };
+
   if (!isOpen) return null;
+
+  const isRecurring = event.resource.recurrenceType !== "NONE";
 
   // Category is now a full object, not a string
   const category = event.resource.categories[0] ?? null;
@@ -518,7 +542,9 @@ export function EventDetailModal({
                 <div className="flex items-center gap-2 text-[var(--theme-error-fg)]">
                   <Trash2 className="h-4 w-4" />
                   <span className="text-sm font-medium">
-                    Weet je zeker dat je &ldquo;{event.title}&rdquo; wilt verwijderen?
+                    {isRecurring
+                      ? `Verwijder alleen deze dag of alle voorkomens van “${event.title}”?`
+                      : `Weet je zeker dat je “${event.title}” wilt verwijderen?`}
                   </span>
                 </div>
                 <div className="flex gap-2">
@@ -529,12 +555,25 @@ export function EventDetailModal({
                   >
                     Annuleren
                   </button>
+                  {isRecurring && (
+                    <button
+                      onClick={handleDeleteOccurrence}
+                      disabled={isDeleting}
+                      className="flex-1 rounded-xl bg-[var(--theme-error-bg)] px-4 py-2.5 text-sm font-medium text-[var(--theme-error-fg)] transition-colors hover:opacity-90 disabled:opacity-50"
+                    >
+                      {isDeleting ? "Verwijderen..." : "Alleen deze dag"}
+                    </button>
+                  )}
                   <button
                     onClick={handleDelete}
                     disabled={isDeleting}
                     className="flex-1 rounded-xl bg-[var(--theme-error)] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:opacity-90 disabled:opacity-50"
                   >
-                    {isDeleting ? "Verwijderen..." : "Ja, verwijderen"}
+                    {isDeleting
+                      ? "Verwijderen..."
+                      : isRecurring
+                        ? "Alle voorkomens"
+                        : "Ja, verwijderen"}
                   </button>
                 </div>
               </div>

@@ -430,6 +430,16 @@ export async function findOccurrenceById(id: string) {
 }
 
 /**
+ * Delete a single occurrence by ID.
+ * Does NOT delete the parent event.
+ */
+export async function deleteOccurrenceById(id: string) {
+  return prisma.eventOccurrence.delete({
+    where: { id },
+  });
+}
+
+/**
  * Check if an event already has another occurrence on the target date.
  */
 export async function findOccurrenceConflict(

@@ -54,6 +54,7 @@ const MOCK_EVENT: CalendarEvent = {
     seriesParentEventIds: [],
     seriesDayNumber: null,
     hasSeriesChildren: false,
+    recurrenceType: "NONE",
   },
 };
 

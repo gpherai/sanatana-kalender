@@ -31,6 +31,7 @@ function makeEvent(): CalendarEventResponse {
       seriesParentEventIds: [],
       seriesDayNumber: null,
       hasSeriesChildren: false,
+      recurrenceType: "NONE",
     },
   };
 }

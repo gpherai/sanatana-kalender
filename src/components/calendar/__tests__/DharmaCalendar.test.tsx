@@ -102,6 +102,7 @@ describe("DharmaCalendar", () => {
         seriesParentEventIds: [],
         seriesDayNumber: null,
         hasSeriesChildren: false,
+        recurrenceType: "NONE",
       },
     };
 

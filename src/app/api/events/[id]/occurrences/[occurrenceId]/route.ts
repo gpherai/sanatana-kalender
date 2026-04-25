@@ -11,11 +11,44 @@ import {
   OccurrenceConflictError,
   OccurrenceNotFoundError,
   OccurrenceOwnershipError,
+  deleteEventOccurrence,
   updateEventOccurrence,
 } from "@/services/event.service";
 
 interface RouteParams {
   params: Promise<{ id: string; occurrenceId: string }>;
+}
+
+// ============================================================================
+// DELETE /api/events/[id]/occurrences/[occurrenceId]
+// ============================================================================
+
+export async function DELETE(_request: NextRequest, { params }: RouteParams) {
+  try {
+    const { id, occurrenceId } = await params;
+
+    if (!cuidSchema.safeParse(id).success) {
+      return errorResponse("Ongeldig event ID formaat", 400);
+    }
+    if (!cuidSchema.safeParse(occurrenceId).success) {
+      return errorResponse("Ongeldig occurrence ID formaat", 400);
+    }
+
+    await deleteEventOccurrence(id, occurrenceId);
+
+    return new NextResponse(null, { status: 204 });
+  } catch (error) {
+    if (error instanceof OccurrenceNotFoundError) {
+      return notFoundError("Occurrence");
+    }
+
+    if (error instanceof OccurrenceOwnershipError) {
+      return errorResponse("Occurrence behoort niet tot dit event", 403);
+    }
+
+    logError("[API] DELETE /api/events/[id]/occurrences/[occurrenceId] error:", error);
+    return serverError("Kon occurrence niet verwijderen");
+  }
 }
 
 // ============================================================================

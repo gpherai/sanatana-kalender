@@ -28,6 +28,10 @@ describe("Calendar types helpers", () => {
         startTime: "09:00",
         endTime: "10:00",
         originalEndDate: "2025-01-02T00:00:00.000Z",
+        seriesParentEventIds: [],
+        seriesDayNumber: null,
+        hasSeriesChildren: false,
+        recurrenceType: "NONE",
       },
     };
 
