@@ -110,14 +110,16 @@ export function SessionCard({
   const countItems = session.items.filter(
     (i) => i.unit === "count" && i.practice_type !== "mantra_japa"
   );
+
+  // Build a readable summary for count-based items: list each with quantity and name
   const countSummary =
-    countItems.length === 1
-      ? `${countItems[0]!.quantity}× ${countItems[0]!.practice_name}`
-      : `${session.total_count.toLocaleString("nl-NL")}× recitatie`;
+    countItems.length === 0
+      ? ""
+      : countItems.map((i) => `${i.quantity}× ${i.practice_name}`).join(" · ");
 
   const primarySummary =
     session.total_malas > 0 && session.total_count > 0
-      ? `${session.total_malas} malas · ${session.total_count}×`
+      ? `${session.total_malas} malas · ${countSummary}`
       : session.total_malas > 0
         ? `${session.total_malas} malas`
         : session.total_mantras > 0
