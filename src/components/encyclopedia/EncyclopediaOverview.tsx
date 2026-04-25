@@ -180,7 +180,9 @@ export function EncyclopediaOverview({
             const items = groupedTerms[category] ?? [];
 
             const itemsToShow =
-              category === "Navagraha" ? items : items.filter((t) => !t.parent);
+              category === "Navagraha"
+                ? items
+                : items.filter((t) => !t.parent || t.isGroup);
 
             if (itemsToShow.length === 0) return null;
 

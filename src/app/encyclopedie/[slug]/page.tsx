@@ -108,6 +108,8 @@ export default async function TermPage({
   const isChildOf = (t: EncyclopediaTerm, slug: string) =>
     t.parent === slug || (t.parents ?? []).includes(slug);
 
+  const termParents = [...(term.parents ?? []), ...(term.parent ? [term.parent] : [])];
+
   // 1. Identify direct child groups
   const childGroups = allTerms
     .filter((t) => isChildOf(t, term.slug) && t.isGroup)
@@ -139,7 +141,26 @@ export default async function TermPage({
       return a.title.localeCompare(b.title);
     });
 
-  // 4. Identify other related terms
+  // 4. Siblings — articles that share at least one parent with the current article
+  const siblings =
+    termParents.length > 0
+      ? allTerms
+          .filter((t) => {
+            if (t.slug === term.slug) return false;
+            if (isChildOf(t, term.slug)) return false;
+            const tParents = [...(t.parents ?? []), ...(t.parent ? [t.parent] : [])];
+            return termParents.some((p) => tParents.includes(p));
+          })
+          .sort((a, b) => {
+            if ((a.priority || 99) !== (b.priority || 99))
+              return (a.priority || 99) - (b.priority || 99);
+            return a.title.localeCompare(b.title);
+          })
+          .slice(0, 12)
+      : [];
+
+  // 5. Other related terms — same category, not already shown above
+  const siblingSlugSet = new Set(siblings.map((s) => s.slug));
   const otherRelated = allTerms
     .filter((t) => {
       return (
@@ -148,7 +169,7 @@ export default async function TermPage({
         !isChildOf(t, term.slug) &&
         t.slug !== term.parent &&
         !(t.parents ?? []).includes(term.slug) &&
-        !t.parent &&
+        !siblingSlugSet.has(t.slug) &&
         !t.isGroup
       );
     })
@@ -275,7 +296,33 @@ export default async function TermPage({
             )
         )}
 
-        {/* 3. Related Subjects Section (Last) */}
+        {/* 3. Siblings — other manifestations sharing the same parent(s) */}
+        {siblings.length > 0 && (
+          <div className="mt-16">
+            <h2 className="text-theme-fg mb-8 text-3xl font-black tracking-tight">
+              Gerelateerde Manifestaties
+            </h2>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {siblings.map((sibling) => (
+                <Link
+                  href={`/encyclopedie/${sibling.slug}`}
+                  key={sibling.slug}
+                  className="group border-theme-border bg-theme-surface hover:border-theme-primary-30 focus:ring-theme-primary focus:ring-offset-theme-bg relative flex flex-col rounded-2xl border p-6 transition-all duration-500 hover:-translate-y-1 hover:shadow-lg focus:ring-2 focus:ring-offset-2 focus:outline-none"
+                >
+                  <div className="bg-theme-secondary-20 group-hover:bg-theme-secondary-40 absolute top-0 left-0 h-1.5 w-full rounded-t-2xl transition-colors duration-300" />
+                  <h3 className="text-theme-fg mb-2 text-xl font-bold tracking-tight transition-colors duration-300">
+                    {sibling.title}
+                  </h3>
+                  <p className="text-theme-fg-secondary line-clamp-2 text-sm leading-relaxed transition-colors duration-300">
+                    {sibling.shortDescription}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 4. Related Subjects Section (Last) */}
         {otherRelated.length > 0 && (
           <div className="mt-16">
             <h2 className="text-theme-fg mb-8 text-3xl font-black tracking-tight">
