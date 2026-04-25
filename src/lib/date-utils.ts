@@ -95,6 +95,7 @@ export function formatShortDate(date: Date | string): string {
   return d.toLocaleDateString("nl-NL", {
     day: "numeric",
     month: "short",
+    timeZone: "Europe/Amsterdam",
   });
 }
 

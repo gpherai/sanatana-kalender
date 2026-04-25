@@ -75,7 +75,7 @@ export function EventDetailModal({
   }
   const { data: eventRelationsData, loading: relationsLoading } =
     useFetch<EventRelations>(isOpen ? `/api/events/${event.eventId}` : null);
-  const { data: dayInfo } = useFetch<DailyInfoResponse>(
+  const { data: dayInfo, loading: dayInfoLoading } = useFetch<DailyInfoResponse>(
     isOpen ? `/api/daily-info?date=${formatDateLocal(event.start)}` : null
   );
   const eventRelations = relationsLoading
@@ -333,7 +333,9 @@ export function EventDetailModal({
           <div className="max-h-[calc(90vh-280px)] space-y-5 overflow-y-auto p-6 pt-5">
             {/* Date + Moon Phase Row */}
             <div className="flex items-start gap-4">
-              {dayInfo && (
+              {dayInfoLoading ? (
+                <div className="bg-theme-surface-raised h-14 w-14 flex-shrink-0 animate-pulse rounded-full" />
+              ) : dayInfo ? (
                 <div className="flex-shrink-0">
                   <MoonPhase
                     percent={dayInfo.moonPhasePercent}
@@ -342,7 +344,7 @@ export function EventDetailModal({
                     glow={false}
                   />
                 </div>
-              )}
+              ) : null}
               <div className="flex-1">
                 <div className="mb-1 flex items-center gap-2">
                   <Calendar className="text-theme-primary h-4 w-4" />
@@ -602,17 +604,19 @@ export function EventDetailModal({
                   title="Open volledige pagina"
                 >
                   <ExternalLink className="h-4 w-4" />
+                  <span className="hidden sm:inline">Bekijken</span>
                 </button>
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
                   className={cn(
-                    "flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-medium",
+                    "flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium",
                     "bg-theme-active hover:bg-[var(--theme-error-bg)]",
                     "text-theme-fg-secondary hover:text-[var(--theme-error-fg)]",
                     "transition-colors"
                   )}
                 >
                   <Trash2 className="h-4 w-4" />
+                  <span className="hidden sm:inline">Verwijderen</span>
                 </button>
               </div>
             )}

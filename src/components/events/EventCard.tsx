@@ -99,7 +99,7 @@ export function EventCard({
     <>
       {/* Category Color Strip */}
       <div
-        className="absolute top-0 left-0 h-full w-1.5 transition-all duration-300 group-hover:w-2"
+        className="absolute top-0 left-0 h-full w-1.5"
         style={{ backgroundColor: categoryColor }}
       />
 

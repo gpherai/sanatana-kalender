@@ -16,6 +16,7 @@ import {
   findEventByIdForDisplay,
 } from "@/repositories/event.repository";
 import { DEFAULT_LOCATION } from "@/lib/domain";
+import { DeleteEventButton } from "@/components/events/DeleteEventButton";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -104,14 +105,17 @@ export default async function EventDetailPage({ params }: PageProps) {
             </div>
           </div>
 
-          {/* Edit Button */}
-          <Link
-            href={`/events/${id}/edit`}
-            className="bg-theme-primary flex shrink-0 items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
-          >
-            <Pencil className="h-4 w-4" />
-            Bewerken
-          </Link>
+          {/* Edit + Delete Buttons */}
+          <div className="flex shrink-0 items-center gap-2">
+            <Link
+              href={`/events/${id}/edit`}
+              className="bg-theme-primary flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
+            >
+              <Pencil className="h-4 w-4" />
+              Bewerken
+            </Link>
+            <DeleteEventButton eventId={id} eventName={event.name} />
+          </div>
         </div>
 
         {/* Date & Time */}

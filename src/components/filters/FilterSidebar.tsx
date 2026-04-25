@@ -11,7 +11,6 @@ import {
   Tag,
   List,
   Moon,
-  ArrowUpDown,
 } from "lucide-react";
 import { CATEGORIES, EVENT_TYPES, SPECIAL_TITHIS } from "@/lib/domain";
 import type { FilterState } from "@/hooks/useFilters";
@@ -172,63 +171,6 @@ function SearchInput({
   );
 }
 
-/**
- * Single date input in DD-MM-JJJJ format with auto-dash insertion.
- * Stores value as YYYY-MM-DD string (compatible with the API).
- */
-function DateInput({
-  value,
-  onChange,
-}: {
-  value: string; // YYYY-MM-DD or ""
-  onChange: (val: string) => void;
-}) {
-  const toDisplay = (iso: string) =>
-    iso ? `${iso.slice(8, 10)}-${iso.slice(5, 7)}-${iso.slice(0, 4)}` : "";
-
-  const [inputVal, setInputVal] = useState(() => toDisplay(value));
-
-  const handleChange = useCallback(
-    (raw: string) => {
-      // Strip non-digits, then reinsert dashes at positions 2 and 4
-      const digits = raw.replace(/\D/g, "").slice(0, 8);
-      let formatted = digits;
-      if (digits.length > 4) {
-        formatted = `${digits.slice(0, 2)}-${digits.slice(2, 4)}-${digits.slice(4)}`;
-      } else if (digits.length > 2) {
-        formatted = `${digits.slice(0, 2)}-${digits.slice(2)}`;
-      }
-      setInputVal(formatted);
-
-      if (digits.length === 8) {
-        const iso = `${digits.slice(4)}-${digits.slice(2, 4)}-${digits.slice(0, 2)}`;
-        if (!isNaN(new Date(iso).getTime())) onChange(iso);
-      } else if (!digits) {
-        onChange("");
-      }
-    },
-    [onChange]
-  );
-
-  return (
-    <input
-      type="text"
-      inputMode="numeric"
-      placeholder="DD-MM-JJJJ"
-      value={inputVal}
-      maxLength={10}
-      onChange={(e) => handleChange(e.target.value)}
-      className={cn(
-        "w-32 rounded-lg px-2 py-1.5 text-sm",
-        "bg-theme-surface-raised",
-        "border-theme-border border",
-        "ring-theme-primary-50 focus:border-theme-primary focus:ring-2 focus:outline-none",
-        "placeholder:text-theme-fg-subtle"
-      )}
-    />
-  );
-}
-
 export function FilterSidebar({
   filters,
   onFilterChange,
@@ -296,17 +238,30 @@ export function FilterSidebar({
         defaultOpen={false}
       >
         <div className="space-y-2">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <DateInput
-              key={filters.dateFrom ? "from-filled" : "from-empty"}
+          <div className="flex flex-col gap-2">
+            <input
+              type="date"
               value={filters.dateFrom}
-              onChange={(v) => onFilterChange("dateFrom", v)}
+              onChange={(e) => onFilterChange("dateFrom", e.target.value)}
+              className={cn(
+                "w-full rounded-lg px-2 py-1.5 text-sm",
+                "bg-theme-surface-raised",
+                "border-theme-border border",
+                "ring-theme-primary-50 focus:border-theme-primary focus:ring-2 focus:outline-none"
+              )}
             />
-            <span className="text-theme-fg-muted text-xs select-none">→</span>
-            <DateInput
-              key={filters.dateTo ? "to-filled" : "to-empty"}
+            <span className="text-theme-fg-muted text-center text-xs select-none">→</span>
+            <input
+              type="date"
               value={filters.dateTo}
-              onChange={(v) => onFilterChange("dateTo", v)}
+              onChange={(e) => onFilterChange("dateTo", e.target.value)}
+              min={filters.dateFrom || undefined}
+              className={cn(
+                "w-full rounded-lg px-2 py-1.5 text-sm",
+                "bg-theme-surface-raised",
+                "border-theme-border border",
+                "ring-theme-primary-50 focus:border-theme-primary focus:ring-2 focus:outline-none"
+              )}
             />
             {(filters.dateFrom || filters.dateTo) && (
               <button
@@ -314,10 +269,10 @@ export function FilterSidebar({
                   onFilterChange("dateFrom", "");
                   onFilterChange("dateTo", "");
                 }}
-                className="text-theme-fg-muted hover:text-theme-primary transition-colors"
-                title="Periode wissen"
+                className="text-theme-fg-muted hover:text-theme-primary flex items-center gap-1 text-xs transition-colors"
               >
-                <X className="h-3.5 w-3.5" />
+                <X className="h-3 w-3" />
+                Periode wissen
               </button>
             )}
           </div>
@@ -371,61 +326,6 @@ export function FilterSidebar({
               onChange={() => onToggleFilter("specialTithis", tithi.value)}
             />
           ))}
-        </div>
-      </FilterSection>
-
-      {/* Sortering */}
-      <FilterSection
-        title="Sortering"
-        icon={<ArrowUpDown className="h-4 w-4" />}
-        defaultOpen={false}
-      >
-        <div className="space-y-2">
-          <div>
-            <label htmlFor="sort-by" className="text-theme-fg-muted mb-1 block text-xs">
-              Sorteer op
-            </label>
-            <select
-              id="sort-by"
-              value={filters.sortBy}
-              onChange={(e) =>
-                onFilterChange("sortBy", e.target.value as FilterState["sortBy"])
-              }
-              className={cn(
-                "w-full rounded-lg px-3 py-2 text-sm",
-                "bg-theme-surface-raised",
-                "border-theme-border border",
-                "ring-theme-primary-50 focus:border-theme-primary focus:ring-2 focus:outline-none"
-              )}
-            >
-              <option value="date">Datum</option>
-              <option value="name">Naam</option>
-            </select>
-          </div>
-          <div>
-            <label
-              htmlFor="sort-order"
-              className="text-theme-fg-muted mb-1 block text-xs"
-            >
-              Volgorde
-            </label>
-            <select
-              id="sort-order"
-              value={filters.sortOrder}
-              onChange={(e) =>
-                onFilterChange("sortOrder", e.target.value as FilterState["sortOrder"])
-              }
-              className={cn(
-                "w-full rounded-lg px-3 py-2 text-sm",
-                "bg-theme-surface-raised",
-                "border-theme-border border",
-                "ring-theme-primary-50 focus:border-theme-primary focus:ring-2 focus:outline-none"
-              )}
-            >
-              <option value="asc">Oplopend (A-Z / Oud-Nieuw)</option>
-              <option value="desc">Aflopend (Z-A / Nieuw-Oud)</option>
-            </select>
-          </div>
         </div>
       </FilterSection>
     </aside>

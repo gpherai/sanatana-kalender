@@ -11,7 +11,14 @@ import {
   transformFormToApi,
   type EventFormData,
 } from "@/lib/validations";
-import { EVENT_TYPES, TITHIS, NAKSHATRAS, MAAS, SANKRANTIS } from "@/lib/domain";
+import {
+  EVENT_TYPES,
+  TITHIS,
+  NAKSHATRAS,
+  MAAS,
+  SANKRANTIS,
+  RECURRENCE_TYPES,
+} from "@/lib/domain";
 import type { Category } from "@/types/calendar";
 
 interface EventFormProps {
@@ -348,6 +355,49 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
               className={cn(inputClasses, "border-theme-border")}
             />
           </div>
+        </div>
+      </div>
+
+      {/* Recurrence Section */}
+      <div className="space-y-4">
+        <h3 className="text-theme-fg-muted text-sm font-medium tracking-wide uppercase">
+          Herhaling
+        </h3>
+        <div>
+          <label
+            htmlFor="recurrenceType"
+            className="text-theme-fg-secondary mb-1 block text-sm font-medium"
+          >
+            Type herhaling
+          </label>
+          <select
+            id="recurrenceType"
+            value={formData.recurrenceType}
+            onChange={(e) =>
+              updateField(
+                "recurrenceType",
+                e.target.value as EventFormData["recurrenceType"]
+              )
+            }
+            className={cn(inputClasses, "border-theme-border")}
+          >
+            {RECURRENCE_TYPES.map((r) => (
+              <option key={r.value} value={r.value}>
+                {r.label}
+              </option>
+            ))}
+          </select>
+          {(formData.recurrenceType === "YEARLY_LUNAR" ||
+            formData.recurrenceType === "MONTHLY_LUNAR") && (
+            <p className="text-theme-fg-subtle mt-1 text-xs">
+              Vereist een Tithi in de Lunaire Informatie hieronder.
+            </p>
+          )}
+          {formData.recurrenceType === "YEARLY_SOLAR" && (
+            <p className="text-theme-fg-subtle mt-1 text-xs">
+              Vereist een Sankranti in de Solaire Informatie hieronder.
+            </p>
+          )}
         </div>
       </div>
 

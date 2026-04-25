@@ -11,6 +11,7 @@ import {
   AlertCircle,
   CalendarOff,
   Calendar,
+  ArrowUpDown,
 } from "lucide-react";
 import { FilterSidebar } from "@/components/filters";
 import { EventDetailModal } from "@/components/calendar/EventDetailModal";
@@ -112,6 +113,33 @@ function EventsContent() {
 
         {/* Actions */}
         <div className="flex items-center gap-3">
+          {/* Sort controls */}
+          <div className="flex items-center gap-1.5">
+            <select
+              value={filters.sortBy}
+              onChange={(e) => setFilter("sortBy", e.target.value as "date" | "name")}
+              className="bg-theme-surface-raised border-theme-border text-theme-fg-muted focus:border-theme-primary rounded-lg border px-2 py-1 text-sm focus:outline-none"
+            >
+              <option value="date">Datum</option>
+              <option value="name">Naam</option>
+            </select>
+            <button
+              onClick={() =>
+                setFilter("sortOrder", filters.sortOrder === "asc" ? "desc" : "asc")
+              }
+              style={{ touchAction: "manipulation" }}
+              className={cn(
+                "bg-theme-surface-raised border-theme-border flex h-9 w-9 items-center justify-center rounded-lg border transition-colors",
+                filters.sortOrder === "desc"
+                  ? "text-theme-primary"
+                  : "text-theme-fg-muted hover:text-theme-fg"
+              )}
+              title={filters.sortOrder === "asc" ? "Oplopend" : "Aflopend"}
+            >
+              <ArrowUpDown className="h-4 w-4" />
+            </button>
+          </div>
+
           {/* View Toggle */}
           <div className="bg-theme-surface-raised flex items-center rounded-lg p-1 shadow-sm">
             <button
@@ -153,7 +181,7 @@ function EventsContent() {
               setShowFilters(true);
             }}
             className={cn(
-              "flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 transition-colors lg:hidden",
+              "flex min-h-[44px] cursor-pointer items-center gap-2 rounded-lg px-3 py-2 transition-colors lg:hidden",
               showFilters
                 ? "bg-theme-primary-15 text-theme-primary"
                 : "bg-theme-surface-raised text-theme-fg-muted"
