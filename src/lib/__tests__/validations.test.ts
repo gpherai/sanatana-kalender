@@ -109,12 +109,30 @@ describe("Validations", () => {
   });
 
   describe("dateQuerySchema", () => {
-    it("should accept ISO date-time strings", () => {
-      expect(dateQuerySchema.parse("2025-01-01T12:00:00Z")).toBe("2025-01-01T12:00:00Z");
+    it("should accept YYYY-MM-DD date strings", () => {
+      expect(dateQuerySchema.parse("2025-01-01")).toBe("2025-01-01");
     });
 
     it("should reject non-date prefixes", () => {
       expect(() => dateQuerySchema.parse("01-01-2025T12:00:00Z")).toThrow(ZodError);
+    });
+
+    it("should reject ISO date-time strings", () => {
+      expect(() => dateQuerySchema.parse("2025-01-01T12:00:00Z")).toThrow(ZodError);
+    });
+
+    it("should reject trailing junk after YYYY-MM-DD", () => {
+      expect(() => dateQuerySchema.parse("2025-01-01garbage")).toThrow(ZodError);
+    });
+
+    it("should reject invalid calendar dates", () => {
+      expect(() => dateQuerySchema.parse("2025-13-01")).toThrow(ZodError);
+      expect(() => dateQuerySchema.parse("2025-04-00")).toThrow(ZodError);
+      expect(() => dateQuerySchema.parse("2025-02-29")).toThrow(ZodError);
+    });
+
+    it("should accept leap-day dates in leap years", () => {
+      expect(dateQuerySchema.parse("2024-02-29")).toBe("2024-02-29");
     });
   });
 

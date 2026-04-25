@@ -8,7 +8,7 @@ import { findAllCategories } from "@/repositories/category.repository";
 import { panchangaService } from "@/services/panchanga.service";
 import { transformToApiResponse } from "@/lib/api-transformers";
 import { getWeatherDashboard } from "@/services/weather.service";
-import { DEFAULT_LOCATION } from "@/lib/domain";
+import { DEFAULT_LOCATION, EVENT_TYPES } from "@/lib/domain";
 
 export const dynamic = "force-dynamic";
 
@@ -95,8 +95,8 @@ export default async function Home() {
                   const crossesYear = eventDate.getFullYear() !== now.getFullYear();
                   const typeLabel =
                     occ.event.eventType && occ.event.eventType !== "OTHER"
-                      ? occ.event.eventType.charAt(0) +
-                        occ.event.eventType.slice(1).toLowerCase()
+                      ? (EVENT_TYPES.find((type) => type.value === occ.event.eventType)
+                          ?.label ?? null)
                       : null;
                   return (
                     <Link
@@ -144,7 +144,7 @@ export default async function Home() {
               {categories.map((cat) => (
                 <Link
                   key={cat.id}
-                  href={`/events?categories=${cat.name}`}
+                  href={`/events?categories=${encodeURIComponent(cat.name)}`}
                   className="flex cursor-pointer items-center gap-2 rounded-r-lg border-l-[3px] px-2.5 py-1.5 transition-opacity hover:opacity-75 active:opacity-60"
                   style={{
                     borderLeftColor: cat.color,

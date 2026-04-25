@@ -18,12 +18,7 @@ import {
   MAAS,
   SANKRANTIS,
 } from "./domain";
-import {
-  TIME_REGEX_LENIENT,
-  DATE_REGEX,
-  DATE_PREFIX_REGEX,
-  ERROR_MESSAGES,
-} from "./patterns";
+import { TIME_REGEX_LENIENT, DATE_REGEX, ERROR_MESSAGES } from "./patterns";
 
 // =============================================================================
 // HELPER FUNCTIONS
@@ -60,17 +55,32 @@ const calendarViewEnum = z.enum(["month", "week", "day", "agenda"]);
 // REUSABLE FIELD SCHEMAS
 // =============================================================================
 
+function isValidCalendarDateString(value: string): boolean {
+  if (!DATE_REGEX.test(value)) return false;
+
+  const [year, month, day] = value.split("-").map(Number);
+  const parsed = new Date(Date.UTC(year!, month! - 1, day!));
+
+  return (
+    parsed.getUTCFullYear() === year &&
+    parsed.getUTCMonth() === month! - 1 &&
+    parsed.getUTCDate() === day
+  );
+}
+
 /** CUID identifier (Prisma default) */
 export const cuidSchema = z.string().cuid();
 
 /** Optional CUID (accepts empty string as undefined) */
 const optionalCuidSchema = cuidSchema.optional().or(z.literal(""));
 
-/** Date string in YYYY-MM-DD format (strict - for form inputs) */
-export const dateStringSchema = z.string().regex(DATE_REGEX, ERROR_MESSAGES.INVALID_DATE);
+/** Date string in YYYY-MM-DD format (strict calendar date) */
+export const dateStringSchema = z
+  .string()
+  .refine(isValidCalendarDateString, { message: ERROR_MESSAGES.INVALID_DATE });
 
-/** Date string that starts with YYYY-MM-DD (lenient - for API query params) */
-export const dateQuerySchema = z.string().regex(DATE_PREFIX_REGEX);
+/** Date query string in YYYY-MM-DD format (strict calendar date) */
+export const dateQuerySchema = dateStringSchema;
 
 /** Optional date string */
 export const optionalDateStringSchema = dateStringSchema
@@ -235,7 +245,7 @@ const createEventBaseSchema = z.object({
   sankranti: sankrantiEnum.nullable().optional(),
   tags: z.array(z.string()).default([]),
   date: dateStringSchema,
-  endDate: z.string().regex(DATE_REGEX).nullable().optional(),
+  endDate: dateStringSchema.nullable().optional(),
   startTime: timeStringSchema.nullable().optional(),
   endTime: timeStringSchema.nullable().optional(),
   notes: z.string().max(500).nullable().optional(),
@@ -282,7 +292,7 @@ export const updatePreferencesSchema = z.object({
  */
 export const updateOccurrenceSchema = z.object({
   date: dateStringSchema.optional(),
-  endDate: z.string().regex(DATE_REGEX).nullable().optional(),
+  endDate: dateStringSchema.nullable().optional(),
   startTime: timeStringSchema.nullable().optional(),
   endTime: timeStringSchema.nullable().optional(),
   notes: z.string().max(500).nullable().optional(),
@@ -311,7 +321,7 @@ export const generateOccurrencesSchema = z.object({
 /**
  * Event query parameters schema.
  * Used in GET /api/events for filtering.
- * Uses dateQuerySchema (lenient) to accept ISO datetime strings from frontend.
+ * Uses dateQuerySchema to accept only strict YYYY-MM-DD calendar dates.
  */
 export const eventQuerySchema = z.object({
   start: dateQuerySchema.optional(),

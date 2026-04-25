@@ -306,9 +306,9 @@ describe("DELETE /api/events/[id]/occurrences/[occurrenceId]", () => {
       createdAt: new Date(),
       updatedAt: new Date(),
     } as any);
-    prismaMock.eventOccurrence.delete = vi
-      .fn()
-      .mockResolvedValue({ id: VALID_OCCURRENCE_ID });
+    prismaMock.eventOccurrence.delete.mockResolvedValue({
+      id: VALID_OCCURRENCE_ID,
+    } as any);
     const req = new NextRequest(
       `http://localhost/api/events/${VALID_ID}/occurrences/${VALID_OCCURRENCE_ID}`,
       { method: "DELETE" }

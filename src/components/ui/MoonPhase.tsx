@@ -1,5 +1,6 @@
 "use client";
 
+import { useId } from "react";
 import { cn } from "@/lib/utils";
 
 interface MoonPhaseProps {
@@ -26,6 +27,9 @@ export function MoonPhase({
   className,
   glow = true,
 }: MoonPhaseProps) {
+  const reactId = useId().replace(/:/g, "");
+  const moonSurfaceId = `moonSurface-${reactId}`;
+  const moonDarkId = `moonDark-${reactId}`;
   const illumination = percent / 100;
   const r = size / 2 - 2;
   const cx = size / 2;
@@ -112,7 +116,7 @@ export function MoonPhase({
         {/* Definitions for gradients and filters */}
         <defs>
           {/* Moon surface gradient - light side */}
-          <radialGradient id={`moonSurface-${size}`} cx="40%" cy="40%">
+          <radialGradient id={moonSurfaceId} cx="40%" cy="40%">
             <stop
               offset="0%"
               style={{
@@ -134,7 +138,7 @@ export function MoonPhase({
           </radialGradient>
 
           {/* Dark side gradient */}
-          <radialGradient id={`moonDark-${size}`} cx="50%" cy="50%">
+          <radialGradient id={moonDarkId} cx="50%" cy="50%">
             <stop
               offset="0%"
               style={{
@@ -151,13 +155,13 @@ export function MoonPhase({
         </defs>
 
         {/* Dark base circle (always visible, full moon disk) */}
-        <circle cx={cx} cy={cy} r={r} fill={`url(#moonDark-${size})`} />
+        <circle cx={cx} cy={cy} r={r} fill={`url(#${moonDarkId})`} />
 
         {/* Lit portion of the moon */}
         {moonPath && (
           <path
             d={moonPath}
-            fill={`url(#moonSurface-${size})`}
+            fill={`url(#${moonSurfaceId})`}
             className="[transition:d_1000ms_ease] motion-reduce:transition-none"
           />
         )}

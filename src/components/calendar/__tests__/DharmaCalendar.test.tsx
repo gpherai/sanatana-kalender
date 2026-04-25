@@ -196,6 +196,48 @@ describe("DharmaCalendar", () => {
     });
   });
 
+  it("shows an error banner and retries when events fail to load", async () => {
+    const fetchMock = vi.mocked(fetch);
+    const user = userEvent.setup();
+    let eventFetchCount = 0;
+
+    fetchMock.mockImplementation(async (url) => {
+      if (typeof url === "string" && url.includes("/api/events")) {
+        eventFetchCount += 1;
+        if (eventFetchCount === 1) {
+          return {
+            ok: false,
+            status: 500,
+            statusText: "Internal Server Error",
+          } as Response;
+        }
+
+        return {
+          ok: true,
+          json: async () => [],
+        } as Response;
+      }
+
+      return {
+        ok: true,
+        json: async () => [],
+      } as Response;
+    });
+
+    render(<DharmaCalendar />);
+
+    expect(await screen.findByText("Kon events niet laden.")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Opnieuw proberen" }));
+
+    await waitFor(() => {
+      expect(eventFetchCount).toBe(2);
+    });
+    await waitFor(() => {
+      expect(screen.queryByText("Kon events niet laden.")).toBeNull();
+    });
+  });
+
   it("builds event query URL with date-only params (no timestamp suffix)", async () => {
     const fetchMock = vi.mocked(fetch);
     fetchMock.mockResolvedValue({
@@ -220,7 +262,7 @@ describe("DharmaCalendar", () => {
     });
 
     expect(eventsCalls.length).toBeGreaterThan(0);
-    const firstCall = eventsCalls[0];
+    const firstCall = eventsCalls[0]!;
     const url = typeof firstCall[0] === "string" ? firstCall[0] : "";
 
     // Verify the URL has date-only params
@@ -229,5 +271,30 @@ describe("DharmaCalendar", () => {
     // Ensure no timestamp suffix
     expect(url).not.toContain("T00:00:00");
     expect(url).not.toContain("T23:59:59");
+  });
+
+  it("loads the default calendar view from preferences on mount", async () => {
+    const fetchMock = vi.mocked(fetch);
+
+    fetchMock.mockImplementation(async (url) => {
+      if (url === "/api/preferences") {
+        return {
+          ok: true,
+          json: async () => ({ defaultView: "week" }),
+        } as Response;
+      }
+
+      return {
+        ok: true,
+        json: async () => [],
+      } as Response;
+    });
+
+    render(<DharmaCalendar />);
+
+    await screen.findByTestId("calendar");
+    await waitFor(() => {
+      expect(lastCalendarProps.view).toBe("week");
+    });
   });
 });

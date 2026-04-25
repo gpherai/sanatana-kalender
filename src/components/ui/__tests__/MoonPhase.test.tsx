@@ -18,6 +18,24 @@ describe("MoonPhase Component", () => {
     expect(svg).toHaveAttribute("height", "200");
   });
 
+  it("uses unique gradient IDs for multiple instances with the same size", () => {
+    const { container } = render(
+      <>
+        <MoonPhase percent={50} isWaxing={true} size={100} />
+        <MoonPhase percent={50} isWaxing={true} size={100} />
+      </>
+    );
+
+    const surfaceIds = Array.from(
+      container.querySelectorAll("radialGradient[id^='moonSurface-']")
+    ).map((gradient) => gradient.getAttribute("id"));
+
+    expect(surfaceIds).toHaveLength(2);
+    expect(surfaceIds[0]).toBeDefined();
+    expect(surfaceIds[1]).toBeDefined();
+    expect(surfaceIds[0]).not.toBe(surfaceIds[1]);
+  });
+
   it("renders full moon state (snapshot)", () => {
     const { asFragment } = render(<MoonPhase percent={100} isWaxing={true} />);
     expect(asFragment()).toMatchSnapshot();

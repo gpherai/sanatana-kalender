@@ -50,6 +50,11 @@ const localizer = dateFnsLocalizer({
 
 type MoonCellData = { emoji: string; isSpecial: "full" | "new" | null };
 const MoonDataContext = createContext<Map<string, MoonCellData>>(new Map());
+const CALENDAR_VIEWS: readonly View[] = ["month", "week", "day", "agenda"];
+
+function isCalendarView(value: unknown): value is View {
+  return typeof value === "string" && CALENDAR_VIEWS.includes(value as View);
+}
 
 /**
  * Custom date header component showing moon phase (exact via Swiss Ephemeris API data)
@@ -84,12 +89,39 @@ export function DharmaCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<View>("month");
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
+  const [eventsError, setEventsError] = useState(false);
   const { resolvedColorMode } = useTheme();
   const isDark = resolvedColorMode === "dark";
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: SSR hydration guard
     setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadDefaultView() {
+      try {
+        const response = await fetch("/api/preferences", {
+          signal: controller.signal,
+        });
+        if (!response.ok) return;
+
+        const preferences = (await response.json()) as { defaultView?: unknown };
+        if (isCalendarView(preferences.defaultView)) {
+          setView(preferences.defaultView);
+        }
+      } catch (error) {
+        if (error instanceof Error && error.name === "AbortError") return;
+      }
+    }
+
+    void loadDefaultView();
+
+    return () => {
+      controller.abort();
+    };
   }, []);
 
   // Build URL for current month range (with ±1 month buffer for multi-day events)
@@ -111,7 +143,11 @@ export function DharmaCalendar() {
     loading,
     refetch,
   } = useFetch<CalendarEventResponse[]>(eventsUrl, {
-    onError: (err) => logError("Failed to fetch calendar events", err),
+    onSuccess: () => setEventsError(false),
+    onError: (err) => {
+      logError("Failed to fetch calendar events", err);
+      setEventsError(true);
+    },
   });
   const events = useMemo(() => eventsData?.map(parseCalendarEvent) ?? [], [eventsData]);
 
@@ -132,7 +168,13 @@ export function DharmaCalendar() {
   // Navigate to different month
   const handleNavigate = useCallback((newDate: Date) => {
     setCurrentDate(newDate);
+    setEventsError(false);
   }, []);
+
+  const handleRetryEvents = useCallback(() => {
+    setEventsError(false);
+    refetch();
+  }, [refetch]);
 
   // Handle view change
   const handleViewChange = useCallback((newView: View) => {
@@ -230,6 +272,21 @@ export function DharmaCalendar() {
           <div className="flex flex-col items-center gap-2">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-[var(--theme-spinner-track)] border-t-[var(--theme-spinner-fill)] motion-reduce:animate-none" />
             <div className="text-theme-fg-muted text-sm">Laden...</div>
+          </div>
+        </div>
+      )}
+
+      {eventsError && !loading && (
+        <div className="absolute inset-x-0 top-4 z-10 flex justify-center px-4">
+          <div className="flex items-center gap-2 rounded-xl border border-[var(--theme-error)] bg-[var(--theme-error-bg)] px-4 py-2.5 text-sm text-[var(--theme-error-fg)] shadow-md">
+            <span>Kon events niet laden.</span>
+            <button
+              type="button"
+              onClick={handleRetryEvents}
+              className="font-medium underline hover:no-underline"
+            >
+              Opnieuw proberen
+            </button>
           </div>
         </div>
       )}
