@@ -87,14 +87,13 @@ export function useSadhanaData(): SadhanaData {
     try {
       setError(null);
 
-      const yearAgo = new Date();
-      yearAgo.setDate(yearAgo.getDate() - 364);
       const fromDate = new Date("2025-01-01T00:00:00");
       const heatmapStart = localDateString(fromDate);
       const heatmapEnd = todayString();
       const heatmapEventsUrl = `/api/events?start=${heatmapStart}&end=${heatmapEnd}&sortBy=date&order=asc`;
 
-      const results = await Promise.allSettled([
+      // Phase 1: fast core data — update UI immediately when done
+      const coreResults = await Promise.allSettled([
         apiFetch<TodayStats>("/stats/today"),
         apiFetch<StreakStats>("/stats/streak"),
         apiFetch<OverviewStats>("/stats/overview"),
@@ -105,21 +104,19 @@ export function useSadhanaData(): SadhanaData {
         apiFetch<Practice[]>("/practices?active_only=false"),
         apiFetch<Goal[]>("/goals"),
         apiFetch<Routine[]>("/routines"),
-        fetchDayInfoMap(localDateString(fromDate), todayString()),
-        fetchCalendarEvents(heatmapEventsUrl),
       ]);
 
-      const failed = results.filter(
+      const coreFailed = coreResults.filter(
         (r) => r.status === "rejected"
       ) as PromiseRejectedResult[];
-      if (failed.length > 0) {
-        const errors = failed.map(
+      if (coreFailed.length > 0) {
+        const errors = coreFailed.map(
           (f) => (f.reason as Error)?.message || "Onbekende fout"
         );
         throw new Error(errors[0]);
       }
 
-      const [ts, st, ov, cal, sess, pracs, gl, rout, dim, heatmapEvents] = results.map(
+      const [ts, st, ov, cal, sess, pracs, gl, rout] = coreResults.map(
         (r) => (r as PromiseFulfilledResult<unknown>).value
       ) as [
         TodayStats,
@@ -130,8 +127,6 @@ export function useSadhanaData(): SadhanaData {
         Practice[],
         Goal[],
         Routine[],
-        DayInfoMap,
-        CalendarEventResponse[],
       ];
 
       setTodayStats(ts);
@@ -142,22 +137,31 @@ export function useSadhanaData(): SadhanaData {
       setAllPractices(pracs);
       setGoals(gl);
       setRoutines(rout);
-      setDayInfoMap(dim);
+      setLoading(false);
+      initialLoadDone.current = true;
 
-      const rawEvs = heatmapEvents ?? [];
-      setHeatmapEventsRaw(rawEvs);
-      const evMap = new Map<string, Array<{ id: string; title: string }>>();
-      for (const ev of rawEvs) {
-        addEventToDates(evMap, ev, heatmapStart, heatmapEnd);
-      }
-      setHeatmapEventsByDate(evMap);
+      // Phase 2: slow data (panchanga + events) — loads in background, doesn't block UI
+      void Promise.allSettled([
+        fetchDayInfoMap(localDateString(fromDate), todayString()),
+        fetchCalendarEvents(heatmapEventsUrl),
+      ]).then(([dimResult, evResult]) => {
+        if (dimResult.status === "fulfilled") setDayInfoMap(dimResult.value);
+        if (evResult.status === "fulfilled") {
+          const rawEvs = evResult.value ?? [];
+          setHeatmapEventsRaw(rawEvs);
+          const evMap = new Map<string, Array<{ id: string; title: string }>>();
+          for (const ev of rawEvs) {
+            addEventToDates(evMap, ev, heatmapStart, heatmapEnd);
+          }
+          setHeatmapEventsByDate(evMap);
+        }
+      });
     } catch (err: unknown) {
       const msg =
         err instanceof Error
           ? err.message
           : "Onbekende fout bij het laden van de gegevens.";
       setError(msg);
-    } finally {
       setLoading(false);
       initialLoadDone.current = true;
     }
