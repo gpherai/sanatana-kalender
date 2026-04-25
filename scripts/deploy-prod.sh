@@ -80,6 +80,11 @@ echo "Creating mandatory pre-deploy database backup..."
 "${COMPOSE[@]}" --profile backup run --rm backup
 
 echo ""
+# Remove the old migrate container so Docker Compose always runs it fresh.
+# Without this, Compose sees the previous Exited(0) container and skips the
+# migrate service entirely — meaning new migrations are never applied.
+"${COMPOSE[@]}" rm -f migrate 2>/dev/null || true
+
 if [[ "$NO_CACHE" == true || "$PULL" == true ]]; then
   BUILD_ARGS=()
   [[ "$NO_CACHE" == true ]] && BUILD_ARGS+=(--no-cache)
