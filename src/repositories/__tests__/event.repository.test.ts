@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { findEventOccurrences, findUpcomingOccurrences } from "../event.repository";
 
 // vi.mock is hoisted — the factory runs lazily, capturing prismaMock from closure
@@ -127,28 +127,43 @@ describe("findEventOccurrences", () => {
 
 describe("findUpcomingOccurrences", () => {
   beforeEach(() => {
+    vi.useFakeTimers();
     prismaMock.eventOccurrence.findMany.mockResolvedValue([]);
     vi.clearAllMocks();
   });
 
-  function getWhereArg() {
-    const [arg] = prismaMock.eventOccurrence.findMany.mock.calls[0] as [
-      { where: Record<string, unknown>; orderBy: unknown[] },
-    ];
-    return arg.where as Record<string, unknown>;
-  }
-
-  it("uses OR query to support multi-day overlap logic", async () => {
-    await findUpcomingOccurrences(7);
-    const where = getWhereArg();
-    expect(Array.isArray(where.OR)).toBe(true);
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
-  it("second OR branch catches multi-day events with endDate", async () => {
+  function getWhereArg() {
+    const [arg] = prismaMock.eventOccurrence.findMany.mock.calls[0] as [
+      { where: { OR: Array<Record<string, unknown>> } },
+    ];
+    return arg.where;
+  }
+
+  it("computes todayStart as Amsterdam midnight, not UTC midnight", async () => {
+    // Set system time to 2026-01-15 23:30:00 UTC = 2026-01-16 00:30:00 Amsterdam
+    // Amsterdam "today" is Jan 16, UTC "today" is still Jan 15
+    vi.setSystemTime(new Date("2026-01-15T23:30:00.000Z"));
+
     await findUpcomingOccurrences(7);
-    const where = getWhereArg();
-    const orClauses = where.OR as Array<Record<string, unknown>>;
-    const hasEndDateBranch = orClauses.some((branch) => "endDate" in branch);
-    expect(hasEndDateBranch).toBe(true);
+
+    const { OR } = getWhereArg();
+    // Branch 1: single-day events starting today (Amsterdam Jan 16 midnight = UTC Jan 15 23:00)
+    const branch1 = OR[0] as { date: { gte: Date; lte: Date }; endDate: null };
+    // todayStart should be 2026-01-16T00:00:00+01:00 = 2026-01-15T23:00:00.000Z
+    expect(branch1.date.gte.toISOString()).toBe("2026-01-15T23:00:00.000Z");
+  });
+
+  it("includes multi-day overlap branch with endDate >= todayStart", async () => {
+    vi.setSystemTime(new Date("2026-01-15T23:30:00.000Z"));
+
+    await findUpcomingOccurrences(7);
+
+    const { OR } = getWhereArg();
+    const branch2 = OR[1] as { date: { lte: Date }; endDate: { gte: Date } };
+    expect(branch2.endDate.gte.toISOString()).toBe("2026-01-15T23:00:00.000Z");
   });
 });

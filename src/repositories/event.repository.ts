@@ -17,6 +17,8 @@ import {
   RecurrenceType,
 } from "@prisma/client";
 import { prisma } from "@/lib/db";
+import { DateTime } from "luxon";
+import { DEFAULT_LOCATION } from "@/lib/domain";
 import type { EventQueryParams } from "@/lib/validations";
 import type { GeneratedOccurrence } from "@/engine";
 
@@ -197,9 +199,6 @@ export async function findEventOccurrences(params: EventQueryParams) {
  * Includes multi-day events that started before today but end within window.
  */
 export async function findUpcomingOccurrences(daysWindow = 7) {
-  const { DateTime } = await import("luxon");
-  const { DEFAULT_LOCATION } = await import("@/lib/domain");
-
   const tz = DEFAULT_LOCATION.timezone;
   const todayStart = DateTime.now().setZone(tz).startOf("day").toUTC().toJSDate();
   const futureEnd = DateTime.now()
