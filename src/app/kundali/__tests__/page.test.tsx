@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import Kundali from "../page";
+import type { BirthChart, GrahaPosition } from "@/server/panchanga/types";
 
 // Mock the PageLayout component
 vi.mock("@/components/layout", () => ({
@@ -39,7 +40,7 @@ describe("Kundali Page", () => {
   });
 
   it("submits the form and displays the result", async () => {
-    const mockGraha = (name: string, lon: number) => ({
+    const mockGraha = (name: string, lon: number): GrahaPosition => ({
       name,
       longitude: lon,
       latitude: 0,
@@ -50,7 +51,7 @@ describe("Kundali Page", () => {
       nakshatra: { number: 1, name: "Nakshatra", pada: 1 as const },
     });
 
-    const mockChart = {
+    const mockChart: BirthChart = {
       birthData: {
         date: "1987-11-20",
         time: "10:30",
@@ -80,6 +81,13 @@ describe("Kundali Page", () => {
         pluto: mockGraha("Pluto", 210.0),
       },
       julianDay: 2447119.895833333,
+      janmaPanchanga: {
+        vara: { name: "Shukravara" },
+        tithi: { number: 1, name: "Pratipada", paksha: "Shukla" },
+        nakshatra: { number: 1, name: "Nakshatra", pada: 1 },
+        yoga: { number: 1, name: "Vishkumbha" },
+        karana: { number: 1, name: "Kimstughna" },
+      },
     };
 
     vi.mocked(global.fetch).mockResolvedValueOnce({
