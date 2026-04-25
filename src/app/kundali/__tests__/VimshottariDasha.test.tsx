@@ -37,6 +37,13 @@ const mockChart: BirthChart = {
   grahas: {
     chandra: mockMoon,
   } as unknown as BirthChart["grahas"],
+  janmaPanchanga: {
+    tithi: { number: 1, name: "Pratipada", paksha: "Shukla" },
+    nakshatra: { number: 1, name: "Ashwini", pada: 1 },
+    yoga: { number: 1, name: "Vishkumbha" },
+    karana: { number: 1, name: "Kimstughna" },
+    vara: { name: "Somavara" },
+  },
 };
 
 describe("dasha-utils", () => {

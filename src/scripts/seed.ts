@@ -298,27 +298,20 @@ async function main() {
   // 2. USER PREFERENCES (upsert single user)
   // ============================================
   console.log("⚙️  Seeding user preferences...");
-  const existingPref = await prisma.userPreference.findFirst();
-  if (!existingPref) {
-    await prisma.userPreference.create({
-      data: {
-        id: DEFAULT_PREFERENCES_ID,
-        currentTheme: DEFAULT_THEME_NAME,
-        defaultView: "month",
-        timezone: "Europe/Amsterdam",
-        locationName: "Den Haag",
-        locationLat: 52.0705,
-        locationLon: 4.3007,
-        visibleEventTypes: [],
-        visibleCategories: [],
-        notificationsEnabled: false,
-        notificationDaysBefore: 1,
-      },
-    });
-    console.log("   ✓ Created default preferences (Den Haag)");
-  } else {
-    console.log("   ⏭️  Preferences already exist, skipping");
-  }
+  await prisma.userPreference.upsert({
+    where: { id: DEFAULT_PREFERENCES_ID },
+    create: {
+      id: DEFAULT_PREFERENCES_ID,
+      currentTheme: DEFAULT_THEME_NAME,
+      defaultView: "month",
+      visibleEventTypes: [],
+      visibleCategories: [],
+      notificationsEnabled: false,
+      notificationDaysBefore: 1,
+    },
+    update: {},
+  });
+  console.log("   ✓ Preferences ready");
 
   // ============================================
   // 3. SUMMARY

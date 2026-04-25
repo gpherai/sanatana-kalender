@@ -3,6 +3,7 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { DayDetailsPanel } from "../DayDetailsPanel";
 import type { DailyInfoResponse } from "@/types";
+import { DEFAULT_LOCATION } from "@/lib/domain";
 
 // Mock dependencies
 vi.mock("@/components/ui/MoonPhase", () => ({
@@ -17,9 +18,9 @@ const MOCK_DATE = new Date("2025-01-01");
 
 const MOCK_INFO = {
   date: "2025-01-01T00:00:00.000Z",
-  locationName: "Den Haag",
-  locationLat: 52.0705,
-  locationLon: 4.3007,
+  locationName: DEFAULT_LOCATION.name,
+  locationLat: DEFAULT_LOCATION.lat,
+  locationLon: DEFAULT_LOCATION.lon,
   sunrise: "08:00",
   sunset: "16:00",
   moonrise: "20:00",

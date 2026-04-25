@@ -192,6 +192,56 @@ describe("Kundali Page", () => {
     ).toBeInTheDocument();
   });
 
+  it("validates coordinate ranges client-side", async () => {
+    const { container } = render(<Kundali />);
+
+    fireEvent.change(screen.getByPlaceholderText("DD"), { target: { value: "01" } });
+    fireEvent.change(screen.getByPlaceholderText("MM"), { target: { value: "01" } });
+    fireEvent.change(screen.getByPlaceholderText("JJJJ"), { target: { value: "2000" } });
+    const timeInput = container.querySelector('input[type="time"]')!;
+    fireEvent.change(timeInput, { target: { value: "10:30" } });
+    fireEvent.change(screen.getByPlaceholderText("52.0893"), { target: { value: "91" } });
+    fireEvent.change(screen.getByPlaceholderText("4.3683"), { target: { value: "4" } });
+
+    fireEvent.submit(
+      screen.getByRole("button", { name: /Bereken Kundali/i }).closest("form")!
+    );
+
+    expect(screen.getByText(/Breedtegraad moet tussen -90 en 90/i)).toBeInTheDocument();
+  });
+
+  it("displays standardized API validation details", async () => {
+    vi.mocked(global.fetch).mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({
+        error: "VALIDATION_ERROR",
+        message: "Validatiefout",
+        details: [{ field: "tz", message: "Ongeldige IANA tijdzone" }],
+      }),
+    } as Response);
+
+    const { container } = render(<Kundali />);
+
+    fireEvent.change(screen.getByPlaceholderText("DD"), { target: { value: "20" } });
+    fireEvent.change(screen.getByPlaceholderText("MM"), { target: { value: "11" } });
+    fireEvent.change(screen.getByPlaceholderText("JJJJ"), { target: { value: "1987" } });
+    const timeInput = container.querySelector('input[type="time"]')!;
+    fireEvent.change(timeInput, { target: { value: "10:30" } });
+    fireEvent.change(screen.getByPlaceholderText("52.0893"), {
+      target: { value: "52.3" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("4.3683"), { target: { value: "4.9" } });
+    fireEvent.change(screen.getByPlaceholderText("Europe/Amsterdam"), {
+      target: { value: "Europe/Amsterdam" },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /Bereken Kundali/i }));
+
+    await waitFor(() =>
+      expect(screen.getByText(/Ongeldige IANA tijdzone/i)).toBeInTheDocument()
+    );
+  });
+
   it("handles network errors gracefully", async () => {
     vi.mocked(global.fetch).mockRejectedValueOnce(new Error("Network Error"));
 

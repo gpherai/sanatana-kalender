@@ -2,54 +2,53 @@
 
 import type { BirthChart, GrahaKey } from "@/server/panchanga/types";
 import {
-  CellGraha,
+  type CellGraha,
   GRAHA_ORDER,
   SOUTH_INDIAN_POS,
   RASHI_NAMES,
   RashiCell,
 } from "./KundaliChart";
 
-const NAVAMSHA_SPAN = 30 / 9;
+const DASHAMSHA_SPAN = 3; // 30° / 10 padas
 const norm360 = (x: number): number => ((x % 360) + 360) % 360;
 
-export function navamshaRashi(longitude: number): number {
+/**
+ * D10 rashi (1-12) for a given sidereal longitude.
+ * Odd rashis: count padas from the same rashi.
+ * Even rashis: count padas from the 9th rashi (= rashi + 8).
+ */
+export function dashamshaRashi(longitude: number): number {
   const normalized = norm360(longitude);
   const rashi = Math.floor(normalized / 30) + 1; // 1-12
   const degInRashi = normalized % 30;
-  const pada = Math.floor(degInRashi / NAVAMSHA_SPAN); // 0-8
-
-  const startRashi = [1, 5, 9].includes(rashi)
-    ? 1 // Fire → Mesha
-    : [2, 6, 10].includes(rashi)
-      ? 10 // Earth → Makara
-      : [3, 7, 11].includes(rashi)
-        ? 7 // Air → Tula
-        : 4; // Water → Karka
-
-  return ((startRashi - 1 + pada) % 12) + 1;
+  const pada = Math.floor(degInRashi / DASHAMSHA_SPAN); // 0-9
+  const isOdd = rashi % 2 === 1;
+  const startOffset = isOdd ? rashi - 1 : rashi + 7;
+  return ((startOffset + pada) % 12) + 1;
 }
 
-export function navamshaDegree(longitude: number): number {
+/** Degree within the D10 rashi (0-30) */
+export function dashamshaDegree(longitude: number): number {
   const degInRashi = norm360(longitude) % 30;
-  return (degInRashi % NAVAMSHA_SPAN) * 9;
+  return (degInRashi % DASHAMSHA_SPAN) * 10;
 }
 
-export function NavamshaChart({ chart }: { chart: BirthChart }) {
+export function DashamshaChart({ chart }: { chart: BirthChart }) {
   const rashiGrahas: Record<number, CellGraha[]> = {};
   for (let i = 1; i <= 12; i++) rashiGrahas[i] = [];
 
   for (const key of GRAHA_ORDER) {
     const g = chart.grahas[key as GrahaKey];
     if (!g) continue;
-    const nr = navamshaRashi(g.longitude);
+    const nr = dashamshaRashi(g.longitude);
     rashiGrahas[nr]!.push({
       key: key as GrahaKey,
       retrograde: g.retrograde,
-      degreeInRashi: navamshaDegree(g.longitude),
+      degreeInRashi: dashamshaDegree(g.longitude),
     });
   }
 
-  const lagnaRashi = navamshaRashi(chart.lagna.longitude);
+  const lagnaRashi = dashamshaRashi(chart.lagna.longitude);
 
   return (
     <div
@@ -76,7 +75,7 @@ export function NavamshaChart({ chart }: { chart: BirthChart }) {
         }
       )}
 
-      {/* Center 2×2 — D9 label */}
+      {/* Center 2×2 — D10 label */}
       <div
         className="border-theme-border flex flex-col items-center justify-center border bg-[var(--theme-surface-raised)]"
         style={{ gridRow: "2/4", gridColumn: "2/4" }}
@@ -85,7 +84,7 @@ export function NavamshaChart({ chart }: { chart: BirthChart }) {
           className="text-[10px] font-semibold tracking-widest uppercase"
           style={{ color: "var(--theme-fg-muted)" }}
         >
-          D9
+          D10
         </span>
         <span
           className="mt-1.5 text-center text-base leading-tight font-bold"
@@ -94,7 +93,7 @@ export function NavamshaChart({ chart }: { chart: BirthChart }) {
           {RASHI_NAMES[lagnaRashi]}
         </span>
         <span className="mt-0.5 text-xs" style={{ color: "var(--theme-fg-muted)" }}>
-          Navamsha
+          Dashamsha
         </span>
       </div>
     </div>

@@ -59,6 +59,14 @@ export type GrahaKey =
   | "neptune"
   | "pluto";
 
+export interface JanmaPanchanga {
+  tithi: { number: number; name: string; paksha: "Shukla" | "Krishna" };
+  nakshatra: { number: number; name: string; pada: 1 | 2 | 3 | 4 };
+  yoga: { number: number; name: string };
+  karana: { number: number; name: string };
+  vara: { name: string };
+}
+
 export interface BirthChart {
   birthData: BirthData;
   julianDay: number; // JD (UT) of birth moment
@@ -68,6 +76,7 @@ export interface BirthChart {
   };
   lagna: LagnaInfo;
   grahas: Record<GrahaKey, GrahaPosition>;
+  janmaPanchanga: JanmaPanchanga;
 }
 
 export interface LocationConfig {

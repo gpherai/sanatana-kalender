@@ -244,7 +244,7 @@
   --theme-calendar-date-text: oklch(0.38 0.1 275);
   --theme-calendar-border: oklch(0.88 0.06 280);
   --theme-calendar-border-subtle: oklch(0.91 0.04 280);
-  --theme-calendar-weekend-bg: oklch(0.96 0.01 280);
+  --theme-calendar-weekend-bg: var(--bhairava-ash);
   --theme-heatmap-4: var(--theme-accent);
 }
 
@@ -481,13 +481,5 @@
   }
   50% {
     filter: brightness(1.1) saturate(1.12);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  [data-theme="bhairava-nocturne"] {
-    --theme-brand-mark-animation: none;
-    --theme-brand-label-animation: none;
-    --theme-primary-text-animation: none;
   }
 }

@@ -1,15 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { PageLayout } from "@/components/layout";
 import { Star, TriangleAlert, Grid2x2, Table2, Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { BirthChart, GrahaKey } from "@/server/panchanga/types";
 import { KundaliChart, RASHI_NAMES } from "./KundaliChart";
-import { NavamshaChart, navamshaRashi } from "./NavamshaChart";
+import { NavamshaChart, navamshaDegree, navamshaRashi } from "./NavamshaChart";
 import { VimshottariDasha } from "./VimshottariDasha";
 import { getGrahaDignity, DIGNITY_LABEL, type Dignity } from "./graha-dignity";
 import { GrahaAspects } from "./GrahaAspects";
+import { DashamshaChart, dashamshaRashi, dashamshaDegree } from "./DashamshaChart";
 
 // =============================================================================
 // GRAHA DISPLAY CONFIG
@@ -59,6 +60,8 @@ interface FormState {
   tz: string;
 }
 
+const STORAGE_KEY = "kundali-form";
+
 const EMPTY_FORM: FormState = {
   day: "",
   month: "",
@@ -84,6 +87,40 @@ function formatDeg(deg: number): string {
 function formatLon(lon: number): string {
   const inSign = lon % 30;
   return `${formatDeg(inSign)} (${lon.toFixed(2)}°)`;
+}
+
+function isValidTimeZone(tz: string): boolean {
+  try {
+    Intl.DateTimeFormat(undefined, { timeZone: tz });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function apiErrorMessage(data: unknown): string {
+  if (!data || typeof data !== "object") return "Onbekende fout";
+
+  const payload = data as {
+    error?: unknown;
+    message?: unknown;
+    details?: unknown;
+  };
+
+  if (Array.isArray(payload.details)) {
+    const firstDetail = payload.details.find(
+      (detail): detail is { message: string } =>
+        !!detail &&
+        typeof detail === "object" &&
+        "message" in detail &&
+        typeof detail.message === "string"
+    );
+    if (firstDetail) return firstDetail.message;
+  }
+
+  if (typeof payload.message === "string") return payload.message;
+  if (typeof payload.error === "string") return payload.error;
+  return "Onbekende fout";
 }
 
 // =============================================================================
@@ -202,20 +239,72 @@ function GrahaRow({ grahaKey, chart }: { grahaKey: GrahaKey; chart: BirthChart }
 }
 
 // =============================================================================
+// LOCAL STORAGE SYNC
+// =============================================================================
+
+let cachedRaw: string | null = null;
+let cachedParsed: FormState | null = null;
+
+function getSnapshot() {
+  const raw = window.localStorage.getItem(STORAGE_KEY);
+  if (raw !== cachedRaw) {
+    cachedRaw = raw;
+    try {
+      cachedParsed = raw ? JSON.parse(raw) : null;
+    } catch {
+      cachedParsed = null;
+    }
+  }
+  return cachedParsed;
+}
+
+function getServerSnapshot() {
+  return null;
+}
+
+function subscribe(callback: () => void) {
+  window.addEventListener("storage", callback);
+  return () => window.removeEventListener("storage", callback);
+}
+
+// =============================================================================
 // MAIN PAGE
 // =============================================================================
 
-type ResultView = "d1-chart" | "d1-table" | "d9-chart" | "d9-table";
+type ResultView =
+  | "d1-chart"
+  | "d1-table"
+  | "d9-chart"
+  | "d9-table"
+  | "d10-chart"
+  | "d10-table";
 
 export default function KundaliPage() {
+  const savedForm = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
+  const [prevSaved, setPrevSaved] = useState<FormState | null>(null);
+
+  // Sync external store to local state during render (avoids cascading useEffects)
+  if (savedForm !== prevSaved) {
+    setPrevSaved(savedForm);
+    if (savedForm) setForm(savedForm);
+  }
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [chart, setChart] = useState<BirthChart | null>(null);
   const [resultView, setResultView] = useState<ResultView>("d1-chart");
+  const hasSaved = savedForm !== null;
 
   const set = (field: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((f) => ({ ...f, [field]: e.target.value }));
+
+  function clearSaved() {
+    localStorage.removeItem(STORAGE_KEY);
+    window.dispatchEvent(new Event("storage"));
+    setForm(EMPTY_FORM);
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -228,9 +317,24 @@ export default function KundaliPage() {
     const d = parseInt(form.day, 10);
     const m = parseInt(form.month, 10);
     const y = parseInt(form.year, 10);
+    const tz = form.tz.trim();
 
-    if (isNaN(lat) || isNaN(lon)) {
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
       setError("Breedtegraad en lengtegraad moeten getallen zijn.");
+      setLoading(false);
+      return;
+    }
+    if (lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+      setError(
+        "Breedtegraad moet tussen -90 en 90 zijn; lengtegraad tussen -180 en 180."
+      );
+      setLoading(false);
+      return;
+    }
+    if (!tz || !isValidTimeZone(tz)) {
+      setError(
+        "Tijdzone moet een geldige IANA naam zijn, bijvoorbeeld Europe/Amsterdam."
+      );
       setLoading(false);
       return;
     }
@@ -255,13 +359,15 @@ export default function KundaliPage() {
       const res = await fetch("/api/kundali", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ date: dateStr, time: form.time, lat, lon, tz: form.tz }),
+        body: JSON.stringify({ date: dateStr, time: form.time, lat, lon, tz }),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => null);
       if (!res.ok) {
-        setError(data.error ?? "Onbekende fout");
+        setError(apiErrorMessage(data));
       } else {
         setChart(data as BirthChart);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(form));
+        window.dispatchEvent(new Event("storage"));
       }
     } catch {
       setError("Kon de server niet bereiken.");
@@ -397,13 +503,27 @@ export default function KundaliPage() {
           </FormField>
         </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-theme-primary text-theme-primary-fg hover:bg-theme-primary-80 mt-6 rounded-lg px-6 py-2.5 text-sm font-semibold transition-colors disabled:opacity-50"
-        >
-          {loading ? "Berekenen..." : "Bereken Kundali"}
-        </button>
+        <div className="mt-6 flex items-center gap-4">
+          <button
+            type="submit"
+            disabled={loading}
+            className="bg-theme-primary text-theme-primary-fg hover:bg-theme-primary-80 rounded-lg px-6 py-2.5 text-sm font-semibold transition-colors disabled:opacity-50"
+          >
+            {loading ? "Berekenen..." : "Bereken Kundali"}
+          </button>
+          {hasSaved && (
+            <p className="text-theme-fg-muted text-xs">
+              Gegevens opgeslagen ·{" "}
+              <button
+                type="button"
+                onClick={clearSaved}
+                className="text-theme-primary cursor-pointer hover:underline"
+              >
+                Wissen
+              </button>
+            </p>
+          )}
+        </div>
       </form>
 
       {/* Error */}
@@ -445,6 +565,28 @@ export default function KundaliPage() {
                 </div>
                 <div>
                   <p className="text-theme-fg-muted text-xs font-semibold tracking-wide uppercase">
+                    Chandra Rashi
+                  </p>
+                  <p className="text-theme-fg mt-0.5 text-lg font-bold">
+                    {chart.grahas.chandra.rashi.name}
+                  </p>
+                  <p className="text-theme-fg-muted text-xs">
+                    {chart.grahas.chandra.degreeInRashi.toFixed(2)}°
+                  </p>
+                </div>
+                <div>
+                  <p className="text-theme-fg-muted text-xs font-semibold tracking-wide uppercase">
+                    Janma Nakshatra
+                  </p>
+                  <p className="text-theme-fg mt-0.5 font-semibold">
+                    {chart.grahas.chandra.nakshatra.name}
+                  </p>
+                  <p className="text-theme-fg-muted text-xs">
+                    pada {chart.grahas.chandra.nakshatra.pada}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-theme-fg-muted text-xs font-semibold tracking-wide uppercase">
                     Ayanamsa
                   </p>
                   <p className="text-theme-fg mt-0.5 font-semibold">
@@ -463,6 +605,17 @@ export default function KundaliPage() {
                       {RASHI_NAMES[navamshaRashi(chart.lagna.longitude)]}
                     </p>
                     <p className="text-theme-fg-muted text-xs">Navamsha</p>
+                  </div>
+                )}
+                {(resultView === "d10-chart" || resultView === "d10-table") && (
+                  <div>
+                    <p className="text-theme-fg-muted text-xs font-semibold tracking-wide uppercase">
+                      D10 Lagna
+                    </p>
+                    <p className="text-theme-fg mt-0.5 text-lg font-bold">
+                      {RASHI_NAMES[dashamshaRashi(chart.lagna.longitude)]}
+                    </p>
+                    <p className="text-theme-fg-muted text-xs">Dashamsha</p>
                   </div>
                 )}
               </div>
@@ -528,6 +681,85 @@ export default function KundaliPage() {
                 >
                   <Table2 className="h-3.5 w-3.5" />
                 </button>
+                <div className="bg-theme-border mx-0.5 h-4 w-px shrink-0" />
+                <button
+                  onClick={() => setResultView("d10-chart")}
+                  style={{ touchAction: "manipulation" }}
+                  title="D10 Grafiek"
+                  aria-label="D10 Grafiek"
+                  className={cn(
+                    "flex cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
+                    resultView === "d10-chart"
+                      ? "bg-theme-primary-15 text-theme-primary"
+                      : "text-theme-fg-muted hover:text-theme-fg"
+                  )}
+                >
+                  <Layers className="h-3.5 w-3.5" />
+                  D10
+                </button>
+                <button
+                  onClick={() => setResultView("d10-table")}
+                  style={{ touchAction: "manipulation" }}
+                  title="D10 Tabel"
+                  aria-label="D10 Tabel"
+                  className={cn(
+                    "flex cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
+                    resultView === "d10-table"
+                      ? "bg-theme-primary-15 text-theme-primary"
+                      : "text-theme-fg-muted hover:text-theme-fg"
+                  )}
+                >
+                  <Table2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Janma Panchanga */}
+          <div className="bg-theme-surface-raised rounded-xl px-6 py-4 shadow">
+            <p className="text-theme-fg-muted mb-3 text-xs font-semibold tracking-wide uppercase">
+              Janma Panchanga
+            </p>
+            <div className="flex flex-wrap gap-x-8 gap-y-3">
+              <div>
+                <p className="text-theme-fg-muted text-xs">Vara</p>
+                <p className="text-theme-fg mt-0.5 font-semibold">
+                  {chart.janmaPanchanga.vara.name}
+                </p>
+              </div>
+              <div>
+                <p className="text-theme-fg-muted text-xs">Tithi</p>
+                <p className="text-theme-fg mt-0.5 font-semibold">
+                  {chart.janmaPanchanga.tithi.name}
+                </p>
+                <p className="text-theme-fg-muted text-xs">
+                  {chart.janmaPanchanga.tithi.paksha} · #
+                  {chart.janmaPanchanga.tithi.number}
+                </p>
+              </div>
+              <div>
+                <p className="text-theme-fg-muted text-xs">Nakshatra</p>
+                <p className="text-theme-fg mt-0.5 font-semibold">
+                  {chart.janmaPanchanga.nakshatra.name}
+                </p>
+                <p className="text-theme-fg-muted text-xs">
+                  pada {chart.janmaPanchanga.nakshatra.pada}
+                </p>
+              </div>
+              <div>
+                <p className="text-theme-fg-muted text-xs">Yoga</p>
+                <p className="text-theme-fg mt-0.5 font-semibold">
+                  {chart.janmaPanchanga.yoga.name}
+                </p>
+                <p className="text-theme-fg-muted text-xs">
+                  #{chart.janmaPanchanga.yoga.number}
+                </p>
+              </div>
+              <div>
+                <p className="text-theme-fg-muted text-xs">Karana</p>
+                <p className="text-theme-fg mt-0.5 font-semibold">
+                  {chart.janmaPanchanga.karana.name}
+                </p>
               </div>
             </div>
           </div>
@@ -621,7 +853,7 @@ export default function KundaliPage() {
                       const g = chart.grahas[key];
                       if (!g) return null;
                       const d9Rashi = navamshaRashi(g.longitude);
-                      const d9Deg = (g.degreeInRashi % (30 / 9)) * 9;
+                      const d9Deg = navamshaDegree(g.longitude);
                       const d9Dignity = getGrahaDignity(key, d9Rashi, d9Deg);
                       return (
                         <tr
@@ -666,6 +898,101 @@ export default function KundaliPage() {
                           <td className="py-3 text-right">
                             <span className="text-theme-fg-muted font-mono text-xs">
                               {d9Deg.toFixed(2)}°
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              <p className="text-theme-fg-muted mt-4 text-xs">
+                R = Retrograde · Mean Node voor Rahu/Ketu
+              </p>
+            </div>
+          )}
+
+          {/* D10 chart */}
+          {resultView === "d10-chart" && (
+            <div className="mx-auto w-full max-w-2xl">
+              <DashamshaChart chart={chart} />
+            </div>
+          )}
+
+          {/* D10 table */}
+          {resultView === "d10-table" && (
+            <div className="bg-theme-surface-raised rounded-xl p-6 shadow">
+              <h2 className="text-theme-fg mb-4 text-base font-semibold">
+                Navagrahas — D10 Dashamsha
+              </h2>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-theme-border border-b">
+                      <th className="text-theme-fg-muted pr-4 pb-2 text-left text-xs font-semibold tracking-wide uppercase">
+                        Graha
+                      </th>
+                      <th className="text-theme-fg-muted pr-4 pb-2 text-left text-xs font-semibold tracking-wide uppercase">
+                        D1 Rashi
+                      </th>
+                      <th className="text-theme-fg-muted pr-4 pb-2 text-left text-xs font-semibold tracking-wide uppercase">
+                        D10 Rashi
+                      </th>
+                      <th className="text-theme-fg-muted pb-2 text-right text-xs font-semibold tracking-wide uppercase">
+                        D10 Graad
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {GRAHA_ORDER.map((key) => {
+                      const g = chart.grahas[key];
+                      if (!g) return null;
+                      const d10Rashi = dashamshaRashi(g.longitude);
+                      const d10Deg = dashamshaDegree(g.longitude);
+                      const d10Dignity = getGrahaDignity(key, d10Rashi, d10Deg);
+                      return (
+                        <tr
+                          key={key}
+                          className="border-theme-border border-b last:border-0"
+                        >
+                          <td className="py-3 pr-4">
+                            <div className="flex items-center gap-2">
+                              <span className="text-theme-primary w-5 text-center text-base">
+                                {GRAHA_SYMBOL[key]}
+                              </span>
+                              <span className="text-theme-fg font-semibold">
+                                {g.name}
+                              </span>
+                              {g.retrograde && (
+                                <span className="text-theme-fg-muted rounded border border-current px-1 text-[10px]">
+                                  R
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="py-3 pr-4">
+                            <span className="text-theme-fg-muted">{g.rashi.name}</span>
+                          </td>
+                          <td className="py-3 pr-4">
+                            <div className="flex flex-wrap items-center gap-1.5">
+                              <span className="text-theme-fg font-medium">
+                                {RASHI_NAMES[d10Rashi]}
+                              </span>
+                              {d10Dignity && (
+                                <span
+                                  className={cn(
+                                    "rounded px-1.5 py-0.5 text-[10px] font-semibold",
+                                    DIGNITY_STYLE[d10Dignity]
+                                  )}
+                                >
+                                  {DIGNITY_LABEL[d10Dignity]}
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="py-3 text-right">
+                            <span className="text-theme-fg-muted font-mono text-xs">
+                              {d10Deg.toFixed(2)}°
                             </span>
                           </td>
                         </tr>

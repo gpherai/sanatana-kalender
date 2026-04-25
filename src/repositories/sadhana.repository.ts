@@ -37,13 +37,6 @@ export async function findSessionById(id: string) {
   });
 }
 
-export async function createSession(data: Prisma.SadhanaSessionCreateInput) {
-  return prisma.sadhanaSession.create({
-    data,
-    include: { items: { include: { practice: true } } },
-  });
-}
-
 // =============================================================================
 // PRACTICES
 // =============================================================================

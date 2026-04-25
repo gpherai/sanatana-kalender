@@ -1,22 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
-import { errorResponse, serverError } from "@/lib/api-response";
-import { logError } from "@/lib/utils";
-import { panchangaService } from "@/services/panchanga.service";
-import { DEFAULT_LOCATION } from "@/lib/domain";
 import { getMoonPhaseType, getMoonPhaseEmoji, getMoonPhaseName } from "@/lib/moon-phases";
 import { detectSpecialDay } from "@/lib/panchanga-helpers";
 import type { DailyPanchangaFull } from "@/server/panchanga";
-import { DateTime } from "luxon";
-
-// =============================================================================
-// HELPER FUNCTIONS
-// =============================================================================
 
 /**
  * Transform Panchanga data to API response format
  * Includes both old fields (for compatibility) and new Vedic fields
  */
-function transformToApiResponse(panchanga: DailyPanchangaFull) {
+export function transformToApiResponse(panchanga: DailyPanchangaFull) {
   const illuminationPct = Math.round(panchanga.moon.illuminationPct);
   const moonPhaseType = getMoonPhaseType(illuminationPct, panchanga.moon.waxing);
 
@@ -94,14 +84,14 @@ function transformToApiResponse(panchanga: DailyPanchangaFull) {
           start: panchanga.rahuKalam.startLocal,
           end: panchanga.rahuKalam.endLocal,
         }
-      : null,
+      : undefined,
 
     yamagandam: panchanga.yamagandam
       ? {
           start: panchanga.yamagandam.startLocal,
           end: panchanga.yamagandam.endLocal,
         }
-      : null,
+      : undefined,
 
     // Ayanamsa (precession correction)
     ayanamsa: {
@@ -144,7 +134,7 @@ function transformToApiResponse(panchanga: DailyPanchangaFull) {
       if (sd?.type === "purnima" || sd?.type === "amavasya") return null;
       return sd
         ? { type: sd.type, name: sd.name, description: sd.description, emoji: sd.emoji }
-        : null;
+        : undefined;
     })(),
 
     // =========================================================================
@@ -253,123 +243,5 @@ function transformToApiResponse(panchanga: DailyPanchangaFull) {
           endUtcIso: panchanga.nextKarana.endUtcIso ?? null,
         }
       : undefined,
-
-    // Exact moon phase event (Swiss Ephemeris binary search)
-    moonPhaseEvent: panchanga.moonPhaseEvent ?? null,
-
-    // Metadata
-    meta: {
-      engine: panchanga.meta.engine,
-      calculationDate: new Date().toISOString(),
-    },
   };
-}
-
-// =============================================================================
-// API ROUTE HANDLER
-// =============================================================================
-
-/**
- * GET /api/daily-info
- *
- * Query params:
- * - date: Single date (YYYY-MM-DD)
- * - start, end: Date range (YYYY-MM-DD)
- *
- * Without params: Returns today's data
- *
- * Location and timezone are fetched from UserPreference.
- * Results are cached for performance.
- */
-export async function GET(request: NextRequest) {
-  try {
-    const searchParams = request.nextUrl.searchParams;
-    const dateParam = searchParams.get("date");
-    const startParam = searchParams.get("start");
-    const endParam = searchParams.get("end");
-
-    // =========================================================================
-    // STEP 1: Get user preferences for location and timezone
-    // =========================================================================
-    const location = DEFAULT_LOCATION;
-    const timezone = DEFAULT_LOCATION.timezone;
-
-    // =========================================================================
-    // STEP 2: Parse and validate date parameters
-    // =========================================================================
-
-    if (dateParam) {
-      // ---------------------------------------------------------------------
-      // Single date mode
-      // ---------------------------------------------------------------------
-
-      // IMPORTANT: Parse date in the selected timezone, not UTC!
-      // This ensures we calculate for the correct calendar day.
-      const dt = DateTime.fromISO(dateParam, { zone: timezone });
-
-      if (!dt.isValid) {
-        return errorResponse("Ongeldige datum formaat. Gebruik YYYY-MM-DD.", 400);
-      }
-
-      const date = dt.toJSDate();
-
-      // Calculate Panchanga using service layer
-      const panchanga = await panchangaService.calculateDaily(date, location, timezone);
-
-      // Transform to API response format
-      const response = transformToApiResponse(panchanga);
-
-      return NextResponse.json(response);
-    } else if (startParam && endParam) {
-      // ---------------------------------------------------------------------
-      // Date range mode
-      // ---------------------------------------------------------------------
-
-      const startDt = DateTime.fromISO(startParam, { zone: timezone });
-      const endDt = DateTime.fromISO(endParam, { zone: timezone });
-
-      if (!startDt.isValid || !endDt.isValid) {
-        return errorResponse("Ongeldige datum formaat. Gebruik YYYY-MM-DD.", 400);
-      }
-
-      const start = startDt.toJSDate();
-      const end = endDt.toJSDate();
-
-      if (start > end) {
-        return errorResponse("Startdatum moet voor einddatum liggen.", 400);
-      }
-
-      // Limit to max 90 days for API requests
-      const diffDays = Math.ceil(endDt.diff(startDt, "days").days) + 1;
-      if (diffDays > 90) {
-        return errorResponse("Maximum bereik is 90 dagen.", 400);
-      }
-
-      // Calculate range using service layer
-      const panchangas = await panchangaService.calculateRange(
-        start,
-        end,
-        location,
-        timezone
-      );
-
-      // Transform all results
-      const responses = panchangas.map(transformToApiResponse);
-
-      return NextResponse.json(responses);
-    } else {
-      // ---------------------------------------------------------------------
-      // Default: Today's data
-      // ---------------------------------------------------------------------
-
-      const today = new Date();
-      const panchanga = await panchangaService.calculateDaily(today, location, timezone);
-      const response = transformToApiResponse(panchanga);
-
-      return NextResponse.json(response);
-    }
-  } catch (error) {
-    logError("[API] GET /api/daily-info error:", error);
-    return serverError("Kon Panchanga niet berekenen");
-  }
 }

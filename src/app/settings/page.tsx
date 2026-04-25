@@ -6,13 +6,11 @@
  * Allows user to configure:
  * - Theme (color theme from THEME_CATALOG)
  * - Color mode (light/dark/system)
- * - Calendar preferences (default view, week start)
- * - Location (for sun/moon calculations)
- * - Timezone
+ * - Calendar preferences (default view)
  *
  * All changes are automatically saved after a short delay.
  * Theme/colorMode changes are instant via ThemeProvider.
- * Other preferences sync to database.
+ * DEFAULT_LOCATION is fixed in code for panchanga/weather/event calculations.
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
@@ -24,7 +22,7 @@ import { useToast } from "@/components/ui/Toast";
 import { useTheme } from "@/components/theme/ThemeProvider";
 import { PageLayout } from "@/components/layout";
 import { ThemeSection, CalendarSection, LocationSection } from "@/components/settings";
-import { PRESET_LOCATIONS, DEFAULT_LOCATION } from "@/lib/domain";
+import { DEFAULT_LOCATION } from "@/lib/domain";
 
 // =============================================================================
 // TYPES
@@ -34,10 +32,6 @@ interface Preferences {
   id: string;
   currentTheme: string;
   defaultView: string;
-  timezone: string;
-  locationName: string;
-  locationLat: number;
-  locationLon: number;
 }
 
 interface DailyInfo {
@@ -172,10 +166,6 @@ export default function SettingsPage() {
       setFormData({
         currentTheme: prefs.currentTheme,
         defaultView: prefs.defaultView,
-        timezone: prefs.timezone,
-        locationName: prefs.locationName,
-        locationLat: prefs.locationLat,
-        locationLon: prefs.locationLon,
       });
       setAutoSaveResetKey((key) => key + 1);
       // Sync ThemeProvider with DB value (new browser/device won't have localStorage)
@@ -187,25 +177,15 @@ export default function SettingsPage() {
       showToast("Kon instellingen niet laden", "error");
     },
   });
-  const {
-    data: dailyInfo,
-    loading: dailyLoading,
-    refetch: refreshDailyInfo,
-  } = useFetch<DailyInfo>("/api/daily-info");
+  const { data: dailyInfo, loading: dailyLoading } =
+    useFetch<DailyInfo>("/api/daily-info");
   const loading = prefsLoading || dailyLoading;
 
   // Form state - initialized with defaults
   const [formData, setFormData] = useState({
     currentTheme: themeName,
     defaultView: "month",
-    timezone: DEFAULT_LOCATION.timezone,
-    locationName: DEFAULT_LOCATION.name,
-    locationLat: DEFAULT_LOCATION.lat,
-    locationLon: DEFAULT_LOCATION.lon,
   });
-
-  // Track if location changed for daily info refresh
-  const [locationChanged, setLocationChanged] = useState(false);
 
   // Sync form theme with context theme
   useEffect(() => {
@@ -247,14 +227,6 @@ export default function SettingsPage() {
     }
   }, [saveStatus, showToast]);
 
-  // Refresh daily info after a location change is saved
-  useEffect(() => {
-    if (!locationChanged || saveStatus !== "saved") return;
-    refreshDailyInfo();
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: clear flag after triggering refresh
-    setLocationChanged(false);
-  }, [locationChanged, saveStatus, refreshDailyInfo]);
-
   // ---------------------------------------------------------------------------
   // Handlers
   // ---------------------------------------------------------------------------
@@ -265,29 +237,6 @@ export default function SettingsPage() {
       setTheme(newThemeName); // Instant visual update via ThemeProvider
     },
     [setTheme, setFormData]
-  );
-
-  const handleLocationPreset = useCallback(
-    (preset: (typeof PRESET_LOCATIONS)[number]) => {
-      setFormData((prev) => ({
-        ...prev,
-        locationName: preset.name,
-        locationLat: preset.lat,
-        locationLon: preset.lon,
-      }));
-      setLocationChanged(true);
-    },
-    [setFormData, setLocationChanged]
-  );
-
-  const handleLocationChange = useCallback(
-    (field: "locationName" | "locationLat" | "locationLon", value: string | number) => {
-      setFormData((prev) => ({ ...prev, [field]: value }));
-      if (field === "locationLat" || field === "locationLon") {
-        setLocationChanged(true);
-      }
-    },
-    [setFormData, setLocationChanged]
   );
 
   const handleCalendarFieldChange = useCallback(
@@ -363,18 +312,16 @@ export default function SettingsPage() {
         {/* Calendar Section */}
         <CalendarSection
           defaultView={formData.defaultView}
-          timezone={formData.timezone}
+          timezone={DEFAULT_LOCATION.timezone}
           onFieldChange={handleCalendarFieldChange}
         />
 
         {/* Location Section */}
         <LocationSection
-          locationName={formData.locationName}
-          locationLat={formData.locationLat}
-          locationLon={formData.locationLon}
+          locationName={DEFAULT_LOCATION.name}
+          locationLat={DEFAULT_LOCATION.lat}
+          locationLon={DEFAULT_LOCATION.lon}
           dailyInfo={dailyInfo}
-          onLocationPreset={handleLocationPreset}
-          onLocationChange={handleLocationChange}
         />
       </div>
     </PageLayout>

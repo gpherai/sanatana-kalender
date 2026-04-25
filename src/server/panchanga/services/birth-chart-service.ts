@@ -15,8 +15,17 @@ import {
   getAyanamsa,
   sweHousesEx,
   sweSetTopo,
+  withSwissEphLock,
 } from "../utils/astro";
-import { NAKSHATRA_NAMES, RASHI_NAMES, GRAHA_DEFINITIONS } from "../constants";
+import {
+  NAKSHATRA_NAMES,
+  RASHI_NAMES,
+  GRAHA_DEFINITIONS,
+  TITHI_NAMES,
+  YOGA_NAMES,
+  KARANA_NAMES,
+  VARA_NAMES,
+} from "../constants";
 
 const EPHE_PATH = path.join(process.cwd(), "node_modules/swisseph/ephe");
 
@@ -27,24 +36,79 @@ const EPHE_PATH = path.join(process.cwd(), "node_modules/swisseph/ephe");
 const norm360 = (x: number): number => ((x % 360) + 360) % 360;
 
 function rashiFromLon(lon: number): RashiInfo {
-  const idx = Math.floor(lon / 30); // 0-11
+  const normalized = norm360(lon);
+  const idx = Math.floor(normalized / 30); // 0-11
   return { number: idx + 1, name: RASHI_NAMES[idx] ?? "Unknown" };
 }
 
 function nakshatraFromLon(lon: number): NakshatraInfo {
+  const normalized = norm360(lon);
   // Each nakshatra = 360/27 = 13.333...°
   // Each pada = 360/108 = 3.333...°
   const nakWidth = 360 / 27;
   const padaWidth = 360 / 108;
-  const idx = Math.floor(lon / nakWidth); // 0-26
-  const posInNak = lon % nakWidth;
+  const idx = Math.floor(normalized / nakWidth); // 0-26
+  const posInNak = normalized % nakWidth;
   const pada = (Math.floor(posInNak / padaWidth) + 1) as 1 | 2 | 3 | 4;
   return { number: idx + 1, name: NAKSHATRA_NAMES[idx] ?? "Unknown", pada };
+}
+
+type SwissEphPosition = Awaited<ReturnType<typeof swe_calc_ut>>;
+
+function grahaPosition(name: string, pos: SwissEphPosition): GrahaPosition {
+  const lon = norm360(pos.longitude);
+  return {
+    name,
+    longitude: lon,
+    latitude: pos.latitude,
+    speed: pos.speed,
+    retrograde: pos.speed < 0,
+    rashi: rashiFromLon(lon),
+    degreeInRashi: lon % 30,
+    nakshatra: nakshatraFromLon(lon),
+  };
+}
+
+function parseBirthDateTime(birth: BirthData): DateTime {
+  const localDt = DateTime.fromISO(`${birth.date}T${birth.time}`, {
+    zone: birth.tz,
+  });
+  if (!localDt.isValid) {
+    throw new BirthChartInputError(
+      `Invalid birth date/time: ${birth.date}T${birth.time} in zone ${birth.tz}`
+    );
+  }
+
+  const expectedLocal = `${birth.date}T${
+    birth.time.length === 5 ? `${birth.time}:00` : birth.time
+  }`;
+  const actualLocal = `${localDt.toISODate()}T${localDt.toFormat("HH:mm:ss")}`;
+  if (actualLocal !== expectedLocal) {
+    throw new BirthChartInputError(
+      `Invalid birth date/time: ${birth.date}T${birth.time} does not exist in zone ${birth.tz}`
+    );
+  }
+
+  const possibleOffsets = localDt.getPossibleOffsets();
+  if (possibleOffsets.length > 1) {
+    throw new BirthChartInputError(
+      `Ambigue geboortetijd: ${birth.date} ${birth.time} komt meerdere keren voor in ${birth.tz} door zomer-/wintertijd. Gebruik een niet-ambigue lokale tijd of geef de equivalente UTC-tijd met tz UTC door.`
+    );
+  }
+
+  return localDt;
 }
 
 // =============================================================================
 // BIRTH CHART SERVICE
 // =============================================================================
+
+export class BirthChartInputError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "BirthChartInputError";
+  }
+}
 
 export class BirthChartService {
   constructor() {
@@ -69,15 +133,8 @@ export class BirthChartService {
     // Step 1: Convert local birth time to Julian Day (UT)
     // -------------------------------------------------------------------------
     // Parse the local time in the birth timezone, then convert to UTC.
-    // Luxon handles DST and historical timezone offsets correctly.
-    const localDt = DateTime.fromISO(`${birth.date}T${birth.time}`, {
-      zone: birth.tz,
-    });
-    if (!localDt.isValid) {
-      throw new Error(
-        `Invalid birth date/time: ${birth.date}T${birth.time} in zone ${birth.tz}`
-      );
-    }
+    // Ambiguous/non-existent DST wall-clock times are rejected instead of guessed.
+    const localDt = parseBirthDateTime(birth);
     const utcDt = localDt.toUTC();
 
     const jd = await swe_julday(
@@ -94,37 +151,30 @@ export class BirthChartService {
     const ayanamsaDeg = await getAyanamsa(jd);
 
     // -------------------------------------------------------------------------
-    // Step 3: Set topocentric position for Moon calculation
-    // Must be called before any swe_calc_ut with SEFLG_TOPOCTR
-    // -------------------------------------------------------------------------
-    sweSetTopo(birth.lon, birth.lat, altitude);
-
-    // -------------------------------------------------------------------------
-    // Step 4: Calculate all Grahas
+    // Step 3: Calculate all Grahas
     // -------------------------------------------------------------------------
     const baseFlags =
       swisseph.SEFLG_SIDEREAL | swisseph.SEFLG_SWIEPH | swisseph.SEFLG_SPEED;
 
     const grahas: Record<string, GrahaPosition> = {};
 
-    for (const def of GRAHA_DEFINITIONS) {
-      // Apply topocentric correction to Chandra only (Moon parallax up to ~57')
-      // All other grahas use geocentric — parallax is negligible for planets
-      const flags =
-        def.ipl === swisseph.SE_MOON ? baseFlags | swisseph.SEFLG_TOPOCTR : baseFlags;
-      const pos = await swe_calc_ut(jd, def.ipl, flags);
-      const lon = norm360(pos.longitude);
+    const chandraDef = GRAHA_DEFINITIONS.find((def) => def.ipl === swisseph.SE_MOON);
+    if (!chandraDef) throw new Error("Chandra definition missing");
 
-      grahas[def.key] = {
-        name: def.name,
-        longitude: lon,
-        latitude: pos.latitude,
-        speed: pos.speed,
-        retrograde: pos.speed < 0,
-        rashi: rashiFromLon(lon),
-        degreeInRashi: lon % 30,
-        nakshatra: nakshatraFromLon(lon),
-      };
+    // Topocentric coordinates are global Swiss Ephemeris state. Keep set_topo and
+    // the Moon calculation inside one serialized block.
+    const chandraPos = await withSwissEphLock(() => {
+      sweSetTopo(birth.lon, birth.lat, altitude);
+      return swe_calc_ut(jd, chandraDef.ipl, baseFlags | swisseph.SEFLG_TOPOCTR);
+    });
+    grahas[chandraDef.key] = grahaPosition(chandraDef.name, chandraPos);
+
+    for (const def of GRAHA_DEFINITIONS) {
+      // Chandra is calculated separately with topocentric correction.
+      // All other grahas use geocentric positions.
+      if (def.ipl === swisseph.SE_MOON) continue;
+      const pos = await swe_calc_ut(jd, def.ipl, baseFlags);
+      grahas[def.key] = grahaPosition(def.name, pos);
     }
 
     // Ketu: exactly opposite Rahu
@@ -144,11 +194,40 @@ export class BirthChartService {
     };
 
     // -------------------------------------------------------------------------
-    // Step 5: Lagna (Ascendant) via Whole Sign houses
+    // Step 4: Lagna (Ascendant) via Whole Sign houses
     // swe_houses_ex with SEFLG_SIDEREAL applies Lahiri ayanamsa automatically
     // -------------------------------------------------------------------------
     const housesResult = sweHousesEx(jd, birth.lat, birth.lon, "W");
     const lagnaLon = housesResult.ascendant;
+
+    // -------------------------------------------------------------------------
+    // Step 5: Panchanga at birth moment (derived from already-computed positions)
+    // -------------------------------------------------------------------------
+    const sLon = grahas["surya"]!.longitude;
+    const mLon = grahas["chandra"]!.longitude;
+
+    const tithiProg = norm360(mLon - sLon) / 12; // 0.0–29.999
+    const tithiIdx = Math.floor(tithiProg) + 1; // 1–30
+    const paksha: "Shukla" | "Krishna" = tithiIdx <= 15 ? "Shukla" : "Krishna";
+
+    const yogaProg = norm360(sLon + mLon) / (360 / 27); // 0.0–26.999
+    const yogaIdx = Math.floor(yogaProg) + 1; // 1–27
+
+    // 60 half-tithis per lunar month:
+    // 1 = Kimstughna (fixed), 2-57 = 7 movable cycling, 58-60 = Shakuni/Chatushpada/Naga
+    const karanaProg = tithiProg * 2; // 0.0–59.998
+    const karanaIdx = Math.floor(karanaProg) + 1; // 1–60
+    let karanaName: string;
+    if (karanaIdx === 1) {
+      karanaName = KARANA_NAMES[10]; // Kimstughna
+    } else if (karanaIdx <= 57) {
+      karanaName = KARANA_NAMES[(karanaIdx - 2) % 7]!;
+    } else {
+      karanaName = KARANA_NAMES[karanaIdx - 51]!; // 58→7 Shakuni, 59→8 Chatushpada, 60→9 Naga
+    }
+
+    // Vara: weekday of birth local date (Luxon weekday 1=Mon–7=Sun → 0=Sun…6=Sat)
+    const varaIdx = localDt.weekday % 7;
 
     return {
       birthData: birth,
@@ -164,6 +243,13 @@ export class BirthChartService {
         nakshatra: nakshatraFromLon(lagnaLon),
       },
       grahas: grahas as Record<GrahaKey, GrahaPosition>,
+      janmaPanchanga: {
+        tithi: { number: tithiIdx, name: TITHI_NAMES[tithiIdx - 1]!, paksha },
+        nakshatra: grahas["chandra"]!.nakshatra,
+        yoga: { number: yogaIdx, name: YOGA_NAMES[yogaIdx - 1]! },
+        karana: { number: karanaIdx, name: karanaName },
+        vara: { name: VARA_NAMES[varaIdx]! },
+      },
     };
   }
 }

@@ -141,13 +141,12 @@ npm run db:migrate:deploy  # Production
 
 ### 8. Consistente default locatie
 
-**Keuze:** Den Haag (52.0705, 4.3007)
+**Keuze:** Den Haag (`DEFAULT_LOCATION` in `src/lib/domain.ts`)
 
 Alle plekken waar een default locatie wordt gebruikt:
 - `schema.prisma` → DailyInfo defaults
-- `schema.prisma` → UserPreference defaults
-- `constants.ts` → DEFAULT_LOCATION
-- `seed.ts` → UserPreference data
+- `src/lib/domain.ts` → DEFAULT_LOCATION
+- `seed.ts` → DailyInfo data vanuit DEFAULT_LOCATION
 
 ## Consequenties
 

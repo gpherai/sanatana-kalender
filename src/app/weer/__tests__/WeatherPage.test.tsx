@@ -2,6 +2,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import WeatherPage from "../page";
+import { DEFAULT_LOCATION } from "@/lib/domain";
 
 // Mock next/image
 vi.mock("next/image", () => ({
@@ -47,7 +48,7 @@ describe("WeatherPage 100% Coverage", () => {
         visibility: 10000,
         wind_speed: 5.5,
         wind_deg: 180,
-        coord: { lat: 52.0705, lon: 4.3007 },
+        coord: { lat: DEFAULT_LOCATION.lat, lon: DEFAULT_LOCATION.lon },
         weather: [{ icon: "01d", description: "onbewolkt" }],
         sunrise: now - 3600,
         sunset: now + 3600,
@@ -90,7 +91,7 @@ describe("WeatherPage 100% Coverage", () => {
           rain_total: 0,
           snow_total: 0,
         })),
-      location: "Den Haag",
+      location: DEFAULT_LOCATION.name,
       country: "NL",
       alerts: overrides.alerts || [],
       timezone_offset: tz,

@@ -21,6 +21,7 @@ import {
 import type { DailyInfoResponse } from "@/types";
 import type { CalendarEvent, CalendarEventResponse } from "@/types/calendar";
 import { parseCalendarEvent } from "@/types/calendar";
+import { DEFAULT_LOCATION } from "@/lib/domain";
 
 // =============================================================================
 // HELPERS
@@ -105,7 +106,7 @@ export default function AlmanacPage() {
   const monthData = cachedDailyInfo ?? fetchedMonthData;
   const monthEvents = cachedEvents ?? fetchedMonthEvents;
   const loading = dailyLoading || eventsLoading;
-  const location = monthData?.[0]?.locationName ?? "Den Haag";
+  const location = monthData?.[0]?.locationName ?? DEFAULT_LOCATION.name;
 
   // Preserve scroll position when selecting different dates within same month
   useEffect(() => {

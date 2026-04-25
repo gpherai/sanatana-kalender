@@ -263,12 +263,6 @@ export const updatePreferencesSchema = z.object({
   // Calendar
   defaultView: calendarViewEnum.optional(),
 
-  // Location
-  timezone: z.string().min(1).max(50).optional(),
-  locationName: z.string().min(1).max(100).optional(),
-  locationLat: z.number().min(-90).max(90).optional(),
-  locationLon: z.number().min(-180).max(180).optional(),
-
   // Visibility filters
   visibleEventTypes: z.array(eventTypeEnum).optional(),
   visibleCategories: z.array(z.string().cuid()).optional(),
@@ -306,14 +300,6 @@ export const generateOccurrencesSchema = z.object({
   eventId: z.string().cuid().optional(),
   startDate: dateStringSchema,
   endDate: dateStringSchema,
-  location: z
-    .object({
-      name: z.string().min(1).max(100),
-      lat: z.number().min(-90).max(90),
-      lon: z.number().min(-180).max(180),
-    })
-    .optional(),
-  timezone: z.string().min(1).max(50).optional(),
   maxOccurrences: z.number().int().positive().max(5000).optional(),
   replace: z.boolean().default(false),
 });
@@ -418,20 +404,4 @@ export const patchSadhanaRoutineSchema = z.object({
   name: z.string().min(1).max(80).optional(),
   active: z.boolean().optional(),
   items: z.array(sadhanaRoutineItemSchema).min(1).optional(),
-});
-
-// =============================================================================
-// WEATHER QUERY SCHEMA
-// =============================================================================
-
-export const weerQuerySchema = z.object({
-  lat: z
-    .string()
-    .regex(/^-?\d+\.?\d*$/, "Ongeldige breedtegraad")
-    .optional(),
-  lon: z
-    .string()
-    .regex(/^-?\d+\.?\d*$/, "Ongeldige lengtegraad")
-    .optional(),
-  name: z.string().max(100).optional(),
 });

@@ -101,6 +101,39 @@ describe("GET /api/daily-info", () => {
     expect(json.moonPhasePercent).toBe(10);
   });
 
+  it("uses DEFAULT_LOCATION even when legacy preferences contain another location", async () => {
+    prismaMock.userPreference.findUnique.mockResolvedValue({
+      id: "default",
+      currentTheme: "custom",
+      defaultView: "month",
+      timezone: "Asia/Kolkata",
+      locationName: "Mumbai",
+      locationLat: 19.076,
+      locationLon: 72.8777,
+      visibleEventTypes: [],
+      visibleCategories: [],
+      notificationsEnabled: false,
+      notificationDaysBefore: 1,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as never);
+    calculateDaily.mockResolvedValue(basePanchanga);
+
+    const request = new NextRequest("http://localhost/api/daily-info?date=2025-01-01");
+
+    await GET(request);
+
+    expect(calculateDaily).toHaveBeenCalledWith(
+      expect.any(Date),
+      expect.objectContaining({
+        name: DEFAULT_LOCATION.name,
+        lat: DEFAULT_LOCATION.lat,
+        lon: DEFAULT_LOCATION.lon,
+      }),
+      DEFAULT_LOCATION.timezone
+    );
+  });
+
   it("returns daily info for a valid range", async () => {
     calculateRange.mockResolvedValue([
       basePanchanga,

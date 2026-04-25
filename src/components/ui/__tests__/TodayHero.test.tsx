@@ -1,6 +1,7 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
-import { TodayHero } from "../TodayHero";
+import { describe, it, expect, vi } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { TodayHero, TodayHeroProps } from "../TodayHero";
+import { DailyInfoResponse } from "@/types";
 
 // Mock child components to simplify testing
 vi.mock("./MoonPhase", () => ({
@@ -25,56 +26,32 @@ const MOCK_DAILY_INFO = {
 
 const MOCK_TODAY_EVENTS = [
   {
-    eventId: "1",
-    title: "New Year Puja",
-    start: "2025-01-01",
-    resource: {
-      categories: [{ icon: "🐘" }],
-      eventType: "PUJA",
+    id: "1",
+    name: "New Year Puja",
+    date: "2025-01-01",
+    category: {
+      id: "1",
+      icon: "🐘",
+      name: "Ganesha",
+      color: "orange",
+      displayName: "Ganesha",
+      sortOrder: 1,
+      description: null,
+      colorDark: null,
     },
+    eventType: "PUJA",
   },
 ];
 
 describe("TodayHero Component", () => {
-  const mockFetch = vi.fn();
-
-  beforeEach(() => {
-    mockFetch.mockReset();
-    global.fetch = mockFetch;
-  });
-
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  it("renders loading state initially", () => {
-    mockFetch.mockReturnValue(new Promise(() => {}));
-    render(<TodayHero />);
-    expect(screen.getByText(/Vandaag laden.../i)).toBeInTheDocument();
-  });
-
-  it("renders daily info after fetch", async () => {
-    mockFetch.mockImplementation((url) => {
-      if (url.includes("/api/daily-info")) {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve(MOCK_DAILY_INFO),
-        });
-      }
-      if (url.includes("/api/events")) {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve(MOCK_TODAY_EVENTS),
-        });
-      }
-      return Promise.reject(new Error("Unknown URL"));
-    });
-    render(<TodayHero />);
-
-    // Wait for loading to disappear
-    await waitFor(() => {
-      expect(screen.queryByText(/Vandaag laden.../i)).not.toBeInTheDocument();
-    });
+  it("renders daily info directly", () => {
+    render(
+      <TodayHero
+        dailyInfo={MOCK_DAILY_INFO as unknown as DailyInfoResponse}
+        todayEvents={[]}
+        currentWeather={null}
+      />
+    );
 
     // Check header info
     expect(screen.getByText("Margashirsha Maas")).toBeInTheDocument();
@@ -85,27 +62,14 @@ describe("TodayHero Component", () => {
     expect(screen.getByText("16:00")).toBeInTheDocument();
   });
 
-  it("renders today events", async () => {
-    mockFetch.mockImplementation((url) => {
-      if (url.includes("/api/daily-info")) {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve(MOCK_DAILY_INFO),
-        });
-      }
-      if (url.includes("/api/events")) {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve(MOCK_TODAY_EVENTS),
-        });
-      }
-      return Promise.reject(new Error("Unknown URL"));
-    });
-    render(<TodayHero />);
-
-    await waitFor(() => {
-      expect(screen.queryByText(/Vandaag laden.../i)).not.toBeInTheDocument();
-    });
+  it("renders today events", () => {
+    render(
+      <TodayHero
+        dailyInfo={MOCK_DAILY_INFO as unknown as DailyInfoResponse}
+        todayEvents={MOCK_TODAY_EVENTS as unknown as TodayHeroProps["todayEvents"]}
+        currentWeather={null}
+      />
+    );
 
     expect(screen.getByText("New Year Puja")).toBeInTheDocument();
     expect(screen.getByText("🐘")).toBeInTheDocument();

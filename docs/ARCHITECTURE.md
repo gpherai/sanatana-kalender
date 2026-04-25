@@ -30,7 +30,7 @@ Dharma Calendar is een persoonlijke web applicatie voor het bijhouden van Sanata
 | Deployment | VPS met Docker | Multi-instance / cloud |
 | Data source | Handmatige invoer + berekening | Panchang API integratie |
 | Taal | Nederlands/Engels | Meertalig (i18n) |
-| Locatie | Den Haag (standaard) | Instelbare locatie |
+| Locatie | Vaste Den Haag-locatie via `DEFAULT_LOCATION` | Instelbare locatie |
 
 ---
 
@@ -343,7 +343,6 @@ Vanaf versie 4.9 hanteert het project een strikte scheiding tussen de datalaag e
 | `/api/kundali` | POST | Jyotisha geboortehoroscoop (9 navagrahas + lagna, Lahiri ayanamsa) |
 | `/api/ical/export` | GET | iCal export (.ics) van alle events |
 | `/api/weer` | GET | Weerdashboard (huidig, uurlijks, dagelijks, lucht, astronomie) |
-| `/api/weer/search` | GET | Locatiezoekfunctie (OpenWeatherMap geocoding) |
 | `/api/weer/map/[layer]/[z]/[x]/[y]` | GET | Proxy voor OpenWeatherMap kaarttegels |
 | `/api/sadhana/sessions` | GET / POST | Sadhana sessies lijst + aanmaken |
 | `/api/sadhana/sessions/[id]` | GET / PATCH / DELETE | Individuele sessie |
@@ -526,7 +525,6 @@ Alle Zod schemas zijn gecentraliseerd in `src/lib/validations.ts`. Nooit inline 
 | `createSadhanaPracticeSchema` / `patchSadhanaPracticeSchema` | Sadhana praktijken |
 | `createSadhanaGoalSchema` / `patchSadhanaGoalSchema` | Sadhana doelen |
 | `createSadhanaRoutineSchema` / `patchSadhanaRoutineSchema` | Sadhana routines |
-| `weerQuerySchema` | GET /api/weer query parameters |
 
 ### 7.2 Enum Schemas
 
@@ -580,6 +578,6 @@ Enum schemas worden dynamisch gegenereerd vanuit de constanten in `src/lib/domai
 |-----------|-------|------------|
 | Single user | Scope beperking | Uitbreidbaar met auth later |
 | Handmatige event invoer | Geen externe Panchang API-integratie | Handmatig invoeren via EventForm |
-| Locatie vast (Den Haag default) | Configureerbaar maar niet multi-locatie | Instelbaar via Settings → Locatie |
+| Locatie vast (Den Haag default) | Bewuste single-user scope | Wijzig `DEFAULT_LOCATION` en hergenereer locatie-afhankelijke data |
 | Weerdata externe afhankelijkheid | OpenWeatherMap API key vereist | Degradeert graceful zonder weerdata |
 | Geen server-side caching voor weer | Elke request roept OpenWeatherMap aan | Uitbreidbaar met Redis/ISR later |

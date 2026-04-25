@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { render, screen, within } from "@testing-library/react";
-import { NavamshaChart, navamshaRashi } from "../NavamshaChart";
+import { NavamshaChart, navamshaDegree, navamshaRashi } from "../NavamshaChart";
 import type { BirthChart, GrahaPosition } from "@/server/panchanga/types";
 
 // Helper to create a minimal GrahaPosition
@@ -33,6 +33,13 @@ const mockChart: BirthChart = {
     degreeInRashi: 5.5,
     nakshatra: { number: 1, name: "Test", pada: 1 },
   },
+  janmaPanchanga: {
+    tithi: { number: 1, name: "Pratipada", paksha: "Shukla" },
+    nakshatra: { number: 1, name: "Test", pada: 1 },
+    yoga: { number: 1, name: "Vishkumbha" },
+    karana: { number: 1, name: "Kimstughna" },
+    vara: { name: "Somavara" },
+  },
   grahas: {
     surya: makeGraha(214.2), // Scorpio
     chandra: makeGraha(205.8), // Libra
@@ -50,6 +57,11 @@ const mockChart: BirthChart = {
 };
 
 describe("navamshaRashi", () => {
+  it("normalizes longitudes at the 360 degree boundary", () => {
+    expect(navamshaRashi(360)).toBe(1);
+    expect(navamshaDegree(360)).toBe(0);
+  });
+
   it("calculates Navamsha correctly for Fire signs (Mesha, Simha, Dhanu)", () => {
     // Mesha (1) - 0° to 3°20' is Mesha (1)
     expect(navamshaRashi(1)).toBe(1);

@@ -22,10 +22,11 @@ test.describe("Kundali Page", () => {
     await page.getByRole("button", { name: "Bereken Kundali" }).click();
 
     // Wait for result section
-    await expect(page.getByText("Lagna (Ascendant)")).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText("Technische details")).toBeVisible({ timeout: 10000 });
 
-    // Check for some results
-    await expect(page.getByText("Navagrahas")).toBeVisible();
+    // Check for some results in table view
+    await page.getByRole("button", { name: "D1 Tabel" }).click();
+    await expect(page.getByText("Navagrahas — D1")).toBeVisible();
     await expect(page.getByRole("cell", { name: "Surya" })).toBeVisible();
 
     // Check technical details

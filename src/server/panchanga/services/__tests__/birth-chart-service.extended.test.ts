@@ -33,6 +33,18 @@ describe("BirthChartService Extended", () => {
     await expect(service.compute(testBirth)).rejects.toThrow(/Invalid birth date\/time/);
   });
 
+  it("throws error for ambiguous daylight-saving birth time", async () => {
+    const testBirth: BirthData = {
+      date: "2024-10-27",
+      time: "02:30",
+      lat: 52.3676,
+      lon: 4.9041,
+      tz: "Europe/Amsterdam",
+    };
+
+    await expect(service.compute(testBirth)).rejects.toThrow(/Ambigue geboortetijd/);
+  });
+
   it("handles edge cases in rashi and nakshatra calculation (Unknown branches)", async () => {
     // These are hard to hit because the logic covers 0-360,
     // but we can at least ensure normal operation.

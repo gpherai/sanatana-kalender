@@ -50,17 +50,7 @@ vi.mock("@/components/settings", () => ({
   CalendarSection: ({ onFieldChange }: any) => (
     <button onClick={() => onFieldChange("defaultView", "week")}>Change View</button>
   ),
-  LocationSection: ({ onLocationPreset, onLocationChange }: any) => (
-    <div>
-      <button onClick={() => onLocationPreset({ name: "Berlin", lat: 52.5, lon: 13.4 })}>
-        Preset
-      </button>
-      <button onClick={() => onLocationChange("locationName", "Munich")}>
-        Manual Name
-      </button>
-      <button onClick={() => onLocationChange("locationLon", 11.5)}>Manual Lon</button>
-    </div>
-  ),
+  LocationSection: () => <div>Fixed Location</div>,
 }));
 
 describe("SettingsPage", () => {
@@ -91,9 +81,6 @@ describe("SettingsPage", () => {
     fireEvent.click(screen.getByText("Change Theme")); // Line 230-231
     expect(mockTheme.setTheme).toHaveBeenCalledWith("dark-theme");
 
-    fireEvent.click(screen.getByText("Preset")); // Line 238-244
-    fireEvent.click(screen.getByText("Manual Name"));
-    fireEvent.click(screen.getByText("Manual Lon"));
     fireEvent.click(screen.getByText("Change View"));
 
     // Wait for save cycle (AUTO_SAVE_DELAY = 800ms)
@@ -107,10 +94,7 @@ describe("SettingsPage", () => {
     // Status: Opgeslagen (exact match to avoid description text)
     expect(screen.getByText("Opgeslagen")).toBeInTheDocument();
 
-    // Verify refetch triggered (line 219)
-    await waitFor(() => {
-      expect(refetchDaily).toHaveBeenCalled();
-    });
+    expect(refetchDaily).not.toHaveBeenCalled();
 
     unmount(); // Line 113 cleanup
   });
@@ -129,7 +113,7 @@ describe("SettingsPage", () => {
     render(<SettingsPage />);
 
     act(() => {
-      successCb({ currentTheme: "ocean" });
+      successCb({ currentTheme: "ocean", defaultView: "month" });
     });
     expect(mockTheme.setTheme).toHaveBeenCalledWith("ocean");
 
@@ -161,10 +145,6 @@ describe("SettingsPage", () => {
       successCb({
         currentTheme: "ocean",
         defaultView: "month",
-        timezone: "Europe/Amsterdam",
-        locationName: "Den Haag",
-        locationLat: 52.08,
-        locationLon: 4.31,
       });
     });
 

@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { NextRequest } from "next/server";
 import { prismaMock } from "@/__tests__/helpers/prisma-mock";
-import { DEFAULT_LOCATION } from "@/lib/domain";
 import { GET, PUT } from "../preferences/route";
 import { Prisma } from "@prisma/client";
 
@@ -21,7 +20,7 @@ describe("API Preferences", () => {
     expect(response.status).toBe(200);
     expect(json.id).toBe("default");
     expect(json.currentTheme).toBe("spiritual-minimal");
-    expect(json.timezone).toBe(DEFAULT_LOCATION.timezone);
+    expect(json.timezone).toBeUndefined();
   });
 
   it("returns existing preferences when found", async () => {
@@ -67,11 +66,7 @@ describe("API Preferences", () => {
       currentTheme: "forest-green",
       createdAt: new Date(),
       updatedAt: new Date(),
-      locationName: "Den Haag",
-      locationLat: 52,
-      locationLon: 4,
       defaultView: "month" as never,
-      timezone: "Europe/Amsterdam",
       visibleEventTypes: [],
       visibleCategories: [],
       notificationsEnabled: false,
@@ -90,6 +85,51 @@ describe("API Preferences", () => {
     expect(prismaMock.userPreference.upsert).toHaveBeenCalled();
     expect(response.status).toBe(200);
     expect(json.currentTheme).toBe("forest-green");
+  });
+
+  it("strips legacy location fields from preference payloads", async () => {
+    prismaMock.userPreference.upsert.mockResolvedValue({
+      id: "default",
+      currentTheme: "forest-green",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      defaultView: "month" as never,
+      visibleEventTypes: [],
+      visibleCategories: [],
+      notificationsEnabled: false,
+      notificationDaysBefore: 1,
+    });
+
+    const request = new NextRequest("http://localhost/api/preferences", {
+      method: "PUT",
+      body: JSON.stringify({
+        currentTheme: "forest-green",
+        timezone: "Asia/Kolkata",
+        locationName: "Mumbai",
+        locationLat: 19.076,
+        locationLon: 72.8777,
+      }),
+      headers: { "Content-Type": "application/json" },
+    });
+
+    await PUT(request);
+
+    expect(prismaMock.userPreference.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        create: expect.not.objectContaining({
+          timezone: expect.anything(),
+          locationName: expect.anything(),
+          locationLat: expect.anything(),
+          locationLon: expect.anything(),
+        }),
+        update: expect.not.objectContaining({
+          timezone: expect.anything(),
+          locationName: expect.anything(),
+          locationLat: expect.anything(),
+          locationLon: expect.anything(),
+        }),
+      })
+    );
   });
 
   it("updates preferences with empty payload (partial update)", async () => {

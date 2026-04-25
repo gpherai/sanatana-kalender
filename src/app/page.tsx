@@ -5,22 +5,59 @@ import { TodayHero } from "@/components/ui/TodayHero";
 import { PageLayout } from "@/components/layout";
 import { findUpcomingOccurrences } from "@/repositories/event.repository";
 import { findAllCategories } from "@/repositories/category.repository";
+import { panchangaService } from "@/services/panchanga.service";
+import { transformToApiResponse } from "@/lib/api-transformers";
+import { getWeatherDashboard } from "@/services/weather.service";
+import { DEFAULT_LOCATION } from "@/lib/domain";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const now = new Date();
 
-  // Fetch data using repositories
-  const [upcomingEvents, categories] = await Promise.all([
+  // 1. Fetch server data using repositories and services
+  const [upcomingEvents, categories, weatherDash] = await Promise.all([
     findUpcomingOccurrences(7),
     findAllCategories(),
+    getWeatherDashboard().catch(() => null),
   ]);
+
+  // 2. Fetch Panchanga for today
+  const rawPanchanga = await panchangaService.calculateDaily(
+    now,
+    DEFAULT_LOCATION,
+    DEFAULT_LOCATION.timezone
+  );
+  const dailyInfo = transformToApiResponse(rawPanchanga);
+
+  // 3. Filter today's events from the upcoming events
+  // upcomingEvents is already ordered and includes occurrences from today
+  const todayStr = now.toISOString().split("T")[0];
+  const todayEvents = upcomingEvents
+    .filter((occ) => {
+      const d = new Date(occ.date);
+      // adjust for timezone offset to get YYYY-MM-DD
+      const localDate = new Date(d.getTime() - d.getTimezoneOffset() * 60000)
+        .toISOString()
+        .split("T")[0];
+      return localDate === todayStr;
+    })
+    .map((occ) => ({
+      id: occ.event.id,
+      name: occ.event.name,
+      category: occ.event.categories[0]?.category ?? null,
+      eventType: occ.event.eventType,
+      date: occ.date.toISOString(),
+    }));
 
   return (
     <PageLayout spacing>
       {/* Hero: Today's Info */}
-      <TodayHero />
+      <TodayHero
+        dailyInfo={dailyInfo}
+        todayEvents={todayEvents}
+        currentWeather={weatherDash?.current ?? null}
+      />
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-4">

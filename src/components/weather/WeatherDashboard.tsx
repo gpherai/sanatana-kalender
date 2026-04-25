@@ -24,16 +24,8 @@ const WeatherMap = dynamic(() => import("@/components/weather/WeatherMap"), {
 });
 
 export function WeatherDashboard() {
-  const {
-    weather,
-    loading,
-    error,
-    lastUpdated,
-    refreshing,
-    refresh,
-    retry,
-    setLocation,
-  } = useWeather();
+  const { weather, loading, error, lastUpdated, refreshing, refresh, retry } =
+    useWeather();
 
   if (loading) return <WeatherSkeleton />;
   if (error) return <WeatherErrorState error={error} onRetry={retry} />;
@@ -62,7 +54,6 @@ export function WeatherDashboard() {
         lastUpdated={lastUpdated}
         refreshing={refreshing}
         onRefresh={refresh}
-        onLocationSelect={setLocation}
       />
 
       <WeatherAlerts alerts={alerts} timezoneOffset={timezoneOffset} />

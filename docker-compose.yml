@@ -110,7 +110,7 @@ services:
       - dharma-network
 
   # ---------------------------------------------------------------------------
-  # Backup Service (optioneel — gebruik: docker-compose --profile backup run backup)
+  # Backup Service (optioneel — gebruik: docker compose --profile backup run --rm backup)
   # ---------------------------------------------------------------------------
   backup:
     image: postgres:17
@@ -122,6 +122,7 @@ services:
       PGUSER: ${POSTGRES_USER}
       PGPASSWORD: ${POSTGRES_PASSWORD}
       PGDATABASE: ${POSTGRES_DB}
+      BACKUP_RETENTION_DAYS: ${BACKUP_RETENTION_DAYS:-30}
     volumes:
       - ./backups:/backups
       - ./scripts/backup-db.sh:/backup-db.sh:ro

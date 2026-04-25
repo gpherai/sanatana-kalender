@@ -126,8 +126,8 @@ model DailyInfo {
   id                   String         @id @default(cuid())
   date                 DateTime       @unique @db.Date
   locationName         String         @default("Den Haag")
-  locationLat          Float          @default(52.078525871758096)
-  locationLon          Float          @default(4.331036597783044)
+  locationLat          Float          @default(52.07809868016908)
+  locationLon          Float          @default(4.33091146659494)
   sunrise              String?
   sunset               String?
   moonrise             String?
@@ -192,10 +192,6 @@ model UserPreference {
   id                     String       @id @default("default")
   currentTheme           String       @default("spiritual-minimal")
   defaultView            CalendarView @default(month)
-  timezone               String       @default("Europe/Amsterdam")
-  locationName           String       @default("Den Haag")
-  locationLat            Float        @default(52.0705)
-  locationLon            Float        @default(4.3007)
   visibleEventTypes      EventType[]  @default([])
   visibleCategories      String[]     @default([])
   notificationsEnabled   Boolean      @default(false)

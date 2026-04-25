@@ -20,14 +20,6 @@ const VIEW_OPTIONS = [
   { value: "agenda", label: "Agenda" },
 ] as const;
 
-const TIMEZONE_OPTIONS = [
-  { value: "Europe/Amsterdam", label: "Amsterdam (CET/CEST)" },
-  { value: "Europe/London", label: "Londen (GMT/BST)" },
-  { value: "Asia/Kolkata", label: "India (IST)" },
-  { value: "America/New_York", label: "New York (EST/EDT)" },
-  { value: "Asia/Singapore", label: "Singapore (SGT)" },
-] as const;
-
 // =============================================================================
 // COMPONENT
 // =============================================================================
@@ -69,24 +61,18 @@ export function CalendarSection({
 
         {/* Timezone */}
         <div>
-          <label
-            htmlFor="timezone"
-            className="text-theme-fg-secondary mb-2 block text-sm font-medium"
-          >
+          <div className="text-theme-fg-secondary mb-2 block text-sm font-medium">
             Tijdzone
-          </label>
-          <select
-            id="timezone"
-            value={timezone}
-            onChange={(e) => onFieldChange("timezone", e.target.value)}
-            className="focus:ring-theme-primary-50 focus:border-theme-primary border-theme-border bg-theme-surface text-theme-fg w-full rounded-lg border px-3 py-2 focus:ring-2 sm:w-8/12"
+          </div>
+          <div
+            aria-label="Tijdzone"
+            className="border-theme-border bg-theme-bg-muted text-theme-fg w-full rounded-lg border px-3 py-2 sm:w-8/12"
           >
-            {TIMEZONE_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
+            {timezone}
+          </div>
+          <p className="text-theme-fg-muted mt-2 text-xs">
+            Vast gekoppeld aan de centrale app-locatie.
+          </p>
         </div>
       </div>
     </Section>

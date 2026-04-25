@@ -63,4 +63,13 @@ describe("Constants", () => {
     expect(DEFAULT_LOCATION.lon).toBeGreaterThanOrEqual(-180);
     expect(DEFAULT_LOCATION.lon).toBeLessThanOrEqual(180);
   });
+
+  it("uses the fixed Den Haag application location", () => {
+    expect(DEFAULT_LOCATION).toEqual({
+      name: "Den Haag",
+      lat: 52.07809868016908,
+      lon: 4.33091146659494,
+      timezone: "Europe/Amsterdam",
+    });
+  });
 });

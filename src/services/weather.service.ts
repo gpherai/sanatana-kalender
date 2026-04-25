@@ -1,9 +1,6 @@
 import { DEFAULT_LOCATION } from "@/lib/domain";
 import type { AirQuality, WeatherApiResponse, WeatherCondition } from "@/types/weather";
 
-const LAT = process.env.DEFAULT_LOCATION_LAT ?? String(DEFAULT_LOCATION.lat);
-const LON = process.env.DEFAULT_LOCATION_LON ?? String(DEFAULT_LOCATION.lon);
-const LOCATION_NAME = process.env.DEFAULT_LOCATION_NAME ?? DEFAULT_LOCATION.name;
 const OPENWEATHER_BASE_URL = "https://api.openweathermap.org/data/2.5";
 
 type WeatherServiceErrorCode = "missing_api_key" | "invalid_api_key" | "upstream";
@@ -208,37 +205,7 @@ function mapAirQuality(data: AirPollutionResponse): AirQuality | null {
   };
 }
 
-export async function searchLocation(
-  query: string
-): Promise<import("@/types/weather").LocationSearchResult[]> {
-  const apiKey = process.env.OPENWEATHER_API_KEY;
-  if (!apiKey) {
-    throw new WeatherServiceError(
-      "missing_api_key",
-      "OpenWeather API sleutel niet geconfigureerd",
-      503
-    );
-  }
-  const res = await fetch(
-    `http://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(query)}&limit=5&appid=${apiKey}`,
-    { next: { revalidate: 86400 } }
-  );
-  if (!res.ok) {
-    if (res.status === 401)
-      throw new WeatherServiceError("invalid_api_key", "Ongeldige API sleutel", 503);
-    throw new WeatherServiceError(
-      "upstream",
-      `OpenWeather Geocoding fout: ${res.status}`
-    );
-  }
-  return (await res.json()) as import("@/types/weather").LocationSearchResult[];
-}
-
-export async function getWeatherDashboard(
-  customLat?: string,
-  customLon?: string,
-  customLocationName?: string
-): Promise<WeatherApiResponse> {
+export async function getWeatherDashboard(): Promise<WeatherApiResponse> {
   const apiKey = process.env.OPENWEATHER_API_KEY;
 
   if (!apiKey) {
@@ -249,9 +216,8 @@ export async function getWeatherDashboard(
     );
   }
 
-  const lat = customLat ?? LAT;
-  const lon = customLon ?? LON;
-  const locationName = customLocationName ?? LOCATION_NAME;
+  const lat = String(DEFAULT_LOCATION.lat);
+  const lon = String(DEFAULT_LOCATION.lon);
 
   const params = `lat=${lat}&lon=${lon}&units=metric&lang=nl&appid=${apiKey}`;
   const airParams = `lat=${lat}&lon=${lon}&appid=${apiKey}`;
@@ -284,7 +250,7 @@ export async function getWeatherDashboard(
     : null;
 
   return {
-    location: locationName,
+    location: DEFAULT_LOCATION.name,
     country: weather.sys.country,
     timezone_offset: tzOffset,
     current: mapCurrent(weather),

@@ -52,8 +52,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const location = data.location || DEFAULT_LOCATION;
-    const timezone = data.timezone || DEFAULT_LOCATION.timezone;
     const maxOccurrences = data.maxOccurrences;
     const replace = data.replace;
 
@@ -61,8 +59,8 @@ export async function POST(request: NextRequest) {
       eventId: data.eventId,
       startDate,
       endDate,
-      location,
-      timezone,
+      location: DEFAULT_LOCATION,
+      timezone: DEFAULT_LOCATION.timezone,
       maxOccurrences,
       replace,
     });

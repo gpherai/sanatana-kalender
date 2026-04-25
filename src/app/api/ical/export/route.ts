@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import ical from "ical-generator";
 import { DateTime } from "luxon";
 import { findOccurrencesForIcalExport } from "@/repositories/event.repository";
-import { findPreferences } from "@/repositories/preference.repository";
+import { DEFAULT_LOCATION } from "@/lib/domain";
 
 export const dynamic = "force-dynamic";
 
@@ -10,9 +10,7 @@ export async function GET() {
   try {
     const calendar = ical({ name: "Sanatana Kalender" });
 
-    // Fetch user preference to get timezone, defaulting to Europe/Amsterdam
-    const prefs = await findPreferences();
-    const timezone = prefs?.timezone || "Europe/Amsterdam";
+    const timezone = DEFAULT_LOCATION.timezone;
 
     calendar.timezone({ name: timezone });
 

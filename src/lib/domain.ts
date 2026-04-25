@@ -218,20 +218,20 @@ export interface Location {
 }
 
 /**
- * Extended location with timezone for user preferences
+ * Extended location with timezone for fixed app-wide calculations
  */
 export interface LocationWithTimezone extends Location {
   timezone: string;
 }
 
 /**
- * Default location: Den Haag, Netherlands.
- * Coordinates match the database defaults in UserPreference and DailyInfo models.
+ * Fixed application location: Den Haag, Netherlands.
+ * Keep all app-wide panchanga, weather, event and export calculations pointed here.
  */
 export const DEFAULT_LOCATION: LocationWithTimezone = {
   name: "Den Haag",
-  lat: 52.0705,
-  lon: 4.3007,
+  lat: 52.07809868016908,
+  lon: 4.33091146659494,
   timezone: "Europe/Amsterdam",
 } as const;
 
@@ -240,20 +240,6 @@ export const DEFAULT_LOCATION: LocationWithTimezone = {
  * This application uses a single-row UserPreference table.
  */
 export const DEFAULT_PREFERENCES_ID = "default" as const;
-
-/**
- * Preset locations for quick selection in settings
- */
-export const PRESET_LOCATIONS: Location[] = [
-  { name: "Den Haag", lat: 52.0705, lon: 4.3007 },
-  { name: "Rotterdam", lat: 51.9225, lon: 4.4792 },
-  { name: "Amsterdam", lat: 52.3676, lon: 4.9041 },
-  { name: "Utrecht", lat: 52.0907, lon: 5.1214 },
-  { name: "Mumbai", lat: 19.076, lon: 72.8777 },
-  { name: "Delhi", lat: 28.6139, lon: 77.209 },
-  { name: "Varanasi", lat: 25.3176, lon: 82.9739 },
-  { name: "Chennai", lat: 13.0827, lon: 80.2707 },
-] as const;
 
 // --------------------------------------------
 // HELPER FUNCTIONS

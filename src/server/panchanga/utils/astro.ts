@@ -14,6 +14,20 @@ swisseph.swe_set_sid_mode(swisseph.SE_SIDM_LAHIRI, 0, 0);
 // PROMISIFIED SWISS EPHEMERIS WRAPPERS
 // =============================================================================
 
+// Swiss Ephemeris keeps some calculation settings (notably topocentric
+// coordinates) in process-global state. Serialize stateful sections so concurrent
+// requests cannot observe each other's temporary settings.
+let swissEphQueue: Promise<void> = Promise.resolve();
+
+export async function withSwissEphLock<T>(fn: () => Promise<T> | T): Promise<T> {
+  const run = swissEphQueue.then(fn, fn);
+  swissEphQueue = run.then(
+    () => undefined,
+    () => undefined
+  );
+  return run;
+}
+
 // Type definitions for swisseph callback results
 interface SweRiseTransResult {
   error?: string | any; // eslint-disable-line @typescript-eslint/no-explicit-any

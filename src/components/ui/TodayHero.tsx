@@ -2,22 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState, useMemo } from "react";
-import { useFetch } from "@/hooks/useFetch";
+import { useEffect, useState } from "react";
 import { Sun, Sunrise, Sunset, Moon, MoonStar, Calendar, Sparkles } from "lucide-react";
 import { MoonPhase } from "./MoonPhase";
-import {
-  formatDateLocal,
-  formatTimeAgo,
-  formatIsoTimeAgo,
-  formatDate,
-} from "@/lib/date-utils";
+import { formatTimeAgo, formatIsoTimeAgo, formatDate } from "@/lib/date-utils";
 import type { DailyInfoResponse } from "@/types";
-import type {
-  CalendarEventResponse,
-  CalendarEventResourceResponse,
-} from "@/types/calendar";
+import type { CalendarEventResourceResponse } from "@/types/calendar";
 import type { WeatherApiResponse } from "@/types/weather";
+import { DEFAULT_LOCATION } from "@/lib/domain";
 
 interface TodayEvent {
   id: string;
@@ -38,7 +30,13 @@ const SANSKRIT_DAYS = [
   { name: "Shanivara", deity: "Shani", icon: "🪐" }, // Saturday
 ] as const;
 
-export function TodayHero() {
+export interface TodayHeroProps {
+  dailyInfo: DailyInfoResponse | null;
+  todayEvents: TodayEvent[];
+  currentWeather: WeatherApiResponse["current"] | null;
+}
+
+export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroProps) {
   const [currentTime, setCurrentTime] = useState(new Date());
 
   // Update time every minute, synced to the minute boundary
@@ -55,28 +53,6 @@ export function TodayHero() {
     };
   }, []);
 
-  // Fetch daily info, today's events, and current weather
-  const todayStr = formatDateLocal(currentTime);
-  const { data: dailyInfo, loading: dailyLoading } =
-    useFetch<DailyInfoResponse>("/api/daily-info");
-  const { data: rawEvents, loading: eventsLoading } = useFetch<CalendarEventResponse[]>(
-    `/api/events?start=${todayStr}T00:00:00.000Z&end=${todayStr}T23:59:59.999Z`
-  );
-  const { data: weatherData } = useFetch<WeatherApiResponse>("/api/weer");
-  const currentWeather = weatherData?.current;
-  const loading = dailyLoading || eventsLoading;
-  const todayEvents = useMemo<TodayEvent[]>(
-    () =>
-      rawEvents?.map((e) => ({
-        id: e.eventId,
-        name: e.title,
-        category: e.resource.categories[0] ?? null,
-        eventType: e.resource.eventType,
-        date: e.start,
-      })) ?? [],
-    [rawEvents]
-  );
-
   const today = currentTime;
   const dayOfWeek = today.getDay();
   const sanskritDay = SANSKRIT_DAYS[dayOfWeek] ?? SANSKRIT_DAYS[0]!;
@@ -87,22 +63,6 @@ export function TodayHero() {
   // Themes can override via --theme-hero-bg; fallback darkens the primary palette
   const heroBackground =
     "var(--theme-hero-bg, linear-gradient(135deg, color-mix(in oklch, var(--theme-primary) 95%, black), color-mix(in oklch, var(--theme-secondary) 92%, black), color-mix(in oklch, var(--theme-accent) 90%, black)))";
-
-  if (loading) {
-    return (
-      <div
-        className="relative overflow-hidden rounded-3xl p-8 shadow-2xl"
-        style={{ background: heroBackground }}
-      >
-        <div className="flex h-48 items-center justify-center">
-          <div className="flex flex-col items-center gap-3">
-            <div className="h-12 w-12 animate-spin rounded-full border-4 border-[var(--theme-spinner-track)] border-t-[var(--theme-spinner-fill)] motion-reduce:animate-none" />
-            <span className="text-sm text-white/70">Vandaag laden...</span>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div
@@ -149,7 +109,7 @@ export function TodayHero() {
               })}
             </div>
             <div className="mt-1 text-sm text-white/50">
-              {dailyInfo?.locationName || "Den Haag"}
+              {dailyInfo?.locationName || DEFAULT_LOCATION.name}
             </div>
 
             {/* Weather snippet — only shown when API data is available */}

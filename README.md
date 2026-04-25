@@ -238,7 +238,6 @@ sanatana-kalender/
 | `/api/kundali` | POST | Jyotisha geboortehoroscoop (alle 9 navagrahas + lagna) |
 | `/api/ical/export` | GET | iCal export van alle events (.ics) |
 | `/api/weer` | GET | Weerdashboard data (huidig, uurlijks, dagelijks, lucht, astronomie) |
-| `/api/weer/search` | GET | Locatiezoekfunctie voor weermodule |
 | `/api/weer/map/[layer]/[z]/[x]/[y]` | GET | Proxy voor OpenWeatherMap kaarttegels |
 | `/api/sadhana/sessions` | GET/POST | Sadhana sessies |
 | `/api/sadhana/sessions/[id]` | GET/PATCH/DELETE | Individuele sessie |

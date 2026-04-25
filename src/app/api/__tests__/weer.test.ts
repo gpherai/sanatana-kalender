@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { NextRequest } from "next/server";
+import { DEFAULT_LOCATION } from "@/lib/domain";
 import { GET } from "../weer/route";
 
 // Mock global fetch
@@ -8,7 +8,6 @@ global.fetch = mockFetch;
 
 describe("GET /api/weer", () => {
   const originalEnv = process.env;
-  const createRequest = (url = "http://localhost/api/weer") => new NextRequest(url);
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -97,7 +96,7 @@ describe("GET /api/weer", () => {
 
   it("returns 503 if API key is missing", async () => {
     delete process.env.OPENWEATHER_API_KEY;
-    const response = await GET(createRequest());
+    const response = await GET();
     const json = await response.json();
     expect(response.status).toBe(503);
     expect(json.message).toContain("niet geconfigureerd");
@@ -117,7 +116,7 @@ describe("GET /api/weer", () => {
       return Promise.reject(new Error("Unknown URL"));
     });
 
-    const response = await GET(createRequest());
+    const response = await GET();
     const json = await response.json();
 
     expect(response.status).toBe(200);
@@ -129,9 +128,38 @@ describe("GET /api/weer", () => {
     expect(json.daily[0].moon_phase).toBeDefined();
   });
 
+  it("uses DEFAULT_LOCATION for weather requests", async () => {
+    mockFetch.mockImplementation((url: string) => {
+      if (url.includes("/weather"))
+        return Promise.resolve({ ok: true, json: () => Promise.resolve(mockWeather) });
+      if (url.includes("/forecast"))
+        return Promise.resolve({ ok: true, json: () => Promise.resolve(mockForecast) });
+      if (url.includes("/air_pollution"))
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve(mockAirPollution),
+        });
+      return Promise.reject(new Error("Unknown URL"));
+    });
+
+    const response = await GET();
+    const json = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(json.location).toBe(DEFAULT_LOCATION.name);
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringContaining(`lat=${DEFAULT_LOCATION.lat}`),
+      expect.any(Object)
+    );
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringContaining(`lon=${DEFAULT_LOCATION.lon}`),
+      expect.any(Object)
+    );
+  });
+
   it("returns 503 for invalid API key (401)", async () => {
     mockFetch.mockResolvedValueOnce({ ok: false, status: 401 });
-    const response = await GET(createRequest());
+    const response = await GET();
     const json = await response.json();
     expect(response.status).toBe(503);
     expect(json.message).toContain("Ongeldige");
@@ -139,7 +167,7 @@ describe("GET /api/weer", () => {
 
   it("returns 500 for other OpenWeather errors", async () => {
     mockFetch.mockResolvedValueOnce({ ok: false, status: 500 });
-    const response = await GET(createRequest());
+    const response = await GET();
     const json = await response.json();
     expect(response.status).toBe(500);
     expect(json.message).toContain("OpenWeather fout");
@@ -147,7 +175,7 @@ describe("GET /api/weer", () => {
 
   it("returns 500 on fetch rejection", async () => {
     mockFetch.mockRejectedValueOnce(new Error("Network error"));
-    const response = await GET(createRequest());
+    const response = await GET();
     const json = await response.json();
     expect(response.status).toBe(500);
     expect(json.message).toContain("Kon weerdata niet ophalen");
@@ -164,7 +192,7 @@ describe("GET /api/weer", () => {
       return Promise.reject(new Error("Unknown URL"));
     });
 
-    const response = await GET(createRequest());
+    const response = await GET();
     const json = await response.json();
 
     expect(response.status).toBe(200);
@@ -186,7 +214,7 @@ describe("GET /api/weer", () => {
       return Promise.reject(new Error("Unknown URL"));
     });
 
-    const response = await GET(createRequest());
+    const response = await GET();
     const json = await response.json();
 
     expect(json.current.rain).toBeUndefined();
@@ -217,7 +245,7 @@ describe("GET /api/weer", () => {
       return Promise.reject(new Error("Unknown URL"));
     });
 
-    const response = await GET(createRequest());
+    const response = await GET();
     const json = await response.json();
     expect(json.daily[0].moon_phase).toBeDefined();
   });
@@ -256,7 +284,7 @@ describe("GET /api/weer", () => {
       return Promise.reject(new Error("Unknown URL"));
     });
 
-    const response = await GET(createRequest());
+    const response = await GET();
     const json = await response.json();
     expect(json.current.sea_level).toBe(json.current.pressure);
     expect(json.current.grnd_level).toBe(json.current.pressure);
@@ -274,7 +302,7 @@ describe("GET /api/weer", () => {
       return Promise.reject(new Error("Unknown URL"));
     });
 
-    const response = await GET(createRequest());
+    const response = await GET();
     const json = await response.json();
     expect(json.air_quality).toBeNull();
   });

@@ -32,6 +32,14 @@ if [ -z "$DUMP_FILE" ] || [ ! -f "$DUMP_FILE" ]; then
   exit 1
 fi
 
+if [ ! -s "$DUMP_FILE" ]; then
+  echo ""
+  echo "❌  Dumpbestand is leeg: $DUMP_FILE"
+  echo "    Import afgebroken om dataverlies door een kapotte dump te voorkomen."
+  echo ""
+  exit 1
+fi
+
 echo ""
 echo "⚠️   Dit overschrijft de lokale database ($DB_NAME) met:"
 echo "    $DUMP_FILE"

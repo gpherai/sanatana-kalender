@@ -21,7 +21,7 @@ describe("TodayHero 100% Coverage", () => {
     const now = new Date("2025-01-01T10:00:30Z");
     vi.setSystemTime(now);
 
-    render(<TodayHero />);
+    render(<TodayHero dailyInfo={null} todayEvents={[]} currentWeather={null} />);
 
     // Advance 31 seconds to hit the first timeout
     act(() => {

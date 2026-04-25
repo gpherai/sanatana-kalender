@@ -1,47 +1,80 @@
 import { NextRequest, NextResponse } from "next/server";
-import { BirthChartService } from "@/server/panchanga/services/birth-chart-service";
+import { DateTime } from "luxon";
+import { z } from "zod";
+import {
+  BirthChartInputError,
+  BirthChartService,
+} from "@/server/panchanga/services/birth-chart-service";
 import type { BirthData } from "@/server/panchanga/types";
+import { errorResponse, serverError, validationError } from "@/lib/api-response";
+import { logError } from "@/lib/utils";
 
 const service = new BirthChartService();
+
+const TIME_WITH_OPTIONAL_SECONDS = /^([01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?$/;
+
+function isValidCalendarDate(date: string): boolean {
+  const parsed = DateTime.fromISO(date, { zone: "UTC" });
+  return parsed.isValid && parsed.toISODate() === date;
+}
+
+function isValidTimeZone(tz: string): boolean {
+  return DateTime.now().setZone(tz).isValid;
+}
+
+const birthDataSchema = z
+  .object({
+    date: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, "Ongeldig datumformaat (gebruik YYYY-MM-DD)")
+      .refine(isValidCalendarDate, "Ongeldige geboortedatum"),
+    time: z
+      .string()
+      .regex(TIME_WITH_OPTIONAL_SECONDS, "Ongeldige geboortetijd (gebruik HH:mm)"),
+    lat: z
+      .number()
+      .finite()
+      .min(-90, "Breedtegraad moet minimaal -90 zijn")
+      .max(90, "Breedtegraad moet maximaal 90 zijn"),
+    lon: z
+      .number()
+      .finite()
+      .min(-180, "Lengtegraad moet minimaal -180 zijn")
+      .max(180, "Lengtegraad moet maximaal 180 zijn"),
+    tz: z
+      .string()
+      .trim()
+      .min(1, "Tijdzone is verplicht")
+      .max(100, "Tijdzone is te lang")
+      .refine(isValidTimeZone, "Ongeldige IANA tijdzone"),
+    altitude: z.number().finite().min(-500).max(10000).optional().default(0),
+  })
+  .strict();
 
 export async function POST(req: NextRequest) {
   let body: unknown;
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "Ongeldig JSON" }, { status: 400 });
+    return errorResponse("Ongeldig JSON", 400);
   }
 
-  const b = body as Record<string, unknown>;
-
-  // Basic validation
-  if (
-    typeof b.date !== "string" ||
-    typeof b.time !== "string" ||
-    typeof b.lat !== "number" ||
-    typeof b.lon !== "number" ||
-    typeof b.tz !== "string"
-  ) {
-    return NextResponse.json(
-      { error: "Verplichte velden: date (YYYY-MM-DD), time (HH:mm), lat, lon, tz" },
-      { status: 400 }
-    );
+  const parsed = birthDataSchema.safeParse(body);
+  if (!parsed.success) {
+    return validationError(parsed.error);
   }
 
-  const birthData: BirthData = {
-    date: b.date,
-    time: b.time,
-    lat: b.lat,
-    lon: b.lon,
-    tz: b.tz,
-    altitude: typeof b.altitude === "number" ? b.altitude : 0,
-  };
+  const birthData: BirthData = parsed.data;
 
   try {
     const chart = await service.compute(birthData);
     return NextResponse.json(chart);
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Onbekende fout";
-    return NextResponse.json({ error: message }, { status: 500 });
+    if (err instanceof BirthChartInputError) {
+      return errorResponse(err.message, 400);
+    }
+
+    logError("[API] POST /api/kundali error:", err);
+    return serverError("Kon kundali niet berekenen");
   }
 }

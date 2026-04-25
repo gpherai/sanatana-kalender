@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { CalendarSection } from "../CalendarSection";
 
 describe("CalendarSection", () => {
-  it("calls onFieldChange for select updates", () => {
+  it("calls onFieldChange for default view updates and renders timezone read-only", () => {
     const onFieldChange = vi.fn();
 
     render(
@@ -17,11 +17,8 @@ describe("CalendarSection", () => {
     fireEvent.change(screen.getByLabelText(/Standaard weergave/i), {
       target: { value: "week" },
     });
-    fireEvent.change(screen.getByLabelText(/Tijdzone/i), {
-      target: { value: "Asia/Kolkata" },
-    });
 
     expect(onFieldChange).toHaveBeenCalledWith("defaultView", "week");
-    expect(onFieldChange).toHaveBeenCalledWith("timezone", "Asia/Kolkata");
+    expect(screen.getByLabelText(/Tijdzone/i)).toHaveTextContent("Europe/Amsterdam");
   });
 });
