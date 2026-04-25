@@ -194,4 +194,39 @@ describe("DharmaCalendar", () => {
       expect(fetchMock).toHaveBeenCalled();
     });
   });
+
+  it("builds event query URL with date-only params (no timestamp suffix)", async () => {
+    const fetchMock = vi.mocked(fetch);
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: async () => [],
+    } as Response);
+
+    render(<DharmaCalendar />);
+
+    await waitFor(() => {
+      const calls = fetchMock.mock.calls.filter((call) => {
+        const url = typeof call[0] === "string" ? call[0] : "";
+        return url.includes("/api/events");
+      });
+      expect(calls.length).toBeGreaterThan(0);
+    });
+
+    // Check that the events URL contains YYYY-MM-DD format without T and timestamp
+    const eventsCalls = fetchMock.mock.calls.filter((call) => {
+      const url = typeof call[0] === "string" ? call[0] : "";
+      return url.includes("/api/events");
+    });
+
+    expect(eventsCalls.length).toBeGreaterThan(0);
+    const firstCall = eventsCalls[0];
+    const url = typeof firstCall[0] === "string" ? firstCall[0] : "";
+
+    // Verify the URL has date-only params
+    expect(url).toMatch(/start=\d{4}-\d{2}-\d{2}/);
+    expect(url).toMatch(/end=\d{4}-\d{2}-\d{2}/);
+    // Ensure no timestamp suffix
+    expect(url).not.toContain("T00:00:00");
+    expect(url).not.toContain("T23:59:59");
+  });
 });

@@ -96,7 +96,7 @@ export function DharmaCalendar() {
   const eventsUrl = (() => {
     const start = startOfMonth(addMonths(currentDate, -1));
     const end = endOfMonth(addMonths(currentDate, 1));
-    return `/api/events?start=${formatDateLocal(start)}T00:00:00.000Z&end=${formatDateLocal(end)}T23:59:59.999Z`;
+    return `/api/events?start=${formatDateLocal(start)}&end=${formatDateLocal(end)}`;
   })();
 
   // Daily-info for the full calendar grid (including overflow days from adjacent months)
