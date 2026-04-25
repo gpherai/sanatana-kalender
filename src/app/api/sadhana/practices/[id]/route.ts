@@ -16,11 +16,12 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     const parsed = patchSadhanaPracticeSchema.safeParse(await req.json());
     if (!parsed.success) return validationError(parsed.error);
 
-    const { name, type, mantra_text, notes, active } = parsed.data;
+    const { name, type, mantra_text, count_size, notes, active } = parsed.data;
     const updated = await updateSadhanaPractice(id, {
       ...(name !== undefined && { name }),
       ...(type !== undefined && { type }),
       ...(mantra_text !== undefined && { mantraText: mantra_text ?? null }),
+      ...(count_size !== undefined && { countSize: count_size ?? null }),
       ...(notes !== undefined && { notes: notes ?? null }),
       ...(active !== undefined && { active }),
     });

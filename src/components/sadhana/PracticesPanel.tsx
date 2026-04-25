@@ -35,12 +35,14 @@ export function PracticesPanel({
   const [newName, setNewName] = useState("");
   const [newType, setNewType] = useState<PracticeType>("mantra_japa");
   const [newMantraText, setNewMantraText] = useState("");
+  const [newCountSize, setNewCountSize] = useState("");
   const [newNotes, setNewNotes] = useState("");
   const [adding, setAdding] = useState(false);
 
   const [editName, setEditName] = useState("");
   const [editType, setEditType] = useState<PracticeType>("mantra_japa");
   const [editMantraText, setEditMantraText] = useState("");
+  const [editCountSize, setEditCountSize] = useState("");
   const [editNotes, setEditNotes] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -49,6 +51,7 @@ export function PracticesPanel({
     setEditName(p.name);
     setEditType(p.type);
     setEditMantraText(p.mantra_text ?? "");
+    setEditCountSize(p.count_size ? String(p.count_size) : "");
     setEditNotes(p.notes ?? "");
   };
 
@@ -63,12 +66,15 @@ export function PracticesPanel({
           name: newName.trim(),
           type: newType,
           mantra_text: newType === "mantra_japa" ? newMantraText.trim() || null : null,
+          count_size:
+            newType !== "mantra_japa" && newCountSize ? parseInt(newCountSize, 10) : null,
           notes: newNotes.trim() || null,
         }),
       });
       setNewName("");
       setNewType("mantra_japa");
       setNewMantraText("");
+      setNewCountSize("");
       setNewNotes("");
       setShowAdd(false);
       onChanged();
@@ -86,6 +92,10 @@ export function PracticesPanel({
           name: editName.trim(),
           type: editType,
           mantra_text: editType === "mantra_japa" ? editMantraText.trim() || null : null,
+          count_size:
+            editType !== "mantra_japa" && editCountSize
+              ? parseInt(editCountSize, 10)
+              : null,
           notes: editNotes.trim() || null,
         }),
       });
@@ -190,6 +200,23 @@ export function PracticesPanel({
               />
             </>
           )}
+          {newType !== "mantra_japa" && (
+            <>
+              <label htmlFor="pa-count-size" className="sr-only">
+                Aantal namen/items per ronde
+              </label>
+              <input
+                id="pa-count-size"
+                type="number"
+                inputMode="numeric"
+                min={1}
+                value={newCountSize}
+                onChange={(e) => setNewCountSize(e.target.value)}
+                placeholder="Aantal namen per ronde (optioneel) — bijv. 32"
+                className={cn(inputCls, "w-full")}
+              />
+            </>
+          )}
           <label htmlFor="pa-notes" className="sr-only">
             Notities
           </label>
@@ -252,6 +279,17 @@ export function PracticesPanel({
                   className={cn(inputCls, "w-full resize-none")}
                 />
               )}
+              {editType !== "mantra_japa" && (
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  min={1}
+                  value={editCountSize}
+                  onChange={(e) => setEditCountSize(e.target.value)}
+                  placeholder="Aantal namen per ronde (optioneel) — bijv. 32"
+                  className={cn(inputCls, "w-full")}
+                />
+              )}
               <input
                 value={editNotes}
                 onChange={(e) => setEditNotes(e.target.value)}
@@ -291,6 +329,7 @@ export function PracticesPanel({
                 )}
                 <div className="text-theme-fg-muted text-xs">
                   {PRACTICE_TYPE_LABELS[p.type]}
+                  {p.count_size ? ` · ${p.count_size} namen/ronde` : ""}
                   {p.notes ? ` · ${p.notes}` : ""}
                 </div>
               </div>

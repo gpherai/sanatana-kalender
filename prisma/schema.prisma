@@ -358,6 +358,7 @@ model SadhanaPractice {
   name         String
   type         SadhanaPracticeType
   mantraText   String?
+  countSize    Int?
   notes        String?
   active       Boolean              @default(true)
   createdAt    DateTime             @default(now())

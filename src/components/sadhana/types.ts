@@ -19,6 +19,7 @@ export interface Practice {
   name: string;
   type: PracticeType;
   mantra_text: string | null;
+  count_size: number | null;
   notes: string | null;
   active: boolean;
 }
@@ -31,6 +32,7 @@ export interface SessionItemData {
   quantity: number;
   unit: ItemUnit;
   mantra_count: number | null;
+  count_total: number | null;
   duration_minutes: number | null;
 }
 

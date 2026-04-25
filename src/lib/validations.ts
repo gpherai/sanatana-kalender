@@ -392,6 +392,7 @@ export const createSadhanaPracticeSchema = z.object({
   name: z.string().min(1).max(100),
   type: z.enum(["mantra_japa", "parayana", "other"]),
   mantra_text: z.string().max(2000).nullable().optional(),
+  count_size: z.number().int().min(1).nullable().optional(),
   notes: z.string().max(500).nullable().optional(),
 });
 
@@ -399,6 +400,7 @@ export const patchSadhanaPracticeSchema = z.object({
   name: z.string().min(1).max(100).optional(),
   type: z.enum(["mantra_japa", "parayana", "other"]).optional(),
   mantra_text: z.string().max(2000).nullable().optional(),
+  count_size: z.number().int().min(1).nullable().optional(),
   notes: z.string().max(500).nullable().optional(),
   active: z.boolean().optional(),
 });

@@ -105,17 +105,32 @@ export function SessionCard({
   }
 
   const isToday = session.date === todayString();
+  const bubbleValue = session.total_malas + session.total_count;
+
+  const countItems = session.items.filter(
+    (i) => i.unit === "count" && i.practice_type !== "mantra_japa"
+  );
+  const countSummary =
+    countItems.length === 1
+      ? `${countItems[0]!.quantity}× ${countItems[0]!.practice_name}`
+      : `${session.total_count.toLocaleString("nl-NL")}× recitatie`;
+
   const primarySummary =
-    session.total_malas > 0
-      ? `${session.total_malas} malas`
-      : session.total_mantras > 0
-        ? `${session.total_mantras.toLocaleString("nl-NL")} mantras`
-        : `${session.total_count.toLocaleString("nl-NL")}× recitatie`;
+    session.total_malas > 0 && session.total_count > 0
+      ? `${session.total_malas} malas · ${session.total_count}×`
+      : session.total_malas > 0
+        ? `${session.total_malas} malas`
+        : session.total_mantras > 0
+          ? `${session.total_mantras.toLocaleString("nl-NL")} mantras`
+          : session.total_count > 0
+            ? countSummary
+            : "Geen telling";
+
   const detailSummary =
     session.total_mantras > 0
       ? `${session.total_mantras.toLocaleString("nl-NL")} mantras`
       : session.total_count > 0
-        ? `${session.total_count.toLocaleString("nl-NL")}× recitatie`
+        ? countSummary
         : "Geen telling";
 
   return (
@@ -132,7 +147,7 @@ export function SessionCard({
           onClick={() => setOpen((v) => !v)}
         >
           <div className="bg-theme-primary-15 text-theme-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold tabular-nums">
-            {session.total_malas}
+            {bubbleValue}
           </div>
           <div className="min-w-0 flex-1">
             <div className="text-theme-fg-secondary text-sm font-medium">
@@ -220,10 +235,13 @@ export function SessionCard({
                 {item.practice_name}
               </span>
               <span className="text-theme-fg-muted ml-auto shrink-0 text-xs">
-                {item.quantity} {item.unit === "malas" ? "malas" : "×"}
+                {item.quantity}
+                {item.unit === "malas" ? " malas" : "×"}
                 {item.mantra_count
                   ? ` (${item.mantra_count.toLocaleString("nl-NL")} mantras)`
-                  : ""}
+                  : item.count_total
+                    ? ` (${item.count_total.toLocaleString("nl-NL")} namen)`
+                    : ""}
               </span>
             </div>
           ))}

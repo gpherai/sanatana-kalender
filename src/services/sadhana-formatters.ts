@@ -34,6 +34,7 @@ export function formatPractice(p: SadhanaPractice) {
     name: p.name,
     type: p.type,
     mantra_text: p.mantraText ?? null,
+    count_size: p.countSize ?? null,
     notes: p.notes,
     active: p.active,
     created_at: p.createdAt.toISOString(),
@@ -50,6 +51,11 @@ export function formatSessionItem(
       : item.quantity
     : null;
 
+  const count_total =
+    !isJapa && item.unit === "count" && item.practice.countSize
+      ? item.quantity * item.practice.countSize
+      : null;
+
   return {
     id: item.id,
     practice_id: item.practiceId,
@@ -58,6 +64,7 @@ export function formatSessionItem(
     quantity: item.quantity,
     unit: item.unit,
     mantra_count,
+    count_total,
     duration_minutes: item.durationMinutes,
     notes: item.notes,
     created_at: item.createdAt.toISOString(),
