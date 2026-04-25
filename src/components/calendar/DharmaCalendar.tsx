@@ -58,7 +58,7 @@ function DateHeader({ date }: DateHeaderProps) {
   const moonData = useContext(MoonDataContext);
   const key = formatDateLocal(date);
   const moon = moonData.get(key);
-  const moonEmoji = moon?.emoji ?? "🌑";
+  const moonEmoji = moon?.emoji ?? "";
   const specialDay = moon?.isSpecial ?? null;
   const isToday = new Date().toDateString() === date.toDateString();
 
@@ -175,25 +175,27 @@ export function DharmaCalendar() {
     [isDark]
   );
 
-  // Custom day cell styling for weekends
-  // Note: Special moon days (Purnima, Amavasya, etc.) are now detected
-  // via exact Panchanga data in the Almanac page
-  const dayPropGetter = useCallback((date: Date) => {
-    const day = date.getDay();
-    const isWeekend = day === 0 || day === 6;
+  // Custom day cell styling for weekends and moon phase days
+  const dayPropGetter = useCallback(
+    (date: Date) => {
+      const day = date.getDay();
+      const isWeekend = day === 0 || day === 6;
 
-    let backgroundColor = "";
-    const className = "";
+      const key = formatDateLocal(date);
+      const moon = moonDataMap.get(key);
+      let className = "";
+      if (moon?.isSpecial === "full") className = "full-moon-day";
+      else if (moon?.isSpecial === "new") className = "new-moon-day";
 
-    if (isWeekend) {
-      backgroundColor = "var(--theme-calendar-weekend-bg)";
-    }
-
-    return {
-      style: backgroundColor ? { backgroundColor } : undefined,
-      className,
-    };
-  }, []);
+      return {
+        style: isWeekend
+          ? { backgroundColor: "var(--theme-calendar-weekend-bg)" }
+          : undefined,
+        className,
+      };
+    },
+    [moonDataMap]
+  );
 
   // Event content with emoji
   // Category is now a full object, not a string
