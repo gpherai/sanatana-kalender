@@ -54,14 +54,24 @@ export function GoalProgressWidget({
                     {g.name ?? g.type}
                   </span>
                 </div>
-                <span
-                  className={cn(
-                    "shrink-0 text-xs font-medium tabular-nums",
-                    done ? "text-theme-success" : "text-theme-fg-muted"
-                  )}
-                >
-                  {pct}%
-                </span>
+                <div className="flex shrink-0 flex-col items-end">
+                  <span
+                    className={cn(
+                      "text-xs font-medium tabular-nums",
+                      done ? "text-theme-success" : "text-theme-fg-muted"
+                    )}
+                  >
+                    {g.progress_malas ?? 0} / {g.target_malas} malas
+                  </span>
+                  <span
+                    className={cn(
+                      "text-xs tabular-nums",
+                      done ? "text-theme-success" : "text-theme-fg-muted"
+                    )}
+                  >
+                    {pct}%
+                  </span>
+                </div>
               </div>
 
               {/* Progress bar */}
