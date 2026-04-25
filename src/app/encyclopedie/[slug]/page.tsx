@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { PageLayout } from "@/components/layout";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import Link from "next/link";
-import { ArrowLeft, Book } from "lucide-react";
+import { ArrowLeft, MoonStar, Clock, Sparkles, Users, Sun, Info } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 export async function generateStaticParams() {
   const terms = getAllTerms();
@@ -32,6 +33,15 @@ export async function generateMetadata({
   };
 }
 
+const CATEGORY_CONFIG: Record<string, { icon: LucideIcon; chipClass: string }> = {
+  Astronomie: { icon: MoonStar, chipClass: "encyl-chip-astronomie" },
+  Tijd: { icon: Clock, chipClass: "encyl-chip-tijd" },
+  "Speciale dagen": { icon: Sparkles, chipClass: "encyl-chip-speciale" },
+  Devatās: { icon: Users, chipClass: "encyl-chip-devatas" },
+  Navagraha: { icon: Sun, chipClass: "encyl-chip-navagraha" },
+  Algemeen: { icon: Info, chipClass: "encyl-chip-algemeen" },
+};
+
 // Custom components for MDX rendering to match the theme
 const components = {
   h2: (props: React.ComponentProps<"h2">) => (
@@ -47,7 +57,7 @@ const components = {
     />
   ),
   p: (props: React.ComponentProps<"p">) => (
-    <p className="text-theme-fg-secondary mb-6 leading-relaxed" {...props} />
+    <p className="text-theme-fg mb-6 leading-relaxed" {...props} />
   ),
   ul: (props: React.ComponentProps<"ul">) => (
     <ul
@@ -205,10 +215,21 @@ export default async function TermPage({
         <article className="border-theme-border-subtle bg-theme-surface overflow-hidden rounded-[2rem] border shadow-xl">
           <div className="bg-theme-bg-subtle border-theme-border-subtle border-b p-8 md:p-12">
             <div className="mb-6 flex items-center gap-3">
-              <span className="theme-chip-primary px-3 py-1 text-sm font-semibold">
-                <Book className="h-4 w-4" />
-                {term.category}
-              </span>
+              {(() => {
+                const catCfg = CATEGORY_CONFIG[term.category] ?? {
+                  icon: Info,
+                  chipClass: "encyl-chip-algemeen",
+                };
+                const CatIcon = catCfg.icon;
+                return (
+                  <span
+                    className={`encyl-chip-base ${catCfg.chipClass} px-3 py-1 text-sm font-semibold`}
+                  >
+                    <CatIcon className="h-4 w-4" />
+                    {term.category}
+                  </span>
+                );
+              })()}
             </div>
 
             <h1 className="text-theme-fg mb-4 text-4xl font-black tracking-tight md:text-5xl">

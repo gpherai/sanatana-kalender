@@ -27,13 +27,18 @@ export type TermSummary = {
 
 const CATEGORY_CONFIG: Record<
   string,
-  { icon: LucideIcon; color: "primary" | "secondary" | "accent" | "muted" }
+  {
+    icon: LucideIcon;
+    color: "primary" | "secondary" | "accent" | "muted";
+    barClass: string;
+  }
 > = {
-  Astronomie: { icon: MoonStar, color: "secondary" },
-  Tijd: { icon: Clock, color: "primary" },
-  "Speciale dagen": { icon: Sparkles, color: "accent" },
-  Devatās: { icon: Users, color: "muted" },
-  Navagraha: { icon: Sun, color: "secondary" },
+  Astronomie: { icon: MoonStar, color: "secondary", barClass: "encyl-bar-astronomie" },
+  Tijd: { icon: Clock, color: "primary", barClass: "encyl-bar-tijd" },
+  "Speciale dagen": { icon: Sparkles, color: "accent", barClass: "encyl-bar-speciale" },
+  Devatās: { icon: Users, color: "muted", barClass: "encyl-bar-devatas" },
+  Navagraha: { icon: Sun, color: "secondary", barClass: "encyl-bar-navagraha" },
+  Algemeen: { icon: Info, color: "muted", barClass: "encyl-bar-algemeen" },
 };
 
 // =============================================================================
@@ -43,9 +48,11 @@ const CATEGORY_CONFIG: Record<
 function TermCard({
   item,
   showCategory = false,
+  barClass = "encyl-bar-algemeen",
 }: {
   item: TermSummary;
   showCategory?: boolean;
+  barClass?: string;
 }) {
   const sanskritPart = item.sanskrit ? ` (${item.sanskrit})` : "";
   return (
@@ -53,7 +60,7 @@ function TermCard({
       href={`/encyclopedie/${item.slug}`}
       className="theme-card theme-interactive theme-focus-ring group relative flex flex-col p-6 duration-500 hover:-translate-y-1"
     >
-      <div className="bg-theme-primary-20 group-hover:bg-theme-primary-40 absolute top-0 left-0 h-1.5 w-full rounded-t-2xl transition-colors duration-300" />
+      <div className={`${barClass} absolute top-0 left-0 h-1.5 w-full rounded-t-2xl`} />
       <div className="space-y-2">
         {showCategory && (
           <span className="text-theme-fg-muted text-xs font-medium tracking-wide uppercase">
@@ -164,7 +171,14 @@ export function EncyclopediaOverview({
             </p>
             <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
               {searchResults.map((item) => (
-                <TermCard key={item.slug} item={item} showCategory />
+                <TermCard
+                  key={item.slug}
+                  item={item}
+                  showCategory
+                  barClass={
+                    CATEGORY_CONFIG[item.category]?.barClass ?? "encyl-bar-algemeen"
+                  }
+                />
               ))}
             </div>
           </div>
@@ -176,6 +190,7 @@ export function EncyclopediaOverview({
             const config = CATEGORY_CONFIG[category] ?? {
               icon: Info,
               color: "primary" as const,
+              barClass: "encyl-bar-algemeen",
             };
             const items = groupedTerms[category] ?? [];
 
@@ -197,7 +212,7 @@ export function EncyclopediaOverview({
               >
                 <div className="grid gap-6 pt-4 md:grid-cols-2 xl:grid-cols-3">
                   {itemsToShow.map((item) => (
-                    <TermCard key={item.slug} item={item} />
+                    <TermCard key={item.slug} item={item} barClass={config.barClass} />
                   ))}
                 </div>
               </Section>

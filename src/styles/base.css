@@ -32,7 +32,7 @@
   /* Text colors */
   --theme-fg: oklch(0.141 0.005 285); /* Primary text (zinc-900) */
   --theme-fg-secondary: oklch(0.442 0.017 285); /* Secondary text (zinc-600) */
-  --theme-fg-muted: oklch(0.552 0.016 286); /* Muted text (zinc-500) */
+  --theme-fg-muted: oklch(0.51 0.016 286); /* Muted text (~zinc-550, 4.5:1 on white) */
   --theme-fg-subtle: oklch(0.705 0.015 286); /* Subtle text (zinc-400) */
 
   /* Borders & Dividers */
@@ -295,6 +295,14 @@
   --theme-panchanga-karana-bg: oklch(0.91 0.04 295);
   --theme-panchanga-karana-label: oklch(0.42 0.12 290);
 
+  /* Encyclopedia category accent colors */
+  --theme-encyl-devatas: oklch(0.6 0.18 45);
+  --theme-encyl-tijd: oklch(0.52 0.16 250);
+  --theme-encyl-speciale: oklch(0.62 0.18 70);
+  --theme-encyl-navagraha: oklch(0.65 0.2 50);
+  --theme-encyl-astronomie: oklch(0.52 0.15 225);
+  --theme-encyl-algemeen: oklch(0.58 0.1 195);
+
   /* Sadhana tracker — heatmap cell intensity levels */
   --theme-heatmap-empty: color-mix(in oklch, var(--theme-fg) 10%, transparent);
   --theme-heatmap-1: color-mix(in oklch, var(--theme-primary) 28%, transparent);
@@ -495,6 +503,14 @@
   --theme-almanac-event-time-end-bg: oklch(0.38 0.1 75 / 0.3);
   --theme-almanac-event-time-end-fg: oklch(0.75 0.12 70);
 
+  /* Encyclopedia category accent colors (dark mode) */
+  --theme-encyl-devatas: oklch(0.72 0.18 45);
+  --theme-encyl-tijd: oklch(0.68 0.16 250);
+  --theme-encyl-speciale: oklch(0.75 0.18 70);
+  --theme-encyl-navagraha: oklch(0.75 0.2 50);
+  --theme-encyl-astronomie: oklch(0.68 0.15 225);
+  --theme-encyl-algemeen: oklch(0.68 0.1 195);
+
   /* Panchanga detail cards (dark mode defaults) */
   --theme-panchanga-yoga-bg: oklch(0.28 0.08 280 / 0.4);
   --theme-panchanga-yoga-label: oklch(0.75 0.1 278);
@@ -676,6 +692,7 @@ body.app-body::after {
 .app-brand-mark {
   display: inline-block;
   animation: var(--theme-brand-mark-animation);
+  will-change: transform, filter;
 }
 
 .app-brand-label {

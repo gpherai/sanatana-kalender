@@ -976,6 +976,94 @@
   color: oklch(0.7 0.1 180);
 }
 
+/* =============================================================================
+   ENCYCLOPEDIA CATEGORY ACCENT BARS
+   Use on the h-1.5 top accent strip inside .group cards.
+   ============================================================================= */
+.encyl-bar-devatas {
+  background: color-mix(in oklch, var(--theme-encyl-devatas) 20%, transparent);
+  transition: background-color 300ms;
+}
+.group:hover .encyl-bar-devatas {
+  background: color-mix(in oklch, var(--theme-encyl-devatas) 40%, transparent);
+}
+.encyl-bar-tijd {
+  background: color-mix(in oklch, var(--theme-encyl-tijd) 20%, transparent);
+  transition: background-color 300ms;
+}
+.group:hover .encyl-bar-tijd {
+  background: color-mix(in oklch, var(--theme-encyl-tijd) 40%, transparent);
+}
+.encyl-bar-speciale {
+  background: color-mix(in oklch, var(--theme-encyl-speciale) 20%, transparent);
+  transition: background-color 300ms;
+}
+.group:hover .encyl-bar-speciale {
+  background: color-mix(in oklch, var(--theme-encyl-speciale) 40%, transparent);
+}
+.encyl-bar-navagraha {
+  background: color-mix(in oklch, var(--theme-encyl-navagraha) 20%, transparent);
+  transition: background-color 300ms;
+}
+.group:hover .encyl-bar-navagraha {
+  background: color-mix(in oklch, var(--theme-encyl-navagraha) 40%, transparent);
+}
+.encyl-bar-astronomie {
+  background: color-mix(in oklch, var(--theme-encyl-astronomie) 20%, transparent);
+  transition: background-color 300ms;
+}
+.group:hover .encyl-bar-astronomie {
+  background: color-mix(in oklch, var(--theme-encyl-astronomie) 40%, transparent);
+}
+.encyl-bar-algemeen {
+  background: color-mix(in oklch, var(--theme-encyl-algemeen) 20%, transparent);
+  transition: background-color 300ms;
+}
+.group:hover .encyl-bar-algemeen {
+  background: color-mix(in oklch, var(--theme-encyl-algemeen) 40%, transparent);
+}
+
+/* =============================================================================
+   ENCYCLOPEDIA CATEGORY CHIPS
+   Base layout shared, color variants per category.
+   ============================================================================= */
+.encyl-chip-base {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 999px;
+}
+.encyl-chip-devatas {
+  background: color-mix(in oklch, var(--theme-encyl-devatas) 12%, transparent);
+  color: var(--theme-encyl-devatas);
+  border: 1px solid color-mix(in oklch, var(--theme-encyl-devatas) 22%, transparent);
+}
+.encyl-chip-tijd {
+  background: color-mix(in oklch, var(--theme-encyl-tijd) 12%, transparent);
+  color: var(--theme-encyl-tijd);
+  border: 1px solid color-mix(in oklch, var(--theme-encyl-tijd) 22%, transparent);
+}
+.encyl-chip-speciale {
+  background: color-mix(in oklch, var(--theme-encyl-speciale) 12%, transparent);
+  color: var(--theme-encyl-speciale);
+  border: 1px solid color-mix(in oklch, var(--theme-encyl-speciale) 22%, transparent);
+}
+.encyl-chip-navagraha {
+  background: color-mix(in oklch, var(--theme-encyl-navagraha) 12%, transparent);
+  color: var(--theme-encyl-navagraha);
+  border: 1px solid color-mix(in oklch, var(--theme-encyl-navagraha) 22%, transparent);
+}
+.encyl-chip-astronomie {
+  background: color-mix(in oklch, var(--theme-encyl-astronomie) 12%, transparent);
+  color: var(--theme-encyl-astronomie);
+  border: 1px solid color-mix(in oklch, var(--theme-encyl-astronomie) 22%, transparent);
+}
+.encyl-chip-algemeen {
+  background: color-mix(in oklch, var(--theme-encyl-algemeen) 12%, transparent);
+  color: var(--theme-encyl-algemeen);
+  border: 1px solid color-mix(in oklch, var(--theme-encyl-algemeen) 22%, transparent);
+}
+
 /* === FALLBACK: Custom Property for Dynamic Cases === */
 :root {
   --category-color: transparent;

@@ -1,10 +1,20 @@
-import { Book } from "lucide-react";
+import { MoonStar, Clock, Sparkles, Users, Sun, Info } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { PageLayout } from "@/components/layout";
 import { getAllTerms } from "@/lib/encyclopedia";
 import {
   EncyclopediaOverview,
   type TermSummary,
 } from "@/components/encyclopedia/EncyclopediaOverview";
+
+const HERO_CATEGORY_CONFIG: Record<string, { icon: LucideIcon; chipClass: string }> = {
+  Astronomie: { icon: MoonStar, chipClass: "encyl-chip-astronomie" },
+  Tijd: { icon: Clock, chipClass: "encyl-chip-tijd" },
+  "Speciale dagen": { icon: Sparkles, chipClass: "encyl-chip-speciale" },
+  Devatās: { icon: Users, chipClass: "encyl-chip-devatas" },
+  Navagraha: { icon: Sun, chipClass: "encyl-chip-navagraha" },
+  Algemeen: { icon: Info, chipClass: "encyl-chip-algemeen" },
+};
 
 export const metadata = {
   title: "Encyclopedie",
@@ -78,12 +88,6 @@ export default function DictionaryPage() {
         <div className="bg-theme-secondary-20 absolute -bottom-32 -left-32 h-96 w-96 rounded-full opacity-50 blur-[100px]" />
 
         <div className="relative z-10 flex flex-col items-center text-center">
-          <div className="mb-8">
-            <div className="border-theme-border-strong/20 bg-theme-surface ring-theme-surface/50 relative flex h-24 w-24 items-center justify-center rounded-3xl border shadow-2xl ring-4 backdrop-blur-md">
-              <Book className="text-theme-primary h-12 w-12" />
-            </div>
-          </div>
-
           <h1 className="text-theme-fg mb-6 text-4xl font-black tracking-tight md:text-6xl">
             Sanskriet <span className="text-theme-primary">Encyclopedie</span>
           </h1>
@@ -92,6 +96,27 @@ export default function DictionaryPage() {
             Dharma. Ontdek de betekenis van godheden, kosmische principes en de heilige
             ritmes van de tijd.
           </p>
+
+          <div className="mt-8 flex flex-wrap justify-center gap-2">
+            {categories.map((cat) => {
+              const cfg = HERO_CATEGORY_CONFIG[cat] ?? {
+                icon: Info,
+                chipClass: "encyl-chip-algemeen",
+              };
+              const Icon = cfg.icon;
+              const count = groupedTerms[cat]?.length ?? 0;
+              return (
+                <span
+                  key={cat}
+                  className={`encyl-chip-base ${cfg.chipClass} px-4 py-1.5 text-sm font-medium`}
+                >
+                  <Icon className="h-3.5 w-3.5" />
+                  {cat}
+                  <span className="opacity-60">{count}</span>
+                </span>
+              );
+            })}
+          </div>
         </div>
       </div>
 
