@@ -105,7 +105,7 @@ export function useSadhanaData(): SadhanaData {
         apiFetch<Practice[]>("/practices?active_only=false"),
         apiFetch<Goal[]>("/goals"),
         apiFetch<Routine[]>("/routines"),
-        fetchDayInfoMap(localDateString(effectiveStart), todayString()),
+        fetchDayInfoMap(localDateString(fromDate), todayString()),
         fetchCalendarEvents(heatmapEventsUrl),
       ]);
 
