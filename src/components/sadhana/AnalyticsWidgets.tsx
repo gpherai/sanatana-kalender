@@ -58,7 +58,7 @@ export function WeekdayPattern({ sessions }: { sessions: SessionData[] }) {
               key={m}
               onClick={() => setMetric(m)}
               className={[
-                "cursor-pointer rounded-full px-2.5 py-0.5 text-[10px] font-medium transition-colors",
+                "cursor-pointer rounded-full px-3 py-1.5 text-[10px] font-medium transition-colors",
                 metric === m
                   ? "bg-theme-primary text-white"
                   : "text-theme-fg-muted hover:text-theme-fg hover:bg-theme-hover bg-transparent",
@@ -399,7 +399,20 @@ const TIME_BUCKETS = [
 export function TimeOfDayPattern({ sessions }: { sessions: SessionData[] }) {
   const [hovered, setHovered] = useState<number | null>(null);
   const timed = sessions.filter((s) => s.started_at);
-  if (timed.length < 5) return null;
+  if (timed.length < 5)
+    return (
+      <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
+        <div className="mb-4 flex items-center gap-2">
+          <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
+            <Clock className="h-4 w-4" />
+          </div>
+          <h2 className="text-theme-fg text-sm font-semibold">Tijdstip</h2>
+        </div>
+        <p className="text-theme-fg-muted text-sm">
+          Voeg een starttijd toe aan sessies om dit patroon te zien.
+        </p>
+      </div>
+    );
 
   const counts = TIME_BUCKETS.map(
     ({ start, end }) =>
@@ -727,11 +740,16 @@ export function PracticeTrend({ sessions }: { sessions: SessionData[] }) {
         const hm = months.find((m) => m.key === tooltip.key);
         if (!hm || hm.total === 0) return null;
         const { rect } = tooltip;
+        const tipX = rect.left + rect.width / 2;
+        const clampedX =
+          typeof window !== "undefined"
+            ? Math.max(60, Math.min(window.innerWidth - 60, tipX))
+            : tipX;
         return createPortal(
           <div
             className="pointer-events-none fixed z-[9999] rounded-xl border px-3.5 py-2.5 shadow-xl backdrop-blur-sm"
             style={{
-              left: rect.left + rect.width / 2,
+              left: clampedX,
               top: rect.top - 10,
               transform: "translate(-50%, -100%)",
               background: "var(--theme-glass-bg)",
