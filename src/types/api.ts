@@ -19,7 +19,8 @@ import type { DailyInfoData } from "@/services";
  * - karanaName: string → karana: { number, name, type, endTime }
  * - Adds: moonPhaseEmoji, moonPhaseName, vara, rahuKalam
  *
- * @see /src/app/api/daily-info/route.ts for the transformation logic
+ * @see src/lib/api-transformers.ts for the transformation logic
+ * @see src/app/api/daily-info/route.ts for the route handler
  */
 export interface DailyInfoResponse extends Omit<
   DailyInfoData,
@@ -113,7 +114,18 @@ export interface DailyInfoResponse extends Omit<
     start: string;
     /** End time in HH:mm format */
     end: string;
-  };
+  } | null;
+
+  /**
+   * Yamagandam (inauspicious time period)
+   * Returned as null when unavailable.
+   */
+  yamagandam?: {
+    /** Start time in HH:mm format */
+    start: string;
+    /** End time in HH:mm format */
+    end: string;
+  } | null;
 
   /**
    * Exact moon phase event occurring on this calendar day (if any).
@@ -314,5 +326,11 @@ export interface DailyInfoResponse extends Omit<
     endLocal?: string | null;
     /** UTC ISO timestamp when this karana ends */
     endUtcIso?: string | null;
+  };
+
+  /** Response metadata for calculation/debugging. */
+  meta?: {
+    engine: string;
+    calculationDate: string;
   };
 }

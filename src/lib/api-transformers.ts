@@ -3,8 +3,9 @@ import { detectSpecialDay } from "@/lib/panchanga-helpers";
 import type { DailyPanchangaFull } from "@/server/panchanga";
 
 /**
- * Transform Panchanga data to API response format
- * Includes both old fields (for compatibility) and new Vedic fields
+ * Transform Panchanga data to the shared /api/daily-info response format.
+ * Used by API routes and server-rendered pages to keep all Panchanga display
+ * fields consistent.
  */
 export function transformToApiResponse(panchanga: DailyPanchangaFull) {
   const illuminationPct = Math.round(panchanga.moon.illuminationPct);
@@ -84,14 +85,14 @@ export function transformToApiResponse(panchanga: DailyPanchangaFull) {
           start: panchanga.rahuKalam.startLocal,
           end: panchanga.rahuKalam.endLocal,
         }
-      : undefined,
+      : null,
 
     yamagandam: panchanga.yamagandam
       ? {
           start: panchanga.yamagandam.startLocal,
           end: panchanga.yamagandam.endLocal,
         }
-      : undefined,
+      : null,
 
     // Ayanamsa (precession correction)
     ayanamsa: {
@@ -134,7 +135,7 @@ export function transformToApiResponse(panchanga: DailyPanchangaFull) {
       if (sd?.type === "purnima" || sd?.type === "amavasya") return null;
       return sd
         ? { type: sd.type, name: sd.name, description: sd.description, emoji: sd.emoji }
-        : undefined;
+        : null;
     })(),
 
     // =========================================================================
@@ -243,5 +244,14 @@ export function transformToApiResponse(panchanga: DailyPanchangaFull) {
           endUtcIso: panchanga.nextKarana.endUtcIso ?? null,
         }
       : undefined,
+
+    // Exact moon phase event (Swiss Ephemeris binary search)
+    moonPhaseEvent: panchanga.moonPhaseEvent ?? null,
+
+    // Metadata
+    meta: {
+      engine: panchanga.meta.engine,
+      calculationDate: new Date().toISOString(),
+    },
   };
 }

@@ -3,52 +3,14 @@ import { ArrowRight, Plus } from "lucide-react";
 import { DharmaCalendar } from "@/components/calendar/DharmaCalendar";
 import { TodayHero } from "@/components/ui/TodayHero";
 import { PageLayout } from "@/components/layout";
-import { findUpcomingOccurrences } from "@/repositories/event.repository";
-import { findAllCategories } from "@/repositories/category.repository";
-import { panchangaService } from "@/services/panchanga.service";
-import { transformToApiResponse } from "@/lib/api-transformers";
-import { getWeatherDashboard } from "@/services/weather.service";
 import { DEFAULT_LOCATION, EVENT_TYPES } from "@/lib/domain";
+import { getHomePageData } from "@/services/home.service";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const now = new Date();
-
-  // 1. Fetch server data using repositories and services
-  const [upcomingEvents, categories, weatherDash] = await Promise.all([
-    findUpcomingOccurrences(7),
-    findAllCategories(),
-    getWeatherDashboard().catch(() => null),
-  ]);
-
-  // 2. Fetch Panchanga for today
-  const rawPanchanga = await panchangaService.calculateDaily(
-    now,
-    DEFAULT_LOCATION,
-    DEFAULT_LOCATION.timezone
-  );
-  const dailyInfo = transformToApiResponse(rawPanchanga);
-
-  // 3. Filter today's events from the upcoming events
-  // upcomingEvents is already ordered and includes occurrences from today
-  const todayStr = now.toISOString().split("T")[0];
-  const todayEvents = upcomingEvents
-    .filter((occ) => {
-      const d = new Date(occ.date);
-      // adjust for timezone offset to get YYYY-MM-DD
-      const localDate = new Date(d.getTime() - d.getTimezoneOffset() * 60000)
-        .toISOString()
-        .split("T")[0];
-      return localDate === todayStr;
-    })
-    .map((occ) => ({
-      id: occ.event.id,
-      name: occ.event.name,
-      category: occ.event.categories[0]?.category ?? null,
-      eventType: occ.event.eventType,
-      date: occ.date.toISOString(),
-    }));
+  const { todayYear, upcomingEvents, categories, weatherDash, dailyInfo, todayEvents } =
+    await getHomePageData();
 
   return (
     <PageLayout spacing>
@@ -92,7 +54,13 @@ export default async function Home() {
                 {upcomingEvents.map((occ) => {
                   const category = occ.event.categories[0]?.category ?? null;
                   const eventDate = new Date(occ.date);
-                  const crossesYear = eventDate.getFullYear() !== now.getFullYear();
+                  const eventYear = Number(
+                    eventDate.toLocaleDateString("en-CA", {
+                      year: "numeric",
+                      timeZone: DEFAULT_LOCATION.timezone,
+                    })
+                  );
+                  const crossesYear = eventYear !== todayYear;
                   const typeLabel =
                     occ.event.eventType && occ.event.eventType !== "OTHER"
                       ? (EVENT_TYPES.find((type) => type.value === occ.event.eventType)
@@ -115,6 +83,7 @@ export default async function Home() {
                             {eventDate.toLocaleDateString("nl-NL", {
                               day: "numeric",
                               month: "short",
+                              timeZone: DEFAULT_LOCATION.timezone,
                               ...(crossesYear ? { year: "numeric" } : {}),
                             })}
                           </span>

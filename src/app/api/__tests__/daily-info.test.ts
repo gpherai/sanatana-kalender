@@ -181,6 +181,7 @@ describe("GET /api/daily-info", () => {
     const json = await response.json();
 
     expect(json.specialDay.type).toBe("purnima");
+    expect(json.moonPhaseEvent.type).toBe("full");
   });
 
   it("identifies Amavasya from moonPhaseEvent", async () => {

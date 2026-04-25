@@ -194,17 +194,18 @@ export async function findEventOccurrences(params: EventQueryParams) {
 }
 
 /**
- * Find upcoming event occurrences within a specific day window.
+ * Find upcoming event occurrences from today through N days after today.
  * Starting from today in Europe/Amsterdam timezone (DEFAULT_LOCATION.timezone).
  * Includes multi-day events that started before today but end within window.
  */
-export async function findUpcomingOccurrences(daysWindow = 7) {
+export async function findUpcomingOccurrences(daysAfterToday = 6) {
   const tz = DEFAULT_LOCATION.timezone;
   const todayStart = DateTime.now().setZone(tz).startOf("day").toUTC().toJSDate();
   const futureEnd = DateTime.now()
     .setZone(tz)
     .startOf("day")
-    .plus({ days: daysWindow })
+    .plus({ days: daysAfterToday })
+    .endOf("day")
     .toUTC()
     .toJSDate();
 

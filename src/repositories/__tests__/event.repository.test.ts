@@ -166,4 +166,14 @@ describe("findUpcomingOccurrences", () => {
     const branch2 = OR[1] as { date: { lte: Date }; endDate: { gte: Date } };
     expect(branch2.endDate.gte.toISOString()).toBe("2026-01-15T23:00:00.000Z");
   });
+
+  it("uses the end of the final Amsterdam day as the upper bound", async () => {
+    vi.setSystemTime(new Date("2026-04-25T10:00:00.000Z"));
+
+    await findUpcomingOccurrences(6);
+
+    const { OR } = getWhereArg();
+    const branch1 = OR[0] as { date: { gte: Date; lte: Date }; endDate: null };
+    expect(branch1.date.lte.toISOString()).toBe("2026-05-01T21:59:59.999Z");
+  });
 });

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { prismaMock } from "@/__tests__/helpers/prisma-mock";
 import Home from "../page";
@@ -9,7 +9,13 @@ vi.mock("@/components/calendar/DharmaCalendar", () => ({
 }));
 
 vi.mock("@/components/ui/TodayHero", () => ({
-  TodayHero: () => <section data-testid="today-hero" />,
+  TodayHero: ({ todayEvents }: { todayEvents: Array<{ id: string; name: string }> }) => (
+    <section data-testid="today-hero">
+      {todayEvents.map((event) => (
+        <span key={event.id}>Vandaag: {event.name}</span>
+      ))}
+    </section>
+  ),
 }));
 
 vi.mock("@/services/panchanga.service", () => ({
@@ -28,7 +34,13 @@ vi.mock("@/services/weather.service", () => ({
 
 describe("HomePage", () => {
   beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-04-25T10:00:00.000Z"));
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it("renders with categories and events", async () => {
@@ -45,7 +57,8 @@ describe("HomePage", () => {
     prismaMock.eventOccurrence.findMany.mockResolvedValue([
       {
         id: "occ_1",
-        date: new Date(),
+        date: new Date("2026-04-25T00:00:00.000Z"),
+        endDate: null,
         event: {
           id: "evt_1",
           name: "Test Event",
@@ -66,6 +79,19 @@ describe("HomePage", () => {
       "href",
       "/events?categories=ganesha%20%26%20shiva"
     );
+    expect(prismaMock.eventOccurrence.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          OR: expect.arrayContaining([
+            expect.objectContaining({
+              date: expect.objectContaining({
+                lte: new Date("2026-05-01T21:59:59.999Z"),
+              }),
+            }),
+          ]),
+        }),
+      })
+    );
   });
 
   it("renders with no upcoming events", async () => {
@@ -74,5 +100,27 @@ describe("HomePage", () => {
     const ui = await Home();
     render(ui);
     expect(screen.getByText(/Geen aankomende events/i)).toBeInTheDocument();
+  });
+
+  it("passes ongoing multi-day events to the TodayHero", async () => {
+    prismaMock.category.findMany.mockResolvedValue([]);
+    prismaMock.eventOccurrence.findMany.mockResolvedValue([
+      {
+        id: "occ_ongoing",
+        date: new Date("2026-04-24T00:00:00.000Z"),
+        endDate: new Date("2026-04-26T00:00:00.000Z"),
+        event: {
+          id: "evt_ongoing",
+          name: "Doorlopende Vrat",
+          eventType: "VRAT",
+          categories: [],
+        },
+      },
+    ] as any);
+
+    const ui = await Home();
+    render(ui);
+
+    expect(screen.getByText("Vandaag: Doorlopende Vrat")).toBeInTheDocument();
   });
 });
