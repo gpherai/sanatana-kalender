@@ -388,9 +388,10 @@ De Repository layer is de **enige** plek in de applicatie die direct communiceer
 
 Het project gebruikt een **pragmatisch gelaagd systeem**:
 
-1. **Pages/API Routes**: Gebruiken repositories voor simpele data-ophaling en services voor acties die logica vereisen.
+1. **Pages/API Routes**: Gebruiken repositories voor simpele data-ophaling en services voor acties die logica vereisen. Server Components (zoals `page.tsx`) fetchen data en sturen dit direct als props naar Client Components om redundante data fetches en "cascading renders" te voorkomen.
 2. **Repositories**: Verplicht voor **alle** database queries. Geen `prisma.xxx` calls meer in UI componenten of API routes.
 3. **Services**: Verplicht voor berekeningen (stats, streaks) of wanneer meerdere repositories gecoördineerd moeten worden.
+4. **Transformers (`lib/api-transformers.ts`)**: Zetten rijke interne domeinmodellen om in gestandaardiseerde HTTP API responses.
 
 **📋 Code Review Checklist**
 

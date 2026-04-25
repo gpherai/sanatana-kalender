@@ -113,12 +113,12 @@ export default async function TermPage({
   }
 
   const allTerms = getAllTerms();
-  const parentTerm = term.parent ? getTermBySlug(term.parent) : null;
+  const parentTerm = term.parents?.[0] ? getTermBySlug(term.parents[0]) : null;
 
   const isChildOf = (t: EncyclopediaTerm, slug: string) =>
-    t.parent === slug || (t.parents ?? []).includes(slug);
+    (t.parents ?? []).includes(slug);
 
-  const termParents = [...(term.parents ?? []), ...(term.parent ? [term.parent] : [])];
+  const termParents = term.parents ?? [];
 
   // 1. Identify direct child groups
   const childGroups = allTerms
@@ -158,7 +158,7 @@ export default async function TermPage({
           .filter((t) => {
             if (t.slug === term.slug) return false;
             if (isChildOf(t, term.slug)) return false;
-            const tParents = [...(t.parents ?? []), ...(t.parent ? [t.parent] : [])];
+            const tParents = t.parents ?? [];
             return termParents.some((p) => tParents.includes(p));
           })
           .sort((a, b) => {
@@ -177,8 +177,7 @@ export default async function TermPage({
         t.category === term.category &&
         t.slug !== term.slug &&
         !isChildOf(t, term.slug) &&
-        t.slug !== term.parent &&
-        !(t.parents ?? []).includes(term.slug) &&
+        !(term.parents ?? []).includes(t.slug) &&
         !siblingSlugSet.has(t.slug) &&
         !t.isGroup
       );

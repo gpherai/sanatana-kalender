@@ -16,7 +16,7 @@ export type TermSummary = {
   sanskrit: string;
   category: string;
   shortDescription: string;
-  parent?: string;
+  parents?: string[];
   isGroup?: boolean;
   priority?: number;
 };
@@ -54,7 +54,11 @@ function TermCard({
   showCategory?: boolean;
   barClass?: string;
 }) {
-  const sanskritPart = item.sanskrit ? ` (${item.sanskrit})` : "";
+  // Strip Devanagari and comma from sanskrit field (e.g. "tithi, तिथि" → "tithi")
+  const sanitizedSanskrit = item.sanskrit
+    ? item.sanskrit.replace(/,?\s*[ऀ-ॿ०-९]+.*$/, "").trim()
+    : "";
+  const sanskritPart = sanitizedSanskrit ? ` (${sanitizedSanskrit})` : "";
   return (
     <Link
       href={`/encyclopedie/${item.slug}`}
@@ -160,8 +164,13 @@ export function EncyclopediaOverview({
       {searchResults !== null ? (
         searchResults.length === 0 ? (
           <div className="text-theme-fg-muted py-20 text-center">
-            Geen resultaten voor{" "}
-            <span className="text-theme-fg font-semibold">&ldquo;{query}&rdquo;</span>.
+            <p>
+              Geen resultaten voor{" "}
+              <span className="text-theme-fg font-semibold">&ldquo;{query}&rdquo;</span>.
+            </p>
+            <p className="mt-2 text-sm">
+              Probeer een andere spelling of een Sanskriet-equivalent.
+            </p>
           </div>
         ) : (
           <div>
@@ -197,7 +206,7 @@ export function EncyclopediaOverview({
             const itemsToShow =
               category === "Navagraha"
                 ? items
-                : items.filter((t) => !t.parent || t.isGroup);
+                : items.filter((t) => !t.parents?.length || t.isGroup);
 
             if (itemsToShow.length === 0) return null;
 

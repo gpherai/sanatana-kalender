@@ -1,7 +1,19 @@
 # 📋 Dharma Calendar - TODO / Roadmap
 
 > **Status:** Production Ready
-> **Laatst bijgewerkt:** 21 maart 2026
+> **Laatst bijgewerkt:** 25 april 2026
+
+---
+
+## ✅ Session 41 - Architecture & Performance Refactor (25 april 2026)
+
+- [x] Cascading renders opgelost in Kundali form (gemigreerd naar `useSyncExternalStore`)
+- [x] Typfout in Jyotisha dignity interface (`ucchaDeg` → `uchchaDeg`) gecorrigeerd via Ubiquitous Language principe
+- [x] Client-side data waterfalls (redundante calls) weggewerkt in `TodayHero` door over te stappen op Server Component prop-passing
+- [x] Transformatielogica voor API responses geëxtraheerd naar `/lib/api-transformers.ts` (API routes schoner gemaakt)
+- [x] Datagroepering voor UI events geëxtraheerd naar `/lib/events.ts`
+- [x] Dode bestanden (`StatCard`, oude imports) verwijderd (`knip` 100% clean)
+- [x] `ARCHITECTURE.md` (v5.3) bijgewerkt met Server Component fetching rules en nieuwe transformers laag.
 
 ---
 

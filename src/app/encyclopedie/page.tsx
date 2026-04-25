@@ -33,7 +33,7 @@ export default function DictionaryPage() {
       sanskrit,
       category,
       shortDescription,
-      parent,
+      parents,
       isGroup,
       priority,
     }) => ({
@@ -42,7 +42,7 @@ export default function DictionaryPage() {
       sanskrit,
       category,
       shortDescription,
-      parent,
+      parents,
       isGroup,
       priority,
     })
@@ -70,6 +70,18 @@ export default function DictionaryPage() {
 
   const categories = Object.keys(groupedTerms).sort((a, b) => a.localeCompare(b));
   const totalCount = termSummaries.length;
+
+  // Visible top-level counts per category (mirrors EncyclopediaOverview filter)
+  const visibleCounts = Object.fromEntries(
+    categories.map((cat) => {
+      const items = groupedTerms[cat] ?? [];
+      const count =
+        cat === "Navagraha"
+          ? items.length
+          : items.filter((t) => !t.parents?.length || t.isGroup).length;
+      return [cat, count];
+    })
+  );
 
   return (
     <PageLayout spacing>
@@ -104,7 +116,7 @@ export default function DictionaryPage() {
                 chipClass: "encyl-chip-algemeen",
               };
               const Icon = cfg.icon;
-              const count = groupedTerms[cat]?.length ?? 0;
+              const count = visibleCounts[cat] ?? 0;
               return (
                 <span
                   key={cat}

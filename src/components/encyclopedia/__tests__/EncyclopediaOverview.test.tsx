@@ -17,7 +17,7 @@ const MOCK_TERMS = {
       sanskrit: "Paksha",
       category: "Astronomie",
       shortDescription: "Fortnight",
-      parent: "tithi",
+      parents: ["tithi"],
     },
   ],
   Navagraha: [
@@ -34,7 +34,7 @@ const MOCK_TERMS = {
       sanskrit: "Chandra",
       category: "Navagraha",
       shortDescription: "The Moon",
-      parent: "surya", // Navagraha items should NOT be filtered out even with parent
+      parents: ["surya"], // Navagraha items should NOT be filtered out even with parents
     },
   ],
 };

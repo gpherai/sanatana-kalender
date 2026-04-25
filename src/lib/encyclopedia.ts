@@ -17,7 +17,6 @@ export interface EncyclopediaTerm {
     | "Tijd"
     | "Navagraha";
   shortDescription: string;
-  parent?: string;
   parents?: string[];
   isGroup?: boolean;
   priority?: number;
@@ -47,7 +46,6 @@ export function getAllTerms(): EncyclopediaTerm[] {
         devanagari: data.devanagari || undefined,
         category: data.category,
         shortDescription: data.shortDescription || "",
-        parent: data.parent,
         parents: data.parents,
         isGroup: data.isGroup || false,
         priority: data.priority !== undefined ? data.priority : 99,
@@ -72,7 +70,6 @@ export function getTermBySlug(slug: string): EncyclopediaTerm | null {
       devanagari: data.devanagari || undefined,
       category: data.category,
       shortDescription: data.shortDescription || "",
-      parent: data.parent,
       parents: data.parents,
       isGroup: data.isGroup || false,
       priority: data.priority !== undefined ? data.priority : 99,
