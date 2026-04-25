@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { Calendar, TrendingUp } from "lucide-react";
+import { cn } from "@/lib/utils";
 import type {
   CalendarDay,
   SessionData,
@@ -32,11 +34,16 @@ export function DashboardTab({
   onHeatmapEventClick,
 }: DashboardTabProps) {
   const today = new Date();
-  const jan1 = new Date(today.getFullYear(), 0, 1);
+  const currentYear = today.getFullYear();
+  const [selectedYear, setSelectedYear] = useState(currentYear);
+
+  const jan1 = new Date(selectedYear, 0, 1);
 
   // Full calendar year: jan1 → dec31, toekomstige datums = null (leeg)
   const heatmapFull = buildHeatmap(calDays, 364, jan1);
   const heatmapMobile = buildHeatmap(calDays, 154);
+
+  const availableYears = [2025, 2026].filter((y) => y <= currentYear);
 
   return (
     <div className="space-y-6">
@@ -50,7 +57,7 @@ export function DashboardTab({
             <TrendingUp className="h-4 w-4" />
           </div>
           <h2 className="text-theme-fg text-sm font-semibold">
-            Per maand — {today.getFullYear()}
+            Per maand — {selectedYear}
           </h2>
         </div>
         <MalasChart calDays={calDays} sessions={sessions} />
@@ -61,13 +68,32 @@ export function DashboardTab({
 
       {/* Jaar — heatmap */}
       <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
-        <div className="mb-4 flex items-center gap-2">
-          <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
-            <Calendar className="h-4 w-4" />
+        <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-2">
+            <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
+              <Calendar className="h-4 w-4" />
+            </div>
+            <h2 className="text-theme-fg text-sm font-semibold">
+              Activiteit — {selectedYear}
+            </h2>
           </div>
-          <h2 className="text-theme-fg text-sm font-semibold">
-            Activiteit — {today.getFullYear()}
-          </h2>
+
+          <div className="bg-theme-surface flex items-center gap-1 rounded-lg p-1">
+            {availableYears.map((year) => (
+              <button
+                key={year}
+                onClick={() => setSelectedYear(year)}
+                className={cn(
+                  "min-h-[32px] cursor-pointer rounded px-3 text-xs font-medium transition-colors",
+                  selectedYear === year
+                    ? "bg-theme-primary text-white shadow-sm"
+                    : "text-theme-fg-muted hover:bg-theme-hover"
+                )}
+              >
+                {year}
+              </button>
+            ))}
+          </div>
         </div>
         <div className="hidden sm:block">
           <Heatmap

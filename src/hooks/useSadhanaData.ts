@@ -89,10 +89,8 @@ export function useSadhanaData(): SadhanaData {
 
       const yearAgo = new Date();
       yearAgo.setDate(yearAgo.getDate() - 364);
-      const minDate = new Date("2026-01-01T00:00:00");
-      const effectiveStart = yearAgo < minDate ? minDate : yearAgo;
-      const fromDate = new Date("2026-01-01T00:00:00");
-      const heatmapStart = localDateString(effectiveStart);
+      const fromDate = new Date("2025-01-01T00:00:00");
+      const heatmapStart = localDateString(fromDate);
       const heatmapEnd = todayString();
       const heatmapEventsUrl = `/api/events?start=${heatmapStart}&end=${heatmapEnd}&sortBy=date&order=asc`;
 
