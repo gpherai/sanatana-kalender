@@ -155,7 +155,7 @@ export interface DailyInfoResponse extends Omit<
    * Replaces client-side detectSpecialDay() calls
    * @since v1.3.0
    */
-  specialDay?: {
+  specialDay: {
     /** Type identifier (e.g., "purnima", "amavasya", "ekadashi") */
     type: string;
     /** Display name (e.g., "Purnima", "Shukla Ekadashi") */

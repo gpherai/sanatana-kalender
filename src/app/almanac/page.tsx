@@ -94,10 +94,13 @@ export default function AlmanacPage() {
   const cachedDailyInfo = monthDataCache.get(cacheKey) ?? null;
   const cachedEvents = eventsDataCache.get(cacheKey) ?? null;
 
-  const { data: fetchedMonthData, loading: dailyLoading } = useFetch<DailyInfoResponse[]>(
-    `/api/daily-info?start=${start}&end=${end}`,
-    { skip: !!cachedDailyInfo }
-  );
+  const {
+    data: fetchedMonthData,
+    loading: dailyLoading,
+    error: dailyError,
+  } = useFetch<DailyInfoResponse[]>(`/api/daily-info?start=${start}&end=${end}`, {
+    skip: !!cachedDailyInfo,
+  });
   const { data: fetchedMonthEvents, loading: eventsLoading } = useFetch<
     CalendarEventResponse[]
   >(`/api/events?start=${start}&end=${end}`, {
@@ -106,6 +109,7 @@ export default function AlmanacPage() {
   const monthData = cachedDailyInfo ?? fetchedMonthData;
   const monthEvents = cachedEvents ?? fetchedMonthEvents;
   const loading = dailyLoading || eventsLoading;
+  const error = dailyError;
   const location = monthData?.[0]?.locationName ?? DEFAULT_LOCATION.name;
 
   // Preserve scroll position when selecting different dates within same month
@@ -144,16 +148,16 @@ export default function AlmanacPage() {
       const e = formatDateLocal(ld);
       if (!monthDataCache.has(key)) {
         fetch(`/api/daily-info?start=${s}&end=${e}`)
-          .then<DailyInfoResponse[]>((r) => r.json())
-          .then((data) => {
+          .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+          .then((data: DailyInfoResponse[]) => {
             monthDataCache.set(key, data);
           })
           .catch(() => {});
       }
       if (!eventsDataCache.has(key)) {
         fetch(`/api/events?start=${s}&end=${e}`)
-          .then<CalendarEventResponse[]>((r) => r.json())
-          .then((data) => {
+          .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+          .then((data: CalendarEventResponse[]) => {
             eventsDataCache.set(key, data);
           })
           .catch(() => {});
@@ -332,7 +336,22 @@ export default function AlmanacPage() {
         onToggleFilter={handleToggleFilter}
       />
 
-      {loading ? (
+      {error ? (
+        <div className="flex h-64 items-center justify-center">
+          <div className="flex flex-col items-center gap-3 text-center">
+            <span className="text-theme-fg text-sm font-medium">
+              Kon almanac niet laden
+            </span>
+            <span className="text-theme-fg-muted text-xs">{error.message}</span>
+            <button
+              onClick={() => window.location.reload()}
+              className="bg-theme-primary mt-1 rounded-lg px-4 py-2 text-sm text-white hover:opacity-90"
+            >
+              Opnieuw proberen
+            </button>
+          </div>
+        </div>
+      ) : loading ? (
         <div className="flex h-64 items-center justify-center">
           <div className="flex flex-col items-center gap-3">
             <div className="border-theme-primary-20 border-t-theme-primary h-12 w-12 animate-spin rounded-full border-4" />

@@ -61,6 +61,7 @@ function makeInfo(
     nakshatra: { number: 3, name: "Krittika", pada: 1, endTime: null },
     yoga: { number: 4, name: "Saubhagya", endTime: null },
     karana: { number: 2, name: "Balava", type: "Movable", endTime: null },
+    specialDay: null,
     ...overrides,
   };
 }

@@ -1,7 +1,16 @@
 "use client";
 
 import { useRef, useCallback } from "react";
-import { Sun, Sunrise, Sunset, Moon, Sparkles, Star, ChevronRight } from "lucide-react";
+import {
+  Sun,
+  Sunrise,
+  Sunset,
+  Moon,
+  MoonStar,
+  Sparkles,
+  Star,
+  ChevronRight,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FALLBACK_CATEGORY_COLOR, resolveCategoryColor } from "@/lib/category-styles";
 import { useTheme } from "@/components/theme/ThemeProvider";
@@ -247,13 +256,13 @@ export function DayDetailsPanel({
                 </div>
                 <div className="space-y-2.5">
                   <div className="flex items-center gap-2" title="Opkomst">
-                    <Sunrise className="h-3.5 w-3.5 shrink-0 text-[var(--theme-almanac-moon-rise-icon)]" />
+                    <MoonStar className="h-3.5 w-3.5 shrink-0 text-[var(--theme-almanac-moon-rise-icon)]" />
                     <span className="text-theme-fg text-sm font-semibold tabular-nums">
                       {selectedDayInfo.moonrise || "—"}
                     </span>
                   </div>
                   <div className="flex items-center gap-2" title="Ondergang">
-                    <Sunset className="h-3.5 w-3.5 shrink-0 text-[var(--theme-almanac-moon-set-icon)]" />
+                    <Moon className="h-3.5 w-3.5 shrink-0 text-[var(--theme-almanac-moon-set-icon)]" />
                     <span className="text-theme-fg text-sm font-semibold tabular-nums">
                       {selectedDayInfo.moonset || "—"}
                     </span>
@@ -292,8 +301,8 @@ export function DayDetailsPanel({
                 Speciale dag
               </h4>
               <div className="space-y-2">
-                {selectedDaySpecial.map((special, i) => (
-                  <div key={i} className="flex items-start gap-2">
+                {selectedDaySpecial.map((special) => (
+                  <div key={special.type} className="flex items-start gap-2">
                     <span className="text-lg">{special.emoji}</span>
                     <div>
                       <div className="text-theme-fg font-medium">{special.name}</div>
@@ -395,7 +404,7 @@ export function DayDetailsPanel({
                       >
                         {/* Category color strip */}
                         <div
-                          className="absolute top-0 left-0 h-full w-1.5 transition-all duration-300 group-hover:w-2"
+                          className="absolute top-0 left-0 h-full w-1.5"
                           style={{ backgroundColor: categoryColor }}
                         />
 

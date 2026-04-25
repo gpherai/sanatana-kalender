@@ -4,6 +4,7 @@ import { logError } from "@/lib/utils";
 import { panchangaService } from "@/services/panchanga.service";
 import { DEFAULT_LOCATION } from "@/lib/domain";
 import { transformToApiResponse } from "@/lib/api-transformers";
+import { dateQuerySchema } from "@/lib/validations";
 import { DateTime } from "luxon";
 
 // =============================================================================
@@ -44,14 +45,13 @@ export async function GET(request: NextRequest) {
       // Single date mode
       // ---------------------------------------------------------------------
 
-      // IMPORTANT: Parse date in the selected timezone, not UTC!
-      // This ensures we calculate for the correct calendar day.
-      const dt = DateTime.fromISO(dateParam, { zone: timezone });
-
-      if (!dt.isValid) {
+      const parsed = dateQuerySchema.safeParse(dateParam);
+      if (!parsed.success) {
         return errorResponse("Ongeldige datum formaat. Gebruik YYYY-MM-DD.", 400);
       }
 
+      // IMPORTANT: Parse date in the selected timezone, not UTC!
+      const dt = DateTime.fromISO(parsed.data, { zone: timezone });
       const date = dt.toJSDate();
 
       // Calculate Panchanga using service layer
@@ -66,13 +66,15 @@ export async function GET(request: NextRequest) {
       // Date range mode
       // ---------------------------------------------------------------------
 
-      const startDt = DateTime.fromISO(startParam, { zone: timezone });
-      const endDt = DateTime.fromISO(endParam, { zone: timezone });
+      const parsedStart = dateQuerySchema.safeParse(startParam);
+      const parsedEnd = dateQuerySchema.safeParse(endParam);
 
-      if (!startDt.isValid || !endDt.isValid) {
+      if (!parsedStart.success || !parsedEnd.success) {
         return errorResponse("Ongeldige datum formaat. Gebruik YYYY-MM-DD.", 400);
       }
 
+      const startDt = DateTime.fromISO(parsedStart.data, { zone: timezone });
+      const endDt = DateTime.fromISO(parsedEnd.data, { zone: timezone });
       const start = startDt.toJSDate();
       const end = endDt.toJSDate();
 

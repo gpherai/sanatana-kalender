@@ -2,7 +2,7 @@
 
 import { Sunrise, Sunset, Moon, MoonStar } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { isSameDay, isToday, formatDateLocal } from "@/lib/date-utils";
+import { isSameDay, isToday, formatDateLocal, MONTHS_LONG } from "@/lib/date-utils";
 import type { DailyInfoResponse } from "@/types";
 import type { CalendarEventResponse } from "@/types/calendar";
 import type { SpecialDay } from "@/lib/panchanga-helpers";
@@ -26,21 +26,6 @@ interface MonthGridProps {
 
 const WEEKDAYS_SHORT = ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"] as const;
 
-const MONTHS = [
-  "Januari",
-  "Februari",
-  "Maart",
-  "April",
-  "Mei",
-  "Juni",
-  "Juli",
-  "Augustus",
-  "September",
-  "Oktober",
-  "November",
-  "December",
-] as const;
-
 export function MonthGrid({
   year,
   month,
@@ -59,7 +44,7 @@ export function MonthGrid({
   return (
     <div className="bg-theme-surface-raised rounded-2xl p-4 shadow-lg">
       <h2 className="text-theme-fg mb-4 text-xl font-bold">
-        {MONTHS[month]} {year}
+        {MONTHS_LONG[month]} {year}
       </h2>
 
       <div className="grid grid-cols-7 gap-1">
