@@ -100,7 +100,7 @@ export default function AlmanacPage() {
   );
   const { data: fetchedMonthEvents, loading: eventsLoading } = useFetch<
     CalendarEventResponse[]
-  >(`/api/events?start=${start}T00:00:00.000Z&end=${end}T23:59:59.999Z`, {
+  >(`/api/events?start=${start}&end=${end}`, {
     skip: !!cachedEvents,
   });
   const monthData = cachedDailyInfo ?? fetchedMonthData;
@@ -151,7 +151,7 @@ export default function AlmanacPage() {
           .catch(() => {});
       }
       if (!eventsDataCache.has(key)) {
-        fetch(`/api/events?start=${s}T00:00:00.000Z&end=${e}T23:59:59.999Z`)
+        fetch(`/api/events?start=${s}&end=${e}`)
           .then<CalendarEventResponse[]>((r) => r.json())
           .then((data) => {
             eventsDataCache.set(key, data);

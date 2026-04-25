@@ -53,6 +53,22 @@ describe("Almanac Page", () => {
     expect(screen.getAllByText(/April 2026/i).length).toBeGreaterThan(0);
   });
 
+  it("requests events with strict date-only query params", () => {
+    render(<AlmanacPage />);
+
+    const eventsCalls = vi
+      .mocked(useFetch)
+      .mock.calls.filter(
+        ([url]) => typeof url === "string" && url.includes("/api/events")
+      );
+
+    expect(eventsCalls.length).toBeGreaterThan(0);
+    const eventsUrl = eventsCalls[0]![0] as string;
+    expect(eventsUrl).toContain("start=2026-04-01&end=2026-04-30");
+    expect(eventsUrl).not.toContain("T00:00:00.000Z");
+    expect(eventsUrl).not.toContain("T23:59:59.999Z");
+  });
+
   it("handles date selection and saves scroll position", async () => {
     render(<AlmanacPage />);
 
