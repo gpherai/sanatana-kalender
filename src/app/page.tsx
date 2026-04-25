@@ -3,6 +3,7 @@ import { ArrowRight, Plus } from "lucide-react";
 import { DharmaCalendar } from "@/components/calendar/DharmaCalendar";
 import { TodayHero } from "@/components/ui/TodayHero";
 import { PageLayout } from "@/components/layout";
+import { DateTime } from "luxon";
 import { DEFAULT_LOCATION, EVENT_TYPES } from "@/lib/domain";
 import { getHomePageData } from "@/services/home.service";
 
@@ -54,12 +55,9 @@ export default async function Home() {
                 {upcomingEvents.map((occ) => {
                   const category = occ.event.categories[0]?.category ?? null;
                   const eventDate = new Date(occ.date);
-                  const eventYear = Number(
-                    eventDate.toLocaleDateString("en-CA", {
-                      year: "numeric",
-                      timeZone: DEFAULT_LOCATION.timezone,
-                    })
-                  );
+                  const eventYear = DateTime.fromJSDate(eventDate, {
+                    zone: DEFAULT_LOCATION.timezone,
+                  }).year;
                   const crossesYear = eventYear !== todayYear;
                   const typeLabel =
                     occ.event.eventType && occ.event.eventType !== "OTHER"

@@ -36,8 +36,7 @@ function occurrenceOverlapsDay(
 export async function getHomePageData(
   now = DateTime.now().setZone(DEFAULT_LOCATION.timezone)
 ) {
-  const zonedNow = now.setZone(DEFAULT_LOCATION.timezone);
-  const today = zonedNow.startOf("day");
+  const today = now.startOf("day");
 
   const [upcomingEvents, categories, weatherDash, rawPanchanga] = await Promise.all([
     findUpcomingOccurrences(UPCOMING_DAYS_AFTER_TODAY),
@@ -47,7 +46,7 @@ export async function getHomePageData(
       return null;
     }),
     panchangaService.calculateDaily(
-      zonedNow.toJSDate(),
+      now.toJSDate(),
       DEFAULT_LOCATION,
       DEFAULT_LOCATION.timezone
     ),

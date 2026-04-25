@@ -9,7 +9,7 @@ import { formatTimeAgo, formatIsoTimeAgo, formatDate } from "@/lib/date-utils";
 import type { DailyInfoResponse } from "@/types";
 import type { CalendarEventResourceResponse } from "@/types/calendar";
 import type { WeatherApiResponse } from "@/types/weather";
-import { DEFAULT_LOCATION } from "@/lib/domain";
+import { DEFAULT_LOCATION, VARA_DAYS } from "@/lib/domain";
 
 interface TodayEvent {
   id: string;
@@ -18,17 +18,6 @@ interface TodayEvent {
   eventType: string;
   date: string;
 }
-
-// Days of the week in Sanskrit
-const SANSKRIT_DAYS = [
-  { name: "Ravivara", deity: "Surya", icon: "☀️" }, // Sunday
-  { name: "Somavara", deity: "Chandra", icon: "🌙" }, // Monday
-  { name: "Mangalavara", deity: "Mangal", icon: "🔴" }, // Tuesday
-  { name: "Budhavara", deity: "Budha", icon: "🟢" }, // Wednesday
-  { name: "Guruvara", deity: "Brihaspati", icon: "🟡" }, // Thursday
-  { name: "Shukravara", deity: "Shukra", icon: "⚪" }, // Friday
-  { name: "Shanivara", deity: "Shani", icon: "🪐" }, // Saturday
-] as const;
 
 export interface TodayHeroProps {
   dailyInfo: DailyInfoResponse | null;
@@ -55,7 +44,7 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
 
   const today = currentTime;
   const dayOfWeek = today.getDay();
-  const sanskritDay = SANSKRIT_DAYS[dayOfWeek] ?? SANSKRIT_DAYS[0]!;
+  const varaDay = VARA_DAYS[dayOfWeek] ?? VARA_DAYS[0]!;
 
   // Use server-calculated special day (already in API response)
   const specialDay = dailyInfo?.specialDay;
@@ -92,11 +81,11 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
               <span>{today.toLocaleDateString("nl-NL", { weekday: "long" })}</span>
               <span className="text-white/25">•</span>
               <span className="flex items-center gap-1">
-                {sanskritDay.icon} {dailyInfo?.vara?.name ?? sanskritDay.name}
+                {varaDay.icon} {dailyInfo?.vara?.name ?? varaDay.name}
               </span>
             </div>
             <h1 className="theme-heading-reset mb-0 text-4xl font-bold text-white md:text-5xl">
-              {formatDate(today)}
+              {formatDate(today, { timeZone: DEFAULT_LOCATION.timezone })}
             </h1>
           </div>
 

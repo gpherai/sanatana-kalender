@@ -371,6 +371,7 @@ De service layer wordt gebruikt voor complexe business logica en orchestratie.
 | `sadhanaService` | `/services/sadhana.service.ts` | Berekenen van streaks, goals progress, en aggregatie van sessiedata naar statistieken |
 | `weatherService` | `/services/weather.service.ts` | OpenWeather orchestratie, foutnormalisatie en dashboard-response mapping |
 | `sadhanaFormatters` | `/services/sadhana-formatters.ts` | DTO-formatting: `formatSession`, `formatGoal`, `formatPractice`, `computePracticeStats` |
+| `getHomePageData` | `/services/home.service.ts` | SSR-data aggregatie voor de home page: combineert upcomingEvents, categories, panchanga en weather in één parallelle call; berekent todayEvents met timezone-aware overlap |
 
 ### 4.4 Repository Layer (Data Access)
 
@@ -436,6 +437,7 @@ Data-fetching logica wordt gescheiden van UI-logica via custom hooks in `src/hoo
 
 Elke major route heeft een `error.tsx` (`"use client"`) als Next.js error boundary:
 
+- `src/app/error.tsx` (home route — vangt DB/panchanga fouten op)
 - `src/app/events/error.tsx`
 - `src/app/sadhana/error.tsx`
 - `src/app/weer/error.tsx`

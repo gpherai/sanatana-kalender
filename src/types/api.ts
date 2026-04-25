@@ -41,8 +41,9 @@ export interface DailyInfoResponse extends Omit<
   /**
    * Vara (Vedic weekday)
    * Each day is ruled by a planetary deity
+   * Always present in transformer output.
    */
-  vara?: {
+  vara: {
     /** Sanskrit name (e.g., "Ravivara" for Sunday) */
     name: string;
   };
@@ -50,8 +51,9 @@ export interface DailyInfoResponse extends Omit<
   /**
    * Tithi (lunar day, 1-15 in each paksha)
    * The moon's angular distance from the sun in 12° increments
+   * Always present in transformer output.
    */
-  tithi?: {
+  tithi: {
     /** Tithi number (1-15) */
     number: number;
     /** Sanskrit name (e.g., "Pratipada", "Purnima") */
@@ -60,13 +62,15 @@ export interface DailyInfoResponse extends Omit<
     paksha: "Shukla" | "Krishna";
     /** Local time when this tithi ends (HH:mm format) */
     endTime: string | null;
+    endUtcIso?: string | null;
   };
 
   /**
    * Nakshatra (lunar mansion, 1 of 27)
    * The moon's position in one of 27 asterisms along the ecliptic
+   * Always present in transformer output.
    */
-  nakshatra?: {
+  nakshatra: {
     /** Nakshatra number (1-27) */
     number: number;
     /** Sanskrit name (e.g., "Ashwini", "Bharani") */
@@ -75,26 +79,30 @@ export interface DailyInfoResponse extends Omit<
     pada: 1 | 2 | 3 | 4;
     /** Local time when this nakshatra ends (HH:mm format) */
     endTime: string | null;
+    endUtcIso?: string | null;
   };
 
   /**
    * Yoga (auspicious/inauspicious combination, 1 of 27)
    * Sum of sun and moon's longitudes divided into 27 parts
+   * Always present in transformer output.
    */
-  yoga?: {
+  yoga: {
     /** Yoga number (1-27) */
     number: number;
     /** Sanskrit name (e.g., "Vishkambha", "Siddha") */
     name: string;
     /** Local time when this yoga ends (HH:mm format) */
-    endTime?: string | null;
+    endTime: string | null;
+    endUtcIso?: string | null;
   };
 
   /**
    * Karana (half-tithi, 1 of 11)
    * Half of a tithi; used for determining auspicious timings
+   * Always present in transformer output.
    */
-  karana?: {
+  karana: {
     /** Karana number (1-11) */
     number: number;
     /** Sanskrit name (e.g., "Bava", "Balava") */
@@ -102,7 +110,8 @@ export interface DailyInfoResponse extends Omit<
     /** Type: "Movable" or "Fixed" */
     type: string;
     /** Local time when this karana ends (HH:mm format) */
-    endTime?: string | null;
+    endTime: string | null;
+    endUtcIso?: string | null;
   };
 
   /**

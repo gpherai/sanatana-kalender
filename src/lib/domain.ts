@@ -85,6 +85,21 @@ export const PAKSHAS = [
 ] as const;
 
 // --------------------------------------------
+// VARA DAYS (Vedic weekdays, indexed 0=Sunday like Date.getDay())
+// --------------------------------------------
+export const VARA_DAYS = [
+  { name: "Ravivara", deity: "Surya", icon: "☀️" }, // Sunday
+  { name: "Somavara", deity: "Chandra", icon: "🌙" }, // Monday
+  { name: "Mangalavara", deity: "Mangal", icon: "🔴" }, // Tuesday
+  { name: "Budhavara", deity: "Budha", icon: "🟢" }, // Wednesday
+  { name: "Guruvara", deity: "Brihaspati", icon: "🟡" }, // Thursday
+  { name: "Shukravara", deity: "Shukra", icon: "⚪" }, // Friday
+  { name: "Shanivara", deity: "Shani", icon: "🪐" }, // Saturday
+] as const;
+
+export type VaraDay = (typeof VARA_DAYS)[number];
+
+// --------------------------------------------
 // TITHIS (30 lunar days)
 // --------------------------------------------
 export const TITHIS = [

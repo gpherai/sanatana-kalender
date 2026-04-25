@@ -200,14 +200,9 @@ export async function findEventOccurrences(params: EventQueryParams) {
  */
 export async function findUpcomingOccurrences(daysAfterToday = 6) {
   const tz = DEFAULT_LOCATION.timezone;
-  const todayStart = DateTime.now().setZone(tz).startOf("day").toUTC().toJSDate();
-  const futureEnd = DateTime.now()
-    .setZone(tz)
-    .startOf("day")
-    .plus({ days: daysAfterToday })
-    .endOf("day")
-    .toUTC()
-    .toJSDate();
+  const anchor = DateTime.now().setZone(tz).startOf("day");
+  const todayStart = anchor.toUTC().toJSDate();
+  const futureEnd = anchor.plus({ days: daysAfterToday }).endOf("day").toUTC().toJSDate();
 
   return prisma.eventOccurrence.findMany({
     where: {

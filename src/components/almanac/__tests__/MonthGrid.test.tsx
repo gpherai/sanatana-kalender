@@ -56,6 +56,11 @@ function makeInfo(
     isWaxing: false,
     moonPhaseEmoji: "🌕",
     moonPhaseName: "Volle Maan",
+    vara: { name: "Guruvara" },
+    tithi: { number: 2, name: "Dwitiya", paksha: "Shukla", endTime: null },
+    nakshatra: { number: 3, name: "Krittika", pada: 1, endTime: null },
+    yoga: { number: 4, name: "Saubhagya", endTime: null },
+    karana: { number: 2, name: "Balava", type: "Movable", endTime: null },
     ...overrides,
   };
 }
