@@ -232,14 +232,23 @@ export default async function TermPage({
               })()}
             </div>
 
-            <h1 className="text-theme-fg mb-4 text-4xl font-black tracking-tight md:text-5xl">
+            <h1 className="text-theme-fg mb-3 text-4xl font-black tracking-tight md:text-5xl">
               {term.title}
             </h1>
 
-            {term.sanskrit && (
-              <p className="text-theme-fg-muted text-xl font-medium md:text-2xl">
-                {term.sanskrit}
-              </p>
+            {(term.devanagari || term.sanskrit) && (
+              <div className="mt-1 space-y-0.5">
+                {term.devanagari && (
+                  <p className="text-theme-fg-secondary text-2xl font-medium md:text-3xl">
+                    {term.devanagari}
+                  </p>
+                )}
+                {term.sanskrit && (
+                  <p className="text-theme-fg-muted text-base font-medium italic">
+                    {term.sanskrit}
+                  </p>
+                )}
+              </div>
             )}
           </div>
 
@@ -265,13 +274,13 @@ export default async function TermPage({
                 <Link
                   href={`/encyclopedie/${child.slug}`}
                   key={child.slug}
-                  className="group border-theme-border bg-theme-surface hover:border-theme-primary-30 focus:ring-theme-primary focus:ring-offset-theme-bg relative flex flex-col rounded-2xl border p-6 transition-all duration-500 hover:-translate-y-1 hover:shadow-lg focus:ring-2 focus:ring-offset-2 focus:outline-none"
+                  className="theme-card theme-focus-ring group hover:border-theme-primary-30 relative flex flex-col p-6 transition duration-300 hover:-translate-y-1 hover:shadow-md"
                 >
                   <div className="bg-theme-primary-20 group-hover:bg-theme-primary-40 absolute top-0 left-0 h-1.5 w-full rounded-t-2xl transition-colors duration-300" />
-                  <h3 className="text-theme-fg mb-2 text-xl font-bold tracking-tight transition-colors duration-300">
+                  <h3 className="text-theme-fg mb-2 text-xl font-bold tracking-tight">
                     {child.title}
                   </h3>
-                  <p className="text-theme-fg-secondary line-clamp-2 text-sm leading-relaxed transition-colors duration-300">
+                  <p className="text-theme-fg-secondary line-clamp-2 text-sm leading-relaxed">
                     {child.shortDescription}
                   </p>
                 </Link>
@@ -285,7 +294,7 @@ export default async function TermPage({
           ({ group, members }) =>
             members.length > 0 && (
               <div key={group.slug} className="mt-16">
-                <div className="mb-8 flex items-end justify-between border-b pb-4">
+                <div className="border-theme-border mb-8 flex items-end justify-between border-b pb-4">
                   <h2 className="text-theme-fg text-3xl font-black tracking-tight">
                     {group.title}
                   </h2>
@@ -301,13 +310,13 @@ export default async function TermPage({
                     <Link
                       href={`/encyclopedie/${member.slug}`}
                       key={member.slug}
-                      className="group border-theme-border bg-theme-surface hover:border-theme-primary-30 focus:ring-theme-primary focus:ring-offset-theme-bg relative flex flex-col rounded-2xl border p-6 transition-all duration-500 hover:-translate-y-1 hover:shadow-lg focus:ring-2 focus:ring-offset-2 focus:outline-none"
+                      className="theme-card theme-focus-ring group hover:border-theme-primary-30 relative flex flex-col p-6 transition duration-300 hover:-translate-y-1 hover:shadow-md"
                     >
                       <div className="bg-theme-primary-20 group-hover:bg-theme-primary-40 absolute top-0 left-0 h-1.5 w-full rounded-t-2xl transition-colors duration-300" />
-                      <h3 className="text-theme-fg mb-2 text-xl font-bold tracking-tight transition-colors duration-300">
+                      <h3 className="text-theme-fg mb-2 text-xl font-bold tracking-tight">
                         {member.title}
                       </h3>
-                      <p className="text-theme-fg-secondary line-clamp-2 text-sm leading-relaxed transition-colors duration-300">
+                      <p className="text-theme-fg-secondary line-clamp-2 text-sm leading-relaxed">
                         {member.shortDescription}
                       </p>
                     </Link>
@@ -328,13 +337,13 @@ export default async function TermPage({
                 <Link
                   href={`/encyclopedie/${sibling.slug}`}
                   key={sibling.slug}
-                  className="group border-theme-border bg-theme-surface hover:border-theme-primary-30 focus:ring-theme-primary focus:ring-offset-theme-bg relative flex flex-col rounded-2xl border p-6 transition-all duration-500 hover:-translate-y-1 hover:shadow-lg focus:ring-2 focus:ring-offset-2 focus:outline-none"
+                  className="theme-card theme-focus-ring group hover:border-theme-secondary-30 relative flex flex-col p-6 transition duration-300 hover:-translate-y-1 hover:shadow-md"
                 >
                   <div className="bg-theme-secondary-20 group-hover:bg-theme-secondary-40 absolute top-0 left-0 h-1.5 w-full rounded-t-2xl transition-colors duration-300" />
-                  <h3 className="text-theme-fg mb-2 text-xl font-bold tracking-tight transition-colors duration-300">
+                  <h3 className="text-theme-fg mb-2 text-xl font-bold tracking-tight">
                     {sibling.title}
                   </h3>
-                  <p className="text-theme-fg-secondary line-clamp-2 text-sm leading-relaxed transition-colors duration-300">
+                  <p className="text-theme-fg-secondary line-clamp-2 text-sm leading-relaxed">
                     {sibling.shortDescription}
                   </p>
                 </Link>
@@ -354,13 +363,13 @@ export default async function TermPage({
                 <Link
                   href={`/encyclopedie/${related.slug}`}
                   key={related.slug}
-                  className="group border-theme-border bg-theme-bg-subtle/30 hover:border-theme-primary-30 focus:ring-theme-primary focus:ring-offset-theme-bg relative flex flex-col rounded-2xl border p-6 transition-all duration-500 hover:-translate-y-1 hover:shadow-lg focus:ring-2 focus:ring-offset-2 focus:outline-none"
+                  className="theme-card theme-focus-ring group hover:border-theme-accent-20 relative flex flex-col p-6 transition duration-300 hover:-translate-y-1 hover:shadow-md"
                 >
-                  <div className="bg-theme-accent-20 group-hover:bg-theme-accent-40 absolute top-0 left-0 h-1.5 w-full rounded-t-2xl transition-colors duration-300" />
-                  <h3 className="text-theme-fg mb-2 text-xl font-bold tracking-tight transition-colors duration-300">
+                  <div className="bg-theme-accent-15 group-hover:bg-theme-accent-20 absolute top-0 left-0 h-1.5 w-full rounded-t-2xl transition-colors duration-300" />
+                  <h3 className="text-theme-fg mb-2 text-xl font-bold tracking-tight">
                     {related.title}
                   </h3>
-                  <p className="text-theme-fg-secondary line-clamp-2 text-sm leading-relaxed transition-colors duration-300">
+                  <p className="text-theme-fg-secondary line-clamp-2 text-sm leading-relaxed">
                     {related.shortDescription}
                   </p>
                 </Link>

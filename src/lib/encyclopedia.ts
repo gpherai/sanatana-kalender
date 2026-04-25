@@ -8,6 +8,7 @@ export interface EncyclopediaTerm {
   slug: string;
   title: string;
   sanskrit: string;
+  devanagari?: string;
   category:
     | "Algemeen"
     | "Astronomie"
@@ -43,6 +44,7 @@ export function getAllTerms(): EncyclopediaTerm[] {
         slug,
         title: data.title,
         sanskrit: data.sanskrit || "",
+        devanagari: data.devanagari || undefined,
         category: data.category,
         shortDescription: data.shortDescription || "",
         parent: data.parent,
@@ -67,6 +69,7 @@ export function getTermBySlug(slug: string): EncyclopediaTerm | null {
       slug,
       title: data.title,
       sanskrit: data.sanskrit || "",
+      devanagari: data.devanagari || undefined,
       category: data.category,
       shortDescription: data.shortDescription || "",
       parent: data.parent,
