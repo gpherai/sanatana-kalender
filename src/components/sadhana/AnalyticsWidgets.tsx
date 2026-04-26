@@ -301,6 +301,7 @@ export function PracticeDonut({ practices }: { practices: PracticeStat[] }) {
   const segments = data.map((d, i) => ({
     practice_id: d.practice_id,
     practice_name: d.practice_name,
+    practice_type: d.practice_type,
     color: d.color,
     frac: fracs[i]!,
     value: d.value,
@@ -368,7 +369,14 @@ export function PracticeDonut({ practices }: { practices: PracticeStat[] }) {
                 <span className="text-theme-fg-secondary min-w-0 flex-1 truncate text-xs">
                   {seg.practice_name}
                 </span>
-                <span className="text-theme-fg-muted shrink-0 text-xs tabular-nums">
+                <span className="text-theme-fg-muted shrink-0 text-right text-xs tabular-nums">
+                  <span className="text-theme-fg font-medium">
+                    {seg.value % 1 === 0
+                      ? seg.value.toLocaleString("nl-NL")
+                      : seg.value.toLocaleString("nl-NL", { maximumFractionDigits: 1 })}
+                    {seg.practice_type === "mantra_japa" ? " malas" : "×"}
+                  </span>
+                  {" · "}
                   {Math.round(seg.frac * 100)}%
                 </span>
               </div>
