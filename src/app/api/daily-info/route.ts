@@ -23,6 +23,15 @@ import { DateTime } from "luxon";
  * Location and timezone come from DEFAULT_LOCATION.
  * Results are cached for performance.
  */
+// Historical panchanga data never changes — safe to cache in the browser for 24h.
+// Today and future dates are time-sensitive (moonrise/moonset calculated from now).
+const CACHE_HISTORICAL = "public, max-age=86400, stale-while-revalidate=3600";
+const CACHE_DYNAMIC = "no-store";
+
+function cacheHeaders(dateStr: string, todayStr: string) {
+  return { "Cache-Control": dateStr < todayStr ? CACHE_HISTORICAL : CACHE_DYNAMIC };
+}
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
@@ -35,6 +44,7 @@ export async function GET(request: NextRequest) {
     // =========================================================================
     const location = DEFAULT_LOCATION;
     const timezone = DEFAULT_LOCATION.timezone;
+    const todayStr = DateTime.now().setZone(timezone).toISODate()!;
 
     // =========================================================================
     // STEP 2: Parse and validate date parameters
@@ -60,7 +70,9 @@ export async function GET(request: NextRequest) {
       // Transform to API response format
       const response = transformToApiResponse(panchanga);
 
-      return NextResponse.json(response);
+      return NextResponse.json(response, {
+        headers: cacheHeaders(parsed.data, todayStr),
+      });
     } else if (startParam && endParam) {
       // ---------------------------------------------------------------------
       // Date range mode
@@ -99,7 +111,10 @@ export async function GET(request: NextRequest) {
       // Transform all results
       const responses = panchangas.map(transformToApiResponse);
 
-      return NextResponse.json(responses);
+      // Cache only fully-historical ranges (end date is before today)
+      return NextResponse.json(responses, {
+        headers: cacheHeaders(parsedEnd.data, todayStr),
+      });
     } else {
       // ---------------------------------------------------------------------
       // Default: Today's data
@@ -109,7 +124,7 @@ export async function GET(request: NextRequest) {
       const panchanga = await panchangaService.calculateDaily(today, location, timezone);
       const response = transformToApiResponse(panchanga);
 
-      return NextResponse.json(response);
+      return NextResponse.json(response, { headers: { "Cache-Control": CACHE_DYNAMIC } });
     }
   } catch (error) {
     logError("[API] GET /api/daily-info error:", error);

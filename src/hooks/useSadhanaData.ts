@@ -16,6 +16,11 @@ import {
   localDateString,
   todayString,
 } from "@/components/sadhana/types";
+
+// Module-level cache — survives re-renders and tab-switches within one browser session.
+// Keyed on the end date: if the day rolls over, the next load fetches the new day's data.
+let _dayInfoMapCache: DayInfoMap | null = null;
+let _dayInfoMapCacheEnd: string | null = null;
 import type { CalendarEventResponse } from "@/types/calendar";
 import { addDaysDateOnly } from "@/lib/default-location-date";
 
@@ -140,12 +145,25 @@ export function useSadhanaData(): SadhanaData {
       setLoading(false);
       initialLoadDone.current = true;
 
-      // Phase 2: slow data (panchanga + events) — loads in background, doesn't block UI
+      // Phase 2: slow data (panchanga + events) — loads in background, doesn't block UI.
+      // DayInfoMap is served from the module-level cache when the same day is requested twice
+      // (e.g. navigating away and back). Cache is invalidated when the date rolls over.
+      const cachedMap =
+        _dayInfoMapCache && _dayInfoMapCacheEnd === heatmapEnd ? _dayInfoMapCache : null;
+
       void Promise.allSettled([
-        fetchDayInfoMap(localDateString(fromDate), todayString()),
+        cachedMap
+          ? Promise.resolve(cachedMap)
+          : fetchDayInfoMap(localDateString(fromDate), heatmapEnd),
         fetchCalendarEvents(heatmapEventsUrl),
       ]).then(([dimResult, evResult]) => {
-        if (dimResult.status === "fulfilled") setDayInfoMap(dimResult.value);
+        if (dimResult.status === "fulfilled") {
+          if (!cachedMap) {
+            _dayInfoMapCache = dimResult.value;
+            _dayInfoMapCacheEnd = heatmapEnd;
+          }
+          setDayInfoMap(dimResult.value);
+        }
         if (evResult.status === "fulfilled") {
           const rawEvs = evResult.value ?? [];
           setHeatmapEventsRaw(rawEvs);

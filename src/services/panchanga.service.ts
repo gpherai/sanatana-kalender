@@ -152,9 +152,6 @@ class PanchangaService {
       tz: timezone,
     };
 
-    // Calculate using Swiss Ephemeris engine
-    logDebug(`[PanchangaService] Computing Panchanga for ${dateStr} at ${location.name}`);
-
     const result = await this.swissService.computeDaily(dateStr, locConfig);
 
     // Cache the result (only for non-today dates)
