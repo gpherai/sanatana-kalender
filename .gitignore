@@ -115,3 +115,4 @@ __pycache__/
 /check-*.ts
 /update_*.js
 /test-*.js
+.gitnexus

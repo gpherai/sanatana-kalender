@@ -14,14 +14,9 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  type Goal,
-  type GoalType,
-  type Practice,
-  apiFetch,
-  goalProgressRatio,
-  isGoalComplete,
-} from "./types";
+import type { Goal, GoalType, Practice } from "./types";
+import { apiFetch } from "@/lib/sadhana-api";
+import { goalProgressRatio, isGoalComplete } from "@/lib/sadhana-utils";
 
 const GOAL_TYPE_LABELS: Record<GoalType, string> = {
   daily: "Dagdoel",

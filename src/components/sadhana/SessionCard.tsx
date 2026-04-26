@@ -13,16 +13,14 @@ import {
   BookOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { SessionData, Practice, FormItem } from "./types";
+import { apiFetch } from "@/lib/sadhana-api";
 import {
-  type SessionData,
-  type Practice,
-  type FormItem,
-  apiFetch,
   todayString,
   formatTime,
   isoToLocalTime,
   formatDuration,
-} from "./types";
+} from "@/lib/sadhana-utils";
 import { SessionForm } from "./SessionForm";
 
 export function SessionCard({

@@ -3,17 +3,14 @@
 import { useMemo } from "react";
 import { Plus, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { SessionData, Practice, Routine, DayInfoMap } from "./types";
+import { apiFetch } from "@/lib/sadhana-api";
 import {
-  type SessionData,
-  type Practice,
-  type Routine,
-  type DayInfoMap,
-  apiFetch,
   formatDate,
   formatDuration,
   dayContextLabel,
   todayString,
-} from "./types";
+} from "@/lib/sadhana-utils";
 import { SessionForm } from "./SessionForm";
 import { SessionCard } from "./SessionCard";
 

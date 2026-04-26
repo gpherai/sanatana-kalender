@@ -12,7 +12,7 @@ import type {
   DayInfoMap,
   Goal,
 } from "../types";
-import { formatDuration } from "../types";
+import { formatDuration } from "@/lib/sadhana-utils";
 import { SessionsSection } from "../SessionsSection";
 import { UpcomingEventsPanel } from "../UpcomingEventsPanel";
 import { GoalProgressWidget } from "../GoalProgressWidget";

@@ -12,13 +12,8 @@ import {
   Check,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  type Routine,
-  type Practice,
-  type ItemUnit,
-  type PracticeType,
-  apiFetch,
-} from "./types";
+import type { Routine, Practice, ItemUnit, PracticeType } from "./types";
+import { apiFetch } from "@/lib/sadhana-api";
 
 function defaultUnit(type: PracticeType | undefined): ItemUnit {
   if (type === "parayana") return "count";

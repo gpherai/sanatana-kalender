@@ -13,12 +13,9 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  type Practice,
-  type PracticeType,
-  apiFetch,
-  PRACTICE_TYPE_LABELS,
-} from "./types";
+import type { Practice, PracticeType } from "./types";
+import { apiFetch } from "@/lib/sadhana-api";
+import { PRACTICE_TYPE_LABELS } from "@/lib/sadhana-utils";
 
 export function PracticesPanel({
   practices,

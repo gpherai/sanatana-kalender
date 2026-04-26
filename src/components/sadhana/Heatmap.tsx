@@ -1,14 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import {
-  type CalendarDay,
-  type HeatmapCell,
-  type DayInfoMap,
-  localDateString,
-  formatDate,
-  dayContextLabel,
-} from "./types";
+import type { CalendarDay, HeatmapCell, DayInfoMap } from "./types";
+import { localDateString, formatDate, dayContextLabel } from "@/lib/sadhana-utils";
 
 // =============================================================================
 // HELPERS

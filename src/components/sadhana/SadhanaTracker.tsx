@@ -11,7 +11,7 @@ import {
   Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { goalProgressRatio, isGoalComplete, todayString } from "./types";
+import { goalProgressRatio, isGoalComplete, todayString } from "@/lib/sadhana-utils";
 import type { CalendarEvent, CalendarEventResponse } from "@/types/calendar";
 import { parseCalendarEvent } from "@/types/calendar";
 import { EventDetailModal } from "@/components/calendar/EventDetailModal";

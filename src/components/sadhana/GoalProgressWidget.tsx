@@ -1,6 +1,7 @@
 import { Target, CheckCircle2, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { goalProgressRatio, isGoalComplete, type Goal } from "./types";
+import type { Goal } from "./types";
+import { goalProgressRatio, isGoalComplete } from "@/lib/sadhana-utils";
 
 export function GoalProgressWidget({
   goals,

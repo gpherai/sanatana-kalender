@@ -3,14 +3,8 @@
 import { useState } from "react";
 import { Plus, Trash2, Loader2, Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  type Practice,
-  type FormItem,
-  type ItemUnit,
-  type PracticeType,
-  type Routine,
-  todayString,
-} from "./types";
+import type { Practice, FormItem, ItemUnit, PracticeType, Routine } from "./types";
+import { todayString } from "@/lib/sadhana-utils";
 
 function defaultUnit(type: PracticeType | undefined): ItemUnit {
   if (type === "parayana") return "count";

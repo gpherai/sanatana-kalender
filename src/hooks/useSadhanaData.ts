@@ -1,28 +1,26 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
-import {
-  type TodayStats,
-  type StreakStats,
-  type OverviewStats,
-  type CalendarDay,
-  type SessionData,
-  type Practice,
-  type Goal,
-  type Routine,
-  type DayInfoMap,
-  apiFetch,
-  fetchDayInfoMap,
-  localDateString,
-  todayString,
+import type {
+  TodayStats,
+  StreakStats,
+  OverviewStats,
+  CalendarDay,
+  SessionData,
+  Practice,
+  Goal,
+  Routine,
+  DayInfoMap,
 } from "@/components/sadhana/types";
+import { apiFetch, fetchDayInfoMap } from "@/lib/sadhana-api";
+import { localDateString, todayString } from "@/lib/sadhana-utils";
+import type { CalendarEventResponse } from "@/types/calendar";
+import { addDaysDateOnly } from "@/lib/default-location-date";
 
 // Module-level cache — survives re-renders and tab-switches within one browser session.
 // Keyed on the end date: if the day rolls over, the next load fetches the new day's data.
 let _dayInfoMapCache: DayInfoMap | null = null;
 let _dayInfoMapCacheEnd: string | null = null;
-import type { CalendarEventResponse } from "@/types/calendar";
-import { addDaysDateOnly } from "@/lib/default-location-date";
 
 async function fetchCalendarEvents(url: string): Promise<CalendarEventResponse[]> {
   const response = await fetch(url);

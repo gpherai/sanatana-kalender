@@ -8,7 +8,7 @@ import type { CalendarEventResponse, CalendarEvent } from "@/types/calendar";
 import { parseCalendarEvent } from "@/types/calendar";
 import { resolveCategoryColor } from "@/lib/category-styles";
 import { useTheme } from "@/components/theme/ThemeProvider";
-import { todayString } from "./types";
+import { todayString } from "@/lib/sadhana-utils";
 import { addDaysDateOnly } from "@/lib/default-location-date";
 
 const DAYS_NL = ["zo", "ma", "di", "wo", "do", "vr", "za"];
