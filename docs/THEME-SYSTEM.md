@@ -1,8 +1,6 @@
 # Dharma Calendar — Theme System
 
 > Onderdeel van de technische documentatie. Zie [ARCHITECTURE.md](ARCHITECTURE.md) voor het overzicht.
->
-> Vervangt ADR-001, ADR-002 en ADR-003 als actuele referentie.
 
 ---
 

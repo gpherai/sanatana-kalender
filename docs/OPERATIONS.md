@@ -23,6 +23,7 @@
 | `SadhanaSessionItem` | Lijn in een sessie: practice + quantity + unit (malas/count). |
 | `SadhanaGoal` | Doel (dagelijks/wekelijks/lifetime) met target in malas en/of minuten. |
 | `SadhanaRoutine` | Herbruikbare sessie-template: geordende lijst van practices met hoeveelheden. |
+| `SadhanaRoutineItem` | Regel in een routine: practice + quantity + unit + sortOrder. |
 
 ### 1.2 Belangrijke Indexen
 

@@ -153,6 +153,7 @@ dharma-calendar/
     ├── content/
     │   └── encyclopedia/      # MDX artikelen
     ├── engine/                # Pure recurrence helpers (geen DB)
+    │   ├── index.ts           # Barrel export
     │   ├── tithi-helpers.ts
     │   └── types.ts
     ├── hooks/
