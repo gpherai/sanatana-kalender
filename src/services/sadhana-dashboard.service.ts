@@ -9,16 +9,18 @@ import {
   listSadhanaRoutines,
 } from "./sadhana.service";
 import { findEventOccurrences } from "@/repositories/event.repository";
-import { localDateString, todayString } from "@/lib/sadhana-utils";
+import { todayString, SADHANA_START_DATE } from "@/lib/sadhana-utils";
+import type { DayInfo } from "@/components/sadhana/types";
 import { panchangaService } from "./panchanga.service";
-import { transformToApiResponse } from "@/lib/api-transformers";
+import {
+  transformToApiResponse,
+  transformOccurrenceToCalendarEvent,
+} from "@/lib/api-transformers";
 import { DEFAULT_LOCATION } from "@/lib/domain";
 import { DateTime } from "luxon";
-import { transformOccurrenceToCalendarEvent } from "@/lib/api-transformers";
 
 export async function getSadhanaDashboardInit() {
-  const fromDate = new Date("2025-01-01T00:00:00.000Z");
-  const heatmapStart = localDateString(fromDate);
+  const heatmapStart = SADHANA_START_DATE;
   const heatmapEnd = todayString();
 
   // Fetch database queries first
@@ -69,7 +71,7 @@ export async function getSadhanaDashboardInit() {
         specialDay: apiP.specialDay,
         moonPhaseEvent: apiP.moonPhaseEvent,
       },
-    ] as [string, unknown];
+    ] as [string, DayInfo];
   });
 
   return {

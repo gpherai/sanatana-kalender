@@ -5,6 +5,10 @@ import type { DayInfo, Goal, PracticeType } from "@/components/sadhana/types";
 // DATE HELPERS
 // =============================================================================
 
+// Earliest date for heatmap / session queries — app launch date.
+// Shared by the SSR service and the client hook so they always fetch the same window.
+export const SADHANA_START_DATE = "2025-01-01";
+
 export function localDateString(d: Date): string {
   return defaultLocationDate(d);
 }

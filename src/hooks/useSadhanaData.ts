@@ -10,10 +10,11 @@ import type {
   Practice,
   Goal,
   Routine,
+  DayInfo,
   DayInfoMap,
 } from "@/components/sadhana/types";
 import { apiFetch, fetchDayInfoMap } from "@/lib/sadhana-api";
-import { localDateString, todayString } from "@/lib/sadhana-utils";
+import { todayString, SADHANA_START_DATE } from "@/lib/sadhana-utils";
 import type { CalendarEventResponse } from "@/types/calendar";
 import { addDaysDateOnly } from "@/lib/default-location-date";
 
@@ -69,7 +70,7 @@ export interface SadhanaData {
 export interface SadhanaInitialData extends Partial<
   Omit<SadhanaData, "dayInfoMap" | "loadAll">
 > {
-  dayInfoMapEntries?: [string, unknown][];
+  dayInfoMapEntries?: [string, DayInfo][];
   heatmapStart?: string;
   heatmapEnd?: string;
 }
@@ -105,10 +106,11 @@ export function useSadhanaData(initialData?: SadhanaInitialData): SadhanaData {
   const [heatmapEventsByDate, setHeatmapEventsByDate] = useState<
     Map<string, Array<{ id: string; title: string }>>
   >(() => {
-    if (initialData?.heatmapEventsRaw) {
+    const { heatmapEventsRaw, heatmapStart, heatmapEnd } = initialData ?? {};
+    if (heatmapEventsRaw && heatmapStart && heatmapEnd) {
       const evMap = new Map();
-      for (const ev of initialData.heatmapEventsRaw) {
-        addEventToDates(evMap, ev, initialData.heatmapStart!, initialData.heatmapEnd!);
+      for (const ev of heatmapEventsRaw) {
+        addEventToDates(evMap, ev, heatmapStart, heatmapEnd);
       }
       return evMap;
     }
@@ -122,8 +124,7 @@ export function useSadhanaData(initialData?: SadhanaInitialData): SadhanaData {
     try {
       setError(null);
 
-      const fromDate = new Date("2025-01-01T00:00:00");
-      const heatmapStart = localDateString(fromDate);
+      const heatmapStart = SADHANA_START_DATE;
       const heatmapEnd = todayString();
       const heatmapEventsUrl = `/api/events?start=${heatmapStart}&end=${heatmapEnd}&sortBy=date&order=asc`;
 
@@ -135,7 +136,7 @@ export function useSadhanaData(initialData?: SadhanaInitialData): SadhanaData {
         apiFetch<CalendarDay[]>(
           `/stats/calendar?start=${heatmapStart}&end=${heatmapEnd}`
         ),
-        apiFetch<SessionData[]>(`/sessions?from=${localDateString(fromDate)}`),
+        apiFetch<SessionData[]>(`/sessions?from=${heatmapStart}`),
         apiFetch<Practice[]>("/practices?active_only=false"),
         apiFetch<Goal[]>("/goals"),
         apiFetch<Routine[]>("/routines"),
@@ -184,7 +185,7 @@ export function useSadhanaData(initialData?: SadhanaInitialData): SadhanaData {
       void Promise.allSettled([
         cachedMap
           ? Promise.resolve(cachedMap)
-          : fetchDayInfoMap(localDateString(fromDate), heatmapEnd),
+          : fetchDayInfoMap(heatmapStart, heatmapEnd),
         fetchCalendarEvents(heatmapEventsUrl),
       ]).then(([dimResult, evResult]) => {
         if (dimResult.status === "fulfilled") {
