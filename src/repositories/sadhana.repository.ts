@@ -8,6 +8,7 @@
 
 import { prisma } from "@/lib/db";
 import { Prisma } from "@prisma/client";
+import { utcDateFromDateOnly } from "@/lib/default-location-date";
 
 // =============================================================================
 // SESSIONS
@@ -175,40 +176,30 @@ export async function updateSessionWithItems(
     notes?: string | null;
   }[]
 ) {
-  return prisma.$transaction(async (tx) => {
-    await tx.sadhanaSessionItem.deleteMany({ where: { sessionId: id } });
-    await tx.sadhanaSession.update({
-      where: { id },
-      data: {
-        date: new Date(date + "T00:00:00.000Z"),
-        startedAt: startedAt ? new Date(startedAt) : null,
-        durationMinutes: durationMinutes ?? null,
-        notes: notes ?? null,
-      },
-    });
-
-    for (const item of items) {
-      await tx.sadhanaSessionItem.create({
-        data: {
-          sessionId: id,
+  return prisma.sadhanaSession.update({
+    where: { id },
+    data: {
+      date: utcDateFromDateOnly(date),
+      startedAt: startedAt ? new Date(startedAt) : null,
+      durationMinutes: durationMinutes ?? null,
+      notes: notes ?? null,
+      items: {
+        deleteMany: {},
+        create: items.map((item) => ({
           practiceId: item.practice_id,
           quantity: item.quantity,
           unit: (item.unit as "malas" | "count") ?? "malas",
           durationMinutes: item.duration_minutes ?? null,
           notes: item.notes ?? null,
-        },
-      });
-    }
-
-    return tx.sadhanaSession.findUniqueOrThrow({
-      where: { id },
-      include: {
-        items: {
-          include: { practice: true },
-          orderBy: { createdAt: "asc" as const },
-        },
+        })),
       },
-    });
+    },
+    include: {
+      items: {
+        include: { practice: true },
+        orderBy: { createdAt: "asc" as const },
+      },
+    },
   });
 }
 

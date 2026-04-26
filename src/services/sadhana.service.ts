@@ -501,61 +501,76 @@ export async function getGoalsWithProgress() {
   const diff = day === 0 ? 6 : day - 1;
   startOfWeek.setUTCDate(todayDate.getUTCDate() - diff);
 
-  return Promise.all(
-    goals.map(async (goal) => {
-      let progressMalas = 0;
-      let progressMinutes = 0;
-      const practiceIds = goal.practices.map((p) => p.id);
+  const hasLifetime = goals.some((g) => g.type === "lifetime");
+  const hasWeekly = goals.some((g) => g.type === "weekly");
+  const hasDaily = goals.some((g) => g.type === "daily");
 
-      let start: Date | undefined;
-      let end: Date | undefined;
+  let minDate: Date | undefined;
+  if (hasLifetime) minDate = undefined;
+  else if (hasWeekly) minDate = startOfWeek;
+  else if (hasDaily) minDate = todayDate;
 
-      if (goal.type === "daily") {
-        start = todayDate;
-        end = todayDate;
-      } else if (goal.type === "weekly") {
-        start = startOfWeek;
-        end = todayDate;
-      }
+  // Pre-fetch all needed sessions once
+  const sessions = minDate
+    ? await sadhanaRepo.findSessionsByDateRange(minDate, todayDate)
+    : await sadhanaRepo.findAllSessions();
 
-      const sessions =
-        start && end
-          ? await sadhanaRepo.findSessionsByDateRange(start, end)
-          : await sadhanaRepo.findAllSessions();
-      const completedSessions = sessions.filter((s) =>
-        isOnOrBefore(s.date as Date, todayDate)
-      );
-
-      // Filter sessions by linked practices if any
-      for (const s of completedSessions) {
-        // If goal has specific practices, we only count items from those practices.
-        // If not, we count everything.
-        const items =
-          practiceIds.length > 0
-            ? s.items.filter((i) => practiceIds.includes(i.practiceId))
-            : s.items;
-
-        if (practiceIds.length === 0) {
-          progressMinutes += s.durationMinutes ?? 0;
-        } else if (items.length > 0) {
-          const itemMinutes = items.reduce(
-            (sum, item) => sum + (item.durationMinutes ?? 0),
-            0
-          );
-          progressMinutes += itemMinutes > 0 ? itemMinutes : (s.durationMinutes ?? 0);
-        }
-
-        for (const item of items) {
-          const totals = countSadhanaItem(item);
-          progressMalas += totals.malas;
-        }
-      }
-
-      return {
-        ...formatGoal(goal),
-        progress_malas: progressMalas,
-        progress_minutes: progressMinutes,
-      };
-    })
+  const completedSessions = sessions.filter((s) =>
+    isOnOrBefore(s.date as Date, todayDate)
   );
+
+  return goals.map((goal) => {
+    let progressMalas = 0;
+    let progressMinutes = 0;
+    const practiceIds = goal.practices.map((p) => p.id);
+
+    let start: Date | undefined;
+    let end: Date | undefined;
+
+    if (goal.type === "daily") {
+      start = todayDate;
+      end = todayDate;
+    } else if (goal.type === "weekly") {
+      start = startOfWeek;
+      end = todayDate;
+    }
+
+    const goalSessions =
+      start && end
+        ? completedSessions.filter((s) =>
+            isWithinInclusiveRange(s.date as Date, start!, end!)
+          )
+        : completedSessions;
+
+    // Filter sessions by linked practices if any
+    for (const s of goalSessions) {
+      // If goal has specific practices, we only count items from those practices.
+      // If not, we count everything.
+      const items =
+        practiceIds.length > 0
+          ? s.items.filter((i) => practiceIds.includes(i.practiceId))
+          : s.items;
+
+      if (practiceIds.length === 0) {
+        progressMinutes += s.durationMinutes ?? 0;
+      } else if (items.length > 0) {
+        const itemMinutes = items.reduce(
+          (sum, item) => sum + (item.durationMinutes ?? 0),
+          0
+        );
+        progressMinutes += itemMinutes > 0 ? itemMinutes : (s.durationMinutes ?? 0);
+      }
+
+      for (const item of items) {
+        const totals = countSadhanaItem(item);
+        progressMalas += totals.malas;
+      }
+    }
+
+    return {
+      ...formatGoal(goal),
+      progress_malas: progressMalas,
+      progress_minutes: progressMinutes,
+    };
+  });
 }
