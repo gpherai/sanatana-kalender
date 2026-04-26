@@ -21,6 +21,7 @@ export async function getSadhanaDashboardInit() {
   const heatmapStart = localDateString(fromDate);
   const heatmapEnd = todayString();
 
+  // Fetch database queries first
   const [
     todayStats,
     streak,
@@ -31,7 +32,6 @@ export async function getSadhanaDashboardInit() {
     goals,
     routines,
     occurrences,
-    panchangas,
   ] = await Promise.all([
     getSadhanaToday(),
     getSadhanaStreak(),
@@ -47,13 +47,16 @@ export async function getSadhanaDashboardInit() {
       sortBy: "date",
       order: "asc",
     }),
-    panchangaService.calculateRange(
-      DateTime.fromISO(heatmapStart, { zone: DEFAULT_LOCATION.timezone }).toJSDate(),
-      DateTime.fromISO(heatmapEnd, { zone: DEFAULT_LOCATION.timezone }).toJSDate(),
-      DEFAULT_LOCATION,
-      DEFAULT_LOCATION.timezone
-    ),
   ]);
+
+  // Run CPU-intensive Panchanga calculations separately to avoid event loop blocking
+  // that causes Prisma connection pool timeouts (5000ms).
+  const panchangas = await panchangaService.calculateRange(
+    DateTime.fromISO(heatmapStart, { zone: DEFAULT_LOCATION.timezone }).toJSDate(),
+    DateTime.fromISO(heatmapEnd, { zone: DEFAULT_LOCATION.timezone }).toJSDate(),
+    DEFAULT_LOCATION,
+    DEFAULT_LOCATION.timezone
+  );
 
   const heatmapEventsRaw = occurrences.map((occ) => ({
     id: occ.id,
