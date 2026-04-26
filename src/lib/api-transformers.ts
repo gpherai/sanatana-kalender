@@ -1,6 +1,44 @@
 import { getMoonPhaseType, getMoonPhaseEmoji, getMoonPhaseName } from "@/lib/moon-phases";
 import { detectSpecialDay } from "@/lib/panchanga-helpers";
 import type { DailyPanchangaFull } from "@/server/panchanga";
+import { addDayForDisplay, formatDateLocal } from "@/lib/date-utils";
+import type { findEventOccurrences } from "@/repositories/event.repository";
+
+type EventOccurrence = Awaited<ReturnType<typeof findEventOccurrences>>[number];
+
+/**
+ * Transform a Prisma EventOccurrence (with event includes) to the shared
+ * CalendarEventResponse wire format. Used by the API route and SSR services
+ * to guarantee consistent output.
+ */
+export function transformOccurrenceToCalendarEvent(occ: EventOccurrence) {
+  const endDate = occ.endDate ?? occ.date;
+  return {
+    id: occ.id,
+    eventId: occ.event.id,
+    title: occ.event.name,
+    start: formatDateLocal(occ.date),
+    end: formatDateLocal(addDayForDisplay(endDate)),
+    allDay: true,
+    resource: {
+      description: occ.event.description,
+      eventType: occ.event.eventType,
+      categories: occ.event.categories.map((ec) => ec.category),
+      tithi: occ.event.tithi,
+      nakshatra: occ.event.nakshatra,
+      maas: occ.event.maas,
+      tags: occ.event.tags,
+      notes: occ.notes,
+      startTime: occ.startTime,
+      endTime: occ.endTime,
+      originalEndDate: occ.endDate ? formatDateLocal(occ.endDate) : null,
+      seriesParentEventIds: occ.event.seriesChildEntries.map((e) => e.parentEventId),
+      seriesDayNumber: occ.event.seriesChildEntries[0]?.dayNumber ?? null,
+      hasSeriesChildren: occ.event.seriesParentEntries.length > 0,
+      recurrenceType: occ.event.recurrenceType,
+    },
+  };
+}
 
 /**
  * Transform Panchanga data to the shared /api/daily-info response format.

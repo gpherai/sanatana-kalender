@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { createEventSchema, eventQuerySchema } from "@/lib/validations";
 import { errorResponse, serverError, validationError } from "@/lib/api-response";
 import { logError } from "@/lib/utils";
-import { addDayForDisplay, formatDateLocal } from "@/lib/date-utils";
 import { Prisma } from "@prisma/client";
 import { findEventOccurrences } from "@/repositories/event.repository";
 import { CategoryNotFoundError, createEvent } from "@/services/event.service";
+import { transformOccurrenceToCalendarEvent } from "@/lib/api-transformers";
 
 // ============================================================================
 // Helper: Parse Query Parameters
@@ -44,37 +44,7 @@ export async function GET(request: NextRequest) {
 
     const occurrences = await findEventOccurrences(paramsResult.data);
 
-    // Transform to calendar-friendly format
-    const calendarEvents = occurrences.map((occ) => {
-      const endDate = occ.endDate ?? occ.date;
-
-      return {
-        id: occ.id,
-        eventId: occ.event.id,
-        title: occ.event.name,
-        // Format dates as local YYYY-MM-DD to prevent timezone shifts
-        start: formatDateLocal(occ.date),
-        end: formatDateLocal(addDayForDisplay(endDate)),
-        allDay: true,
-        resource: {
-          description: occ.event.description,
-          eventType: occ.event.eventType,
-          categories: occ.event.categories.map((ec) => ec.category),
-          tithi: occ.event.tithi,
-          nakshatra: occ.event.nakshatra,
-          maas: occ.event.maas,
-          tags: occ.event.tags,
-          notes: occ.notes,
-          startTime: occ.startTime,
-          endTime: occ.endTime,
-          originalEndDate: occ.endDate ? formatDateLocal(occ.endDate) : null,
-          seriesParentEventIds: occ.event.seriesChildEntries.map((e) => e.parentEventId),
-          seriesDayNumber: occ.event.seriesChildEntries[0]?.dayNumber ?? null,
-          hasSeriesChildren: occ.event.seriesParentEntries.length > 0,
-          recurrenceType: occ.event.recurrenceType,
-        },
-      };
-    });
+    const calendarEvents = occurrences.map(transformOccurrenceToCalendarEvent);
 
     return NextResponse.json(calendarEvents);
   } catch (error) {

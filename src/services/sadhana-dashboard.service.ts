@@ -10,11 +10,11 @@ import {
 } from "./sadhana.service";
 import { findEventOccurrences } from "@/repositories/event.repository";
 import { localDateString, todayString } from "@/lib/sadhana-utils";
-import { CalendarEventResponse } from "@/types/calendar";
 import { panchangaService } from "./panchanga.service";
 import { transformToApiResponse } from "@/lib/api-transformers";
 import { DEFAULT_LOCATION } from "@/lib/domain";
 import { DateTime } from "luxon";
+import { transformOccurrenceToCalendarEvent } from "@/lib/api-transformers";
 
 export async function getSadhanaDashboardInit() {
   const fromDate = new Date("2025-01-01T00:00:00.000Z");
@@ -58,19 +58,7 @@ export async function getSadhanaDashboardInit() {
     DEFAULT_LOCATION.timezone
   );
 
-  const heatmapEventsRaw = occurrences.map((occ) => ({
-    id: occ.id,
-    eventId: occ.eventId,
-    title: occ.event.name,
-    start: occ.date.toISOString(),
-    end: (occ.endDate ?? occ.date).toISOString(),
-    allDay: true,
-    resource: {
-      originalEndDate: occ.endDate ? occ.endDate.toISOString() : null,
-      hasSeriesChildren: false,
-      seriesParentEventIds: [],
-    },
-  })) as unknown as CalendarEventResponse[];
+  const heatmapEventsRaw = occurrences.map(transformOccurrenceToCalendarEvent);
 
   const dayInfoMapEntries = panchangas.map((p) => {
     const apiP = transformToApiResponse(p);
