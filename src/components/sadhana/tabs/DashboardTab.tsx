@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Calendar, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type {
@@ -43,7 +43,11 @@ export function DashboardTab({
   const heatmapFull = buildHeatmap(calDays, 364, jan1);
   const heatmapMobile = buildHeatmap(calDays, 154);
 
-  const availableYears = [2025, 2026].filter((y) => y <= currentYear);
+  const availableYears = useMemo(() => {
+    const years = new Set<number>([currentYear]);
+    for (const s of sessions) years.add(parseInt(s.date.slice(0, 4)));
+    return Array.from(years).sort();
+  }, [sessions, currentYear]);
 
   return (
     <div className="space-y-6">
@@ -60,11 +64,11 @@ export function DashboardTab({
             Per maand — {selectedYear}
           </h2>
         </div>
-        <MalasChart calDays={calDays} sessions={sessions} />
+        <MalasChart calDays={calDays} sessions={sessions} year={selectedYear} />
       </div>
 
       {/* Jaar — stacked beoefening grafiek */}
-      <StackedPracticeChart sessions={sessions} />
+      <StackedPracticeChart sessions={sessions} year={selectedYear} />
 
       {/* Jaar — heatmap */}
       <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">

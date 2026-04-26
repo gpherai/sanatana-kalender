@@ -34,12 +34,12 @@ interface MonthEntry {
   total: number;
 }
 
-function buildData(sessions: SessionData[]) {
+function buildData(sessions: SessionData[], year: number) {
   const today = new Date();
-
-  const monthCount = today.getMonth() + 1;
+  const isCurrentYear = year === today.getFullYear();
+  const monthCount = isCurrentYear ? today.getMonth() + 1 : 12;
   const months: MonthEntry[] = Array.from({ length: monthCount }, (_, i) => {
-    const d = new Date(today.getFullYear(), i, 1);
+    const d = new Date(year, i, 1);
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
     const fullLabel = d.toLocaleDateString("nl-NL", { month: "long", year: "numeric" });
 
@@ -95,9 +95,15 @@ function buildData(sessions: SessionData[]) {
   return { months, colorMap: seen };
 }
 
-export function StackedPracticeChart({ sessions }: { sessions: SessionData[] }) {
+export function StackedPracticeChart({
+  sessions,
+  year,
+}: {
+  sessions: SessionData[];
+  year?: number;
+}) {
   const [hovered, setHovered] = useState<number | null>(null);
-  const { months, colorMap } = buildData(sessions);
+  const { months, colorMap } = buildData(sessions, year ?? new Date().getFullYear());
 
   // Only render when there are 2+ distinct practices with data
   if (colorMap.size < 2) return null;
@@ -114,7 +120,7 @@ export function StackedPracticeChart({ sessions }: { sessions: SessionData[] }) 
           <Layers className="h-4 w-4" />
         </div>
         <h2 className="text-theme-fg text-sm font-semibold">
-          Per beoefening — laatste jaar
+          Per beoefening — {year ?? new Date().getFullYear()}
         </h2>
       </div>
 

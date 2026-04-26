@@ -40,12 +40,14 @@ interface MonthData {
 
 function buildMonthlyData(
   calDays: CalendarDay[],
-  sessionData: SessionData[]
+  sessionData: SessionData[],
+  year: number
 ): MonthData[] {
   const today = new Date();
-  const monthCount = today.getMonth() + 1; // jan=0, dus +1 = aantal maanden dit jaar
+  const isCurrentYear = year === today.getFullYear();
+  const monthCount = isCurrentYear ? today.getMonth() + 1 : 12;
   return Array.from({ length: monthCount }, (_, i) => {
-    const d = new Date(today.getFullYear(), i, 1);
+    const d = new Date(year, i, 1);
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
     const days = calDays.filter((cd) => cd.date.startsWith(key));
 
@@ -81,7 +83,9 @@ function buildMonthlyData(
       malas: days.reduce((s, cd) => s + cd.total_malas, 0),
       sessions: days.reduce((s, cd) => s + cd.session_count, 0),
       isCurrentMonth:
-        d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear(),
+        isCurrentYear &&
+        d.getMonth() === today.getMonth() &&
+        d.getFullYear() === today.getFullYear(),
       practices: Array.from(practiceMap.values()).sort((a, b) => b.amount - a.amount),
     };
   });
@@ -96,14 +100,16 @@ type Metric = "malas" | "sessions";
 export function MalasChart({
   calDays,
   sessions = [],
+  year,
 }: {
   calDays: CalendarDay[];
   sessions?: SessionData[];
+  year?: number;
 }) {
   const [hovered, setHovered] = useState<number | null>(null);
   const [metric, setMetric] = useState<Metric>("malas");
 
-  const data = buildMonthlyData(calDays, sessions);
+  const data = buildMonthlyData(calDays, sessions, year ?? new Date().getFullYear());
   const values = data.map((m) => (metric === "malas" ? m.malas : m.sessions));
   const maxVal = Math.max(...values, 1);
 
