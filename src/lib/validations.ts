@@ -324,8 +324,8 @@ export const generateOccurrencesSchema = z.object({
  * Uses dateQuerySchema to accept only strict YYYY-MM-DD calendar dates.
  */
 export const eventQuerySchema = z.object({
-  start: dateQuerySchema.optional(),
-  end: dateQuerySchema.optional(),
+  start: dateStringSchema.optional(),
+  end: dateStringSchema.optional(),
   search: z.string().max(100).optional(),
   categories: z.array(z.string().max(50)).max(20).optional(),
   types: z.array(z.string().max(20)).max(20).optional(),
@@ -368,8 +368,8 @@ export const patchSadhanaSessionSchema = z.object({
 });
 
 export const sadhanaCalendarQuerySchema = z.object({
-  start: dateQuerySchema.optional(),
-  end: dateQuerySchema.optional(),
+  start: dateStringSchema.optional(),
+  end: dateStringSchema.optional(),
 });
 
 export const createSadhanaGoalSchema = z.object({

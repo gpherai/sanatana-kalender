@@ -4,7 +4,6 @@ import {
   createEnumFromConstants,
   transformFormToApi,
   dateStringSchema,
-  dateStringSchema,
   optionalDateStringSchema,
   timeStringSchema,
   optionalTimeStringSchema,
@@ -108,7 +107,7 @@ describe("Validations", () => {
     });
   });
 
-  describe("dateStringSchema", () => {
+  describe("dateStringSchema (strict calendar dates)", () => {
     it("should accept YYYY-MM-DD date strings", () => {
       expect(dateStringSchema.parse("2025-01-01")).toBe("2025-01-01");
     });
