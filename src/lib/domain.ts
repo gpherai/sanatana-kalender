@@ -97,8 +97,6 @@ export const VARA_DAYS = [
   { name: "Shanivara", deity: "Shani", icon: "🪐" }, // Saturday
 ] as const;
 
-export type VaraDay = (typeof VARA_DAYS)[number];
-
 // --------------------------------------------
 // TITHIS (30 lunar days)
 // --------------------------------------------

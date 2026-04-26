@@ -143,7 +143,7 @@ export function SessionCard({
       <div className="flex items-start gap-3">
         {/* Expand toggle */}
         <button
-          className="flex flex-1 items-start gap-3 text-left"
+          className="hover:bg-theme-hover -m-2 flex flex-1 cursor-pointer items-start gap-3 rounded-xl p-2 text-left transition-colors"
           onClick={() => setOpen((v) => !v)}
         >
           <div className="bg-theme-primary-15 text-theme-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold tabular-nums">

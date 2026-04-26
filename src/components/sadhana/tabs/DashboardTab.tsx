@@ -46,7 +46,7 @@ export function DashboardTab({
   const availableYears = useMemo(() => {
     const years = new Set<number>([currentYear]);
     for (const s of sessions) years.add(parseInt(s.date.slice(0, 4)));
-    return Array.from(years).sort();
+    return Array.from(years).sort((a, b) => b - a);
   }, [sessions, currentYear]);
 
   return (

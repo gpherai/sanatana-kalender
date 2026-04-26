@@ -80,7 +80,7 @@ export const dateStringSchema = z
   .refine(isValidCalendarDateString, { message: ERROR_MESSAGES.INVALID_DATE });
 
 /** Date query string in YYYY-MM-DD format (strict calendar date) */
-export const dateQuerySchema = dateStringSchema;
+// Removed duplicate dateQuerySchema, use dateStringSchema instead.
 
 /** Optional date string */
 export const optionalDateStringSchema = dateStringSchema

@@ -4,7 +4,7 @@ import { logError } from "@/lib/utils";
 import { panchangaService } from "@/services/panchanga.service";
 import { DEFAULT_LOCATION } from "@/lib/domain";
 import { transformToApiResponse } from "@/lib/api-transformers";
-import { dateQuerySchema } from "@/lib/validations";
+import { dateStringSchema } from "@/lib/validations";
 import { DateTime } from "luxon";
 
 // =============================================================================
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
       // Single date mode
       // ---------------------------------------------------------------------
 
-      const parsed = dateQuerySchema.safeParse(dateParam);
+      const parsed = dateStringSchema.safeParse(dateParam);
       if (!parsed.success) {
         return errorResponse("Ongeldige datum formaat. Gebruik YYYY-MM-DD.", 400);
       }
@@ -78,8 +78,8 @@ export async function GET(request: NextRequest) {
       // Date range mode
       // ---------------------------------------------------------------------
 
-      const parsedStart = dateQuerySchema.safeParse(startParam);
-      const parsedEnd = dateQuerySchema.safeParse(endParam);
+      const parsedStart = dateStringSchema.safeParse(startParam);
+      const parsedEnd = dateStringSchema.safeParse(endParam);
 
       if (!parsedStart.success || !parsedEnd.success) {
         return errorResponse("Ongeldige datum formaat. Gebruik YYYY-MM-DD.", 400);
