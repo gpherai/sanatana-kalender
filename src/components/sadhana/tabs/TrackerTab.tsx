@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { Flame, Sparkles, Activity, TrendingUp, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type {
@@ -90,7 +91,7 @@ interface TrackerTabProps {
   onGoToSettings: () => void;
 }
 
-export function TrackerTab({
+export const TrackerTab = memo(function TrackerTab({
   todayStats,
   streak,
   overview,
@@ -217,4 +218,4 @@ export function TrackerTab({
       </div>
     </div>
   );
-}
+});

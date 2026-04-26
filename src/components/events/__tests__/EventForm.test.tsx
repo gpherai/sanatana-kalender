@@ -173,10 +173,12 @@ describe("EventForm", () => {
     const user = userEvent.setup();
     render(<EventForm mode="create" initialData={{ recurrenceType: "YEARLY_SOLAR" }} />);
 
-    expect(screen.getByText(/Solaire Informatie/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: /Solaire Informatie/i })
+    ).toBeInTheDocument();
 
     await user.type(screen.getByLabelText(/Beschrijving/i), "Desc text");
-    await user.selectOptions(screen.getByLabelText(/Type/i), "PUJA");
+    await user.selectOptions(screen.getByLabelText(/Type \*/i), "PUJA");
     await user.selectOptions(screen.getByLabelText(/Categorie/i), "cat_1");
     fireEvent.change(screen.getByLabelText(/Einddatum/i), {
       target: { value: "2025-01-02" },

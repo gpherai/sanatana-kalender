@@ -1,3 +1,4 @@
+import { memo } from "react";
 import type { SessionData, CalendarDay, OverviewStats } from "../types";
 import {
   WeekdayPattern,
@@ -13,7 +14,11 @@ interface AnalyticsTabProps {
   overview: OverviewStats | null;
 }
 
-export function AnalyticsTab({ sessions, calDays, overview }: AnalyticsTabProps) {
+export const AnalyticsTab = memo(function AnalyticsTab({
+  sessions,
+  calDays,
+  overview,
+}: AnalyticsTabProps) {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -27,4 +32,4 @@ export function AnalyticsTab({ sessions, calDays, overview }: AnalyticsTabProps)
       <PracticeTrend sessions={sessions} />
     </div>
   );
-}
+});

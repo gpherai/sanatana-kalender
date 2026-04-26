@@ -84,10 +84,10 @@ export function SadhanaTracker({ initialData }: { initialData?: SadhanaInitialDa
 
   // ── Initial load ─────────────────────────────────────────────────────────────
   useEffect(() => {
-    requestAnimationFrame(() => {
-      void loadAll();
-    });
-  }, [loadAll]);
+    if (!initialData) {
+      loadAll();
+    }
+  }, [loadAll, initialData]);
 
   // ── Goal completion toast ───────────────────────────────────────────────────
   useEffect(() => {
@@ -138,6 +138,8 @@ export function SadhanaTracker({ initialData }: { initialData?: SadhanaInitialDa
     },
     [heatmapEventsRaw]
   );
+
+  const handleGoToSettings = useCallback(() => setTab("instellingen"), [setTab]);
 
   // ── Loading / error states ──────────────────────────────────────────────────
   if (loading) {
@@ -212,7 +214,7 @@ export function SadhanaTracker({ initialData }: { initialData?: SadhanaInitialDa
           routines={routines}
           loadAll={loadAll}
           showToast={showToast}
-          onGoToSettings={() => setTab("instellingen")}
+          onGoToSettings={handleGoToSettings}
         />
       )}
 

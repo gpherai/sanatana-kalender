@@ -179,7 +179,7 @@ describe("Panchanga Service (with Caching)", () => {
     const stats = panchangaService.getCacheStats();
 
     expect(stats.size).toBe(0);
-    expect(stats.maxSize).toBe(365);
+    expect(stats.maxSize).toBe(2000);
     expect(stats.ttlMs).toBe(24 * 60 * 60 * 1000);
   });
 });

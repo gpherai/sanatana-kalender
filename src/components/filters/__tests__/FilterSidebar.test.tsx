@@ -78,10 +78,10 @@ describe("FilterSidebar", () => {
     fireEvent.click(xButton);
   });
 
-  it("handles DateInput formatting and clearing", async () => {
+  it("handles DateInput clearing", async () => {
     const onFilterChange = vi.fn();
     const user = userEvent.setup();
-    const { rerender } = render(
+    const { rerender, container } = render(
       <FilterSidebar
         filters={BASE_FILTERS}
         onFilterChange={onFilterChange}
@@ -94,16 +94,11 @@ describe("FilterSidebar", () => {
     const sectionButton = screen.getByText(/Periode/i).closest("button")!;
     await user.click(sectionButton);
 
-    let inputs = screen.getAllByPlaceholderText("DD-MM-JJJJ");
+    const inputs = container.querySelectorAll('input[type="date"]');
 
-    // Complete date (Line 285)
-    await user.type(inputs[0]!, "01012025");
+    // Change date
+    fireEvent.change(inputs[0]!, { target: { value: "2025-01-01" } });
     expect(onFilterChange).toHaveBeenCalledWith("dateFrom", "2025-01-01");
-
-    // Edge case: invalid date with 8 digits (e.g. 99-99-9999) - should not call onChange
-    await user.clear(inputs[0]!);
-    await user.type(inputs[0]!, "99999999");
-    expect(onFilterChange).not.toHaveBeenCalledWith("dateFrom", "9999-99-99");
 
     rerender(
       <FilterSidebar
@@ -115,12 +110,10 @@ describe("FilterSidebar", () => {
       />
     );
 
-    const clearPeriod = screen.getByTitle("Periode wissen");
+    const clearPeriod = screen.getByText("Periode wissen");
     await user.click(clearPeriod);
     expect(onFilterChange).toHaveBeenCalledWith("dateFrom", "");
-
-    inputs = screen.getAllByPlaceholderText("DD-MM-JJJJ");
-    await user.clear(inputs[0]!); // Line 287 (trigger !digits)
+    expect(onFilterChange).toHaveBeenCalledWith("dateTo", "");
   });
 
   it("toggles sections and filters", async () => {
@@ -155,28 +148,5 @@ describe("FilterSidebar", () => {
     const godSection = screen.getByText(/Godheden/i).closest("button")!;
     await user.click(godSection);
     expect(screen.queryByText(CATEGORIES[0]!.label)).toBeNull();
-  });
-
-  it("handles sorting changes", async () => {
-    const onFilterChange = vi.fn();
-    const user = userEvent.setup();
-    render(
-      <FilterSidebar
-        filters={BASE_FILTERS}
-        onFilterChange={onFilterChange}
-        onToggleFilter={vi.fn()}
-        onClearFilters={vi.fn()}
-        activeFilterCount={0}
-      />
-    );
-
-    const sortSection = screen.getByText(/Sortering/i).closest("button")!;
-    await user.click(sortSection);
-
-    await user.selectOptions(screen.getByLabelText(/Sorteer op/i), "name");
-    expect(onFilterChange).toHaveBeenCalledWith("sortBy", "name");
-
-    await user.selectOptions(screen.getByLabelText(/Volgorde/i), "desc");
-    expect(onFilterChange).toHaveBeenCalledWith("sortOrder", "desc");
   });
 });

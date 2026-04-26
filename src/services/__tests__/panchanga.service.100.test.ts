@@ -35,19 +35,19 @@ describe("Panchanga Service 100% Coverage", () => {
     const cache = service.cache as any;
 
     // Fill up to maxSize - 1
-    for (let i = 0; i < 364; i++) {
+    for (let i = 0; i < 1999; i++) {
       cache.cache.set(`key-${i}`, { data: MOCK_RESULT, timestamp: Date.now() });
     }
 
-    expect(panchangaService.getCacheStats().size).toBe(364);
+    expect(panchangaService.getCacheStats().size).toBe(1999);
 
-    // Add 365th
+    // Add 2000th
     await panchangaService.calculateDaily(new Date("2025-01-01"), MOCK_LOCATION, "UTC");
-    expect(panchangaService.getCacheStats().size).toBe(365);
+    expect(panchangaService.getCacheStats().size).toBe(2000);
 
-    // Add 366th - should trigger eviction of the oldest (key-0)
+    // Add 2001th - should trigger eviction of the oldest (key-0)
     await panchangaService.calculateDaily(new Date("2025-01-02"), MOCK_LOCATION, "UTC");
-    expect(panchangaService.getCacheStats().size).toBe(365);
+    expect(panchangaService.getCacheStats().size).toBe(2000);
     expect(cache.cache.has("key-0")).toBe(false);
   });
 

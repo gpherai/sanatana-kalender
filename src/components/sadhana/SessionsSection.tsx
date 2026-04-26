@@ -72,13 +72,35 @@ export function SessionsSection({
   hideHeader = false,
 }: SessionsSectionProps) {
   const sessionsByMonth = useMemo(() => {
-    const map = new Map<string, SessionData[]>();
+    const map = new Map<
+      string,
+      { sessions: SessionData[]; days: Array<[string, SessionData[]]> }
+    >();
     for (const s of sessions) {
       const month = s.date.slice(0, 7);
-      if (!map.has(month)) map.set(month, []);
-      map.get(month)!.push(s);
+      if (!map.has(month)) {
+        map.set(month, { sessions: [], days: [] });
+      }
+      map.get(month)!.sessions.push(s);
     }
-    return [...map.entries()].sort(([a], [b]) => b.localeCompare(a));
+
+    return [...map.entries()]
+      .sort(([a], [b]) => b.localeCompare(a))
+      .map(([month, data]) => {
+        const dayMap = data.sessions.reduce(
+          (acc, s) => {
+            (acc[s.date] ??= []).push(s);
+            return acc;
+          },
+          {} as Record<string, SessionData[]>
+        );
+
+        return {
+          month,
+          monthSessions: data.sessions,
+          days: Object.entries(dayMap).sort(([a], [b]) => b.localeCompare(a)),
+        };
+      });
   }, [sessions]);
 
   return (
@@ -141,7 +163,7 @@ export function SessionsSection({
         </div>
       ) : (
         <div className="space-y-2">
-          {sessionsByMonth.map(([month, monthSessions]) => {
+          {sessionsByMonth.map(({ month, monthSessions, days }) => {
             const isOpen = expandedMonths.has(month);
             const { malas, minutes, count } = getMonthTotals(monthSessions);
             return (
@@ -177,55 +199,45 @@ export function SessionsSection({
 
                 {isOpen && (
                   <div className="border-theme-border space-y-4 border-t px-4 pt-4 pb-4">
-                    {Object.entries(
-                      monthSessions.reduce(
-                        (acc, s) => {
-                          (acc[s.date] ??= []).push(s);
-                          return acc;
-                        },
-                        {} as Record<string, SessionData[]>
-                      )
-                    )
-                      .sort(([a], [b]) => b.localeCompare(a))
-                      .map(([date, daySessions]) => {
-                        const info = dayInfoMap.get(date);
-                        const context = dayContextLabel(info);
-                        const isToday = date === todayString();
-                        return (
-                          <div key={date} className="space-y-2">
-                            <div className="flex flex-wrap items-center gap-2 px-1">
-                              <span className="text-theme-fg-secondary text-xs font-semibold">
-                                {formatDate(date)}
+                    {days.map(([date, daySessions]) => {
+                      const info = dayInfoMap.get(date);
+                      const context = dayContextLabel(info);
+                      const isToday = date === todayString();
+                      return (
+                        <div key={date} className="space-y-2">
+                          <div className="flex flex-wrap items-center gap-2 px-1">
+                            <span className="text-theme-fg-secondary text-xs font-semibold">
+                              {formatDate(date)}
+                            </span>
+                            {isToday && (
+                              <span className="bg-theme-primary/15 text-theme-primary rounded-full px-2 py-0.5 text-xs font-medium">
+                                Vandaag
                               </span>
-                              {isToday && (
-                                <span className="bg-theme-primary/15 text-theme-primary rounded-full px-2 py-0.5 text-xs font-medium">
-                                  Vandaag
-                                </span>
-                              )}
-                              {context && (
-                                <span className="text-theme-fg-muted text-xs">
-                                  {context}
-                                </span>
-                              )}
-                            </div>
-                            {daySessions.map((s) => (
-                              <SessionCard
-                                key={s.id}
-                                session={s}
-                                practices={activePractices}
-                                onUpdated={() => {
-                                  loadAll();
-                                  showToast("Sessie opgeslagen");
-                                }}
-                                onDeleted={() => {
-                                  loadAll();
-                                  showToast("Sessie verwijderd");
-                                }}
-                              />
-                            ))}
+                            )}
+                            {context && (
+                              <span className="text-theme-fg-muted text-xs">
+                                {context}
+                              </span>
+                            )}
                           </div>
-                        );
-                      })}
+                          {daySessions.map((s) => (
+                            <SessionCard
+                              key={s.id}
+                              session={s}
+                              practices={activePractices}
+                              onUpdated={() => {
+                                loadAll();
+                                showToast("Sessie opgeslagen");
+                              }}
+                              onDeleted={() => {
+                                loadAll();
+                                showToast("Sessie verwijderd");
+                              }}
+                            />
+                          ))}
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>

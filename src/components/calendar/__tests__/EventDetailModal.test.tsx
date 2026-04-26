@@ -128,7 +128,7 @@ describe("EventDetailModal", () => {
     // We can use container.querySelector if needed, but let's try getting all buttons.
     const closeButton = screen.getByRole("button", { name: "Sluiten" });
     const editButton = screen.getByRole("button", { name: "Bewerken" });
-    const openButton = screen.getByRole("button", { name: /open volledige pagina/i });
+    const openButton = screen.getByRole("button", { name: "Bekijken" });
     const buttons = screen.getAllByRole("button");
     const deleteBtn = buttons.find(
       (button) => ![closeButton, editButton, openButton].includes(button)
@@ -163,7 +163,7 @@ describe("EventDetailModal", () => {
 
     const closeButton = screen.getByRole("button", { name: "Sluiten" });
     const editButton = screen.getByRole("button", { name: "Bewerken" });
-    const openButton = screen.getByRole("button", { name: /open volledige pagina/i });
+    const openButton = screen.getByRole("button", { name: "Bekijken" });
     const buttons = screen.getAllByRole("button");
     const deleteBtn = buttons.find(
       (button) => ![closeButton, editButton, openButton].includes(button)
@@ -190,7 +190,7 @@ describe("EventDetailModal", () => {
 
     const closeButton = screen.getByRole("button", { name: "Sluiten" });
     const editButton = screen.getByRole("button", { name: "Bewerken" });
-    const openButton = screen.getByRole("button", { name: /open volledige pagina/i });
+    const openButton = screen.getByRole("button", { name: "Bekijken" });
     const buttons = screen.getAllByRole("button");
     const deleteBtn = buttons.find(
       (button) => ![closeButton, editButton, openButton].includes(button)
@@ -211,7 +211,7 @@ describe("EventDetailModal", () => {
 
     const closeButton = screen.getByRole("button", { name: "Sluiten" });
     const editButton = screen.getByRole("button", { name: "Bewerken" });
-    const openButton = screen.getByRole("button", { name: /open volledige pagina/i });
+    const openButton = screen.getByRole("button", { name: "Bekijken" });
     const buttons = screen.getAllByRole("button");
     const deleteBtn = buttons.find(
       (button) => ![closeButton, editButton, openButton].includes(button)

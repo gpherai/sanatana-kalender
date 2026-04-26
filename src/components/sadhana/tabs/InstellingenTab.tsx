@@ -1,3 +1,4 @@
+import { memo } from "react";
 import type { Routine, Goal, Practice } from "../types";
 import { RoutinePanel } from "../RoutinePanel";
 import { GoalPanel } from "../GoalPanel";
@@ -10,7 +11,7 @@ interface InstellingenTabProps {
   loadAll: () => Promise<void>;
 }
 
-export function InstellingenTab({
+export const InstellingenTab = memo(function InstellingenTab({
   routines,
   goals,
   allPractices,
@@ -25,4 +26,4 @@ export function InstellingenTab({
       <PracticesPanel practices={allPractices} onChanged={loadAll} />
     </div>
   );
-}
+});

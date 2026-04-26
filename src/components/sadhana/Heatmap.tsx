@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, memo } from "react";
 import type { CalendarDay, HeatmapCell, DayInfoMap } from "./types";
 import { localDateString, formatDate, dayContextLabel } from "@/lib/sadhana-utils";
 
@@ -92,7 +92,7 @@ const DAY_LABELS = ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"];
 
 type HeatmapEvent = { id: string; title: string };
 
-export function Heatmap({
+export const Heatmap = memo(function Heatmap({
   weeks,
   cellSize,
   dayInfoMap,
@@ -452,4 +452,4 @@ export function Heatmap({
       </div>
     </div>
   );
-}
+});

@@ -25,7 +25,7 @@ import { DateTime } from "luxon";
 // =============================================================================
 
 const CACHE_CONFIG = {
-  maxSize: 365, // Cache up to 1 year of data
+  maxSize: 2000, // Cache up to 2000 days of data (approx 5.5 years)
   ttlMs: 24 * 60 * 60 * 1000, // 24 hours
 } as const;
 
@@ -187,6 +187,8 @@ class PanchangaService {
       `[PanchangaService] Computing range: ${Math.ceil(end.diff(current, "days").days) + 1} days from ${current.toISODate()} to ${end.toISODate()}`
     );
 
+    let daysProcessed = 0;
+
     while (current <= end) {
       const jsDate = current.toJSDate();
       const panchanga = await this.calculateDaily(jsDate, location, timezone);
@@ -194,6 +196,13 @@ class PanchangaService {
 
       // Move to next day
       current = current.plus({ days: 1 });
+      daysProcessed++;
+
+      // Yield the event loop every 10 days to prevent blocking concurrent Prisma connections
+      // and other incoming API requests when computing large ranges.
+      if (daysProcessed % 10 === 0) {
+        await new Promise((resolve) => setImmediate(resolve));
+      }
     }
 
     logDebug(

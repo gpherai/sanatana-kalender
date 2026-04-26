@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useMemo } from "react";
 import type {
   TodayStats,
   StreakStats,
@@ -118,7 +118,8 @@ export function useSadhanaData(initialData?: SadhanaInitialData): SadhanaData {
   const initialLoadDone = useRef(!!initialData);
 
   const loadAll = useCallback(async () => {
-    if (!initialLoadDone.current) setLoading(true);
+    if (initialLoadDone.current) return;
+    setLoading(true);
     try {
       setError(null);
 
@@ -215,23 +216,45 @@ export function useSadhanaData(initialData?: SadhanaInitialData): SadhanaData {
     }
   }, []);
 
-  const activePractices = allPractices.filter((p) => p.active);
+  const activePractices = useMemo(
+    () => allPractices.filter((p) => p.active),
+    [allPractices]
+  );
 
-  return {
-    loading,
-    error,
-    todayStats,
-    streak,
-    overview,
-    calDays,
-    sessions,
-    allPractices,
-    activePractices,
-    goals,
-    routines,
-    dayInfoMap,
-    heatmapEventsByDate,
-    heatmapEventsRaw,
-    loadAll,
-  };
+  return useMemo(
+    () => ({
+      loading,
+      error,
+      todayStats,
+      streak,
+      overview,
+      calDays,
+      sessions,
+      allPractices,
+      activePractices,
+      goals,
+      routines,
+      dayInfoMap,
+      heatmapEventsByDate,
+      heatmapEventsRaw,
+      loadAll,
+    }),
+    [
+      loading,
+      error,
+      todayStats,
+      streak,
+      overview,
+      calDays,
+      sessions,
+      allPractices,
+      activePractices,
+      goals,
+      routines,
+      dayInfoMap,
+      heatmapEventsByDate,
+      heatmapEventsRaw,
+      loadAll,
+    ]
+  );
 }

@@ -15,6 +15,10 @@ vi.mock("next/navigation", () => ({
   notFound: vi.fn().mockImplementation(() => {
     throw new Error("NEXT_NOT_FOUND");
   }),
+  useRouter: () => ({
+    replace: vi.fn(),
+    push: vi.fn(),
+  }),
 }));
 
 // Mock EventForm

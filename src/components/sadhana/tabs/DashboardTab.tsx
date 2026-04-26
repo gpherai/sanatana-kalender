@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, memo } from "react";
 import { Calendar, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type {
@@ -24,7 +24,7 @@ interface DashboardTabProps {
   onHeatmapEventClick: (id: string) => void;
 }
 
-export function DashboardTab({
+export const DashboardTab = memo(function DashboardTab({
   calDays,
   sessions,
   overview,
@@ -37,11 +37,11 @@ export function DashboardTab({
   const currentYear = today.getFullYear();
   const [selectedYear, setSelectedYear] = useState(currentYear);
 
-  const jan1 = new Date(selectedYear, 0, 1);
+  const jan1 = useMemo(() => new Date(selectedYear, 0, 1), [selectedYear]);
 
   // Full calendar year: jan1 → dec31, toekomstige datums = null (leeg)
-  const heatmapFull = buildHeatmap(calDays, 364, jan1);
-  const heatmapMobile = buildHeatmap(calDays, 154);
+  const heatmapFull = useMemo(() => buildHeatmap(calDays, 364, jan1), [calDays, jan1]);
+  const heatmapMobile = useMemo(() => buildHeatmap(calDays, 154), [calDays]);
 
   const availableYears = useMemo(() => {
     const years = new Set<number>([currentYear]);
@@ -122,4 +122,4 @@ export function DashboardTab({
       {overview && <AllTimeOverview overview={overview} />}
     </div>
   );
-}
+});

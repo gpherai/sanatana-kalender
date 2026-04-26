@@ -6,6 +6,9 @@ const loadAll = vi.fn();
 
 vi.mock("next/navigation", () => ({
   useSearchParams: () => new URLSearchParams("tab=instellingen"),
+  useRouter: () => ({
+    replace: vi.fn(),
+  }),
 }));
 
 vi.mock("@/hooks/useSadhanaData", () => ({
