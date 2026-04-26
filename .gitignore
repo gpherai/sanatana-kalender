@@ -57,10 +57,13 @@ node_modules/
 # -----------------------------------------------------------------------------
 CLAUDE.md
 GEMINI.md
+AGENTS.md
+.mcp.json
 .codex
 /.claude/
 /.gemini/
 /.gemini_security/
+/docs/superpowers/
 
 .idea/
 .vscode/
