@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import {
   Flame,
   Loader2,
@@ -41,14 +41,13 @@ const VALID_TABS = new Set<string>(TABS.map((t) => t.id));
 // =============================================================================
 
 export function SadhanaTracker({ initialData }: { initialData?: SadhanaInitialData }) {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const rawTab = searchParams.get("tab") ?? "tracker";
   const activeTab: TabId = VALID_TABS.has(rawTab) ? (rawTab as TabId) : "tracker";
 
   const setTab = useCallback(
-    (id: TabId) => router.replace(`/sadhana?tab=${id}`, { scroll: false }),
-    [router]
+    (id: TabId) => window.history.replaceState(null, "", `/sadhana?tab=${id}`),
+    []
   );
 
   // ── Data via hook ────────────────────────────────────────────────────────────

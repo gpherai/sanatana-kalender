@@ -118,8 +118,7 @@ export function useSadhanaData(initialData?: SadhanaInitialData): SadhanaData {
   const initialLoadDone = useRef(!!initialData);
 
   const loadAll = useCallback(async () => {
-    if (initialLoadDone.current) return;
-    setLoading(true);
+    if (!initialLoadDone.current) setLoading(true);
     try {
       setError(null);
 
