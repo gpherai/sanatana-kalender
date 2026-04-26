@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Flame,
   Loader2,
@@ -19,7 +19,7 @@ import { TrackerTab } from "./tabs/TrackerTab";
 import { DashboardTab } from "./tabs/DashboardTab";
 import { AnalyticsTab } from "./tabs/AnalyticsTab";
 import { InstellingenTab } from "./tabs/InstellingenTab";
-import { useSadhanaData } from "@/hooks/useSadhanaData";
+import { useSadhanaData, type SadhanaInitialData } from "@/hooks/useSadhanaData";
 
 // =============================================================================
 // TYPES
@@ -40,14 +40,15 @@ const VALID_TABS = new Set<string>(TABS.map((t) => t.id));
 // COMPONENT
 // =============================================================================
 
-export function SadhanaTracker() {
+export function SadhanaTracker({ initialData }: { initialData?: SadhanaInitialData }) {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const rawTab = searchParams.get("tab") ?? "tracker";
   const activeTab: TabId = VALID_TABS.has(rawTab) ? (rawTab as TabId) : "tracker";
 
   const setTab = useCallback(
-    (id: TabId) => window.history.replaceState(null, "", `/sadhana?tab=${id}`),
-    []
+    (id: TabId) => router.replace(`/sadhana?tab=${id}`, { scroll: false }),
+    [router]
   );
 
   // ── Data via hook ────────────────────────────────────────────────────────────
@@ -67,7 +68,7 @@ export function SadhanaTracker() {
     heatmapEventsByDate,
     heatmapEventsRaw,
     loadAll,
-  } = useSadhanaData();
+  } = useSadhanaData(initialData);
 
   // ── UI state ────────────────────────────────────────────────────────────────
   const [showAddSession, setShowAddSession] = useState(false);

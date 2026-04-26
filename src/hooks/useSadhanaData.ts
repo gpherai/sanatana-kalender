@@ -66,24 +66,56 @@ export interface SadhanaData {
   loadAll: () => Promise<void>;
 }
 
-export function useSadhanaData(): SadhanaData {
-  const [loading, setLoading] = useState(true);
+export interface SadhanaInitialData extends Partial<
+  Omit<SadhanaData, "dayInfoMap" | "loadAll">
+> {
+  dayInfoMapEntries?: [string, unknown][];
+  heatmapStart?: string;
+  heatmapEnd?: string;
+}
+
+export function useSadhanaData(initialData?: SadhanaInitialData): SadhanaData {
+  const [loading, setLoading] = useState(!initialData);
   const [error, setError] = useState<string | null>(null);
-  const [todayStats, setTodayStats] = useState<TodayStats | null>(null);
-  const [streak, setStreak] = useState<StreakStats | null>(null);
-  const [overview, setOverview] = useState<OverviewStats | null>(null);
-  const [calDays, setCalDays] = useState<CalendarDay[]>([]);
-  const [sessions, setSessions] = useState<SessionData[]>([]);
-  const [allPractices, setAllPractices] = useState<Practice[]>([]);
-  const [goals, setGoals] = useState<Goal[]>([]);
-  const [routines, setRoutines] = useState<Routine[]>([]);
-  const [dayInfoMap, setDayInfoMap] = useState<DayInfoMap>(new Map());
+  const [todayStats, setTodayStats] = useState<TodayStats | null>(
+    initialData?.todayStats ?? null
+  );
+  const [streak, setStreak] = useState<StreakStats | null>(initialData?.streak ?? null);
+  const [overview, setOverview] = useState<OverviewStats | null>(
+    initialData?.overview ?? null
+  );
+  const [calDays, setCalDays] = useState<CalendarDay[]>(initialData?.calDays ?? []);
+  const [sessions, setSessions] = useState<SessionData[]>(initialData?.sessions ?? []);
+  const [allPractices, setAllPractices] = useState<Practice[]>(
+    initialData?.allPractices ?? []
+  );
+  const [goals, setGoals] = useState<Goal[]>(initialData?.goals ?? []);
+  const [routines, setRoutines] = useState<Routine[]>(initialData?.routines ?? []);
+
+  const [dayInfoMap, setDayInfoMap] = useState<DayInfoMap>(() => {
+    if (initialData?.dayInfoMapEntries) {
+      return new Map(initialData.dayInfoMapEntries);
+    }
+    return new Map();
+  });
+
+  const [heatmapEventsRaw, setHeatmapEventsRaw] = useState<CalendarEventResponse[]>(
+    initialData?.heatmapEventsRaw ?? []
+  );
   const [heatmapEventsByDate, setHeatmapEventsByDate] = useState<
     Map<string, Array<{ id: string; title: string }>>
-  >(new Map());
-  const [heatmapEventsRaw, setHeatmapEventsRaw] = useState<CalendarEventResponse[]>([]);
+  >(() => {
+    if (initialData?.heatmapEventsRaw) {
+      const evMap = new Map();
+      for (const ev of initialData.heatmapEventsRaw) {
+        addEventToDates(evMap, ev, initialData.heatmapStart!, initialData.heatmapEnd!);
+      }
+      return evMap;
+    }
+    return new Map();
+  });
 
-  const initialLoadDone = useRef(false);
+  const initialLoadDone = useRef(!!initialData);
 
   const loadAll = useCallback(async () => {
     if (!initialLoadDone.current) setLoading(true);

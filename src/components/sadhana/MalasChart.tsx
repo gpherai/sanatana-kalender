@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { type CalendarDay, type SessionData } from "./types";
+import { MALA_BEAD_COUNT } from "@/lib/domain";
 
 // =============================================================================
 // HELPERS
@@ -60,7 +61,7 @@ function buildMonthlyData(
           item.unit === "malas"
             ? item.quantity
             : item.practice_type === "mantra_japa"
-              ? item.quantity / 108
+              ? item.quantity / MALA_BEAD_COUNT
               : item.quantity;
         if (amount === 0) continue;
         const existing = practiceMap.get(item.practice_id);

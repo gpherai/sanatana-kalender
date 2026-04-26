@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Layers } from "lucide-react";
 import type { SessionData } from "./types";
 import { CHART_COLORS } from "./AnalyticsWidgets";
+import { MALA_BEAD_COUNT } from "@/lib/domain";
 
 const MONTH_LABELS = [
   "Jan",
@@ -51,7 +52,7 @@ function buildData(sessions: SessionData[], year: number) {
           item.unit === "malas"
             ? item.quantity
             : item.practice_type === "mantra_japa"
-              ? item.quantity / 108
+              ? item.quantity / MALA_BEAD_COUNT
               : item.quantity;
         if (amount === 0) continue;
         const ex = map.get(item.practice_id);

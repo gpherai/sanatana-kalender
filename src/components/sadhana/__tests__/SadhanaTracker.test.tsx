@@ -74,7 +74,7 @@ vi.mock("@/components/calendar/EventDetailModal", () => ({
 
 describe("SadhanaTracker", () => {
   it("passes inactive practices to settings so they can be reactivated", () => {
-    render(<SadhanaTracker />);
+    render(<SadhanaTracker initialData={undefined} />);
 
     expect(screen.getByText("Actieve practice")).toBeInTheDocument();
     expect(screen.getByText("Gedeactiveerde practice")).toBeInTheDocument();

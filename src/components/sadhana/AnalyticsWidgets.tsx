@@ -4,6 +4,7 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import { Calendar, Clock, Flame, Layers, PieChart } from "lucide-react";
 import { type CalendarDay, type SessionData, type PracticeStat } from "./types";
+import { MALA_BEAD_COUNT } from "@/lib/domain";
 
 export const CHART_COLORS = [
   "oklch(0.60 0.20 264)",
@@ -34,7 +35,7 @@ export function WeekdayPattern({ sessions }: { sessions: SessionData[] }) {
         item.unit === "malas"
           ? item.quantity
           : item.practice_type === "mantra_japa"
-            ? item.quantity / 108
+            ? item.quantity / MALA_BEAD_COUNT
             : 0;
       malasCounts[idx] = (malasCounts[idx] ?? 0) + malas;
     }
@@ -581,7 +582,7 @@ export function PracticeTrend({ sessions }: { sessions: SessionData[] }) {
           item.unit === "malas"
             ? item.quantity
             : item.practice_type === "mantra_japa"
-              ? item.quantity / 108
+              ? item.quantity / MALA_BEAD_COUNT
               : item.quantity;
         if (amount === 0) continue;
         const ex = map.get(item.practice_id);

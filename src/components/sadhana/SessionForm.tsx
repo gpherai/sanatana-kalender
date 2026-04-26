@@ -95,10 +95,14 @@ export function SessionForm({
           />
         </div>
         <div>
-          <label className="text-theme-fg-secondary mb-1 block text-sm font-medium">
+          <label
+            htmlFor="session-start"
+            className="text-theme-fg-secondary mb-1 block text-sm font-medium"
+          >
             Starttijd (optioneel)
           </label>
           <input
+            id="session-start"
             type="time"
             value={startedAt}
             onChange={(e) => setStartedAt(e.target.value)}

@@ -355,7 +355,9 @@ export function Heatmap({
                 return (
                   <div
                     key={di}
-                    className="relative cursor-pointer rounded motion-safe:transition-colors"
+                    role="button"
+                    tabIndex={0}
+                    className="relative cursor-pointer rounded focus:ring-2 focus:ring-[var(--theme-ring)] focus:outline-none motion-safe:transition-colors"
                     style={{
                       width: cs,
                       height: cs,
@@ -368,6 +370,12 @@ export function Heatmap({
                     onClick={() =>
                       setTapped((prev) => (prev?.date === cell.date ? null : cell))
                     }
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        setTapped((prev) => (prev?.date === cell.date ? null : cell));
+                      }
+                    }}
                   >
                     {isSpecial && (
                       <span

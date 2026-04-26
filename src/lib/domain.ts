@@ -254,6 +254,12 @@ export const DEFAULT_LOCATION: LocationWithTimezone = {
  */
 export const DEFAULT_PREFERENCES_ID = "default" as const;
 
+/**
+ * Number of beads in a standard Japa Mala.
+ * Used for calculating mantra counts from malas.
+ */
+export const MALA_BEAD_COUNT = 108;
+
 // --------------------------------------------
 // HELPER FUNCTIONS
 // --------------------------------------------

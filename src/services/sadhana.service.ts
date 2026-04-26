@@ -10,6 +10,7 @@
 import * as sadhanaRepo from "@/repositories/sadhana.repository";
 import type { Prisma } from "@prisma/client";
 import { eachDateOnlyInRange, addDaysDateOnly } from "@/lib/default-location-date";
+import { MALA_BEAD_COUNT } from "@/lib/domain";
 import {
   utcDate,
   todayStr,
@@ -40,7 +41,7 @@ function countSadhanaItem(item: {
   if (item.unit === "malas") {
     return {
       malas: item.quantity,
-      mantras: item.practice.type === "mantra_japa" ? item.quantity * 108 : 0,
+      mantras: item.practice.type === "mantra_japa" ? item.quantity * MALA_BEAD_COUNT : 0,
       count: 0,
       activity: item.quantity,
     };
@@ -48,10 +49,10 @@ function countSadhanaItem(item: {
 
   if (item.practice.type === "mantra_japa") {
     return {
-      malas: item.quantity / 108,
+      malas: item.quantity / MALA_BEAD_COUNT,
       mantras: item.quantity,
       count: 0,
-      activity: item.quantity / 108,
+      activity: item.quantity / MALA_BEAD_COUNT,
     };
   }
 

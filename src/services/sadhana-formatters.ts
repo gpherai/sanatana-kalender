@@ -11,6 +11,7 @@ import {
   defaultLocationDate,
   utcDateFromDateOnly,
 } from "@/lib/default-location-date";
+import { MALA_BEAD_COUNT } from "@/lib/domain";
 
 // =============================================================================
 // TYPES
@@ -80,7 +81,7 @@ export function formatSession(session: SessionWithItems) {
     .filter((i) => i.unit === "malas")
     .reduce((s, i) => s + i.quantity, 0);
   const totalMantras =
-    totalMalas * 108 +
+    totalMalas * MALA_BEAD_COUNT +
     japaItems.filter((i) => i.unit === "count").reduce((s, i) => s + i.quantity, 0);
 
   return {
@@ -179,9 +180,10 @@ export function computePracticeStats(
   const rows = [...map.values()].map((d) => ({
     practice_id: d.id,
     practice_name: d.name,
-    practice_type: d.type,
+    practice_type: d.type as "mantra_japa" | "parayana" | "other",
     total_quantity: d.type === "mantra_japa" ? d.malas : d.countQty,
-    total_mantras: d.type === "mantra_japa" ? d.malas * 108 + d.countQty : null,
+    total_mantras:
+      d.type === "mantra_japa" ? d.malas * MALA_BEAD_COUNT + d.countQty : null,
   }));
 
   if (opts.insertionOrder) return rows;
