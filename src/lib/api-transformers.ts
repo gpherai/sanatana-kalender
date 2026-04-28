@@ -45,6 +45,39 @@ export function transformOccurrenceToCalendarEvent(occ: EventOccurrence) {
  * Used by API routes and server-rendered pages to keep all Panchanga display
  * fields consistent.
  */
+function computeSpecialDay(panchanga: DailyPanchangaFull) {
+  const date = new Date(panchanga.date);
+  if (panchanga.moonPhaseEvent?.type === "full") {
+    return {
+      type: "purnima",
+      name: "Purnima",
+      description: "Volle Maan - Heilige dag",
+      emoji: "🌕",
+    };
+  }
+  if (panchanga.moonPhaseEvent?.type === "new") {
+    return {
+      type: "amavasya",
+      name: "Amavasya",
+      description: "Nieuwe Maan - Voorouderdag",
+      emoji: "🌑",
+    };
+  }
+  if (!panchanga.tithi) return null;
+  const sd = detectSpecialDay(
+    {
+      number: panchanga.tithi.number,
+      name: panchanga.tithi.name,
+      paksha: panchanga.tithi.paksha,
+    },
+    date
+  );
+  if (sd?.type === "purnima" || sd?.type === "amavasya") return null;
+  return sd
+    ? { type: sd.type, name: sd.name, description: sd.description, emoji: sd.emoji }
+    : null;
+}
+
 export function transformToApiResponse(panchanga: DailyPanchangaFull) {
   const illuminationPct = Math.round(panchanga.moon.illuminationPct);
   const moonPhaseType = getMoonPhaseType(illuminationPct, panchanga.moon.waxing);
@@ -142,39 +175,7 @@ export function transformToApiResponse(panchanga: DailyPanchangaFull) {
     // Purnima/Amavasya: use the astronomical moonPhaseEvent (not the sunrise-rule tithi)
     // to ensure the correct calendar day is marked (e.g., April 2 not April 1).
     // All other tithis (Ekadashi, Chaturthi, Pradosham, Ashtami): use tithi-based detection.
-    specialDay: (() => {
-      const date = new Date(panchanga.date);
-      if (panchanga.moonPhaseEvent?.type === "full") {
-        return {
-          type: "purnima",
-          name: "Purnima",
-          description: "Volle Maan - Heilige dag",
-          emoji: "🌕",
-        };
-      }
-      if (panchanga.moonPhaseEvent?.type === "new") {
-        return {
-          type: "amavasya",
-          name: "Amavasya",
-          description: "Nieuwe Maan - Voorouderdag",
-          emoji: "🌑",
-        };
-      }
-      if (!panchanga.tithi) return null;
-      const sd = detectSpecialDay(
-        {
-          number: panchanga.tithi.number,
-          name: panchanga.tithi.name,
-          paksha: panchanga.tithi.paksha,
-        },
-        date
-      );
-      // Exclude Purnima/Amavasya from tithi-based path — handled by moonPhaseEvent above
-      if (sd?.type === "purnima" || sd?.type === "amavasya") return null;
-      return sd
-        ? { type: sd.type, name: sd.name, description: sd.description, emoji: sd.emoji }
-        : null;
-    })(),
+    specialDay: computeSpecialDay(panchanga),
 
     // =========================================================================
     // DRIK PANCHANG EXTENDED FIELDS

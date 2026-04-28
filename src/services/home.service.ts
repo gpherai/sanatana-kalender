@@ -39,7 +39,7 @@ export async function getHomePageData(
   const today = now.startOf("day");
 
   const [upcomingEvents, categories, weatherDash, rawPanchanga] = await Promise.all([
-    findUpcomingOccurrences(UPCOMING_DAYS_AFTER_TODAY),
+    findUpcomingOccurrences(UPCOMING_DAYS_AFTER_TODAY, now),
     findAllCategories(),
     getWeatherDashboard().catch((error) => {
       logError("[Home] Failed to fetch weather dashboard", error);

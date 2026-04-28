@@ -198,9 +198,11 @@ export async function findEventOccurrences(params: EventQueryParams) {
  * Starting from today in Europe/Amsterdam timezone (DEFAULT_LOCATION.timezone).
  * Includes multi-day events that started before today but end within window.
  */
-export async function findUpcomingOccurrences(daysAfterToday = 6) {
-  const tz = DEFAULT_LOCATION.timezone;
-  const anchor = DateTime.now().setZone(tz).startOf("day");
+export async function findUpcomingOccurrences(
+  daysAfterToday = 6,
+  now = DateTime.now().setZone(DEFAULT_LOCATION.timezone)
+) {
+  const anchor = now.startOf("day");
   const todayStart = anchor.toUTC().toJSDate();
   const futureEnd = anchor.plus({ days: daysAfterToday }).endOf("day").toUTC().toJSDate();
 
