@@ -21,7 +21,10 @@ export function DeleteEventButton({ eventId, eventName }: DeleteEventButtonProps
     setIsDeleting(true);
     try {
       const response = await fetch(`/api/events/${eventId}`, { method: "DELETE" });
-      if (!response.ok) throw new Error("Failed");
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error((data as { message?: string }).message ?? "Failed");
+      }
       router.push("/events");
       router.refresh();
     } catch (err) {

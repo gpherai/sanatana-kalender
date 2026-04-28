@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Calendar, Clock, Tag, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getEventType, DEFAULT_LOCATION } from "@/lib/domain";
-import { formatShortDate } from "@/lib/date-utils";
+import { formatShortDate, getDurationDays } from "@/lib/date-utils";
 import {
   getCategoryBgClass,
   getCategoryDynamicStyle,
@@ -56,12 +56,7 @@ export function EventCard({
     : undefined;
   const categoryTextClass = category ? getCategoryTextClass(category.name) : "";
 
-  // Calculate duration for multi-day events
-  const durationDays = endDate
-    ? Math.ceil(
-        (new Date(endDate).getTime() - new Date(date).getTime()) / (1000 * 60 * 60 * 24)
-      ) + 1
-    : 1;
+  const durationDays = endDate ? getDurationDays(new Date(date), new Date(endDate)) : 1;
 
   // Format date nicely
   const formatEventDate = () => {

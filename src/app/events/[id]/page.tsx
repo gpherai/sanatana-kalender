@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Calendar, Clock, Pencil, Tag, RefreshCw } from "lucide-react";
 import { PageLayout } from "@/components/layout";
-import { formatDateNL } from "@/lib/date-utils";
+import { formatDateNL, getDurationDays } from "@/lib/date-utils";
 import { getEventType, RECURRENCE_TYPES } from "@/lib/domain";
 import {
   getCategoryBgClass,
@@ -54,10 +54,7 @@ export default async function EventDetailPage({ params }: PageProps) {
   // Date display
   const startDate = firstOcc?.date ? new Date(firstOcc.date) : null;
   const endDate = firstOcc?.endDate ? new Date(firstOcc.endDate) : null;
-  const durationDays =
-    startDate && endDate
-      ? Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1
-      : 1;
+  const durationDays = startDate && endDate ? getDurationDays(startDate, endDate) : 1;
 
   const hasLunarInfo = event.tithi || event.nakshatra || event.maas || event.sankranti;
 

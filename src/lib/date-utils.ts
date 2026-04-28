@@ -277,6 +277,14 @@ export function isTomorrow(date: Date): boolean {
 }
 
 /**
+ * Number of calendar days a range spans, inclusive on both ends.
+ * e.g. April 1 → April 3 = 3 days.
+ */
+export function getDurationDays(start: Date, end: Date): number {
+  return Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+}
+
+/**
  * Check if date is weekend (Saturday or Sunday)
  *
  * @param date - Date to check

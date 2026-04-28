@@ -1,5 +1,8 @@
 import { CalendarEventResponse } from "@/types/calendar";
 
+// Fallback sort key for series children without a dayNumber — sorts them last.
+const UNKNOWN_DAY_ORDER = 999;
+
 /**
  * Re-order events so series children appear directly below their parent occurrence.
  * Matching is date-range based: a child belongs to the parent occurrence whose
@@ -56,7 +59,8 @@ export function groupChildrenUnderParents(
   for (const children of childrenByParentOccId.values()) {
     children.sort(
       (a, b) =>
-        (a.resource.seriesDayNumber ?? 999) - (b.resource.seriesDayNumber ?? 999) ||
+        (a.resource.seriesDayNumber ?? UNKNOWN_DAY_ORDER) -
+          (b.resource.seriesDayNumber ?? UNKNOWN_DAY_ORDER) ||
         a.start.localeCompare(b.start)
     );
   }

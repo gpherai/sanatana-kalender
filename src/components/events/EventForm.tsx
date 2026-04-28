@@ -54,13 +54,14 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
   });
 
   // Load categories from database using useFetch hook
-  const { data: categories, loading: isLoadingCategories } = useFetch<Category[]>(
-    "/api/categories",
-    {
-      errorMessage: "Failed to load categories",
-      onError: (err) => logError("Failed to load categories", err),
-    }
-  );
+  const {
+    data: categories,
+    loading: isLoadingCategories,
+    error: categoriesError,
+  } = useFetch<Category[]>("/api/categories", {
+    errorMessage: "Failed to load categories",
+    onError: (err) => logError("Failed to load categories", err),
+  });
 
   // Tags as array for chip display
   const [tagInput, setTagInput] = useState("");
@@ -270,6 +271,9 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
                 </option>
               ))}
             </select>
+            {categoriesError && (
+              <p className="text-theme-error text-xs">Kon categorieën niet laden</p>
+            )}
           </div>
         </div>
       </div>
