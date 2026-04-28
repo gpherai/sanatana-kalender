@@ -22,6 +22,7 @@ import type { DailyInfoResponse } from "@/types";
 import type { CalendarEvent, CalendarEventResponse } from "@/types/calendar";
 import { parseCalendarEvent } from "@/types/calendar";
 import { DEFAULT_LOCATION } from "@/lib/domain";
+import { logError } from "@/lib/utils";
 
 // =============================================================================
 // HELPERS
@@ -98,12 +99,15 @@ export default function AlmanacPage() {
     data: fetchedMonthData,
     loading: dailyLoading,
     error: dailyError,
+    refetch: refetchDailyInfo,
   } = useFetch<DailyInfoResponse[]>(`/api/daily-info?start=${start}&end=${end}`, {
     skip: !!cachedDailyInfo,
   });
-  const { data: fetchedMonthEvents, loading: eventsLoading } = useFetch<
-    CalendarEventResponse[]
-  >(`/api/events?start=${start}&end=${end}`, {
+  const {
+    data: fetchedMonthEvents,
+    loading: eventsLoading,
+    refetch: refetchEvents,
+  } = useFetch<CalendarEventResponse[]>(`/api/events?start=${start}&end=${end}`, {
     skip: !!cachedEvents,
   });
   const monthData = cachedDailyInfo ?? fetchedMonthData;
@@ -152,7 +156,7 @@ export default function AlmanacPage() {
           .then((data: DailyInfoResponse[]) => {
             monthDataCache.set(key, data);
           })
-          .catch(() => {});
+          .catch((err) => logError("[Almanac] Prefetch daily-info failed", err));
       }
       if (!eventsDataCache.has(key)) {
         fetch(`/api/events?start=${s}&end=${e}`)
@@ -160,7 +164,7 @@ export default function AlmanacPage() {
           .then((data: CalendarEventResponse[]) => {
             eventsDataCache.set(key, data);
           })
-          .catch(() => {});
+          .catch((err) => logError("[Almanac] Prefetch events failed", err));
       }
     };
     const prevY = month === 0 ? year - 1 : year;
@@ -181,6 +185,11 @@ export default function AlmanacPage() {
   }, []);
 
   const handleCloseMobilePanel = useCallback(() => setMobilePanelOpen(false), []);
+
+  const handleRetry = useCallback(() => {
+    refetchDailyInfo();
+    refetchEvents();
+  }, [refetchDailyInfo, refetchEvents]);
 
   // Month/year navigation: atomically select dag 1 and close mobile panel
   const handleYearChange = useCallback(
@@ -344,7 +353,7 @@ export default function AlmanacPage() {
             </span>
             <span className="text-theme-fg-muted text-xs">{error.message}</span>
             <button
-              onClick={() => window.location.reload()}
+              onClick={handleRetry}
               className="bg-theme-primary mt-1 rounded-lg px-4 py-2 text-sm text-white hover:opacity-90"
             >
               Opnieuw proberen

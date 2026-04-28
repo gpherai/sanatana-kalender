@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { ChevronLeft, ChevronRight, Filter } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MONTHS_SHORT } from "@/lib/date-utils";
@@ -25,7 +26,7 @@ export function AlmanacFilters({
   onMonthChange,
   onToggleFilter,
 }: AlmanacFiltersProps) {
-  const currentDate = new Date();
+  const currentDate = useMemo(() => new Date(), []);
 
   return (
     <div className="bg-theme-surface-raised mb-6 rounded-2xl p-4 shadow-lg">
