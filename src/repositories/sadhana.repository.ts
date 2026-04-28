@@ -127,38 +127,28 @@ export async function createSessionWithItems(
     notes?: string | null;
   }[]
 ) {
-  return prisma.$transaction(async (tx) => {
-    const s = await tx.sadhanaSession.create({
-      data: {
-        date: new Date(date + "T00:00:00.000Z"),
-        startedAt: startedAt ? new Date(startedAt) : null,
-        durationMinutes: durationMinutes ?? null,
-        notes: notes ?? null,
-      },
-    });
-
-    for (const item of items) {
-      await tx.sadhanaSessionItem.create({
-        data: {
-          sessionId: s.id,
+  return prisma.sadhanaSession.create({
+    data: {
+      date: utcDateFromDateOnly(date),
+      startedAt: startedAt ? new Date(startedAt) : null,
+      durationMinutes: durationMinutes ?? null,
+      notes: notes ?? null,
+      items: {
+        create: items.map((item) => ({
           practiceId: item.practice_id,
           quantity: item.quantity,
           unit: (item.unit as "malas" | "count") ?? "malas",
           durationMinutes: item.duration_minutes ?? null,
           notes: item.notes ?? null,
-        },
-      });
-    }
-
-    return tx.sadhanaSession.findUniqueOrThrow({
-      where: { id: s.id },
-      include: {
-        items: {
-          include: { practice: true },
-          orderBy: { createdAt: "asc" as const },
-        },
+        })),
       },
-    });
+    },
+    include: {
+      items: {
+        include: { practice: true },
+        orderBy: { createdAt: "asc" as const },
+      },
+    },
   });
 }
 

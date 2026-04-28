@@ -3,6 +3,7 @@ import ical from "ical-generator";
 import { DateTime } from "luxon";
 import { findOccurrencesForIcalExport } from "@/repositories/event.repository";
 import { DEFAULT_LOCATION } from "@/lib/domain";
+import { logError } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -131,7 +132,7 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error("Error generating iCal export:", error);
+    logError("[API] GET /api/ical/export error:", error);
     return new NextResponse("Fout bij het genereren van de iCal export.", {
       status: 500,
     });

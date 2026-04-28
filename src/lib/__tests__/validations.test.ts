@@ -174,7 +174,7 @@ describe("Validations", () => {
   });
 
   describe("createEventSchema", () => {
-    it("should apply defaults for importance, recurrence, and tags", () => {
+    it("should apply defaults for recurrence and tags", () => {
       const payload = {
         name: "Test Event",
         eventType: "PUJA",
@@ -218,7 +218,6 @@ describe("Validations", () => {
         name: "My Event",
         date: "2025-01-01",
         eventType: "PUJA",
-        importance: "MAJOR",
         recurrenceType: "NONE",
       };
 
@@ -231,7 +230,6 @@ describe("Validations", () => {
         name: "", // Empty name
         date: "2025-01-01",
         eventType: "PUJA",
-        importance: "MODERATE",
         recurrenceType: "NONE",
       };
 
@@ -248,7 +246,6 @@ describe("Validations", () => {
         date: "2025-01-01",
         description: "a".repeat(501), // > 500
         eventType: "OTHER",
-        importance: "MODERATE",
         recurrenceType: "NONE",
       };
 

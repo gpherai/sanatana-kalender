@@ -26,7 +26,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { DEFAULT_LOCATION } from "@/lib/domain";
 import { parseCalendarDate } from "@/lib/date-utils";
 import { generateOccurrencesSchema } from "@/lib/validations";
-import { validationError, notFoundError, serverError } from "@/lib/api-response";
+import {
+  errorResponse,
+  validationError,
+  notFoundError,
+  serverError,
+} from "@/lib/api-response";
 import { logError } from "@/lib/utils";
 import { EventNotFoundError, generateEventOccurrences } from "@/services/event.service";
 
@@ -46,10 +51,7 @@ export async function POST(request: NextRequest) {
     const endDate = parseCalendarDate(data.endDate);
 
     if (startDate > endDate) {
-      return NextResponse.json(
-        { error: "startDate must be before endDate" },
-        { status: 400 }
-      );
+      return errorResponse("startDate moet voor endDate liggen", 400);
     }
 
     const maxOccurrences = data.maxOccurrences;

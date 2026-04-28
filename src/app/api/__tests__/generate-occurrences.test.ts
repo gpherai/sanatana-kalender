@@ -356,7 +356,7 @@ describe("POST /api/events/generate-occurrences", () => {
     const response = await POST(request);
     const json = await response.json();
     expect(response.status).toBe(400);
-    expect(json.error).toBe("startDate must be before endDate");
+    expect(json.message).toBe("startDate moet voor endDate liggen");
   });
 
   it("handles replace logic for single event", async () => {

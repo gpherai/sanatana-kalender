@@ -81,7 +81,7 @@ function computeTotals(
       if (item.unit === "malas") {
         malas += item.quantity;
       } else if (item.practice.type === "mantra_japa" && item.unit === "count") {
-        malas += item.quantity / 108;
+        malas += item.quantity / MALA_BEAD_COUNT;
       }
     }
   }

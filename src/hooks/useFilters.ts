@@ -274,7 +274,7 @@ export function useFilters() {
     setFilter,
     toggleFilter,
     clearFilters,
-    /** Number of active filter groups (search, categories, types, importance) */
+    /** Number of active filter groups (search, categories, types) */
     activeFilterCount,
     /** Total number of individual filter items selected */
     activeFilterItemCount,

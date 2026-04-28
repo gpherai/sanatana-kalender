@@ -362,6 +362,7 @@ model SadhanaPractice {
   notes        String?
   active       Boolean              @default(true)
   createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
   items        SadhanaSessionItem[]
   routineItems SadhanaRoutineItem[]
   goals        SadhanaGoal[]
@@ -376,6 +377,7 @@ model SadhanaSession {
   durationMinutes Int?
   notes           String?
   createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
   items           SadhanaSessionItem[]
 
   @@index([date])
@@ -391,8 +393,9 @@ model SadhanaSessionItem {
   durationMinutes Int?
   notes           String?
   createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
   session         SadhanaSession  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  practice        SadhanaPractice @relation(fields: [practiceId], references: [id])
+  practice        SadhanaPractice @relation(fields: [practiceId], references: [id], onDelete: Restrict)
 
   @@index([sessionId])
   @@map("sadhana_session_items")
@@ -406,6 +409,7 @@ model SadhanaGoal {
   targetMinutes Int?
   active        Boolean         @default(true)
   createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 
   practices SadhanaPractice[]
 
@@ -428,11 +432,13 @@ model SadhanaRoutineItem {
   id         String          @id @default(cuid())
   routine    SadhanaRoutine  @relation(fields: [routineId], references: [id], onDelete: Cascade)
   routineId  String
-  practice   SadhanaPractice @relation(fields: [practiceId], references: [id])
+  practice   SadhanaPractice @relation(fields: [practiceId], references: [id], onDelete: Restrict)
   practiceId String
   quantity   Int
   unit       SadhanaItemUnit @default(malas)
   sortOrder  Int             @default(0)
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
 
   @@index([routineId])
   @@map("sadhana_routine_items")

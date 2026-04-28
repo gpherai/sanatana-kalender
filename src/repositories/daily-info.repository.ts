@@ -195,3 +195,11 @@ export function findDailyInfoPradoshCandidates(
     select: { date: true, tithiEndTime: true, sunrise: true, sunset: true },
   });
 }
+
+export function findDailyInfoHeatmapData(startDate: Date, endDate: Date) {
+  return prisma.dailyInfo.findMany({
+    where: { date: { gte: startDate, lte: endDate } },
+    select: { date: true, tithi: true, moonPhaseType: true },
+    orderBy: { date: "asc" },
+  });
+}

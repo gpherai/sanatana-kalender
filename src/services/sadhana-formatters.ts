@@ -48,7 +48,7 @@ export function formatSessionItem(
   const isJapa = item.practice.type === "mantra_japa";
   const mantra_count = isJapa
     ? item.unit === "malas"
-      ? item.quantity * 108
+      ? item.quantity * MALA_BEAD_COUNT
       : item.quantity
     : null;
 

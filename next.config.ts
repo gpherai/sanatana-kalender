@@ -102,7 +102,7 @@ const nextConfig: NextConfig = {
 
   // Allow cross-origin requests in development to silence Turbopack warning
   // According to Next.js 15+ docs, this should be at the root of the config
-  allowedDevOrigins: ["http://10.123.123.108:3000", "10.123.123.108"],
+  allowedDevOrigins: ["http://10.51.63.101:3000", "10.51.63.101"],
 };
 
 export default nextConfig;

@@ -9,21 +9,17 @@ import {
   listSadhanaRoutines,
 } from "./sadhana.service";
 import { findEventOccurrences } from "@/repositories/event.repository";
+import { findDailyInfoHeatmapData } from "@/repositories/daily-info.repository";
 import { todayString, SADHANA_START_DATE } from "@/lib/sadhana-utils";
 import type { DayInfo } from "@/components/sadhana/types";
-import { panchangaService } from "./panchanga.service";
-import {
-  transformToApiResponse,
-  transformOccurrenceToCalendarEvent,
-} from "@/lib/api-transformers";
-import { DEFAULT_LOCATION } from "@/lib/domain";
-import { DateTime } from "luxon";
+import { transformOccurrenceToCalendarEvent } from "@/lib/api-transformers";
+import { deriveDayInfoFromDailyInfo } from "@/lib/panchanga-helpers";
+import { utcDateFromDateOnly, dateOnlyFromUtcDate } from "@/lib/default-location-date";
 
 export async function getSadhanaDashboardInit() {
   const heatmapStart = SADHANA_START_DATE;
   const heatmapEnd = todayString();
 
-  // Fetch database queries first
   const [
     todayStats,
     streak,
@@ -34,6 +30,7 @@ export async function getSadhanaDashboardInit() {
     goals,
     routines,
     occurrences,
+    heatmapRows,
   ] = await Promise.all([
     getSadhanaToday(),
     getSadhanaStreak(),
@@ -49,30 +46,21 @@ export async function getSadhanaDashboardInit() {
       sortBy: "date",
       order: "asc",
     }),
+    findDailyInfoHeatmapData(
+      utcDateFromDateOnly(heatmapStart),
+      utcDateFromDateOnly(heatmapEnd)
+    ),
   ]);
-
-  // Run CPU-intensive Panchanga calculations separately to avoid event loop blocking
-  // that causes Prisma connection pool timeouts (5000ms).
-  const panchangas = await panchangaService.calculateRange(
-    DateTime.fromISO(heatmapStart, { zone: DEFAULT_LOCATION.timezone }).toJSDate(),
-    DateTime.fromISO(heatmapEnd, { zone: DEFAULT_LOCATION.timezone }).toJSDate(),
-    DEFAULT_LOCATION,
-    DEFAULT_LOCATION.timezone
-  );
 
   const heatmapEventsRaw = occurrences.map(transformOccurrenceToCalendarEvent);
 
-  const dayInfoMapEntries = panchangas.map((p) => {
-    const apiP = transformToApiResponse(p);
-    return [
-      p.date,
-      {
-        tithi: apiP.tithi,
-        specialDay: apiP.specialDay,
-        moonPhaseEvent: apiP.moonPhaseEvent,
-      },
-    ] as [string, DayInfo];
-  });
+  const dayInfoMapEntries = heatmapRows.map(
+    (row) =>
+      [
+        dateOnlyFromUtcDate(row.date),
+        deriveDayInfoFromDailyInfo(row.tithi, row.moonPhaseType, row.date),
+      ] as [string, DayInfo]
+  );
 
   return {
     todayStats,

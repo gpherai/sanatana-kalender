@@ -3,6 +3,9 @@
 // Utilities for working with Panchanga data
 // ============================================
 
+import type { MoonPhaseType, Tithi } from "@prisma/client";
+import type { DayInfo } from "@/components/sadhana/types";
+
 /**
  * Interface for special lunar days detected from Panchanga data
  */
@@ -128,4 +131,101 @@ export function detectSpecialDay(
   }
 
   return null;
+}
+
+// =============================================================================
+// DB → DayInfo derivation (avoids Swiss Ephemeris re-computation)
+// =============================================================================
+
+const TITHI_BASE_TO_NUMBER: Record<string, number> = {
+  PRATIPADA: 1,
+  DWITIYA: 2,
+  TRITIYA: 3,
+  CHATURTHI: 4,
+  PANCHAMI: 5,
+  SHASHTHI: 6,
+  SAPTAMI: 7,
+  ASHTAMI: 8,
+  NAVAMI: 9,
+  DASHAMI: 10,
+  EKADASHI: 11,
+  DWADASHI: 12,
+  TRAYODASHI: 13,
+  CHATURDASHI: 14,
+  PURNIMA: 15,
+  AMAVASYA: 15,
+};
+
+const TITHI_BASE_TO_NAME: Record<string, string> = {
+  PRATIPADA: "Pratipada",
+  DWITIYA: "Dwitiya",
+  TRITIYA: "Tritiya",
+  CHATURTHI: "Chaturthi",
+  PANCHAMI: "Panchami",
+  SHASHTHI: "Shashthi",
+  SAPTAMI: "Saptami",
+  ASHTAMI: "Ashtami",
+  NAVAMI: "Navami",
+  DASHAMI: "Dashami",
+  EKADASHI: "Ekadashi",
+  DWADASHI: "Dwadashi",
+  TRAYODASHI: "Trayodashi",
+  CHATURDASHI: "Chaturdashi",
+  PURNIMA: "Purnima",
+  AMAVASYA: "Amavasya",
+};
+
+const MOON_PHASE_EVENT: Partial<
+  Record<MoonPhaseType, "new" | "first_quarter" | "full" | "last_quarter">
+> = {
+  NEW_MOON: "new",
+  FIRST_QUARTER: "first_quarter",
+  FULL_MOON: "full",
+  LAST_QUARTER: "last_quarter",
+};
+
+function parseTithiEnum(tithi: Tithi): TithiInfo | null {
+  if (tithi === "PURNIMA") return { number: 15, name: "Purnima", paksha: "Shukla" };
+  if (tithi === "AMAVASYA") return { number: 15, name: "Amavasya", paksha: "Krishna" };
+
+  const sep = tithi.lastIndexOf("_");
+  if (sep === -1) return null;
+
+  const base = tithi.slice(0, sep);
+  const pakshaStr = tithi.slice(sep + 1);
+  const number = TITHI_BASE_TO_NUMBER[base];
+  const name = TITHI_BASE_TO_NAME[base];
+  if (!number || !name) return null;
+
+  return { number, name, paksha: pakshaStr === "SHUKLA" ? "Shukla" : "Krishna" };
+}
+
+export function deriveDayInfoFromDailyInfo(
+  tithi: Tithi | null,
+  moonPhaseType: MoonPhaseType | null,
+  date: Date
+): DayInfo {
+  const moonPhaseEventType = moonPhaseType ? MOON_PHASE_EVENT[moonPhaseType] : undefined;
+  const moonPhaseEvent = moonPhaseEventType ? { type: moonPhaseEventType } : null;
+  const parsedTithi = tithi ? parseTithiEnum(tithi) : null;
+
+  let specialDay: DayInfo["specialDay"] = null;
+  if (moonPhaseEvent?.type === "full") {
+    specialDay = { type: "purnima", name: "Purnima", emoji: "🌕" };
+  } else if (moonPhaseEvent?.type === "new") {
+    specialDay = { type: "amavasya", name: "Amavasya", emoji: "🌑" };
+  } else if (parsedTithi) {
+    const sd = detectSpecialDay(parsedTithi, date);
+    if (sd && sd.type !== "purnima" && sd.type !== "amavasya") {
+      specialDay = { type: sd.type, name: sd.name, emoji: sd.emoji };
+    }
+  }
+
+  return {
+    tithi: parsedTithi
+      ? { name: parsedTithi.name, paksha: parsedTithi.paksha }
+      : undefined,
+    specialDay,
+    moonPhaseEvent,
+  };
 }
