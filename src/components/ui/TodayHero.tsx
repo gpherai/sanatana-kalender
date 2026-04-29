@@ -26,10 +26,13 @@ export interface TodayHeroProps {
 }
 
 export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroProps) {
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState<Date | null>(null);
 
-  // Update time every minute, synced to the minute boundary
+  // Update time every minute, synced to the minute boundary.
+  // Initialized in useEffect (not useState) to prevent SSR/hydration mismatch.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: sets client time after mount to avoid SSR hydration mismatch
+    setCurrentTime(new Date());
     const msUntilNextMinute = (60 - new Date().getSeconds()) * 1000;
     let interval: ReturnType<typeof setInterval>;
     const timeout = setTimeout(() => {
@@ -42,7 +45,10 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
     };
   }, []);
 
-  const today = currentTime;
+  // Fall back to server-provided date for stable SSR rendering of weekday/date heading.
+  // currentTime is null until after hydration; the date heading never mismatches.
+  const today =
+    currentTime ?? new Date(dailyInfo?.date ?? new Date().toISOString().slice(0, 10));
   const dayOfWeek = today.getDay();
   const varaDay = VARA_DAYS[dayOfWeek] ?? VARA_DAYS[0]!;
 
@@ -81,7 +87,8 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
               <span>{today.toLocaleDateString("nl-NL", { weekday: "long" })}</span>
               <span className="text-white/25">•</span>
               <span className="flex items-center gap-1">
-                {varaDay.icon} {dailyInfo?.vara?.name ?? varaDay.name}
+                <span aria-hidden="true">{varaDay.icon}</span>
+                {dailyInfo?.vara?.name ?? varaDay.name}
               </span>
             </div>
             <h1 className="theme-heading-reset mb-0 text-4xl font-bold text-white md:text-5xl">
@@ -92,10 +99,10 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
           {/* Current Time + Weather */}
           <div className="shrink-0 text-right">
             <div className="text-3xl font-light text-white tabular-nums md:text-4xl">
-              {currentTime.toLocaleTimeString("nl-NL", {
+              {currentTime?.toLocaleTimeString("nl-NL", {
                 hour: "2-digit",
                 minute: "2-digit",
-              })}
+              }) ?? "--:--"}
             </div>
             <div className="mt-1 text-sm text-white/50">
               {dailyInfo?.locationName || DEFAULT_LOCATION.name}
@@ -223,7 +230,8 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
                     {dailyInfo?.sunrise || "—"}
                   </div>
                   <div className="text-xs text-white/50">
-                    {formatTimeAgo(dailyInfo?.sunrise || null, currentTime)}
+                    {currentTime &&
+                      formatTimeAgo(dailyInfo?.sunrise || null, currentTime)}
                   </div>
                 </div>
               </div>
@@ -238,7 +246,7 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
                     {dailyInfo?.sunset || "—"}
                   </div>
                   <div className="text-xs text-white/50">
-                    {formatTimeAgo(dailyInfo?.sunset || null, currentTime)}
+                    {currentTime && formatTimeAgo(dailyInfo?.sunset || null, currentTime)}
                   </div>
                 </div>
               </div>
@@ -313,7 +321,8 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
                     {dailyInfo?.moonrise || "—"}
                   </div>
                   <div className="text-xs text-white/50">
-                    {formatIsoTimeAgo(dailyInfo?.moonriseUtcIso || null, currentTime)}
+                    {currentTime &&
+                      formatIsoTimeAgo(dailyInfo?.moonriseUtcIso || null, currentTime)}
                   </div>
                 </div>
               </div>
@@ -328,7 +337,8 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
                     {dailyInfo?.moonset || "—"}
                   </div>
                   <div className="text-xs text-white/50">
-                    {formatIsoTimeAgo(dailyInfo?.moonsetUtcIso || null, currentTime)}
+                    {currentTime &&
+                      formatIsoTimeAgo(dailyInfo?.moonsetUtcIso || null, currentTime)}
                   </div>
                 </div>
               </div>
@@ -395,7 +405,9 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
             }}
           >
             <div className="flex items-center gap-3">
-              <span className="text-3xl">{specialDay.emoji}</span>
+              <span className="text-3xl" aria-hidden="true">
+                {specialDay.emoji}
+              </span>
               <div>
                 <div className="font-semibold text-white">{specialDay.name}</div>
                 <div className="text-sm text-white/70">{specialDay.description}</div>
@@ -417,10 +429,12 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
                 <Link
                   key={event.id}
                   href={`/events/${event.id}`}
-                  className="flex items-center gap-2 rounded-full border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] px-4 py-3 text-white/70 backdrop-blur-sm transition-opacity hover:opacity-80 active:opacity-60"
+                  className="flex items-center gap-2 rounded-full border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] px-4 py-3 text-white/70 backdrop-blur-sm transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none active:opacity-60"
                   style={{ touchAction: "manipulation" }}
                 >
-                  {event.category?.icon && <span>{event.category.icon}</span>}
+                  {event.category?.icon && (
+                    <span aria-hidden="true">{event.category.icon}</span>
+                  )}
                   <span className="font-medium">{event.name}</span>
                 </Link>
               ))}

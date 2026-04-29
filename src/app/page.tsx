@@ -34,17 +34,21 @@ export default async function Home() {
           {/* Upcoming Events (7 days) */}
           <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
             <h2 className="text-theme-fg mb-4 flex items-center gap-2 text-lg font-semibold">
-              <span className="text-xl">📿</span>
+              <span className="text-xl" aria-hidden="true">
+                📿
+              </span>
               Binnenkort (7 dagen)
             </h2>
 
             {upcomingEvents.length === 0 ? (
               <div className="py-8 text-center">
-                <div className="mb-3 text-4xl">🙏</div>
+                <div className="mb-3 text-4xl" aria-hidden="true">
+                  🙏
+                </div>
                 <p className="text-theme-fg-muted text-sm">Geen aankomende events</p>
                 <Link
                   href="/events/new"
-                  className="text-theme-primary mt-2 inline-flex items-center gap-1 text-sm hover:opacity-80"
+                  className="text-theme-primary focus-visible:ring-theme-primary mt-2 inline-flex items-center gap-1 rounded text-sm hover:opacity-80 focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none"
                 >
                   <Plus className="h-4 w-4" />
                   Voeg er een toe
@@ -68,10 +72,12 @@ export default async function Home() {
                     <Link
                       key={occ.id}
                       href={`/events/${occ.event.id}`}
-                      className="group hover:bg-theme-surface-hover flex items-center gap-3 rounded-xl p-3 transition-colors active:opacity-75"
+                      className="group hover:bg-theme-surface-hover focus-visible:ring-theme-primary flex items-center gap-3 rounded-xl p-3 transition-colors focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none active:opacity-75"
                       style={{ touchAction: "manipulation" }}
                     >
-                      <div className="text-xl">{category?.icon || "📅"}</div>
+                      <div className="text-xl" aria-hidden="true">
+                        {category?.icon || "📅"}
+                      </div>
                       <div className="min-w-0 flex-1">
                         <div className="group-hover:text-theme-primary text-theme-fg truncate text-sm font-medium transition-colors">
                           {occ.event.name}
@@ -104,7 +110,9 @@ export default async function Home() {
           {/* Category Legend */}
           <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
             <h2 className="text-theme-fg mb-4 flex items-center gap-2 text-lg font-semibold">
-              <span className="text-xl">🏷️</span>
+              <span className="text-xl" aria-hidden="true">
+                🏷️
+              </span>
               Godheden
             </h2>
             <div className="grid grid-cols-2 gap-1.5">
@@ -112,7 +120,7 @@ export default async function Home() {
                 <Link
                   key={cat.id}
                   href={`/events?categories=${encodeURIComponent(cat.name)}`}
-                  className="flex cursor-pointer items-center gap-2 rounded-r-lg border-l-[3px] px-2.5 py-1.5 transition-opacity hover:opacity-75 active:opacity-60"
+                  className="focus-visible:ring-theme-primary flex cursor-pointer items-center gap-2 rounded-r-lg border-l-[3px] px-2.5 py-1.5 transition-opacity hover:opacity-75 focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none active:opacity-60"
                   style={{
                     borderLeftColor: cat.color,
                     background: `color-mix(in oklch, ${cat.color} 10%, transparent)`,
