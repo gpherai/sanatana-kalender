@@ -171,7 +171,7 @@ export function DayDetailsPanel({
             <div className="flex items-center gap-2 text-sm text-white/70">
               {selectedSanskritDay && (
                 <>
-                  <span>{selectedSanskritDay.icon}</span>
+                  <span aria-hidden="true">{selectedSanskritDay.icon}</span>
                   <span>{selectedSanskritDay.name}</span>
                 </>
               )}
@@ -303,7 +303,9 @@ export function DayDetailsPanel({
               <div className="space-y-2">
                 {selectedDaySpecial.map((special) => (
                   <div key={special.type} className="flex items-start gap-2">
-                    <span className="text-lg">{special.emoji}</span>
+                    <span className="text-lg" aria-hidden="true">
+                      {special.emoji}
+                    </span>
                     <div>
                       <div className="text-theme-fg font-medium">{special.name}</div>
                       <div className="text-theme-fg-muted text-xs">
@@ -400,7 +402,7 @@ export function DayDetailsPanel({
                       <button
                         key={event.id}
                         onClick={() => onEventClick(event)}
-                        className="group border-theme-border bg-theme-surface relative w-full overflow-hidden rounded-xl border text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+                        className="group border-theme-border bg-theme-surface focus-visible:ring-theme-primary relative w-full overflow-hidden rounded-xl border text-left shadow-sm transition-all duration-200 hover:shadow-md focus-visible:ring-2 focus-visible:outline-none"
                       >
                         {/* Category color strip */}
                         <div
@@ -410,7 +412,7 @@ export function DayDetailsPanel({
 
                         <div className="py-3 pr-3 pl-5">
                           <div className="flex items-center gap-2">
-                            <span className="flex-shrink-0 text-base">
+                            <span className="flex-shrink-0 text-base" aria-hidden="true">
                               {event.resource.categories[0]?.icon ?? "📅"}
                             </span>
                             <span className="text-theme-fg group-hover:text-theme-primary flex-1 truncate text-sm font-medium transition-colors">

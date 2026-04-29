@@ -43,7 +43,9 @@ export function MoonPhasesTimeline({
                 "bg-theme-surface-raised ring-theme-primary ring-2"
             )}
           >
-            <span className="text-3xl">{phase.emoji}</span>
+            <span className="text-3xl" aria-hidden="true">
+              {phase.emoji}
+            </span>
             <span className="text-theme-fg mt-1 text-xs font-medium">{phase.name}</span>
             <span className="text-theme-fg-muted text-xs">
               {phase.date.getDate()} {MONTHS_SHORT[month]}

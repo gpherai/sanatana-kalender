@@ -108,7 +108,11 @@ export function MonthGrid({
                 >
                   {date.getDate()}
                 </span>
-                {info && <span className="text-sm">{info.moonPhaseEmoji}</span>}
+                {info && (
+                  <span className="text-sm" aria-hidden="true">
+                    {info.moonPhaseEmoji}
+                  </span>
+                )}
               </div>
 
               {/* Sun times — hidden on mobile, shown on desktop */}
@@ -137,7 +141,7 @@ export function MonthGrid({
               {/* Indicators */}
               <div className="mt-1 flex flex-wrap gap-0.5">
                 {moonPhase && showMoonPhases && (
-                  <span className="text-[10px]" title={moonPhase.name}>
+                  <span className="text-[10px]" title={moonPhase.name} aria-hidden="true">
                     {moonPhase.emoji}
                   </span>
                 )}
@@ -145,6 +149,7 @@ export function MonthGrid({
                   <span
                     className="text-[10px]"
                     title={daySpecial.map((s) => s.name).join(", ")}
+                    aria-hidden="true"
                   >
                     🙏
                   </span>
