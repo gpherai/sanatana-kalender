@@ -39,7 +39,7 @@ export function WeatherHeader({
         onClick={onRefresh}
         disabled={refreshing}
         aria-label="Vernieuwen"
-        className="text-theme-fg-muted hover:text-theme-fg hover:bg-theme-hover flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-xl transition-colors disabled:opacity-40"
+        className="text-theme-fg-muted hover:text-theme-fg hover:bg-theme-hover focus-visible:ring-theme-primary flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-xl transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:opacity-40"
       >
         <RefreshCw
           className={cn(
