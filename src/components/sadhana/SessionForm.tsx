@@ -145,7 +145,7 @@ export function SessionForm({
                     }))
                   )
                 }
-                className="bg-theme-surface border-theme-border text-theme-fg hover:border-theme-primary hover:text-theme-primary min-h-[36px] cursor-pointer rounded-full border px-3 py-1 text-xs transition-colors"
+                className="bg-theme-surface border-theme-border text-theme-fg hover:border-theme-primary hover:text-theme-primary focus-visible:ring-theme-primary min-h-[36px] cursor-pointer rounded-full border px-3 py-1 text-xs transition-colors focus-visible:ring-2 focus-visible:outline-none"
               >
                 {r.name}
               </button>
@@ -186,7 +186,7 @@ export function SessionForm({
                     type="button"
                     onClick={() => removeItem(i)}
                     aria-label="Item verwijderen"
-                    className="text-theme-fg-muted hover:text-theme-error flex min-h-[44px] min-w-[44px] shrink-0 cursor-pointer items-center justify-center transition-colors"
+                    className="text-theme-fg-muted hover:text-theme-error focus-visible:ring-theme-primary flex min-h-[44px] min-w-[44px] shrink-0 cursor-pointer items-center justify-center rounded transition-colors focus-visible:ring-2 focus-visible:outline-none"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -229,7 +229,7 @@ export function SessionForm({
         <button
           type="button"
           onClick={addItem}
-          className="text-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1 text-xs transition-opacity hover:opacity-70"
+          className="text-theme-primary focus-visible:ring-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1 rounded text-xs transition-opacity hover:opacity-70 focus-visible:ring-2 focus-visible:outline-none"
         >
           <Plus className="h-3.5 w-3.5" /> Item toevoegen
         </button>
@@ -254,14 +254,14 @@ export function SessionForm({
         <button
           type="button"
           onClick={onCancel}
-          className="text-theme-fg-secondary hover:text-theme-fg min-h-[44px] cursor-pointer rounded-lg px-4 py-2 text-sm transition-colors"
+          className="text-theme-fg-secondary hover:text-theme-fg focus-visible:ring-theme-primary min-h-[44px] cursor-pointer rounded-lg px-4 py-2 text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
         >
           Annuleren
         </button>
         <button
           type="submit"
           disabled={submitting}
-          className="bg-theme-primary flex min-h-[44px] cursor-pointer items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white shadow hover:opacity-90 disabled:opacity-50"
+          className="bg-theme-primary flex min-h-[44px] cursor-pointer items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white shadow hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
         >
           {submitting && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
           {submitLabel}

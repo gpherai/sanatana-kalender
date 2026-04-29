@@ -149,14 +149,14 @@ export function GoalPanel({
           {inactiveGoalCount > 0 && (
             <button
               onClick={() => setShowInactive((v) => !v)}
-              className="text-theme-fg-muted hover:text-theme-fg min-h-[44px] cursor-pointer text-xs transition-colors"
+              className="text-theme-fg-muted hover:text-theme-fg focus-visible:ring-theme-primary min-h-[44px] cursor-pointer rounded text-xs transition-colors focus-visible:ring-2 focus-visible:outline-none"
             >
               {showInactive ? "Verberg inactief" : `Toon inactief (${inactiveGoalCount})`}
             </button>
           )}
           <button
             onClick={() => setShowAdd((v) => !v)}
-            className="bg-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1 rounded-lg px-3 py-2 text-xs font-medium text-white hover:opacity-90"
+            className="bg-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1 rounded-lg px-3 py-2 text-xs font-medium text-white hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none"
           >
             <Plus className="h-3.5 w-3.5" /> Toevoegen
           </button>
@@ -241,7 +241,7 @@ export function GoalPanel({
                         togglePractice(p.id, newPracticeIds, setNewPracticeIds)
                       }
                       className={cn(
-                        "cursor-pointer rounded-full px-3 py-1 text-xs font-medium transition-colors",
+                        "focus-visible:ring-theme-primary cursor-pointer rounded-full px-3 py-1 text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none",
                         isSelected
                           ? "bg-theme-primary text-white"
                           : "bg-theme-surface-raised text-theme-fg hover:bg-theme-border"
@@ -259,14 +259,14 @@ export function GoalPanel({
             <button
               type="button"
               onClick={() => setShowAdd(false)}
-              className="text-theme-fg-secondary hover:text-theme-fg min-h-[44px] cursor-pointer text-sm"
+              className="text-theme-fg-secondary hover:text-theme-fg focus-visible:ring-theme-primary min-h-[44px] cursor-pointer rounded text-sm focus-visible:ring-2 focus-visible:outline-none"
             >
               Annuleren
             </button>
             <button
               type="submit"
               disabled={adding}
-              className="bg-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm text-white hover:opacity-90 disabled:opacity-50"
+              className="bg-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm text-white hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             >
               {adding && <Loader2 className="h-3.5 w-3.5 animate-spin" />} Opslaan
             </button>
@@ -358,7 +358,7 @@ export function GoalPanel({
                 <button
                   onClick={() => handleSave(g)}
                   disabled={saving}
-                  className="bg-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm text-white hover:opacity-90 disabled:opacity-50"
+                  className="bg-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm text-white hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {saving && <Loader2 className="h-3.5 w-3.5 animate-spin" />} Opslaan
                 </button>
@@ -445,7 +445,7 @@ export function GoalPanel({
               <div className="flex shrink-0 items-center gap-1">
                 <button
                   onClick={() => startEdit(g)}
-                  className="text-theme-fg-muted hover:text-theme-primary flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors"
+                  className="text-theme-fg-muted hover:text-theme-primary focus-visible:ring-theme-primary flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors focus-visible:ring-2 focus-visible:outline-none"
                   aria-label={`${GOAL_TYPE_LABELS[g.type]} bewerken`}
                   title="Bewerken"
                 >
@@ -453,7 +453,7 @@ export function GoalPanel({
                 </button>
                 <button
                   onClick={() => handleToggle(g)}
-                  className="text-theme-fg-muted hover:text-theme-primary flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors"
+                  className="text-theme-fg-muted hover:text-theme-primary focus-visible:ring-theme-primary flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors focus-visible:ring-2 focus-visible:outline-none"
                   aria-label={
                     g.active
                       ? `${GOAL_TYPE_LABELS[g.type]} deactiveren`
@@ -471,7 +471,7 @@ export function GoalPanel({
                   <>
                     <button
                       onClick={() => handleDelete(g.id)}
-                      className="text-theme-error flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors hover:opacity-70"
+                      className="text-theme-error flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors hover:opacity-70 focus-visible:ring-2 focus-visible:ring-[var(--theme-error-fg)] focus-visible:outline-none"
                       aria-label="Verwijderen bevestigen"
                       title="Bevestig verwijderen"
                     >
@@ -479,7 +479,7 @@ export function GoalPanel({
                     </button>
                     <button
                       onClick={() => setConfirmDeleteId(null)}
-                      className="text-theme-fg-muted hover:text-theme-fg flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors"
+                      className="text-theme-fg-muted hover:text-theme-fg focus-visible:ring-theme-primary flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors focus-visible:ring-2 focus-visible:outline-none"
                       aria-label="Annuleren"
                     >
                       <X className="h-3.5 w-3.5" />
@@ -488,7 +488,7 @@ export function GoalPanel({
                 ) : (
                   <button
                     onClick={() => setConfirmDeleteId(g.id)}
-                    className="text-theme-fg-muted hover:text-theme-error flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors"
+                    className="text-theme-fg-muted hover:text-theme-error flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors focus-visible:ring-2 focus-visible:ring-[var(--theme-error-fg)] focus-visible:outline-none"
                     aria-label={`${GOAL_TYPE_LABELS[g.type]} verwijderen`}
                     title="Verwijderen"
                   >

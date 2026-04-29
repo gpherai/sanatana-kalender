@@ -155,7 +155,7 @@ export function SadhanaTracker({ initialData }: { initialData?: SadhanaInitialDa
         <p className="text-theme-warning text-sm">{error}</p>
         <button
           onClick={loadAll}
-          className="text-theme-primary mt-3 inline-flex cursor-pointer items-center gap-2 text-sm hover:opacity-70"
+          className="text-theme-primary focus-visible:ring-theme-primary mt-3 inline-flex cursor-pointer items-center gap-2 rounded text-sm hover:opacity-70 focus-visible:ring-2 focus-visible:outline-none"
         >
           <RefreshCw className="h-4 w-4" /> Opnieuw proberen
         </button>
@@ -182,7 +182,7 @@ export function SadhanaTracker({ initialData }: { initialData?: SadhanaInitialDa
               onClick={() => setTab(id)}
               style={{ touchAction: "manipulation" }}
               className={cn(
-                "flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                "focus-visible:ring-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none",
                 activeTab === id
                   ? "bg-theme-primary-15 text-theme-primary"
                   : "text-theme-fg-muted hover:text-theme-fg"

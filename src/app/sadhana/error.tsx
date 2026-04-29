@@ -20,7 +20,7 @@ export default function SadhanaError({
         )}
         <button
           onClick={reset}
-          className="bg-theme-primary-15 text-theme-primary rounded-lg px-4 py-2 text-sm font-medium hover:opacity-80"
+          className="bg-theme-primary-15 text-theme-primary focus-visible:ring-theme-primary cursor-pointer rounded-lg px-4 py-2 text-sm font-medium hover:opacity-80 focus-visible:ring-2 focus-visible:outline-none"
         >
           Opnieuw proberen
         </button>
