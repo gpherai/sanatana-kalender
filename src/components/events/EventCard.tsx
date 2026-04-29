@@ -80,13 +80,14 @@ export function EventCard({
   };
 
   const cardClassName = cn(
-    "group relative block w-full h-full text-left",
+    "group relative block w-full h-full cursor-pointer text-left",
     "bg-theme-surface",
     "rounded-2xl overflow-hidden",
     "border border-theme-border",
     "shadow-sm hover:shadow-xl",
     "transition-all duration-300 ease-out",
     "hover:-translate-y-1 active:opacity-75 active:scale-[0.99]",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-theme-primary focus-visible:ring-offset-1",
     className
   );
 
@@ -103,6 +104,7 @@ export function EventCard({
         <div className="mb-3 flex items-start gap-4">
           {/* Category Icon */}
           <div
+            aria-hidden="true"
             className={cn(
               "h-12 w-12 flex-shrink-0 rounded-xl",
               "flex items-center justify-center text-2xl",
@@ -170,12 +172,12 @@ export function EventCard({
           <div className="mb-3 flex flex-wrap items-center gap-2 pl-16">
             {tithi && (
               <span className="bg-theme-secondary-10 text-theme-secondary inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs">
-                🌙 {tithi}
+                <span aria-hidden="true">🌙</span> {tithi}
               </span>
             )}
             {nakshatra && (
               <span className="bg-theme-accent-10 text-theme-accent inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs">
-                ⭐ {nakshatra}
+                <span aria-hidden="true">⭐</span> {nakshatra}
               </span>
             )}
           </div>
@@ -264,15 +266,17 @@ export function EventCardCompact({
     : undefined;
 
   const compactClassName = cn(
-    "group flex items-center gap-3 p-3 rounded-xl w-full text-left",
+    "group flex items-center gap-3 p-3 rounded-xl w-full cursor-pointer text-left",
     "hover:bg-theme-hover",
     "transition-colors duration-200",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-theme-primary",
     className
   );
 
   const compactContent = (
     <>
       <div
+        aria-hidden="true"
         className={cn(
           "flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg text-lg transition-transform duration-200 group-hover:scale-110",
           categoryBgClass

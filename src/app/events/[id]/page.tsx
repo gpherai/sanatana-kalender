@@ -63,7 +63,7 @@ export default async function EventDetailPage({ params }: PageProps) {
       {/* Back Link */}
       <Link
         href="/events"
-        className="text-theme-fg-muted hover:text-theme-fg mb-6 inline-flex items-center gap-2 text-sm"
+        className="text-theme-fg-muted hover:text-theme-fg focus-visible:ring-theme-primary mb-6 inline-flex items-center gap-2 rounded text-sm focus-visible:ring-2 focus-visible:outline-none"
       >
         <ArrowLeft className="h-4 w-4" />
         Terug naar Events
@@ -96,7 +96,8 @@ export default async function EventDetailPage({ params }: PageProps) {
               )}
               {eventTypeData && (
                 <span className="text-theme-fg-muted text-sm">
-                  {eventTypeData.icon} {eventTypeData.label}
+                  <span aria-hidden="true">{eventTypeData.icon}</span>{" "}
+                  {eventTypeData.label}
                 </span>
               )}
             </div>
@@ -106,7 +107,7 @@ export default async function EventDetailPage({ params }: PageProps) {
           <div className="flex shrink-0 items-center gap-2">
             <Link
               href={`/events/${id}/edit`}
-              className="bg-theme-primary flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
+              className="bg-theme-primary flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none"
             >
               <Pencil className="h-4 w-4" />
               Bewerken
@@ -187,7 +188,7 @@ export default async function EventDetailPage({ params }: PageProps) {
               <div>
                 <p className="text-theme-fg-muted text-xs">Tithi</p>
                 <p className="text-theme-fg mt-0.5 text-sm font-medium">
-                  🌙 {event.tithi}
+                  <span aria-hidden="true">🌙</span> {event.tithi}
                 </p>
               </div>
             )}
@@ -195,7 +196,7 @@ export default async function EventDetailPage({ params }: PageProps) {
               <div>
                 <p className="text-theme-fg-muted text-xs">Nakshatra</p>
                 <p className="text-theme-fg mt-0.5 text-sm font-medium">
-                  ⭐ {event.nakshatra}
+                  <span aria-hidden="true">⭐</span> {event.nakshatra}
                 </p>
               </div>
             )}

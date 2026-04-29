@@ -44,14 +44,14 @@ export function DeleteEventButton({ eventId, eventName }: DeleteEventButtonProps
         <button
           onClick={() => setShowConfirm(false)}
           disabled={isDeleting}
-          className="text-theme-fg-secondary hover:text-theme-fg rounded-lg px-3 py-1.5 text-sm transition-colors"
+          className="text-theme-fg-secondary hover:text-theme-fg focus-visible:ring-theme-primary cursor-pointer rounded-lg px-3 py-1.5 text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
         >
           Nee
         </button>
         <button
           onClick={handleDelete}
           disabled={isDeleting}
-          className="flex items-center gap-1.5 rounded-lg bg-[var(--theme-error)] px-3 py-1.5 text-sm font-medium text-white transition-all hover:opacity-90 disabled:opacity-50"
+          className="flex cursor-pointer items-center gap-1.5 rounded-lg bg-[var(--theme-error)] px-3 py-1.5 text-sm font-medium text-white transition-all hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isDeleting ? (
             <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -67,7 +67,7 @@ export function DeleteEventButton({ eventId, eventName }: DeleteEventButtonProps
   return (
     <button
       onClick={() => setShowConfirm(true)}
-      className="flex shrink-0 items-center gap-2 rounded-xl bg-[var(--theme-error-bg)] px-4 py-2 text-sm font-medium text-[var(--theme-error-fg)] transition-opacity hover:opacity-80"
+      className="flex shrink-0 cursor-pointer items-center gap-2 rounded-xl bg-[var(--theme-error-bg)] px-4 py-2 text-sm font-medium text-[var(--theme-error-fg)] transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-[var(--theme-error-fg)] focus-visible:outline-none"
     >
       <Trash2 className="h-4 w-4" />
       Verwijderen

@@ -129,7 +129,7 @@ function EventsContent() {
               }
               style={{ touchAction: "manipulation" }}
               className={cn(
-                "bg-theme-surface-raised border-theme-border flex h-9 w-9 items-center justify-center rounded-lg border transition-colors",
+                "bg-theme-surface-raised border-theme-border focus-visible:ring-theme-primary flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border transition-colors focus-visible:ring-2 focus-visible:outline-none",
                 filters.sortOrder === "desc"
                   ? "text-theme-primary"
                   : "text-theme-fg-muted hover:text-theme-fg"
@@ -146,7 +146,7 @@ function EventsContent() {
               onClick={() => setViewMode("grid")}
               style={{ touchAction: "manipulation" }}
               className={cn(
-                "flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-md transition-colors",
+                "focus-visible:ring-theme-primary flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-md transition-colors focus-visible:ring-2 focus-visible:outline-none",
                 viewMode === "grid"
                   ? "bg-theme-primary-15 text-theme-primary"
                   : "text-theme-fg-muted hover:text-theme-fg"
@@ -159,7 +159,7 @@ function EventsContent() {
               onClick={() => setViewMode("list")}
               style={{ touchAction: "manipulation" }}
               className={cn(
-                "flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-md transition-colors",
+                "focus-visible:ring-theme-primary flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-md transition-colors focus-visible:ring-2 focus-visible:outline-none",
                 viewMode === "list"
                   ? "bg-theme-primary-15 text-theme-primary"
                   : "text-theme-fg-muted hover:text-theme-fg"
@@ -181,7 +181,7 @@ function EventsContent() {
               setShowFilters(true);
             }}
             className={cn(
-              "flex min-h-[44px] cursor-pointer items-center gap-2 rounded-lg px-3 py-2 transition-colors lg:hidden",
+              "focus-visible:ring-theme-primary flex min-h-[44px] cursor-pointer items-center gap-2 rounded-lg px-3 py-2 transition-colors focus-visible:ring-2 focus-visible:outline-none lg:hidden",
               showFilters
                 ? "bg-theme-primary-15 text-theme-primary"
                 : "bg-theme-surface-raised text-theme-fg-muted"
@@ -198,7 +198,7 @@ function EventsContent() {
           {/* New Event Button */}
           <Link
             href="/events/new"
-            className="bg-theme-primary shadow-theme-primary flex items-center gap-2 rounded-xl px-4 py-2 font-medium text-white shadow-lg transition-all hover:opacity-90"
+            className="bg-theme-primary shadow-theme-primary flex items-center gap-2 rounded-xl px-4 py-2 font-medium text-white shadow-lg transition-all hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none"
           >
             <Plus className="h-4 w-4" />
             <span className="hidden sm:inline">Nieuw Event</span>
@@ -283,7 +283,7 @@ function EventsContent() {
               <p className="text-theme-fg-muted mx-auto mb-6 max-w-md text-sm">{error}</p>
               <button
                 onClick={refetch}
-                className="bg-theme-primary shadow-theme-primary cursor-pointer rounded-xl px-6 py-2.5 font-medium text-white shadow-lg transition-colors hover:opacity-90"
+                className="bg-theme-primary shadow-theme-primary cursor-pointer rounded-xl px-6 py-2.5 font-medium text-white shadow-lg transition-colors hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none"
               >
                 Opnieuw proberen
               </button>
@@ -311,14 +311,14 @@ function EventsContent() {
               {activeFilterCount > 0 ? (
                 <button
                   onClick={clearFilters}
-                  className="border-theme-primary text-theme-primary hover:bg-theme-primary-10 cursor-pointer rounded-xl border-2 px-6 py-2.5 font-medium transition-colors"
+                  className="border-theme-primary text-theme-primary hover:bg-theme-primary-10 focus-visible:ring-theme-primary cursor-pointer rounded-xl border-2 px-6 py-2.5 font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none"
                 >
                   Filters wissen
                 </button>
               ) : (
                 <Link
                   href="/events/new"
-                  className="bg-theme-primary shadow-theme-primary inline-flex items-center gap-2 rounded-xl px-6 py-2.5 font-medium text-white shadow-lg transition-colors hover:opacity-90"
+                  className="bg-theme-primary shadow-theme-primary inline-flex items-center gap-2 rounded-xl px-6 py-2.5 font-medium text-white shadow-lg transition-colors hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none"
                 >
                   <Plus className="h-4 w-4" />
                   Eerste Event Toevoegen

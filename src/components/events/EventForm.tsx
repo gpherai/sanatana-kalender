@@ -551,6 +551,7 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
           <div className="flex gap-2">
             <input
               type="text"
+              aria-label="Nieuwe tag"
               value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
               onKeyDown={handleTagKeyDown}
@@ -561,7 +562,7 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
               type="button"
               onClick={addTag}
               aria-label="Tag toevoegen"
-              className="bg-theme-surface-raised hover:bg-theme-hover rounded-lg px-3 py-2 transition-colors"
+              className="bg-theme-surface-raised hover:bg-theme-hover focus-visible:ring-theme-primary cursor-pointer rounded-lg px-3 py-2 transition-colors focus-visible:ring-2 focus-visible:outline-none"
             >
               <Plus className="text-theme-fg-secondary h-5 w-5" />
             </button>
@@ -593,9 +594,12 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
 
       {/* Notes Section */}
       <div className="space-y-4">
-        <h3 className="text-theme-fg-muted text-sm font-medium tracking-wide uppercase">
+        <label
+          htmlFor="notes"
+          className="text-theme-fg-muted block text-sm font-medium tracking-wide uppercase"
+        >
           Notities <span className="text-xs font-normal">(optioneel)</span>
-        </h3>
+        </label>
 
         <textarea
           id="notes"
@@ -612,7 +616,7 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
         <button
           type="button"
           onClick={() => router.back()}
-          className="text-theme-fg-secondary hover:text-theme-fg rounded-lg px-4 py-2 text-sm font-medium transition-colors"
+          className="text-theme-fg-secondary hover:text-theme-fg focus-visible:ring-theme-primary cursor-pointer rounded-lg px-4 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none"
         >
           Annuleren
         </button>
@@ -623,7 +627,8 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
             "flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium",
             "bg-theme-primary text-white hover:opacity-90",
             "disabled:cursor-not-allowed disabled:opacity-50",
-            "shadow-theme-primary transition-colors"
+            "shadow-theme-primary transition-colors",
+            "focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none"
           )}
         >
           {isSubmitting ? (

@@ -53,7 +53,7 @@ export default async function EditEventPage({ params }: PageProps) {
       {/* Back Link */}
       <Link
         href={`/events/${id}`}
-        className="text-theme-fg-muted hover:text-theme-fg mb-6 inline-flex items-center gap-2 text-sm"
+        className="text-theme-fg-muted hover:text-theme-fg focus-visible:ring-theme-primary mb-6 inline-flex items-center gap-2 rounded text-sm focus-visible:ring-2 focus-visible:outline-none"
       >
         <ArrowLeft className="h-4 w-4" />
         Terug naar event
