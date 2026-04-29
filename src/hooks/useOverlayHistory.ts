@@ -46,7 +46,13 @@ export function useOverlayHistory({
     (afterClose?: () => void) => {
       if (isOpen && hasHistoryEntryRef.current) {
         hasHistoryEntryRef.current = false;
-        window.history.back();
+        if (afterClose) {
+          // Navigating away: replace overlay entry in-place so no popstate fires.
+          // history.back() + router.push() race causes Next.js to abort the push.
+          window.history.replaceState(null, "");
+        } else {
+          window.history.back();
+        }
       }
 
       onClose();
