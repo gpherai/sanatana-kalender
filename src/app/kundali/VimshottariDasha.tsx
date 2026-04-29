@@ -96,7 +96,7 @@ export function VimshottariDasha({ chart }: { chart: BirthChart }) {
                 aria-expanded={isOpen}
                 onClick={() => toggle(idx)}
                 className={cn(
-                  "relative flex w-full cursor-pointer items-center gap-2 overflow-hidden rounded-lg px-3 py-2 text-sm transition-colors",
+                  "focus-visible:ring-theme-primary relative flex w-full cursor-pointer items-center gap-2 overflow-hidden rounded-lg px-3 py-2 text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none",
                   isCurrent && "bg-theme-primary-10",
                   !isCurrent && "hover:bg-theme-hover",
                   isPast && "opacity-50"
@@ -104,7 +104,7 @@ export function VimshottariDasha({ chart }: { chart: BirthChart }) {
               >
                 <ChevronRight
                   className={cn(
-                    "text-theme-fg-muted h-3.5 w-3.5 shrink-0 transition-transform duration-150",
+                    "text-theme-fg-muted h-3.5 w-3.5 shrink-0 transition-transform duration-150 motion-reduce:transition-none",
                     isOpen && "rotate-90"
                   )}
                 />

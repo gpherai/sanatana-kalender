@@ -352,7 +352,7 @@ export default function KundaliPage() {
           <button
             type="submit"
             disabled={loading}
-            className="bg-theme-primary text-theme-primary-fg hover:bg-theme-primary-80 rounded-lg px-6 py-2.5 text-sm font-semibold transition-colors disabled:opacity-50"
+            className="bg-theme-primary text-theme-primary-fg hover:bg-theme-primary-80 cursor-pointer rounded-lg px-6 py-2.5 text-sm font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
           >
             {loading ? "Berekenen..." : "Bereken Kundali"}
           </button>
@@ -362,7 +362,7 @@ export default function KundaliPage() {
               <button
                 type="button"
                 onClick={clearSaved}
-                className="text-theme-primary cursor-pointer hover:underline"
+                className="text-theme-primary focus-visible:ring-theme-primary cursor-pointer rounded hover:underline focus-visible:ring-2 focus-visible:outline-none"
               >
                 Wissen
               </button>
@@ -473,7 +473,7 @@ export default function KundaliPage() {
                   title="D1 Grafiek"
                   aria-label="D1 Grafiek"
                   className={cn(
-                    "flex cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
+                    "focus-visible:ring-theme-primary flex cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none",
                     resultView === "d1-chart"
                       ? "bg-theme-primary-15 text-theme-primary"
                       : "text-theme-fg-muted hover:text-theme-fg"
@@ -488,7 +488,7 @@ export default function KundaliPage() {
                   title="D1 Tabel"
                   aria-label="D1 Tabel"
                   className={cn(
-                    "flex cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
+                    "focus-visible:ring-theme-primary flex cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none",
                     resultView === "d1-table"
                       ? "bg-theme-primary-15 text-theme-primary"
                       : "text-theme-fg-muted hover:text-theme-fg"
@@ -503,7 +503,7 @@ export default function KundaliPage() {
                   title="D9 Grafiek"
                   aria-label="D9 Grafiek"
                   className={cn(
-                    "flex cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
+                    "focus-visible:ring-theme-primary flex cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none",
                     resultView === "d9-chart"
                       ? "bg-theme-primary-15 text-theme-primary"
                       : "text-theme-fg-muted hover:text-theme-fg"
@@ -518,7 +518,7 @@ export default function KundaliPage() {
                   title="D9 Tabel"
                   aria-label="D9 Tabel"
                   className={cn(
-                    "flex cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
+                    "focus-visible:ring-theme-primary flex cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none",
                     resultView === "d9-table"
                       ? "bg-theme-primary-15 text-theme-primary"
                       : "text-theme-fg-muted hover:text-theme-fg"
@@ -533,7 +533,7 @@ export default function KundaliPage() {
                   title="D10 Grafiek"
                   aria-label="D10 Grafiek"
                   className={cn(
-                    "flex cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
+                    "focus-visible:ring-theme-primary flex cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none",
                     resultView === "d10-chart"
                       ? "bg-theme-primary-15 text-theme-primary"
                       : "text-theme-fg-muted hover:text-theme-fg"
@@ -548,7 +548,7 @@ export default function KundaliPage() {
                   title="D10 Tabel"
                   aria-label="D10 Tabel"
                   className={cn(
-                    "flex cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
+                    "focus-visible:ring-theme-primary flex cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none",
                     resultView === "d10-table"
                       ? "bg-theme-primary-15 text-theme-primary"
                       : "text-theme-fg-muted hover:text-theme-fg"
@@ -758,7 +758,9 @@ export default function KundaliPage() {
 
           {/* Technical metadata */}
           <details className="text-theme-fg-muted text-xs">
-            <summary className="cursor-pointer">Technische details</summary>
+            <summary className="focus-visible:ring-theme-primary cursor-pointer rounded focus-visible:ring-2 focus-visible:outline-none">
+              Technische details
+            </summary>
             <div className="mt-2 space-y-1 font-mono">
               <p>Julian Day: {chart.julianDay.toFixed(8)}</p>
               <p>
