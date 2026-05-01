@@ -62,7 +62,7 @@ function TermCard({
   return (
     <Link
       href={`/encyclopedie/${item.slug}`}
-      className="theme-card theme-interactive theme-focus-ring group relative flex flex-col p-6 duration-500 hover:-translate-y-1"
+      className="theme-card theme-interactive theme-focus-ring group relative flex flex-col p-6 duration-200 motion-safe:hover:-translate-y-1"
     >
       <div className={`${barClass} absolute top-0 left-0 h-1.5 w-full rounded-t-2xl`} />
       <div className="space-y-2">
@@ -152,7 +152,7 @@ export function EncyclopediaOverview({
         {query && (
           <button
             onClick={() => setQuery("")}
-            className="text-theme-fg-muted hover:text-theme-fg absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer transition-colors"
+            className="text-theme-fg-muted hover:text-theme-fg focus-visible:ring-theme-primary absolute top-1/2 right-3 flex min-h-[44px] min-w-[44px] -translate-y-1/2 cursor-pointer items-center justify-center rounded-lg transition-colors focus-visible:ring-2 focus-visible:outline-none"
             aria-label="Zoekterm wissen"
           >
             <X className="h-4 w-4" />

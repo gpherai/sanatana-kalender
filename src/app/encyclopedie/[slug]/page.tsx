@@ -81,7 +81,7 @@ const components = {
       return (
         <Link
           href={props.href!}
-          className="text-theme-primary font-medium hover:underline"
+          className="text-theme-primary focus-visible:ring-theme-primary rounded font-medium hover:underline focus-visible:ring-2 focus-visible:outline-none"
         >
           {props.children}
         </Link>
@@ -91,7 +91,7 @@ const components = {
       <a
         target="_blank"
         rel="noopener noreferrer"
-        className="text-theme-primary font-medium hover:underline"
+        className="text-theme-primary focus-visible:ring-theme-primary rounded font-medium hover:underline focus-visible:ring-2 focus-visible:outline-none"
         {...props}
       >
         {props.children}
@@ -191,7 +191,7 @@ export default async function TermPage({
         <div className="text-theme-fg-muted mb-8 flex flex-wrap items-center gap-2 text-sm font-medium">
           <Link
             href="/encyclopedie"
-            className="hover:text-theme-primary flex items-center gap-1 transition-colors"
+            className="hover:text-theme-primary focus-visible:ring-theme-primary flex items-center gap-1 rounded transition-colors focus-visible:ring-2 focus-visible:outline-none"
           >
             <ArrowLeft className="h-4 w-4" />
             Encyclopedie
@@ -201,7 +201,7 @@ export default async function TermPage({
               <span>/</span>
               <Link
                 href={`/encyclopedie/${parentTerm.slug}`}
-                className="hover:text-theme-primary transition-colors"
+                className="hover:text-theme-primary focus-visible:ring-theme-primary rounded transition-colors focus-visible:ring-2 focus-visible:outline-none"
               >
                 {parentTerm.title}
               </Link>
@@ -273,7 +273,7 @@ export default async function TermPage({
                 <Link
                   href={`/encyclopedie/${child.slug}`}
                   key={child.slug}
-                  className="theme-card theme-focus-ring group hover:border-theme-primary-30 relative flex flex-col p-6 transition duration-300 hover:-translate-y-1 hover:shadow-md"
+                  className="theme-card theme-focus-ring group hover:border-theme-primary-30 relative flex flex-col p-6 transition duration-300 hover:shadow-md motion-safe:hover:-translate-y-1"
                 >
                   <div className="bg-theme-primary-20 group-hover:bg-theme-primary-40 absolute top-0 left-0 h-1.5 w-full rounded-t-2xl transition-colors duration-300" />
                   <h3 className="text-theme-fg mb-2 text-xl font-bold tracking-tight">
@@ -299,7 +299,7 @@ export default async function TermPage({
                   </h2>
                   <Link
                     href={`/encyclopedie/${group.slug}`}
-                    className="text-theme-primary text-sm font-semibold hover:underline"
+                    className="text-theme-primary focus-visible:ring-theme-primary rounded text-sm font-semibold hover:underline focus-visible:ring-2 focus-visible:outline-none"
                   >
                     Bekijk volledige groep &rarr;
                   </Link>
@@ -309,7 +309,7 @@ export default async function TermPage({
                     <Link
                       href={`/encyclopedie/${member.slug}`}
                       key={member.slug}
-                      className="theme-card theme-focus-ring group hover:border-theme-primary-30 relative flex flex-col p-6 transition duration-300 hover:-translate-y-1 hover:shadow-md"
+                      className="theme-card theme-focus-ring group hover:border-theme-primary-30 relative flex flex-col p-6 transition duration-300 hover:shadow-md motion-safe:hover:-translate-y-1"
                     >
                       <div className="bg-theme-primary-20 group-hover:bg-theme-primary-40 absolute top-0 left-0 h-1.5 w-full rounded-t-2xl transition-colors duration-300" />
                       <h3 className="text-theme-fg mb-2 text-xl font-bold tracking-tight">
@@ -336,7 +336,7 @@ export default async function TermPage({
                 <Link
                   href={`/encyclopedie/${sibling.slug}`}
                   key={sibling.slug}
-                  className="theme-card theme-focus-ring group hover:border-theme-secondary-30 relative flex flex-col p-6 transition duration-300 hover:-translate-y-1 hover:shadow-md"
+                  className="theme-card theme-focus-ring group hover:border-theme-secondary-30 relative flex flex-col p-6 transition duration-300 hover:shadow-md motion-safe:hover:-translate-y-1"
                 >
                   <div className="bg-theme-secondary-20 group-hover:bg-theme-secondary-40 absolute top-0 left-0 h-1.5 w-full rounded-t-2xl transition-colors duration-300" />
                   <h3 className="text-theme-fg mb-2 text-xl font-bold tracking-tight">
@@ -362,7 +362,7 @@ export default async function TermPage({
                 <Link
                   href={`/encyclopedie/${related.slug}`}
                   key={related.slug}
-                  className="theme-card theme-focus-ring group hover:border-theme-accent-20 relative flex flex-col p-6 transition duration-300 hover:-translate-y-1 hover:shadow-md"
+                  className="theme-card theme-focus-ring group hover:border-theme-accent-20 relative flex flex-col p-6 transition duration-300 hover:shadow-md motion-safe:hover:-translate-y-1"
                 >
                   <div className="bg-theme-accent-15 group-hover:bg-theme-accent-20 absolute top-0 left-0 h-1.5 w-full rounded-t-2xl transition-colors duration-300" />
                   <h3 className="text-theme-fg mb-2 text-xl font-bold tracking-tight">
