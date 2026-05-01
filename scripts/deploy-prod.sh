@@ -11,6 +11,15 @@ set -euo pipefail
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$PROJECT_DIR"
 
+on_error() {
+  echo ""
+  echo "ERROR: Deploy mislukt. Migrate logs (laatste 50 regels):"
+  echo "──────────────────────────────────────────────────────"
+  "${COMPOSE[@]}" logs --tail=50 migrate 2>/dev/null || true
+  echo ""
+  echo "Tip: draai 'docker compose ps' en 'docker compose logs app' voor meer context."
+}
+
 show_help() {
   cat <<'EOF'
 Safe production deploy for Dharma Calendar.
@@ -24,6 +33,7 @@ Usage:
   ./scripts/deploy-prod.sh
   ./scripts/deploy-prod.sh --no-cache
   ./scripts/deploy-prod.sh --pull
+  ./scripts/deploy-prod.sh app        (herbouw alleen de app-service)
 
 Options:
   --no-cache   Build Docker images without cache after the backup succeeds
@@ -57,6 +67,11 @@ for arg in "$@"; do
       exit 2
       ;;
     *)
+      if [[ "$arg" == --* ]]; then
+        echo "ERROR: Onbekende optie: $arg" >&2
+        echo "Gebruik --help voor een overzicht." >&2
+        exit 2
+      fi
       SERVICES+=("$arg")
       ;;
   esac
@@ -66,6 +81,8 @@ COMPOSE=(docker compose)
 if [[ -n "${ENV_FILE:-}" ]]; then
   COMPOSE+=(--env-file "$ENV_FILE")
 fi
+
+trap on_error ERR
 
 if [[ ! -f docker-compose.yml ]]; then
   echo "ERROR: docker-compose.yml not found. Run this from the project root." >&2
@@ -108,3 +125,6 @@ echo "Deployment status:"
 echo ""
 echo "Latest database backups:"
 ls -lh backups/dharma_calendar_*.sql.gz 2>/dev/null | tail -n 5 || echo "No database backups found."
+
+echo ""
+echo "Deploy succesvol!"

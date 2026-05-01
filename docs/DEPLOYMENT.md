@@ -472,6 +472,30 @@ docker compose run --rm migrate npx prisma migrate resolve --applied <migration_
 docker compose up -d
 ```
 
+**Fout `42703 column does not exist`:** De migratie probeert een kolom te droppen die nooit in de productie-database bestond (bijv. via `db push` op dev toegevoegd, maar nooit op prod). Drie stappen:
+
+```bash
+# 1. Clear de failed state
+docker compose run --rm migrate npx prisma migrate resolve --rolled-back <migration_name>
+
+# 2. Schrijf de SQL naar een tijdelijk bestand met IF EXISTS guards
+#    (pas de inhoud aan naar de daadwerkelijke migratie)
+cat > /tmp/fix-migration.sql << 'EOF'
+ALTER TABLE "MyTable" DROP COLUMN IF EXISTS "myColumn";
+-- voeg hier de overige SQL-statements toe
+EOF
+
+# 3. Kopieer naar de db-container en run
+docker compose cp /tmp/fix-migration.sql db:/tmp/fix-migration.sql
+docker compose exec db psql -U <POSTGRES_USER> -d <POSTGRES_DB> -f /tmp/fix-migration.sql
+
+# 4. Markeer als applied en start de app
+docker compose run --rm migrate npx prisma migrate resolve --applied <migration_name>
+docker compose up -d
+```
+
+De `POSTGRES_USER` en `POSTGRES_DB` waarden staan in `.env`.
+
 ### Container Start Issues
 
 ```bash
