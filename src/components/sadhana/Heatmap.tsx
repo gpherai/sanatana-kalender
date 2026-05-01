@@ -357,7 +357,7 @@ export const Heatmap = memo(function Heatmap({
                     key={di}
                     role="button"
                     tabIndex={0}
-                    className="relative cursor-pointer rounded focus:ring-2 focus:ring-[var(--theme-ring)] focus:outline-none motion-safe:transition-colors"
+                    className="relative cursor-pointer rounded focus-visible:ring-2 focus-visible:ring-[var(--theme-ring)] focus-visible:outline-none motion-safe:transition-colors"
                     style={{
                       width: cs,
                       height: cs,

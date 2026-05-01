@@ -112,6 +112,7 @@ export function PageLayout({
         </div>
       ) : (
         <main
+          id="main-content"
           className={cn(
             "container mx-auto px-4 py-6",
             WIDTH_CLASSES[width],

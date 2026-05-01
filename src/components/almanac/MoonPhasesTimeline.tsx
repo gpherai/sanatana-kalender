@@ -38,7 +38,7 @@ export function MoonPhasesTimeline({
             key={`${phase.type}-${index}`}
             onClick={() => onSelectDate(phase.date)}
             className={cn(
-              "hover:bg-theme-surface-hover focus:ring-theme-primary flex flex-col items-center rounded-lg p-2 transition-colors focus:ring-2 focus:ring-offset-1 focus:outline-none",
+              "hover:bg-theme-surface-hover focus-visible:ring-theme-primary flex flex-col items-center rounded-lg p-2 transition-colors focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none",
               isSameDay(phase.date, selectedDate) &&
                 "bg-theme-surface-raised ring-theme-primary ring-2"
             )}

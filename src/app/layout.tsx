@@ -98,6 +98,12 @@ export default function RootLayout({
       <body className="app-body font-sans antialiased">
         <ThemeProvider>
           <ToastProvider>
+            <a
+              href="#main-content"
+              className="focus-visible:ring-theme-primary bg-theme-primary sr-only text-white focus-visible:not-sr-only focus-visible:absolute focus-visible:top-4 focus-visible:left-4 focus-visible:z-50 focus-visible:rounded-lg focus-visible:px-4 focus-visible:py-2 focus-visible:ring-2"
+            >
+              Ga naar inhoud
+            </a>
             <ScrollToTop />
             <Header />
             {children}

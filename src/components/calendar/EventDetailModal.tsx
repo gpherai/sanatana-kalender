@@ -283,8 +283,8 @@ export function EventDetailModal({
                 "absolute top-4 right-4 rounded-full p-2.5",
                 "bg-theme-surface-hover/60 hover:bg-theme-surface-hover",
                 "backdrop-blur-sm transition-all duration-200",
-                "hover:scale-105",
-                "focus:ring-theme-primary focus:ring-2 focus:ring-offset-2 focus:outline-none"
+                "motion-safe:hover:scale-105",
+                "focus-visible:ring-theme-primary focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
               )}
               aria-label="Sluiten"
             >

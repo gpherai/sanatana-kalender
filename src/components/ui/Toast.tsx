@@ -147,7 +147,7 @@ function ToastItem({ toast, onRemove }: ToastItemProps) {
       <p className="flex-1 text-sm font-medium">{toast.message}</p>
       <button
         onClick={() => onRemove(toast.id)}
-        className="hover:bg-theme-surface-hover focus:ring-theme-primary rounded p-1 transition-colors focus:ring-2 focus:ring-offset-1 focus:outline-none"
+        className="hover:bg-theme-surface-hover focus-visible:ring-theme-primary rounded p-1 transition-colors focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none"
         aria-label="Sluiten"
       >
         <X className="h-4 w-4" />

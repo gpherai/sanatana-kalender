@@ -86,7 +86,7 @@ export function EventCard({
     "border border-theme-border",
     "shadow-sm hover:shadow-xl",
     "transition-all duration-300 ease-out",
-    "hover:-translate-y-1 active:opacity-75 active:scale-[0.99]",
+    "motion-safe:hover:-translate-y-1 active:opacity-75 active:scale-[0.99]",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-theme-primary focus-visible:ring-offset-1",
     className
   );

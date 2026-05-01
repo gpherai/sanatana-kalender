@@ -80,7 +80,7 @@ export function MonthGrid({
               onClick={() => onSelectDate(date)}
               style={{ touchAction: "manipulation" }}
               className={cn(
-                "group focus:ring-theme-primary relative flex min-h-[44px] flex-col rounded-lg p-1.5 text-left transition-all focus:ring-2 focus:ring-offset-1 focus:outline-none active:opacity-75",
+                "group focus-visible:ring-theme-primary relative flex min-h-[44px] flex-col rounded-lg p-1.5 text-left transition-all focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none active:opacity-75",
                 isSelected
                   ? "bg-theme-primary ring-theme-primary text-white shadow-lg ring-2 ring-offset-2 ring-offset-[var(--theme-surface)]"
                   : isTodayDate

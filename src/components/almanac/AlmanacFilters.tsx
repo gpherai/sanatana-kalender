@@ -35,7 +35,7 @@ export function AlmanacFilters({
         <div className="flex items-center gap-2">
           <button
             onClick={() => onYearChange(Math.max(1900, year - 1))}
-            className="text-theme-fg-muted hover:bg-theme-surface-hover focus:ring-theme-primary flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg p-2 transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none"
+            className="text-theme-fg-muted hover:bg-theme-surface-hover focus-visible:ring-theme-primary flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg p-2 transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
             aria-label="Vorig jaar"
           >
             <ChevronLeft className="h-5 w-5" />
@@ -45,7 +45,7 @@ export function AlmanacFilters({
           </span>
           <button
             onClick={() => onYearChange(Math.min(2100, year + 1))}
-            className="text-theme-fg-muted hover:bg-theme-surface-hover focus:ring-theme-primary flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg p-2 transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none"
+            className="text-theme-fg-muted hover:bg-theme-surface-hover focus-visible:ring-theme-primary flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg p-2 transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
             aria-label="Volgend jaar"
           >
             <ChevronRight className="h-5 w-5" />
@@ -64,7 +64,7 @@ export function AlmanacFilters({
                 key={m}
                 onClick={() => onMonthChange(index)}
                 className={cn(
-                  "focus:ring-theme-primary flex min-h-[44px] flex-shrink-0 items-center rounded-lg px-3 py-1.5 text-sm font-medium transition-all focus:ring-2 focus:ring-offset-1 focus:outline-none",
+                  "focus-visible:ring-theme-primary flex min-h-[44px] flex-shrink-0 items-center rounded-lg px-3 py-1.5 text-sm font-medium transition-all focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none",
                   isSelected
                     ? "bg-theme-primary text-white shadow-md"
                     : isCurrent
@@ -84,7 +84,7 @@ export function AlmanacFilters({
           <button
             onClick={() => onToggleFilter("moonPhases")}
             className={cn(
-              "flex min-h-[44px] items-center rounded-full px-3 py-1 text-xs font-medium transition-all focus:ring-2 focus:ring-[var(--theme-almanac-moon-focus)] focus:ring-offset-1 focus:outline-none",
+              "flex min-h-[44px] items-center rounded-full px-3 py-1 text-xs font-medium transition-all focus-visible:ring-2 focus-visible:ring-[var(--theme-almanac-moon-focus)] focus-visible:ring-offset-1 focus-visible:outline-none",
               showMoonPhases
                 ? "bg-[var(--theme-almanac-moon-bg)] text-[var(--theme-almanac-moon-fg)]"
                 : "bg-theme-surface-hover text-theme-fg-muted"
@@ -95,7 +95,7 @@ export function AlmanacFilters({
           <button
             onClick={() => onToggleFilter("specialDays")}
             className={cn(
-              "flex min-h-[44px] items-center rounded-full px-3 py-1 text-xs font-medium transition-all focus:ring-2 focus:ring-[var(--theme-almanac-special-focus)] focus:ring-offset-1 focus:outline-none",
+              "flex min-h-[44px] items-center rounded-full px-3 py-1 text-xs font-medium transition-all focus-visible:ring-2 focus-visible:ring-[var(--theme-almanac-special-focus)] focus-visible:ring-offset-1 focus-visible:outline-none",
               showSpecialDays
                 ? "bg-[var(--theme-almanac-special-pill-bg,var(--theme-almanac-special-bg))] text-[var(--theme-almanac-special-fg)]"
                 : "bg-theme-surface-hover text-theme-fg-muted"
@@ -106,7 +106,7 @@ export function AlmanacFilters({
           <button
             onClick={() => onToggleFilter("events")}
             className={cn(
-              "flex min-h-[44px] items-center rounded-full px-3 py-1 text-xs font-medium transition-all focus:ring-2 focus:ring-[var(--theme-almanac-event-focus)] focus:ring-offset-1 focus:outline-none",
+              "flex min-h-[44px] items-center rounded-full px-3 py-1 text-xs font-medium transition-all focus-visible:ring-2 focus-visible:ring-[var(--theme-almanac-event-focus)] focus-visible:ring-offset-1 focus-visible:outline-none",
               showEvents
                 ? "bg-[var(--theme-almanac-event-pill-bg,var(--theme-almanac-event-bg))] text-[var(--theme-almanac-event-fg)]"
                 : "bg-theme-surface-hover text-theme-fg-muted"

@@ -68,6 +68,7 @@ export function Header() {
                   <Link
                     key={href}
                     href={href}
+                    aria-label={label}
                     aria-current={isActive ? "page" : undefined}
                     className={cn(
                       "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-all",
