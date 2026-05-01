@@ -5,7 +5,7 @@ const { mockComputeDaily } = vi.hoisted(() => {
   return { mockComputeDaily: vi.fn() };
 });
 
-vi.mock("@/server/panchanga", () => {
+vi.mock("@/engine/panchanga", () => {
   return {
     PanchangaSwissService: class {
       computeDaily = mockComputeDaily;

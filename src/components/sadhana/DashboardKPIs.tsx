@@ -1,7 +1,7 @@
 "use client";
 
 import { Flame, Sparkles, Calendar, TrendingUp } from "lucide-react";
-import type { CalendarDay, OverviewStats, StreakStats } from "./types";
+import type { CalendarDay, OverviewStats, StreakStats } from "@/types/sadhana";
 
 function getMonthProgress(calDays: CalendarDay[]) {
   const now = new Date();

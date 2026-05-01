@@ -13,7 +13,7 @@ import {
   BookOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { SessionData, Practice, FormItem } from "./types";
+import type { SessionData, Practice, FormItem } from "@/types/sadhana";
 import { apiFetch } from "@/lib/sadhana-api";
 import {
   todayString,

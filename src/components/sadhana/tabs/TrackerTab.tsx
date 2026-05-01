@@ -12,7 +12,7 @@ import type {
   Routine,
   DayInfoMap,
   Goal,
-} from "../types";
+} from "@/types/sadhana";
 import { formatDuration } from "@/lib/sadhana-utils";
 import { SessionsSection } from "../SessionsSection";
 import { UpcomingEventsPanel } from "../UpcomingEventsPanel";

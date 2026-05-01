@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import type { BirthChart, GrahaKey } from "@/server/panchanga/types";
+import type { BirthChart, GrahaKey } from "@/engine/panchanga/types";
 import { RASHI_NAMES } from "./KundaliChart";
 import { navamshaDegree, navamshaRashi } from "./NavamshaChart";
 import { dashamshaDegree, dashamshaRashi } from "./DashamshaChart";

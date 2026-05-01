@@ -18,20 +18,20 @@ import { EventDetailModal } from "@/components/calendar/EventDetailModal";
 import { TrackerTab } from "./tabs/TrackerTab";
 import { DashboardTab } from "./tabs/DashboardTab";
 import { AnalyticsTab } from "./tabs/AnalyticsTab";
-import { InstellingenTab } from "./tabs/InstellingenTab";
+import { SettingsTab } from "./tabs/SettingsTab";
 import { useSadhanaData, type SadhanaInitialData } from "@/hooks/useSadhanaData";
 
 // =============================================================================
 // TYPES
 // =============================================================================
 
-type TabId = "tracker" | "dashboard" | "analytics" | "instellingen";
+type TabId = "tracker" | "dashboard" | "analytics" | "settings";
 
 const TABS: { id: TabId; label: string; Icon: React.ElementType }[] = [
   { id: "tracker", label: "Tracker", Icon: Flame },
   { id: "dashboard", label: "Dashboard", Icon: LayoutDashboard },
   { id: "analytics", label: "Analytics", Icon: TrendingUp },
-  { id: "instellingen", label: "Instellingen", Icon: Settings },
+  { id: "settings", label: "Instellingen", Icon: Settings },
 ];
 
 const VALID_TABS = new Set<string>(TABS.map((t) => t.id));
@@ -138,7 +138,7 @@ export function SadhanaTracker({ initialData }: { initialData?: SadhanaInitialDa
     [heatmapEventsRaw]
   );
 
-  const handleGoToSettings = useCallback(() => setTab("instellingen"), [setTab]);
+  const handleGoToSettings = useCallback(() => setTab("settings"), [setTab]);
 
   // ── Loading / error states ──────────────────────────────────────────────────
   if (loading) {
@@ -233,8 +233,8 @@ export function SadhanaTracker({ initialData }: { initialData?: SadhanaInitialDa
         <AnalyticsTab sessions={sessions} calDays={calDays} overview={overview} />
       )}
 
-      {activeTab === "instellingen" && (
-        <InstellingenTab
+      {activeTab === "settings" && (
+        <SettingsTab
           routines={routines}
           goals={goals}
           allPractices={allPractices}

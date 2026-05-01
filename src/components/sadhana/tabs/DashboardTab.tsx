@@ -7,7 +7,7 @@ import type {
   OverviewStats,
   DayInfoMap,
   StreakStats,
-} from "../types";
+} from "@/types/sadhana";
 import { buildHeatmap, Heatmap } from "../Heatmap";
 import { MalasChart } from "../MalasChart";
 import { AllTimeOverview } from "../AllTimeOverview";

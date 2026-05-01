@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { Calendar, Clock, Flame, Layers, PieChart } from "lucide-react";
-import { type CalendarDay, type SessionData, type PracticeStat } from "./types";
+import { type CalendarDay, type SessionData, type PracticeStat } from "@/types/sadhana";
 import { MALA_BEAD_COUNT } from "@/lib/domain";
 
 export const CHART_COLORS = [

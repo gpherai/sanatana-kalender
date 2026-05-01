@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { type CalendarDay, type SessionData } from "./types";
+import { type CalendarDay, type SessionData } from "@/types/sadhana";
 import { MALA_BEAD_COUNT } from "@/lib/domain";
 
 // =============================================================================

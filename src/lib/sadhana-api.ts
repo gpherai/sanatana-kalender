@@ -1,6 +1,4 @@
-"use client";
-
-import type { DayInfoMap } from "@/components/sadhana/types";
+import type { DayInfoMap } from "@/types/sadhana";
 import { localDateString } from "@/lib/sadhana-utils";
 
 // =============================================================================

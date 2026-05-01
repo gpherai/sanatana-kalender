@@ -15,7 +15,7 @@ import {
   PanchangaSwissService,
   type DailyPanchangaFull,
   type LocationConfig,
-} from "@/server/panchanga";
+} from "@/engine/panchanga";
 import type { Location } from "@/lib/domain";
 import { logDebug } from "@/lib/utils";
 import { DateTime } from "luxon";

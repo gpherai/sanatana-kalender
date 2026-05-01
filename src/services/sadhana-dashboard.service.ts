@@ -11,7 +11,7 @@ import {
 import { findEventOccurrences } from "@/repositories/event.repository";
 import { findDailyInfoHeatmapData } from "@/repositories/daily-info.repository";
 import { todayString, SADHANA_START_DATE } from "@/lib/sadhana-utils";
-import type { DayInfo } from "@/components/sadhana/types";
+import type { DayInfo } from "@/types/sadhana";
 import { transformOccurrenceToCalendarEvent } from "@/lib/api-transformers";
 import { deriveDayInfoFromDailyInfo } from "@/lib/panchanga-helpers";
 import { utcDateFromDateOnly, dateOnlyFromUtcDate } from "@/lib/default-location-date";

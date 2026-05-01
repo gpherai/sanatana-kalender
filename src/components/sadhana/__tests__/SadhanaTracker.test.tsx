@@ -5,7 +5,7 @@ import { SadhanaTracker } from "@/components/sadhana/SadhanaTracker";
 const loadAll = vi.fn();
 
 vi.mock("next/navigation", () => ({
-  useSearchParams: () => new URLSearchParams("tab=instellingen"),
+  useSearchParams: () => new URLSearchParams("tab=settings"),
   useRouter: () => ({
     replace: vi.fn(),
   }),
@@ -57,8 +57,8 @@ vi.mock("@/hooks/useSadhanaData", () => ({
   }),
 }));
 
-vi.mock("@/components/sadhana/tabs/InstellingenTab", () => ({
-  InstellingenTab: ({
+vi.mock("@/components/sadhana/tabs/SettingsTab", () => ({
+  SettingsTab: ({
     allPractices,
   }: {
     allPractices: Array<{ id: string; name: string }>;

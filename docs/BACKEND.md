@@ -94,7 +94,7 @@ Alle routes gebruiken response helpers uit `src/lib/api-response.ts` (`serverErr
 | `recurrenceService` | `recurrence.service.ts` | Event recurrence generation, strategy registry per RuleType |
 | `eventService` | `event.service.ts` | Event mutations, occurrence ownership, category validatie en conflictregels |
 | `sadhanaService` | `sadhana.service.ts` | Streaks, goals progress, aggregatie van sessiedata naar statistieken |
-| `sadhanaFormatters` | `sadhana-formatters.ts` | DTO-formatting: `formatSession`, `formatGoal`, `formatPractice`, `computePracticeStats` |
+| `sadhanaFormatters` | `lib/sadhana-formatters.ts` | DTO-formatting: `formatSession`, `formatGoal`, `formatPractice`, `computePracticeStats` |
 | `weatherService` | `weather.service.ts` | OpenWeather orchestratie, foutnormalisatie, dashboard-response mapping |
 | `getHomePageData` | `home.service.ts` | SSR aggregatie home page: upcomingEvents, categories, panchanga en weather parallel; timezone-aware todayEvents |
 | `getSadhanaDashboardInit` | `sadhana-dashboard.service.ts` | SSR aggregatie sadhana pagina: DB queries parallel, daarna panchanga gescheiden om connection pool timeouts te voorkomen |

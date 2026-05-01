@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import { NavamshaChart, navamshaDegree, navamshaRashi } from "../NavamshaChart";
-import type { BirthChart, GrahaPosition } from "@/server/panchanga/types";
+import type { BirthChart, GrahaPosition } from "@/engine/panchanga/types";
 
 // Helper to create a minimal GrahaPosition
 function makeGraha(longitude: number): GrahaPosition {

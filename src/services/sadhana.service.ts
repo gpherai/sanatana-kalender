@@ -20,7 +20,7 @@ import {
   formatPractice,
   formatRoutine,
   formatSession,
-} from "@/services/sadhana-formatters";
+} from "@/lib/sadhana-formatters";
 
 export class SadhanaNotFoundError extends Error {}
 

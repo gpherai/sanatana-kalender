@@ -139,6 +139,7 @@ dharma-calendar/
     │   ├── calendar/
     │   ├── events/
     │   ├── filters/
+    │   ├── kundali/           # Jyotisha charts, graha tables, dasha (geen DB)
     │   ├── layout/            # PageLayout + barrel
     │   ├── sadhana/           # SadhanaTracker + tabs/ + widgets/charts
     │   ├── settings/
@@ -152,10 +153,18 @@ dharma-calendar/
     │   └── themes.ts          # Theme catalog + metadata
     ├── content/
     │   └── encyclopedia/      # MDX artikelen
-    ├── engine/                # Pure recurrence helpers (geen DB)
-    │   ├── index.ts           # Barrel export
+    ├── engine/                # Pure computation engines (geen DB, geen HTTP)
+    │   ├── index.ts           # Barrel export voor recurrence helpers
     │   ├── tithi-helpers.ts
-    │   └── types.ts
+    │   ├── types.ts
+    │   └── panchanga/         # Swiss Ephemeris wrapper (server-only)
+    │       ├── index.ts       # Runtime guard: gooit als client importeert
+    │       ├── constants.ts
+    │       ├── types.ts
+    │       ├── services/
+    │       │   ├── panchanga-swiss-service.ts
+    │       │   └── birth-chart-service.ts
+    │       └── utils/astro.ts
     ├── hooks/
     │   ├── useSadhanaData.ts  # Laadt sadhana-data; accepteert SSR-hydration
     │   ├── useWeather.ts
@@ -171,14 +180,15 @@ dharma-calendar/
     │   ├── db.ts              # Prisma client singleton
     │   ├── default-location-date.ts
     │   ├── domain.ts          # DEFAULT_LOCATION + alle domein-constanten
-    │   ├── encyclopedia.ts
+    │   ├── encyclopedia.ts    # server-only (gebruikt Node.js fs)
     │   ├── env.ts             # Zod environment validatie
     │   ├── events.ts
     │   ├── moon-phases.ts
     │   ├── panchanga-helpers.ts
     │   ├── patterns.ts
-    │   ├── sadhana-api.ts     # Client-side fetch helpers
-    │   ├── sadhana-utils.ts   # SADHANA_START_DATE, MALA_BEAD_COUNT, goal logica
+    │   ├── sadhana-api.ts     # Client-side fetch helpers voor sadhana API
+    │   ├── sadhana-formatters.ts  # DTO formatters (Prisma → service types)
+    │   ├── sadhana-utils.ts   # SADHANA_START_DATE, goal logica, display utils
     │   ├── timing-utils.ts
     │   ├── utils.ts
     │   ├── validations.ts     # Alle Zod schemas
@@ -190,18 +200,12 @@ dharma-calendar/
     │   ├── preference.repository.ts
     │   └── sadhana.repository.ts
     ├── scripts/               # Build/seed scripts
-    ├── server/panchanga/      # Swiss Ephemeris (server-only)
-    │   ├── services/
-    │   │   ├── panchanga-swiss-service.ts
-    │   │   └── birth-chart-service.ts
-    │   └── utils/astro.ts
     ├── services/              # Business logica & SSR orchestratie (server-only)
     │   ├── event.service.ts
     │   ├── home.service.ts            # SSR aggregatie voor home page
-    │   ├── panchanga.service.ts       # LRU-cached Swiss Ephemeris wrapper
+    │   ├── panchanga.service.ts       # LRU-cached wrapper voor engine/panchanga
     │   ├── recurrence.service.ts
     │   ├── sadhana-dashboard.service.ts  # SSR aggregatie voor sadhana pagina
-    │   ├── sadhana-formatters.ts
     │   ├── sadhana.service.ts
     │   └── weather.service.ts
     ├── styles/                # Tailwind v4 CSS modules
@@ -209,8 +213,9 @@ dharma-calendar/
     │   ├── utilities.css
     │   └── themes/
     └── types/
-        ├── api.ts
+        ├── api.ts        # DailyInfoData + DailyInfoResponse
         ├── calendar.ts
+        ├── sadhana.ts    # Sadhana domein types (DayInfo, Goal, Practice, ...)
         └── weather.ts
 ```
 

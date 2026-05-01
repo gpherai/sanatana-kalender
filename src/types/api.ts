@@ -3,7 +3,28 @@
  * Type definitions for API endpoint responses
  */
 
-import type { DailyInfoData } from "@/services";
+/**
+ * Base fields shared by all /api/daily-info responses.
+ * The full response shape (with structured tithi, nakshatra, etc.) is in DailyInfoResponse.
+ * This interface covers only the scalar fields that DailyInfoResponse does not override.
+ */
+export interface DailyInfoData {
+  date: string; // YYYY-MM-DD
+  locationName: string;
+  locationLat: number;
+  locationLon: number;
+  sunrise: string | null; // HH:mm
+  sunset: string | null;
+  moonrise: string | null;
+  moonset: string | null;
+  moonriseUtcIso: string | null;
+  moonsetUtcIso: string | null;
+  moonPhasePercent: number;
+  moonPhaseType: string | null;
+  isWaxing: boolean;
+  // Note: tithi, nakshatra, yoga, karana, maas are structured objects in DailyInfoResponse.
+  // They are omitted here and overridden there via Omit<DailyInfoData, ...>.
+}
 
 /**
  * API response shape for /api/daily-info endpoint

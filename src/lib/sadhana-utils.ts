@@ -1,5 +1,5 @@
 import { defaultLocationDate } from "@/lib/default-location-date";
-import type { DayInfo, Goal, PracticeType } from "@/components/sadhana/types";
+import type { DayInfo, Goal, PracticeType } from "@/types/sadhana";
 
 // =============================================================================
 // DATE HELPERS

@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { VimshottariDasha } from "../VimshottariDasha";
 import { calcVimshottari, calcAntardasha } from "../dasha-utils";
-import type { BirthChart, GrahaPosition } from "@/server/panchanga/types";
+import type { BirthChart, GrahaPosition } from "@/engine/panchanga/types";
 
 // Mock today to a fixed date for deterministic tests
 const FIXED_TODAY = new Date("2024-06-15T12:00:00Z");

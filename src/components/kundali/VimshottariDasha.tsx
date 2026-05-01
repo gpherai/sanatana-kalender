@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Clock, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { BirthChart } from "@/server/panchanga/types";
+import type { BirthChart } from "@/engine/panchanga/types";
 import {
   calcVimshottari,
   calcAntardasha,

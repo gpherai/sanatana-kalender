@@ -11,7 +11,7 @@
 | Root layout | `src/app/layout.tsx` | Fonts, global providers, theme init script, globale documentstructuur |
 | Page shell | `src/components/layout/PageLayout.tsx` | Consistente pagina-achtergrond, containerbreedtes, verticale spacing |
 | Shared UI | `src/components/ui/` | `Header`, `Section`, `Toast`, `TodayHero`, `MoonPhase` |
-| Feature UI | `src/components/{feature}/` | Almanac, Calendar, Events, Sadhana, Weather, Settings, etc. |
+| Feature UI | `src/components/{feature}/` | Almanac, Calendar, Events, Kundali, Sadhana, Weather, Settings, etc. |
 | Feature routes | `src/app/{route}/` | Data orchestration + compositie; zo dun mogelijk |
 
 ---
@@ -63,7 +63,7 @@ DB queries en Swiss Ephemeris berekeningen worden **bewust gescheiden** uitgevoe
 
 ### Tab Navigatie (Sadhana)
 
-De sadhana tabs gebruiken `window.history.replaceState` + `useSearchParams`, **niet** `router.replace`:
+De sadhana tabs gebruiken `window.history.replaceState` + `useSearchParams`, **niet** `router.replace`. URL params: `?tab=tracker|dashboard|analytics|settings`.
 
 ```ts
 // ✅ Client-only URL update — geen server roundtrip
@@ -115,9 +115,9 @@ SadhanaTracker (Client Component)
   ├─ TrackerTab          (props)
   ├─ DashboardTab        (props)      ← heatmap + charts, year selector
   ├─ AnalyticsTab        (props)      ← donut chart, weekpatroon, trends
-  └─ InstellingenTab     (props)      ← practices, goals, routines CRUD
+  └─ SettingsTab         (props)      ← practices, goals, routines CRUD
 ```
 
 Alle tab-componenten zijn gewrapt in `React.memo`. Data wordt eenmalig geladen in `SadhanaTracker` en als stabiele props doorgegeven — memo is effectief.
 
-**DayInfoMap**: `Map<string, DayInfo>` met tithi/specialDay/moonPhaseEvent per datum. Wordt gevuld via SSR init (panchanga data) of via `fetchDayInfoMap` client-side. Typed als `[string, DayInfo][]` op de SSR boundary — nooit als `unknown`.
+**DayInfoMap**: `Map<string, DayInfo>` met tithi/specialDay/moonPhaseEvent per datum. Wordt gevuld via SSR init (panchanga data) of via `fetchDayInfoMap` client-side. Typed als `[string, DayInfo][]` op de SSR boundary — nooit als `unknown`. Type `DayInfo` en `DayInfoMap` zijn gedefinieerd in `src/types/sadhana.ts`.

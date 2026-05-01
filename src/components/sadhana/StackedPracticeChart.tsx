@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Layers } from "lucide-react";
-import type { SessionData } from "./types";
+import type { SessionData } from "@/types/sadhana";
 import { CHART_COLORS } from "./AnalyticsWidgets";
 import { MALA_BEAD_COUNT } from "@/lib/domain";
 

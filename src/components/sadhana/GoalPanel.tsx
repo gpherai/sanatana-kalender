@@ -14,7 +14,7 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { Goal, GoalType, Practice } from "./types";
+import type { Goal, GoalType, Practice } from "@/types/sadhana";
 import { apiFetch } from "@/lib/sadhana-api";
 import { goalProgressRatio, isGoalComplete } from "@/lib/sadhana-utils";
 

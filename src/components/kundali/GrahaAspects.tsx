@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { BirthChart, GrahaKey } from "@/server/panchanga/types";
+import type { BirthChart, GrahaKey } from "@/engine/panchanga/types";
 import { GRAHA_SYMBOL, GRAHA_COLOR, GRAHA_SHORT, RASHI_NAMES } from "./KundaliChart";
 import { calcAspects, type GrahaAspect } from "./graha-aspects";
 

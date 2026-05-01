@@ -92,7 +92,7 @@ export const DIGNITY_LABEL: Record<NonNullable<Dignity>, string> = {
 // GRAHA DISPLAY CONFIG
 // =============================================================================
 
-import type { GrahaKey } from "@/server/panchanga/types";
+import type { GrahaKey } from "@/engine/panchanga/types";
 
 export const GRAHA_ORDER: GrahaKey[] = [
   "surya",

@@ -3,7 +3,13 @@
 import { useState } from "react";
 import { Plus, Trash2, Loader2, Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { Practice, FormItem, ItemUnit, PracticeType, Routine } from "./types";
+import type {
+  Practice,
+  FormItem,
+  ItemUnit,
+  PracticeType,
+  Routine,
+} from "@/types/sadhana";
 import { todayString } from "@/lib/sadhana-utils";
 
 function defaultUnit(type: PracticeType | undefined): ItemUnit {

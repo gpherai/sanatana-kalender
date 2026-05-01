@@ -1,7 +1,7 @@
 "use client";
 
 import { Award } from "lucide-react";
-import { type OverviewStats } from "./types";
+import { type OverviewStats } from "@/types/sadhana";
 
 function formatHours(minutes: number): string {
   return Math.round(minutes / 60).toLocaleString("nl-NL");

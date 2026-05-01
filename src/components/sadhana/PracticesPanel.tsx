@@ -13,7 +13,7 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { Practice, PracticeType } from "./types";
+import type { Practice, PracticeType } from "@/types/sadhana";
 import { apiFetch } from "@/lib/sadhana-api";
 import { PRACTICE_TYPE_LABELS } from "@/lib/sadhana-utils";
 

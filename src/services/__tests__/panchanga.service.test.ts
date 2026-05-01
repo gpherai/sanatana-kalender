@@ -10,7 +10,7 @@ const { mockComputeDaily } = vi.hoisted(() => {
 });
 
 // Mock the module
-vi.mock("@/server/panchanga", () => {
+vi.mock("@/engine/panchanga", () => {
   return {
     PanchangaSwissService: class {
       computeDaily = mockComputeDaily;

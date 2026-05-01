@@ -4,8 +4,8 @@ import { z } from "zod";
 import {
   BirthChartInputError,
   BirthChartService,
-} from "@/server/panchanga/services/birth-chart-service";
-import type { BirthData } from "@/server/panchanga/types";
+} from "@/engine/panchanga/services/birth-chart-service";
+import type { BirthData } from "@/engine/panchanga/types";
 import { errorResponse, serverError, validationError } from "@/lib/api-response";
 import { logError } from "@/lib/utils";
 

@@ -1,5 +1,5 @@
 import { memo } from "react";
-import type { SessionData, CalendarDay, OverviewStats } from "../types";
+import type { SessionData, CalendarDay, OverviewStats } from "@/types/sadhana";
 import {
   WeekdayPattern,
   ConsistencyRing,

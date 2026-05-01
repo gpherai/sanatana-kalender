@@ -19,6 +19,7 @@ export default defineConfig({
     // ],
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "server-only": path.resolve(__dirname, "./__mocks__/server-only.ts"),
     },
     exclude: [...configDefaults.exclude, "e2e/**"],
     coverage: {

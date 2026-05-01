@@ -1,4 +1,4 @@
-import type { GrahaPosition } from "@/server/panchanga/types";
+import type { GrahaPosition } from "@/engine/panchanga/types";
 
 export type DashaLord =
   | "ketu"

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, memo } from "react";
-import type { CalendarDay, HeatmapCell, DayInfoMap } from "./types";
+import type { CalendarDay, HeatmapCell, DayInfoMap } from "@/types/sadhana";
 import { localDateString, formatDate, dayContextLabel } from "@/lib/sadhana-utils";
 
 // =============================================================================

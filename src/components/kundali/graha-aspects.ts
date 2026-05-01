@@ -1,4 +1,4 @@
-import type { GrahaKey, GrahaPosition } from "@/server/panchanga/types";
+import type { GrahaKey, GrahaPosition } from "@/engine/panchanga/types";
 
 // 0-indexed offsets from planet's rashi (6 = 7th house)
 const ASPECT_OFFSETS: Partial<Record<GrahaKey, number[]>> = {

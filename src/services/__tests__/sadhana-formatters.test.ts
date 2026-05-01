@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, afterEach } from "vitest";
-import { todayStr } from "@/services/sadhana-formatters";
+import { todayStr } from "@/lib/sadhana-formatters";
 
 describe("sadhana date helpers", () => {
   afterEach(() => {

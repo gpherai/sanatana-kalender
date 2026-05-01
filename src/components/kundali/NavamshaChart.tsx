@@ -1,6 +1,6 @@
 "use client";
 
-import type { BirthChart, GrahaKey } from "@/server/panchanga/types";
+import type { BirthChart, GrahaKey } from "@/engine/panchanga/types";
 import {
   CellGraha,
   GRAHA_ORDER,

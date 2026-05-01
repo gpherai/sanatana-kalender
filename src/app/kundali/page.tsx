@@ -4,12 +4,12 @@ import { useState, useSyncExternalStore } from "react";
 import { PageLayout } from "@/components/layout";
 import { Star, TriangleAlert, Grid2x2, Table2, Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { BirthChart } from "@/server/panchanga/types";
-import { KundaliChart, RASHI_NAMES } from "./KundaliChart";
-import { NavamshaChart, navamshaRashi } from "./NavamshaChart";
-import { VimshottariDasha } from "./VimshottariDasha";
-import { GrahaAspects } from "./GrahaAspects";
-import { DashamshaChart, dashamshaRashi } from "./DashamshaChart";
+import type { BirthChart } from "@/engine/panchanga/types";
+import { KundaliChart, RASHI_NAMES } from "@/components/kundali/KundaliChart";
+import { NavamshaChart, navamshaRashi } from "@/components/kundali/NavamshaChart";
+import { VimshottariDasha } from "@/components/kundali/VimshottariDasha";
+import { GrahaAspects } from "@/components/kundali/GrahaAspects";
+import { DashamshaChart, dashamshaRashi } from "@/components/kundali/DashamshaChart";
 import {
   FormField,
   Input,
@@ -17,7 +17,7 @@ import {
   NavamshaTableRow,
   DashamshaTableRow,
   GRAHA_ORDER,
-} from "./kundali-ui";
+} from "@/components/kundali/kundali-ui";
 
 // =============================================================================
 // FORM STATE

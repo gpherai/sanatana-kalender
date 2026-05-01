@@ -4,7 +4,7 @@
 // ============================================
 
 import type { MoonPhaseType, Tithi } from "@prisma/client";
-import type { DayInfo } from "@/components/sadhana/types";
+import type { DayInfo } from "@/types/sadhana";
 
 /**
  * Interface for special lunar days detected from Panchanga data

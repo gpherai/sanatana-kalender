@@ -12,7 +12,7 @@ import type {
   Routine,
   DayInfo,
   DayInfoMap,
-} from "@/components/sadhana/types";
+} from "@/types/sadhana";
 import { apiFetch, fetchDayInfoMap } from "@/lib/sadhana-api";
 import { todayString, SADHANA_START_DATE } from "@/lib/sadhana-utils";
 import type { CalendarEventResponse } from "@/types/calendar";
