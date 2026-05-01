@@ -25,15 +25,8 @@ const eslintConfig = defineConfig([
   ]),
   {
     rules: {
-      // Allow variables prefixed with _ to be unused (conventional placeholder pattern)
-      "@typescript-eslint/no-unused-vars": [
-        "warn",
-        {
-          argsIgnorePattern: "^_",
-          varsIgnorePattern: "^_",
-          caughtErrorsIgnorePattern: "^_",
-        },
-      ],
+      // tsc enforces this via noUnusedLocals + noUnusedParameters (strict mode)
+      "@typescript-eslint/no-unused-vars": "off",
     },
   },
 ]);
