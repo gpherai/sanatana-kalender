@@ -20,6 +20,7 @@ import { Loader2, Check, CloudOff, Cloud } from "lucide-react";
 import { logError } from "@/lib/utils";
 import { useToast } from "@/components/ui/Toast";
 import { useTheme } from "@/components/theme/ThemeProvider";
+import { THEME_STORAGE_KEY } from "@/config/themes";
 import { PageLayout } from "@/components/layout";
 import { ThemeSection, CalendarSection, LocationSection } from "@/components/settings";
 import { DEFAULT_LOCATION } from "@/lib/domain";
@@ -168,8 +169,10 @@ export default function SettingsPage() {
         defaultView: prefs.defaultView,
       });
       setAutoSaveResetKey((key) => key + 1);
-      // Sync ThemeProvider with DB value (new browser/device won't have localStorage)
-      setTheme(prefs.currentTheme);
+      // Sync from DB only when this browser has no stored preference yet (new device/cleared storage)
+      if (!localStorage.getItem(THEME_STORAGE_KEY)) {
+        setTheme(prefs.currentTheme);
+      }
     },
     onError: (error) => {
       setAutoSaveResetKey((key) => key + 1);
