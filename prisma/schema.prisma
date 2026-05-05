@@ -132,6 +132,8 @@ model DailyInfo {
   sunset               String?
   moonrise             String?
   moonset              String?
+  moonriseUtcIso       String?
+  moonsetUtcIso        String?
   moonPhasePercent     Int            @default(0)
   moonPhaseType        MoonPhaseType?
   isWaxing             Boolean        @default(true)
