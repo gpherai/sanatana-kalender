@@ -1,16 +1,16 @@
 -- Fix schema drift: drop columns that exist in DB but not in Prisma schema
 -- Drop Event.importance (old field, replaced by EventType)
 DROP INDEX IF EXISTS "Event_importance_idx";
-ALTER TABLE "Event" DROP COLUMN "importance";
+ALTER TABLE "Event" DROP COLUMN IF EXISTS "importance";
 DROP TYPE IF EXISTS "Importance";
 
 -- Drop UserPreference.weekStartsOn (unused)
-ALTER TABLE "UserPreference" DROP COLUMN "weekStartsOn";
+ALTER TABLE "UserPreference" DROP COLUMN IF EXISTS "weekStartsOn";
 
 -- Drop Event.parentEventId (old direct self-ref, replaced by EventSeriesEntry junction table)
 ALTER TABLE "Event" DROP CONSTRAINT IF EXISTS "Event_parentEventId_fkey";
 DROP INDEX IF EXISTS "Event_parentEventId_idx";
-ALTER TABLE "Event" DROP COLUMN "parentEventId";
+ALTER TABLE "Event" DROP COLUMN IF EXISTS "parentEventId";
 
 -- Add updatedAt to sadhana tables (for audit trail / optimistic locking)
 ALTER TABLE "sadhana_practices" ADD COLUMN "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
