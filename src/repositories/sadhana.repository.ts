@@ -16,7 +16,12 @@ import { utcDateFromDateOnly } from "@/lib/default-location-date";
 
 export async function findAllSessions() {
   return prisma.sadhanaSession.findMany({
-    include: { items: { include: { practice: true }, orderBy: { createdAt: "asc" } } },
+    include: {
+      items: {
+        include: { practice: true },
+        orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+      },
+    },
     orderBy: { date: "desc" },
   });
 }
@@ -26,7 +31,12 @@ export async function findSessionsByDateRange(start: Date, end: Date) {
     where: {
       date: { gte: start, lte: end },
     },
-    include: { items: { include: { practice: true }, orderBy: { createdAt: "asc" } } },
+    include: {
+      items: {
+        include: { practice: true },
+        orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+      },
+    },
     orderBy: { date: "desc" },
   });
 }
@@ -34,7 +44,12 @@ export async function findSessionsByDateRange(start: Date, end: Date) {
 export async function findSessionById(id: string) {
   return prisma.sadhanaSession.findUnique({
     where: { id },
-    include: { items: { include: { practice: true }, orderBy: { createdAt: "asc" } } },
+    include: {
+      items: {
+        include: { practice: true },
+        orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+      },
+    },
   });
 }
 

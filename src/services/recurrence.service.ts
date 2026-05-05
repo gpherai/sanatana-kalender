@@ -814,10 +814,13 @@ async function generateTithiNakshatraRuleOccurrences(
 
   return Array.from(occurrencesByYear.values())
     .sort((a, b) => a.date.getTime() - b.date.getTime())
-    .map((day) => ({
-      date: day.date,
-      endTime: day.nakshatraEndTime ?? undefined,
-    }));
+    .map((day) => {
+      // Conjunction window ends when whichever of tithi/nakshatra ends first
+      const t = day.tithiEndTime;
+      const n = day.nakshatraEndTime;
+      const endTime = t && n ? (t < n ? t : n) : (t ?? n ?? undefined);
+      return { date: day.date, endTime };
+    });
 }
 
 // =============================================================================
