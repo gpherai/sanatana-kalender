@@ -14,8 +14,8 @@
  * @module services/recurrence
  */
 
-import type { Event, RecurrenceType, Tithi } from "@prisma/client";
-import { EventType, Nakshatra, Sankranti } from "@prisma/client";
+import type { Event, RecurrenceType } from "@prisma/client";
+import { EventType, Maas, Nakshatra, Sankranti, Tithi } from "@prisma/client";
 import { DEFAULT_LOCATION } from "@/lib/domain";
 import { logDebug, logWarn } from "@/lib/utils";
 import { formatDateNL } from "@/lib/date-utils";
@@ -30,6 +30,7 @@ import {
   findDailyInfoSunriseByDates,
   findDailyInfoSunTimesByDates,
   findDailyInfoTithiByDates,
+  findDailyInfoTithiNakshatraCandidates,
   findDailyInfoTithiTimingCandidates,
   findDailyInfoYearlyLunarCandidates,
   type DailyInfoAdhikaFilter,
@@ -156,7 +157,7 @@ const RULE_STRATEGIES: Record<string, RecurrenceStrategy> = {
   SOLAR: generateSolarRuleOccurrences,
   TITHI: generateYearlyLunarOccurrences,
   NAKSHATRA: generateNakshatraRuleOccurrences,
-  TITHI_NAKSHATRA: generateNakshatraRuleOccurrences,
+  TITHI_NAKSHATRA: generateTithiNakshatraRuleOccurrences,
   WEEKDAY_TITHI: generateWeekdayTithiOccurrences,
   PRADOSH: generatePradoshOccurrences,
 };
@@ -693,7 +694,8 @@ async function generateNakshatraRuleOccurrences(
 
   const dailyData = await findDailyInfoNakshatraCandidates(
     { startDate, endDate },
-    nakshatraValue as Nakshatra
+    nakshatraValue as Nakshatra,
+    getAdhikaFilter(event)
   );
 
   // Maargazhi rule: ARDRA within the Dhanu solar month (Dec 14 – Jan 15 window).
@@ -719,6 +721,91 @@ async function generateNakshatraRuleOccurrences(
 
   for (const day of dailyData) {
     if (maasFilter && day.maas !== maasFilter) continue;
+    const year = day.date.getUTCFullYear();
+    if (!occurrencesByYear.has(year)) {
+      occurrencesByYear.set(year, day);
+    }
+  }
+
+  return Array.from(occurrencesByYear.values())
+    .sort((a, b) => a.date.getTime() - b.date.getTime())
+    .map((day) => ({
+      date: day.date,
+      endTime: day.nakshatraEndTime ?? undefined,
+    }));
+}
+
+// =============================================================================
+// TITHI + NAKSHATRA RULE-BASED GENERATION
+// =============================================================================
+
+/**
+ * Generate occurrences for events defined by a simultaneous tithi + nakshatra
+ * (+ optional maas) conjunction — e.g. Vamana Jayanti: Dwadashi Shukla +
+ * Shravana nakshatra in Bhadrapada maas.
+ *
+ * Filters entirely in the DB (tithi, nakshatra, maas, adhika) so no
+ * post-query filtering is needed. One occurrence per calendar year.
+ *
+ * ruleConfig must contain: { tithi, nakshatra } and optionally { maas }.
+ */
+async function generateTithiNakshatraRuleOccurrences(
+  event: Event,
+  startDate: Date,
+  endDate: Date,
+  _location: { name: string; lat: number; lon: number },
+  _timezone: string
+): Promise<GeneratedOccurrence[]> {
+  const config = (event.ruleConfig as Record<string, unknown>) ?? {};
+  const tithiValue = (config.tithi ?? event.tithi) as string | null;
+  const nakshatraValue = (config.nakshatra ?? event.nakshatra) as string | null;
+
+  if (!tithiValue) {
+    logWarn(`TITHI_NAKSHATRA event "${event.name}" has no tithi specified`);
+    return [];
+  }
+  if (!nakshatraValue) {
+    logWarn(`TITHI_NAKSHATRA event "${event.name}" has no nakshatra specified`);
+    return [];
+  }
+
+  const validTithiValues = Object.values(Tithi) as string[];
+  if (!validTithiValues.includes(tithiValue)) {
+    logWarn(
+      `TITHI_NAKSHATRA event "${event.name}" has invalid tithi value: "${tithiValue}"`
+    );
+    return [];
+  }
+  const validNakshatraValues = Object.values(Nakshatra) as string[];
+  if (!validNakshatraValues.includes(nakshatraValue)) {
+    logWarn(
+      `TITHI_NAKSHATRA event "${event.name}" has invalid nakshatra value: "${nakshatraValue}"`
+    );
+    return [];
+  }
+
+  const maasValue = config.maas as string | undefined;
+  if (maasValue !== undefined) {
+    const validMaasValues = Object.values(Maas) as string[];
+    if (!validMaasValues.includes(maasValue)) {
+      logWarn(
+        `TITHI_NAKSHATRA event "${event.name}" has invalid maas value: "${maasValue}"`
+      );
+      return [];
+    }
+  }
+
+  const dailyData = await findDailyInfoTithiNakshatraCandidates(
+    { startDate, endDate },
+    tithiValue as Tithi,
+    nakshatraValue as Nakshatra,
+    maasValue as Maas | undefined,
+    getAdhikaFilter(event)
+  );
+
+  // One occurrence per year (first matching day — conjunction is rare, at most once a year)
+  const occurrencesByYear = new Map<number, (typeof dailyData)[0]>();
+  for (const day of dailyData) {
     const year = day.date.getUTCFullYear();
     if (!occurrencesByYear.has(year)) {
       occurrencesByYear.set(year, day);

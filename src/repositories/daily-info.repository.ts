@@ -6,7 +6,14 @@
  * @module repositories/daily-info
  */
 
-import type { MoonPhaseType, Nakshatra, Prisma, Sankranti, Tithi } from "@prisma/client";
+import type {
+  Maas,
+  MoonPhaseType,
+  Nakshatra,
+  Prisma,
+  Sankranti,
+  Tithi,
+} from "@prisma/client";
 import { prisma } from "@/lib/db";
 
 export type DailyInfoAdhikaFilter = "include" | "only" | "exclude";
@@ -99,7 +106,7 @@ export function findDailyInfoMoonPhaseCandidates(
       date: { in: dates },
       moonPhaseType: targetPhase,
     },
-    orderBy: { moonPhasePercent: "desc" },
+    orderBy: [{ moonPhasePercent: "desc" }, { date: "asc" }],
     select: { date: true, moonPhasePercent: true },
   });
 }
@@ -153,16 +160,47 @@ export function findDailyInfoKshayaCandidates(
 
 export function findDailyInfoNakshatraCandidates(
   { startDate, endDate }: DateRange,
-  nakshatra: Nakshatra
+  nakshatra: Nakshatra,
+  adhikaFilter: DailyInfoAdhikaFilter = "exclude"
 ) {
+  const where: Prisma.DailyInfoWhereInput = {
+    date: { gte: startDate, lte: endDate },
+    nakshatra,
+  };
+  applyAdhikaFilter(where, adhikaFilter);
+
   return prisma.dailyInfo.findMany({
-    where: {
-      date: { gte: startDate, lte: endDate },
-      nakshatra,
-      isAdhika: false,
-    },
+    where,
     orderBy: { date: "asc" },
     select: { date: true, nakshatraEndTime: true, maas: true },
+  });
+}
+
+export function findDailyInfoTithiNakshatraCandidates(
+  { startDate, endDate }: DateRange,
+  tithi: Tithi,
+  nakshatra: Nakshatra,
+  maas?: Maas,
+  adhikaFilter: DailyInfoAdhikaFilter = "exclude"
+) {
+  const where: Prisma.DailyInfoWhereInput = {
+    date: { gte: startDate, lte: endDate },
+    tithi,
+    nakshatra,
+    ...(maas !== undefined && { maas }),
+  };
+  applyAdhikaFilter(where, adhikaFilter);
+
+  return prisma.dailyInfo.findMany({
+    where,
+    orderBy: { date: "asc" },
+    select: {
+      date: true,
+      tithiEndTime: true,
+      nakshatraEndTime: true,
+      maas: true,
+      isAdhika: true,
+    },
   });
 }
 

@@ -172,7 +172,9 @@ export async function findEventOccurrences(params: EventQueryParams) {
 
   const order = params.order === "desc" ? "desc" : "asc";
   const orderBy: Prisma.EventOccurrenceOrderByWithRelationInput[] =
-    params.sortBy === "name" ? [{ event: { name: order } }] : [{ date: order }];
+    params.sortBy === "name"
+      ? [{ event: { name: order } }, { date: order }, { id: order }]
+      : [{ date: order }, { id: order }];
 
   return prisma.eventOccurrence.findMany({
     where: occurrenceWhere,
@@ -220,9 +222,7 @@ export async function findUpcomingOccurrences(
         },
       },
     },
-    orderBy: {
-      date: "asc",
-    },
+    orderBy: [{ date: "asc" }, { id: "asc" }],
   });
 }
 
@@ -263,6 +263,7 @@ export async function findEventByIdForDisplay(id: string) {
       categories: eventCategoryInclude,
       occurrences: {
         orderBy: { date: "asc" as const },
+        take: 1,
       },
     },
   });
