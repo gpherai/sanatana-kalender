@@ -398,6 +398,7 @@ model SadhanaSessionItem {
   practice        SadhanaPractice @relation(fields: [practiceId], references: [id], onDelete: Restrict)
 
   @@index([sessionId])
+  @@index([practiceId])
   @@map("sadhana_session_items")
 }
 
@@ -441,6 +442,7 @@ model SadhanaRoutineItem {
   updatedAt  DateTime        @updatedAt
 
   @@index([routineId])
+  @@index([practiceId])
   @@map("sadhana_routine_items")
 }
 
