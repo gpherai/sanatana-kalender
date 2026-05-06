@@ -25,6 +25,7 @@ import {
 } from "@/lib/sadhana-formatters";
 
 export class SadhanaNotFoundError extends Error {}
+export class GoalPracticeNotFoundError extends Error {}
 
 function isOnOrBefore(date: Date, end: Date) {
   return date.getTime() <= end.getTime();
@@ -416,15 +417,64 @@ export async function deactivateSadhanaPractice(id: string) {
   await sadhanaRepo.deletePractice(id);
 }
 
-export async function createSadhanaGoal(data: Prisma.SadhanaGoalCreateInput) {
-  const goal = await sadhanaRepo.createGoal(data);
+export async function createSadhanaGoal(data: {
+  type: string;
+  name?: string | null;
+  targetMalas: number;
+  targetMinutes?: number | null;
+  practice_ids?: string[];
+}) {
+  if (data.practice_ids && data.practice_ids.length > 0) {
+    for (const pid of data.practice_ids) {
+      const practice = await sadhanaRepo.findPracticeById(pid);
+      if (!practice)
+        throw new GoalPracticeNotFoundError(`Beoefening niet gevonden: ${pid}`);
+    }
+  }
+  const goal = await sadhanaRepo.createGoal({
+    type: data.type as "daily" | "weekly" | "lifetime",
+    name: data.name ?? null,
+    targetMalas: data.targetMalas,
+    targetMinutes: data.targetMinutes ?? null,
+    active: true,
+    ...(data.practice_ids &&
+      data.practice_ids.length > 0 && {
+        practices: { connect: data.practice_ids.map((pid) => ({ id: pid })) },
+      }),
+  });
   return formatGoal(goal);
 }
 
-export async function updateSadhanaGoal(id: string, data: Prisma.SadhanaGoalUpdateInput) {
+export async function updateSadhanaGoal(
+  id: string,
+  data: {
+    name?: string | null;
+    targetMalas?: number;
+    targetMinutes?: number | null;
+    active?: boolean;
+    practice_ids?: string[];
+  }
+) {
   const existing = await sadhanaRepo.findGoalById(id);
   if (!existing) throw new SadhanaNotFoundError("Doel niet gevonden");
-  const goal = await sadhanaRepo.updateGoal(id, data);
+
+  if (data.practice_ids !== undefined && data.practice_ids.length > 0) {
+    for (const pid of data.practice_ids) {
+      const practice = await sadhanaRepo.findPracticeById(pid);
+      if (!practice)
+        throw new GoalPracticeNotFoundError(`Beoefening niet gevonden: ${pid}`);
+    }
+  }
+
+  const goal = await sadhanaRepo.updateGoal(id, {
+    ...(data.name !== undefined && { name: data.name }),
+    ...(data.targetMalas !== undefined && { targetMalas: data.targetMalas }),
+    ...(data.targetMinutes !== undefined && { targetMinutes: data.targetMinutes }),
+    ...(data.active !== undefined && { active: data.active }),
+    ...(data.practice_ids !== undefined && {
+      practices: { set: data.practice_ids.map((pid) => ({ id: pid })) },
+    }),
+  });
   return formatGoal(goal);
 }
 

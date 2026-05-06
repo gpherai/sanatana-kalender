@@ -4,6 +4,7 @@ import { logError } from "@/lib/utils";
 import { patchSadhanaGoalSchema } from "@/lib/validations";
 import {
   deleteSadhanaGoal,
+  GoalPracticeNotFoundError,
   SadhanaNotFoundError,
   updateSadhanaGoal,
 } from "@/services/sadhana.service";
@@ -22,13 +23,12 @@ export async function PATCH(req: Request, { params }: Params) {
       ...(target_malas !== undefined && { targetMalas: target_malas }),
       ...(target_minutes !== undefined && { targetMinutes: target_minutes }),
       ...(active !== undefined && { active }),
-      ...(practice_ids !== undefined && {
-        practices: { set: practice_ids.map((pid) => ({ id: pid })) },
-      }),
+      ...(practice_ids !== undefined && { practice_ids }),
     });
     return NextResponse.json(goal);
   } catch (error) {
     if (error instanceof SadhanaNotFoundError) return notFoundError("Doel");
+    if (error instanceof GoalPracticeNotFoundError) return notFoundError("Beoefening");
     logError("[SADHANA_GOAL_PATCH]", error);
     return serverError("Kon doel niet bijwerken");
   }
