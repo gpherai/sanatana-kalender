@@ -73,6 +73,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(response, {
         headers: cacheHeaders(parsed.data, todayStr),
       });
+    } else if (startParam && !endParam) {
+      return errorResponse("Gebruik ?start en ?end samen, of alleen ?date", 400);
+    } else if (!startParam && endParam) {
+      return errorResponse("Gebruik ?start en ?end samen, of alleen ?date", 400);
     } else if (startParam && endParam) {
       // ---------------------------------------------------------------------
       // Date range mode

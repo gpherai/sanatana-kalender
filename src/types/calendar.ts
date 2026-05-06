@@ -6,7 +6,7 @@
  */
 
 import type { EventType, Tithi, Nakshatra, Maas } from "@prisma/client";
-import { EventType as EventTypeEnum } from "@prisma/client";
+import { EVENT_TYPES } from "@/lib/domain";
 import { TIME_REGEX } from "@/lib/patterns";
 
 // =============================================================================
@@ -185,7 +185,7 @@ export function parseCalendarEvent(event: CalendarEventResponse): CalendarEvent 
  * Uses the Prisma-generated enum for accuracy.
  */
 export function isValidEventType(value: string): value is EventType {
-  return Object.values(EventTypeEnum).includes(value as EventType);
+  return EVENT_TYPES.some((t) => t.value === value);
 }
 
 /**

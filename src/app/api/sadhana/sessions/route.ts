@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { serverError, validationError } from "@/lib/api-response";
+import { parseJsonBody, serverError, validationError } from "@/lib/api-response";
 import { logError } from "@/lib/utils";
 import { createSadhanaSessionSchema, optionalDateStringSchema } from "@/lib/validations";
 import { createSadhanaSession, listSadhanaSessions } from "@/services/sadhana.service";
@@ -20,8 +20,8 @@ export async function GET(req: NextRequest) {
     if (!parsed.success) return validationError(parsed.error);
 
     const sessions = await listSadhanaSessions({
-      from: parsed.data.from ?? undefined,
-      to: parsed.data.to ?? undefined,
+      from: parsed.data.from || undefined,
+      to: parsed.data.to || undefined,
     });
 
     return NextResponse.json(sessions);
@@ -33,7 +33,9 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const parsed = createSadhanaSessionSchema.safeParse(await req.json());
+    const bodyResult = await parseJsonBody(req);
+    if (!bodyResult.ok) return bodyResult.response;
+    const parsed = createSadhanaSessionSchema.safeParse(bodyResult.data);
     if (!parsed.success) return validationError(parsed.error);
 
     const session = await createSadhanaSession(parsed.data);

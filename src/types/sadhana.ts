@@ -18,6 +18,7 @@ export interface Practice {
   count_size: number | null;
   notes: string | null;
   active: boolean;
+  created_at: string;
 }
 
 export interface SessionItemData {
@@ -30,6 +31,8 @@ export interface SessionItemData {
   mantra_count: number | null;
   count_total: number | null;
   duration_minutes: number | null;
+  notes: string | null;
+  created_at: string;
 }
 
 export interface SessionData {
@@ -41,6 +44,7 @@ export interface SessionData {
   total_mantras: number;
   total_count: number;
   notes: string | null;
+  created_at: string;
   items: SessionItemData[];
 }
 
@@ -103,6 +107,7 @@ export interface Goal {
   target_malas: number;
   target_minutes: number | null;
   active: boolean;
+  created_at: string;
   practices?: { id: string; name: string }[];
   progress_malas?: number | null;
   progress_minutes?: number | null;
@@ -122,6 +127,7 @@ export interface Routine {
   id: string;
   name: string;
   active: boolean;
+  created_at: string;
   items: RoutineItem[];
 }
 

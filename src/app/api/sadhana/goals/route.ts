@@ -4,7 +4,12 @@ import {
   getGoalsWithProgress,
   GoalPracticeNotFoundError,
 } from "@/services/sadhana.service";
-import { notFoundError, serverError, validationError } from "@/lib/api-response";
+import {
+  notFoundError,
+  parseJsonBody,
+  serverError,
+  validationError,
+} from "@/lib/api-response";
 import { logError } from "@/lib/utils";
 import { createSadhanaGoalSchema } from "@/lib/validations";
 
@@ -20,7 +25,9 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    const parsed = createSadhanaGoalSchema.safeParse(await req.json());
+    const bodyResult = await parseJsonBody(req);
+    if (!bodyResult.ok) return bodyResult.response;
+    const parsed = createSadhanaGoalSchema.safeParse(bodyResult.data);
     if (!parsed.success) return validationError(parsed.error);
 
     const { type, name, target_malas, target_minutes, practice_ids } = parsed.data;

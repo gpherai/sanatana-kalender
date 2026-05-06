@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
-import { serverError, validationError, notFoundError } from "@/lib/api-response";
+import {
+  notFoundError,
+  parseJsonBody,
+  serverError,
+  validationError,
+} from "@/lib/api-response";
 import { logError } from "@/lib/utils";
 import { patchSadhanaRoutineSchema } from "@/lib/validations";
 import {
@@ -13,7 +18,9 @@ type Params = { params: Promise<{ id: string }> };
 export async function PATCH(req: Request, { params }: Params) {
   try {
     const { id } = await params;
-    const parsed = patchSadhanaRoutineSchema.safeParse(await req.json());
+    const bodyResult = await parseJsonBody(req);
+    if (!bodyResult.ok) return bodyResult.response;
+    const parsed = patchSadhanaRoutineSchema.safeParse(bodyResult.data);
     if (!parsed.success) return validationError(parsed.error);
 
     const { name, active, items } = parsed.data;

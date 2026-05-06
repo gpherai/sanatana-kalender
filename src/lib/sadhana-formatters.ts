@@ -6,6 +6,13 @@ import type {
   SadhanaRoutine,
   SadhanaRoutineItem,
 } from "@prisma/client";
+import type {
+  Practice,
+  SessionItemData,
+  SessionData,
+  Goal,
+  Routine,
+} from "@/types/sadhana";
 import {
   dateOnlyFromUtcDate,
   defaultLocationDate,
@@ -29,11 +36,11 @@ export type RoutineWithItems = SadhanaRoutine & {
 // FORMATTERS
 // =============================================================================
 
-export function formatPractice(p: SadhanaPractice) {
+export function formatPractice(p: SadhanaPractice): Practice {
   return {
     id: p.id,
     name: p.name,
-    type: p.type,
+    type: p.type as Practice["type"],
     mantra_text: p.mantraText ?? null,
     count_size: p.countSize ?? null,
     notes: p.notes,
@@ -44,7 +51,7 @@ export function formatPractice(p: SadhanaPractice) {
 
 export function formatSessionItem(
   item: SadhanaSessionItem & { practice: SadhanaPractice }
-) {
+): SessionItemData {
   const isJapa = item.practice.type === "mantra_japa";
   const mantra_count = isJapa
     ? item.unit === "malas"
@@ -61,9 +68,9 @@ export function formatSessionItem(
     id: item.id,
     practice_id: item.practiceId,
     practice_name: item.practice.name,
-    practice_type: item.practice.type,
+    practice_type: item.practice.type as SessionItemData["practice_type"],
     quantity: item.quantity,
-    unit: item.unit,
+    unit: item.unit as SessionItemData["unit"],
     mantra_count,
     count_total,
     duration_minutes: item.durationMinutes,
@@ -72,7 +79,7 @@ export function formatSessionItem(
   };
 }
 
-export function formatSession(session: SessionWithItems) {
+export function formatSession(session: SessionWithItems): SessionData {
   const japaItems = session.items.filter((i) => i.practice.type === "mantra_japa");
   const nonJapaCount = session.items
     .filter((i) => i.practice.type !== "mantra_japa" && i.unit === "count")
@@ -121,10 +128,12 @@ export function todayStr(): string {
 // GOALS
 // =============================================================================
 
-export function formatGoal(g: SadhanaGoal & { practices?: SadhanaPractice[] }) {
+export function formatGoal(
+  g: SadhanaGoal & { practices?: SadhanaPractice[] }
+): Omit<Goal, "progress_malas" | "progress_minutes"> {
   return {
     id: g.id,
-    type: g.type,
+    type: g.type as Goal["type"],
     name: g.name,
     target_malas: g.targetMalas,
     target_minutes: g.targetMinutes,
@@ -134,7 +143,7 @@ export function formatGoal(g: SadhanaGoal & { practices?: SadhanaPractice[] }) {
   };
 }
 
-export function formatRoutine(routine: RoutineWithItems) {
+export function formatRoutine(routine: RoutineWithItems): Routine {
   return {
     id: routine.id,
     name: routine.name,
@@ -144,9 +153,9 @@ export function formatRoutine(routine: RoutineWithItems) {
       id: item.id,
       practice_id: item.practiceId,
       practice_name: item.practice.name,
-      practice_type: item.practice.type,
+      practice_type: item.practice.type as Routine["items"][number]["practice_type"],
       quantity: item.quantity,
-      unit: item.unit,
+      unit: item.unit as Routine["items"][number]["unit"],
       sort_order: item.sortOrder,
     })),
   };

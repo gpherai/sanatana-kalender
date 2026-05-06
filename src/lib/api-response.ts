@@ -182,3 +182,23 @@ export function serverError(
 ): NextResponse<ApiErrorResponse> {
   return errorResponse(message, 500);
 }
+
+// =============================================================================
+// REQUEST BODY HELPERS
+// =============================================================================
+
+type JsonBodyOk = { ok: true; data: unknown };
+type JsonBodyErr = { ok: false; response: NextResponse<ApiErrorResponse> };
+
+/**
+ * Parse the JSON body of a request.
+ * Returns a tagged union so callers can early-return on parse failure
+ * instead of letting SyntaxError bubble up as a 500.
+ */
+export async function parseJsonBody(req: Request): Promise<JsonBodyOk | JsonBodyErr> {
+  try {
+    return { ok: true, data: await req.json() };
+  } catch {
+    return { ok: false, response: errorResponse("Ongeldige JSON", 400) };
+  }
+}

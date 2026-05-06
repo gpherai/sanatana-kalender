@@ -87,19 +87,7 @@ describe("API Preferences", () => {
     expect(json.currentTheme).toBe("forest-green");
   });
 
-  it("strips legacy location fields from preference payloads", async () => {
-    prismaMock.userPreference.upsert.mockResolvedValue({
-      id: "default",
-      currentTheme: "forest-green",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      defaultView: "month" as never,
-      visibleEventTypes: [],
-      visibleCategories: [],
-      notificationsEnabled: false,
-      notificationDaysBefore: 1,
-    });
-
+  it("rejects payloads with unknown legacy location fields", async () => {
     const request = new NextRequest("http://localhost/api/preferences", {
       method: "PUT",
       body: JSON.stringify({
@@ -112,24 +100,10 @@ describe("API Preferences", () => {
       headers: { "Content-Type": "application/json" },
     });
 
-    await PUT(request);
-
-    expect(prismaMock.userPreference.upsert).toHaveBeenCalledWith(
-      expect.objectContaining({
-        create: expect.not.objectContaining({
-          timezone: expect.anything(),
-          locationName: expect.anything(),
-          locationLat: expect.anything(),
-          locationLon: expect.anything(),
-        }),
-        update: expect.not.objectContaining({
-          timezone: expect.anything(),
-          locationName: expect.anything(),
-          locationLat: expect.anything(),
-          locationLon: expect.anything(),
-        }),
-      })
-    );
+    const response = await PUT(request);
+    // strict schema rejects unknown keys
+    expect(response.status).toBe(400);
+    expect(prismaMock.userPreference.upsert).not.toHaveBeenCalled();
   });
 
   it("updates preferences with empty payload (partial update)", async () => {
@@ -160,7 +134,7 @@ describe("API Preferences", () => {
     );
   });
 
-  it("handles Prisma P2002 error in PUT", async () => {
+  it("handles unexpected DB errors in PUT with generic 500", async () => {
     const error = new Prisma.PrismaClientKnownRequestError("Conflict", {
       code: "P2002",
       clientVersion: "5.0.0",
@@ -175,7 +149,7 @@ describe("API Preferences", () => {
     const response = await PUT(request);
     const json = await response.json();
     expect(response.status).toBe(500);
-    expect(json.message).toBe("Voorkeuren bestaan al");
+    expect(json.message).toBe("Kon voorkeuren niet bijwerken");
   });
 
   it("returns 500 when PUT fails with unknown error", async () => {

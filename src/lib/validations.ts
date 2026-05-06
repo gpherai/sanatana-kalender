@@ -82,16 +82,17 @@ export const dateStringSchema = z
 /** Date query string in YYYY-MM-DD format (strict calendar date) */
 // Removed duplicate dateQuerySchema, use dateStringSchema instead.
 
-/** Optional date string */
+/** Optional date string — empty string is coerced to undefined */
 export const optionalDateStringSchema = dateStringSchema
   .nullable()
   .optional()
-  .or(z.literal(""));
+  .or(z.literal("").transform((): undefined => undefined));
 
-/** Time string in HH:mm format */
+/** Time string in HH:mm format — single-digit hours (9:00) are normalized to 09:00 */
 export const timeStringSchema = z
   .string()
-  .regex(TIME_REGEX_LENIENT, ERROR_MESSAGES.INVALID_TIME);
+  .regex(TIME_REGEX_LENIENT, ERROR_MESSAGES.INVALID_TIME)
+  .transform((v) => (v.length === 4 ? `0${v}` : v));
 
 /** Optional time string (for API - allows null) */
 export const optionalTimeStringSchema = timeStringSchema.nullable().optional();
@@ -112,6 +113,8 @@ function withEventRecurrenceValidation<TShape extends z.ZodRawShape>(
     const recurrenceType = data.recurrenceType as string | undefined | null;
     const tithi = data.tithi as string | undefined | null;
     const sankranti = data.sankranti as string | undefined | null;
+    const date = data.date as string | undefined;
+    const endDate = data.endDate as string | null | undefined;
 
     if (
       (recurrenceType === "YEARLY_LUNAR" || recurrenceType === "MONTHLY_LUNAR") &&
@@ -129,6 +132,14 @@ function withEventRecurrenceValidation<TShape extends z.ZodRawShape>(
         code: z.ZodIssueCode.custom,
         path: ["sankranti"],
         message: RECURRENCE_VALIDATION_MESSAGES.SOLAR_SANKRANTI_REQUIRED,
+      });
+    }
+
+    if (date && endDate && endDate < date) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["endDate"],
+        message: "Einddatum moet op of na de startdatum liggen",
       });
     }
   });
@@ -233,23 +244,25 @@ export function transformFormToApi(data: EventFormData) {
  * Create event API schema.
  * Stricter validation for API requests.
  */
-const createEventBaseSchema = z.object({
-  name: z.string().min(1).max(100),
-  description: z.string().max(500).nullable().optional(),
-  eventType: eventTypeEnum,
-  categoryId: z.string().cuid().nullable().optional(),
-  recurrenceType: recurrenceEnum.default("NONE"),
-  tithi: tithiEnum.nullable().optional(),
-  nakshatra: nakshatraEnum.nullable().optional(),
-  maas: maasEnum.nullable().optional(),
-  sankranti: sankrantiEnum.nullable().optional(),
-  tags: z.array(z.string()).default([]),
-  date: dateStringSchema,
-  endDate: dateStringSchema.nullable().optional(),
-  startTime: timeStringSchema.nullable().optional(),
-  endTime: timeStringSchema.nullable().optional(),
-  notes: z.string().max(500).nullable().optional(),
-});
+const createEventBaseSchema = z
+  .object({
+    name: z.string().min(1).max(100),
+    description: z.string().max(500).nullable().optional(),
+    eventType: eventTypeEnum,
+    categoryId: z.string().cuid().nullable().optional(),
+    recurrenceType: recurrenceEnum.default("NONE"),
+    tithi: tithiEnum.nullable().optional(),
+    nakshatra: nakshatraEnum.nullable().optional(),
+    maas: maasEnum.nullable().optional(),
+    sankranti: sankrantiEnum.nullable().optional(),
+    tags: z.array(z.string()).default([]),
+    date: dateStringSchema,
+    endDate: dateStringSchema.nullable().optional(),
+    startTime: timeStringSchema.nullable().optional(),
+    endTime: timeStringSchema.nullable().optional(),
+    notes: z.string().max(500).nullable().optional(),
+  })
+  .strict();
 
 export const createEventSchema = withEventRecurrenceValidation(createEventBaseSchema);
 
@@ -266,21 +279,23 @@ export const updateEventSchema = createEventBaseSchema.partial();
 /**
  * Update preferences API schema.
  */
-export const updatePreferencesSchema = z.object({
-  // Theme
-  currentTheme: z.string().min(1).max(50).optional(),
+export const updatePreferencesSchema = z
+  .object({
+    // Theme
+    currentTheme: z.string().min(1).max(50).optional(),
 
-  // Calendar
-  defaultView: calendarViewEnum.optional(),
+    // Calendar
+    defaultView: calendarViewEnum.optional(),
 
-  // Visibility filters
-  visibleEventTypes: z.array(eventTypeEnum).optional(),
-  visibleCategories: z.array(z.string().cuid()).optional(),
+    // Visibility filters
+    visibleEventTypes: z.array(eventTypeEnum).optional(),
+    visibleCategories: z.array(z.string().cuid()).optional(),
 
-  // Notifications
-  notificationsEnabled: z.boolean().optional(),
-  notificationDaysBefore: z.number().int().min(0).max(30).optional(),
-});
+    // Notifications
+    notificationsEnabled: z.boolean().optional(),
+    notificationDaysBefore: z.number().int().min(0).max(30).optional(),
+  })
+  .strict();
 
 // =============================================================================
 // UPDATE OCCURRENCE SCHEMA
@@ -290,13 +305,24 @@ export const updatePreferencesSchema = z.object({
  * Update a specific event occurrence.
  * All fields optional for partial updates.
  */
-export const updateOccurrenceSchema = z.object({
-  date: dateStringSchema.optional(),
-  endDate: dateStringSchema.nullable().optional(),
-  startTime: timeStringSchema.nullable().optional(),
-  endTime: timeStringSchema.nullable().optional(),
-  notes: z.string().max(500).nullable().optional(),
-});
+export const updateOccurrenceSchema = z
+  .object({
+    date: dateStringSchema.optional(),
+    endDate: dateStringSchema.nullable().optional(),
+    startTime: timeStringSchema.nullable().optional(),
+    endTime: timeStringSchema.nullable().optional(),
+    notes: z.string().max(500).nullable().optional(),
+  })
+  .strict()
+  .superRefine((data, ctx) => {
+    if (data.date && data.endDate && data.endDate < data.date) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["endDate"],
+        message: "Einddatum moet op of na de startdatum liggen",
+      });
+    }
+  });
 
 // =============================================================================
 // GENERATE OCCURRENCES SCHEMA
@@ -306,13 +332,15 @@ export const updateOccurrenceSchema = z.object({
  * Schema for POST /api/events/generate-occurrences.
  * Validates the request body for occurrence generation.
  */
-export const generateOccurrencesSchema = z.object({
-  eventId: z.string().cuid().optional(),
-  startDate: dateStringSchema,
-  endDate: dateStringSchema,
-  maxOccurrences: z.number().int().positive().max(5000).optional(),
-  replace: z.boolean().default(false),
-});
+export const generateOccurrencesSchema = z
+  .object({
+    eventId: z.string().cuid().optional(),
+    startDate: dateStringSchema,
+    endDate: dateStringSchema,
+    maxOccurrences: z.number().int().positive().max(5000).optional(),
+    replace: z.boolean().default(false),
+  })
+  .strict();
 
 // =============================================================================
 // QUERY PARAMETER SCHEMAS
@@ -323,16 +351,26 @@ export const generateOccurrencesSchema = z.object({
  * Used in GET /api/events for filtering.
  * Uses dateQuerySchema to accept only strict YYYY-MM-DD calendar dates.
  */
-export const eventQuerySchema = z.object({
-  start: dateStringSchema.optional(),
-  end: dateStringSchema.optional(),
-  search: z.string().max(100).optional(),
-  categories: z.array(z.string().max(50)).max(20).optional(),
-  types: z.array(z.string().max(20)).max(20).optional(),
-  tithis: z.array(z.string().max(30)).max(20).optional(),
-  sortBy: z.enum(["date", "name"]).optional(),
-  order: z.enum(["asc", "desc"]).optional(),
-});
+export const eventQuerySchema = z
+  .object({
+    start: dateStringSchema.optional(),
+    end: dateStringSchema.optional(),
+    search: z.string().max(100).optional(),
+    categories: z.array(z.string().max(50)).max(20).optional(),
+    types: z.array(eventTypeEnum).max(20).optional(),
+    tithis: z.array(tithiEnum).max(20).optional(),
+    sortBy: z.enum(["date", "name"]).optional(),
+    order: z.enum(["asc", "desc"]).optional(),
+  })
+  .superRefine((data, ctx) => {
+    if ((data.start && !data.end) || (!data.start && data.end)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["end"],
+        message: "start en end moeten samen worden opgegeven",
+      });
+    }
+  });
 
 export type EventQueryParams = z.infer<typeof eventQuerySchema>;
 
@@ -340,85 +378,102 @@ export type EventQueryParams = z.infer<typeof eventQuerySchema>;
 // SADHANA SCHEMAS
 // =============================================================================
 
-const sadhanaSessionItemSchema = z.object({
-  practice_id: z.string().min(1),
-  quantity: z.number().int().positive(),
-  unit: z.enum(["malas", "count"]).optional(),
-  duration_minutes: z.number().int().positive().nullable().optional(),
-  notes: z.string().max(500).nullable().optional(),
-});
+const sadhanaSessionItemSchema = z
+  .object({
+    practice_id: z.string().min(1),
+    quantity: z.number().int().positive(),
+    unit: z.enum(["malas", "count"]).optional(),
+    duration_minutes: z.number().int().positive().nullable().optional(),
+    notes: z.string().max(500).nullable().optional(),
+  })
+  .strict();
 
-export const createSadhanaSessionSchema = z.object({
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  started_at: z.string().nullable().optional(),
-  duration_minutes: z.number().int().positive().nullable().optional(),
-  notes: z.string().max(1000).nullable().optional(),
-  items: z.array(sadhanaSessionItemSchema).min(1),
-});
+export const createSadhanaSessionSchema = z
+  .object({
+    date: dateStringSchema,
+    started_at: z.string().nullable().optional(),
+    duration_minutes: z.number().int().positive().nullable().optional(),
+    notes: z.string().max(1000).nullable().optional(),
+    items: z.array(sadhanaSessionItemSchema).min(1),
+  })
+  .strict();
 
-export const patchSadhanaSessionSchema = z.object({
-  date: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/)
-    .optional(),
-  started_at: z.string().nullable().optional(),
-  duration_minutes: z.number().int().positive().nullable().optional(),
-  notes: z.string().max(1000).nullable().optional(),
-  items: z.array(sadhanaSessionItemSchema).min(1).optional(),
-});
+export const patchSadhanaSessionSchema = z
+  .object({
+    date: dateStringSchema.optional(),
+    started_at: z.string().nullable().optional(),
+    duration_minutes: z.number().int().positive().nullable().optional(),
+    notes: z.string().max(1000).nullable().optional(),
+    items: z.array(sadhanaSessionItemSchema).min(1).optional(),
+  })
+  .strict();
 
 export const sadhanaCalendarQuerySchema = z.object({
   start: dateStringSchema.optional(),
   end: dateStringSchema.optional(),
 });
 
-export const createSadhanaGoalSchema = z.object({
-  type: z.enum(["daily", "weekly", "lifetime"]),
-  name: z.string().min(1).max(100).optional(),
-  target_malas: z.number().int().positive(),
-  target_minutes: z.number().int().positive().nullable().optional(),
-  practice_ids: z.array(z.string().min(1)).optional(),
-});
+export const createSadhanaGoalSchema = z
+  .object({
+    type: z.enum(["daily", "weekly", "lifetime"]),
+    name: z.string().min(1).max(100).optional(),
+    target_malas: z.number().int().positive(),
+    target_minutes: z.number().int().positive().nullable().optional(),
+    practice_ids: z.array(z.string().min(1)).optional(),
+  })
+  .strict();
 
-export const patchSadhanaGoalSchema = z.object({
-  name: z.string().min(1).max(100).optional(),
-  target_malas: z.number().int().positive().optional(),
-  target_minutes: z.number().int().positive().nullable().optional(),
-  active: z.boolean().optional(),
-  practice_ids: z.array(z.string().min(1)).optional(),
-});
+export const patchSadhanaGoalSchema = z
+  .object({
+    name: z.string().min(1).max(100).optional(),
+    target_malas: z.number().int().positive().optional(),
+    target_minutes: z.number().int().positive().nullable().optional(),
+    active: z.boolean().optional(),
+    practice_ids: z.array(z.string().min(1)).optional(),
+  })
+  .strict();
 
-export const createSadhanaPracticeSchema = z.object({
-  name: z.string().min(1).max(100),
-  type: z.enum(["mantra_japa", "parayana", "other"]),
-  mantra_text: z.string().max(2000).nullable().optional(),
-  count_size: z.number().int().min(1).nullable().optional(),
-  notes: z.string().max(500).nullable().optional(),
-});
+export const createSadhanaPracticeSchema = z
+  .object({
+    name: z.string().min(1).max(100),
+    type: z.enum(["mantra_japa", "parayana", "other"]),
+    mantra_text: z.string().max(2000).nullable().optional(),
+    count_size: z.number().int().min(1).nullable().optional(),
+    notes: z.string().max(500).nullable().optional(),
+  })
+  .strict();
 
-export const patchSadhanaPracticeSchema = z.object({
-  name: z.string().min(1).max(100).optional(),
-  type: z.enum(["mantra_japa", "parayana", "other"]).optional(),
-  mantra_text: z.string().max(2000).nullable().optional(),
-  count_size: z.number().int().min(1).nullable().optional(),
-  notes: z.string().max(500).nullable().optional(),
-  active: z.boolean().optional(),
-});
+export const patchSadhanaPracticeSchema = z
+  .object({
+    name: z.string().min(1).max(100).optional(),
+    type: z.enum(["mantra_japa", "parayana", "other"]).optional(),
+    mantra_text: z.string().max(2000).nullable().optional(),
+    count_size: z.number().int().min(1).nullable().optional(),
+    notes: z.string().max(500).nullable().optional(),
+    active: z.boolean().optional(),
+  })
+  .strict();
 
-const sadhanaRoutineItemSchema = z.object({
-  practice_id: z.string().min(1),
-  quantity: z.number().int().min(1),
-  unit: z.enum(["malas", "count"]).default("malas"),
-  sort_order: z.number().int().optional(),
-});
+const sadhanaRoutineItemSchema = z
+  .object({
+    practice_id: z.string().min(1),
+    quantity: z.number().int().min(1),
+    unit: z.enum(["malas", "count"]).default("malas"),
+    sort_order: z.number().int().optional(),
+  })
+  .strict();
 
-export const createSadhanaRoutineSchema = z.object({
-  name: z.string().min(1).max(80),
-  items: z.array(sadhanaRoutineItemSchema).min(1),
-});
+export const createSadhanaRoutineSchema = z
+  .object({
+    name: z.string().min(1).max(80),
+    items: z.array(sadhanaRoutineItemSchema).min(1),
+  })
+  .strict();
 
-export const patchSadhanaRoutineSchema = z.object({
-  name: z.string().min(1).max(80).optional(),
-  active: z.boolean().optional(),
-  items: z.array(sadhanaRoutineItemSchema).min(1).optional(),
-});
+export const patchSadhanaRoutineSchema = z
+  .object({
+    name: z.string().min(1).max(80).optional(),
+    active: z.boolean().optional(),
+    items: z.array(sadhanaRoutineItemSchema).min(1).optional(),
+  })
+  .strict();

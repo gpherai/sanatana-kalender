@@ -139,7 +139,8 @@ describe("Validations", () => {
     it("should accept null, undefined, and empty string", () => {
       expect(optionalDateStringSchema.parse(null)).toBeNull();
       expect(optionalDateStringSchema.parse(undefined)).toBeUndefined();
-      expect(optionalDateStringSchema.parse("")).toBe("");
+      // empty string is coerced to undefined at the schema level
+      expect(optionalDateStringSchema.parse("")).toBeUndefined();
     });
 
     it("should reject invalid date strings when provided", () => {
@@ -149,7 +150,8 @@ describe("Validations", () => {
 
   describe("timeStringSchema", () => {
     it("should accept lenient times", () => {
-      expect(timeStringSchema.parse("9:00")).toBe("9:00");
+      // single-digit hours are normalized to zero-padded HH:mm
+      expect(timeStringSchema.parse("9:00")).toBe("09:00");
       expect(timeStringSchema.parse("23:59")).toBe("23:59");
     });
 

@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createEventSchema, eventQuerySchema } from "@/lib/validations";
-import { errorResponse, serverError, validationError } from "@/lib/api-response";
+import {
+  errorResponse,
+  parseJsonBody,
+  serverError,
+  validationError,
+} from "@/lib/api-response";
 import { logError } from "@/lib/utils";
 import { Prisma } from "@prisma/client";
 import { findEventOccurrences } from "@/repositories/event.repository";
@@ -59,10 +64,10 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const bodyResult = await parseJsonBody(request);
+    if (!bodyResult.ok) return bodyResult.response;
 
-    // Validate with Zod
-    const result = createEventSchema.safeParse(body);
+    const result = createEventSchema.safeParse(bodyResult.data);
     if (!result.success) {
       return validationError(result.error);
     }

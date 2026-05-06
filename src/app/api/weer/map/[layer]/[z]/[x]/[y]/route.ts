@@ -1,5 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { serverError } from "@/lib/api-response";
+import { errorResponse, serverError } from "@/lib/api-response";
+
+const VALID_LAYERS = new Set([
+  "clouds_new",
+  "precipitation_new",
+  "pressure_new",
+  "wind_new",
+  "temp_new",
+]);
+const TILE_COORD_RE = /^\d{1,6}$/;
 
 export async function GET(
   _request: NextRequest,
@@ -7,17 +16,27 @@ export async function GET(
 ) {
   try {
     const { layer, z, x, y } = await params;
+
+    if (
+      !VALID_LAYERS.has(layer) ||
+      !TILE_COORD_RE.test(z) ||
+      !TILE_COORD_RE.test(x) ||
+      !TILE_COORD_RE.test(y)
+    ) {
+      return errorResponse("Ongeldige tegel parameters", 400);
+    }
+
     const apiKey = process.env.OPENWEATHER_API_KEY;
 
     if (!apiKey) {
       return serverError("OpenWeather API key missing");
     }
 
-    // Supported layers by free tier: clouds_new, precipitation_new, pressure_new, wind_new, temp_new
     const url = `https://tile.openweathermap.org/map/${layer}/${z}/${x}/${y}.png?appid=${apiKey}`;
 
     const res = await fetch(url, {
-      next: { revalidate: 3600 }, // Cache tiles for an hour
+      next: { revalidate: 3600 },
+      signal: AbortSignal.timeout(10_000),
     });
 
     if (!res.ok) {

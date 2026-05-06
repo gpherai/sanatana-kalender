@@ -227,8 +227,6 @@ describe("POST /api/events/generate-occurrences", () => {
         eventId: "ckl9z5rte0000s6m1gj8h3x7d",
         startDate: "2025-01-01",
         endDate: "2025-01-05",
-        timezone: "Asia/Kolkata",
-        location: { name: "Mumbai", lat: 19.076, lon: 72.8777 },
       }),
       headers: { "Content-Type": "application/json" },
     });
@@ -297,8 +295,8 @@ describe("POST /api/events/generate-occurrences", () => {
         timingType: null,
       },
     ]);
-    generateOccurrencesForEvents.mockResolvedValue(
-      new Map([
+    generateOccurrencesForEvents.mockResolvedValue({
+      results: new Map([
         [
           "ckl9z5rte0000s6m1gj8h3x7d",
           [
@@ -312,8 +310,9 @@ describe("POST /api/events/generate-occurrences", () => {
           ],
         ],
         ["evt_2", []],
-      ])
-    );
+      ]),
+      failedCount: 0,
+    });
     prismaMock.eventOccurrence.createMany.mockResolvedValue({ count: 1 });
 
     const request = new NextRequest("http://localhost/api/events/generate-occurrences", {
@@ -414,9 +413,10 @@ describe("POST /api/events/generate-occurrences", () => {
         aliases: [],
       } as any,
     ]);
-    generateOccurrencesForEvents.mockResolvedValue(
-      new Map([["ckl9z5rte0000s6m1gj8h3x7d", [{ date: new Date() }]]])
-    );
+    generateOccurrencesForEvents.mockResolvedValue({
+      results: new Map([["ckl9z5rte0000s6m1gj8h3x7d", [{ date: new Date() }]]]),
+      failedCount: 0,
+    });
     prismaMock.eventOccurrence.deleteMany.mockResolvedValue({ count: 3 });
     prismaMock.eventOccurrence.createMany.mockResolvedValue({ count: 1 });
 

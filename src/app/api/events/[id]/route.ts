@@ -3,6 +3,7 @@ import { createEventSchema, updateEventSchema, cuidSchema } from "@/lib/validati
 import {
   errorResponse,
   notFoundError,
+  parseJsonBody,
   serverError,
   validationError,
 } from "@/lib/api-response";
@@ -63,10 +64,10 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       return errorResponse("Ongeldig event ID formaat", 400);
     }
 
-    const body = await request.json();
+    const bodyResult = await parseJsonBody(request);
+    if (!bodyResult.ok) return bodyResult.response;
 
-    // Validate with Zod
-    const result = updateEventSchema.safeParse(body);
+    const result = updateEventSchema.safeParse(bodyResult.data);
     if (!result.success) {
       return validationError(result.error);
     }
@@ -119,6 +120,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     return NextResponse.json(event);
   } catch (error) {
     logError("[API] PUT /api/events/[id] error:", error);
+
+    if (error instanceof EventNotFoundError) return notFoundError("Event");
 
     if (error instanceof CategoryNotFoundError) {
       return errorResponse("Categorie niet gevonden", 400, [

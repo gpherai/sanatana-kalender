@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { serverError, validationError } from "@/lib/api-response";
+import { parseJsonBody, serverError, validationError } from "@/lib/api-response";
 import { logError } from "@/lib/utils";
 import { createSadhanaRoutineSchema } from "@/lib/validations";
 import { createSadhanaRoutine, listSadhanaRoutines } from "@/services/sadhana.service";
@@ -16,7 +16,9 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    const parsed = createSadhanaRoutineSchema.safeParse(await req.json());
+    const bodyResult = await parseJsonBody(req);
+    if (!bodyResult.ok) return bodyResult.response;
+    const parsed = createSadhanaRoutineSchema.safeParse(bodyResult.data);
     if (!parsed.success) return validationError(parsed.error);
 
     const routine = await createSadhanaRoutine({

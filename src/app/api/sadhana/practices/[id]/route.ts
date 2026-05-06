@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { serverError, validationError, notFoundError } from "@/lib/api-response";
+import {
+  notFoundError,
+  parseJsonBody,
+  serverError,
+  validationError,
+} from "@/lib/api-response";
 import { logError } from "@/lib/utils";
 import { patchSadhanaPracticeSchema } from "@/lib/validations";
 import {
@@ -13,7 +18,9 @@ type Params = { params: Promise<{ id: string }> };
 export async function PATCH(req: NextRequest, { params }: Params) {
   try {
     const { id } = await params;
-    const parsed = patchSadhanaPracticeSchema.safeParse(await req.json());
+    const bodyResult = await parseJsonBody(req);
+    if (!bodyResult.ok) return bodyResult.response;
+    const parsed = patchSadhanaPracticeSchema.safeParse(bodyResult.data);
     if (!parsed.success) return validationError(parsed.error);
 
     const { name, type, mantra_text, count_size, notes, active } = parsed.data;

@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { updatePreferencesSchema } from "@/lib/validations";
-import { serverError, validationError } from "@/lib/api-response";
+import { parseJsonBody, serverError, validationError } from "@/lib/api-response";
 import { DEFAULT_PREFERENCES_ID } from "@/lib/domain";
 import { DEFAULT_THEME_NAME } from "@/config/themes";
 import { logError } from "@/lib/utils";
-import { Prisma } from "@prisma/client";
 import { EventType, CalendarView } from "@prisma/client";
 import { findPreferences, upsertPreferences } from "@/repositories/preference.repository";
 
@@ -49,17 +48,17 @@ export async function GET() {
  */
 export async function PUT(request: NextRequest) {
   try {
-    const body = await request.json();
+    const bodyResult = await parseJsonBody(request);
+    if (!bodyResult.ok) return bodyResult.response;
 
-    // Validate input
-    const result = updatePreferencesSchema.safeParse(body);
+    const result = updatePreferencesSchema.safeParse(bodyResult.data);
     if (!result.success) {
       return validationError(result.error);
     }
 
     const data = result.data;
 
-    // Cast validated strings to Prisma enum types
+    // Zod validates these as the correct string values; cast to Prisma enum types
     const visibleEventTypes = data.visibleEventTypes as EventType[] | undefined;
     const defaultView = data.defaultView as CalendarView | undefined;
 
@@ -95,13 +94,6 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json(preferences);
   } catch (error) {
     logError("Error updating preferences:", error);
-
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === "P2002") {
-        return serverError("Voorkeuren bestaan al");
-      }
-    }
-
     return serverError("Kon voorkeuren niet bijwerken");
   }
 }
