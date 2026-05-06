@@ -1,3 +1,5 @@
+import "server-only";
+
 import {
   EventType,
   RecurrenceType,
@@ -349,13 +351,16 @@ export async function generateEventOccurrences(input: GenerateEventOccurrencesIn
     };
   }
 
-  const occurrencesMap = await generateOccurrencesForEvents(eventsWithRecurrence, {
-    startDate: input.startDate,
-    endDate: input.endDate,
-    location: input.location,
-    timezone: input.timezone,
-    maxOccurrences: input.maxOccurrences,
-  });
+  const { results: occurrencesMap, failedCount } = await generateOccurrencesForEvents(
+    eventsWithRecurrence,
+    {
+      startDate: input.startDate,
+      endDate: input.endDate,
+      location: input.location,
+      timezone: input.timezone,
+      maxOccurrences: input.maxOccurrences,
+    }
+  );
 
   const { deletedCount, generatedCount } = await persistGeneratedOccurrencesForEvents(
     occurrencesMap,
@@ -371,5 +376,6 @@ export async function generateEventOccurrences(input: GenerateEventOccurrencesIn
     eventsProcessed: eventsWithRecurrence.length,
     generated: generatedCount,
     deleted: deletedCount,
+    ...(failedCount > 0 && { failed: failedCount }),
   };
 }

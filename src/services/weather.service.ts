@@ -1,3 +1,5 @@
+import "server-only";
+
 import { DEFAULT_LOCATION } from "@/lib/domain";
 import type { AirQuality, WeatherApiResponse, WeatherCondition } from "@/types/weather";
 
@@ -222,7 +224,7 @@ export async function getWeatherDashboard(): Promise<WeatherApiResponse> {
   const params = `lat=${lat}&lon=${lon}&units=metric&lang=nl&appid=${apiKey}`;
   const airParams = `lat=${lat}&lon=${lon}&appid=${apiKey}`;
 
-  const opts = { next: { revalidate: 600 } } as const;
+  const opts = { next: { revalidate: 600 }, signal: AbortSignal.timeout(10_000) };
 
   const [weatherRes, forecastRes, airRes] = await Promise.all([
     fetch(`${OPENWEATHER_BASE_URL}/weather?${params}`, opts),

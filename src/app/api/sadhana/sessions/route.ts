@@ -1,18 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
 import { serverError, validationError } from "@/lib/api-response";
 import { logError } from "@/lib/utils";
-import { createSadhanaSessionSchema } from "@/lib/validations";
+import { createSadhanaSessionSchema, optionalDateStringSchema } from "@/lib/validations";
 import { createSadhanaSession, listSadhanaSessions } from "@/services/sadhana.service";
+import { z } from "zod";
+
+const sessionQuerySchema = z.object({
+  from: optionalDateStringSchema,
+  to: optionalDateStringSchema,
+});
 
 export async function GET(req: NextRequest) {
   try {
     const params = req.nextUrl.searchParams;
-    const fromStr = params.get("from");
-    const toStr = params.get("to");
+    const parsed = sessionQuerySchema.safeParse({
+      from: params.get("from") ?? undefined,
+      to: params.get("to") ?? undefined,
+    });
+    if (!parsed.success) return validationError(parsed.error);
 
     const sessions = await listSadhanaSessions({
-      from: fromStr ?? undefined,
-      to: toStr ?? undefined,
+      from: parsed.data.from ?? undefined,
+      to: parsed.data.to ?? undefined,
     });
 
     return NextResponse.json(sessions);

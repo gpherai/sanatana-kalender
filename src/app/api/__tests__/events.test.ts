@@ -86,7 +86,7 @@ describe("API Events", () => {
     expect(response.status).toBe(200);
     expect(prismaMock.eventOccurrence.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        orderBy: [{ event: { name: "desc" } }],
+        orderBy: [{ event: { name: "desc" } }, { date: "desc" }, { id: "desc" }],
       })
     );
   });

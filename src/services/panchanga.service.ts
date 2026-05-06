@@ -4,12 +4,14 @@
  * Architecture:
  * - Called by: API routes (/api/daily-info, seed scripts)
  * - Calls: PanchangaSwissService (Swiss Ephemeris engine)
- * - Features: LRU caching, timezone handling, batch calculations
+ * - Features: TTL cache with LRU eviction, timezone handling, batch calculations
  *
  * Layer boundary:
  * - UI → API → Service → Engine
  * - UI never imports from this service directly
  */
+
+import "server-only";
 
 import {
   PanchangaSwissService,
@@ -56,11 +58,14 @@ class PanchangaCache {
 
     if (!entry) return null;
 
-    // Check if entry is expired
     if (Date.now() - entry.timestamp > CACHE_CONFIG.ttlMs) {
       this.cache.delete(key);
       return null;
     }
+
+    // Move to end of Map to update recency (LRU eviction order)
+    this.cache.delete(key);
+    this.cache.set(key, entry);
 
     return entry.data;
   }
@@ -73,7 +78,7 @@ class PanchangaCache {
   ): void {
     const key = this.createKey(date, location, timezone);
 
-    // Evict oldest entry if cache is full (LRU)
+    // Evict least-recently-used entry when cache is full
     if (this.cache.size >= CACHE_CONFIG.maxSize) {
       const oldestKey = this.cache.keys().next().value;
       if (oldestKey) this.cache.delete(oldestKey);

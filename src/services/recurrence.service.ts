@@ -14,8 +14,19 @@
  * @module services/recurrence
  */
 
+import "server-only";
+
 import type { Event, RecurrenceType } from "@prisma/client";
 import { EventType, Maas, Nakshatra, Sankranti, Tithi } from "@prisma/client";
+import {
+  asRuleConfig,
+  type NakshatraRuleConfig,
+  type PradoshRuleConfig,
+  type SolarRuleConfig,
+  type TithiNakshatraRuleConfig,
+  type TithiRuleConfig,
+  type WeekdayTithiRuleConfig,
+} from "@/config/rule-config.types";
 import { DEFAULT_LOCATION } from "@/lib/domain";
 import { logDebug, logWarn } from "@/lib/utils";
 import { formatDateNL } from "@/lib/date-utils";
@@ -377,8 +388,8 @@ async function generateSolarRuleOccurrences(
   endDate: Date
 ): Promise<GeneratedOccurrence[]> {
   // Extract sankranti from ruleConfig or direct sankranti field
-  const sankrantiName =
-    (event.ruleConfig as Record<string, unknown>)?.sankranti || event.sankranti;
+  const config = asRuleConfig<SolarRuleConfig>(event.ruleConfig);
+  const sankrantiName = config.sankranti || event.sankranti;
 
   if (!sankrantiName) {
     logWarn(`SOLAR rule for event "${event.name}" has no sankranti specified`);
@@ -506,6 +517,7 @@ async function generateYearlyLunarOccurrences(
   }
 
   const adhikaFilter = getAdhikaFilter(event);
+  const config = asRuleConfig<TithiRuleConfig>(event.ruleConfig);
 
   // Fetch daily lunar info from database (with end times)
   const dailyData = await findDailyInfoYearlyLunarCandidates(
@@ -515,11 +527,11 @@ async function generateYearlyLunarOccurrences(
   );
 
   // Build maas filter: ruleConfig.maas (array or single) takes priority over event.maas
-  const rcMaas = (event.ruleConfig as Record<string, unknown>)?.maas;
+  const rcMaas = config.maas;
   const maasValues: string[] | null = Array.isArray(rcMaas)
-    ? (rcMaas as string[])
+    ? rcMaas
     : rcMaas
-      ? [rcMaas as string]
+      ? [rcMaas]
       : event.maas
         ? [event.maas]
         : null;
@@ -553,8 +565,7 @@ async function generateYearlyLunarOccurrences(
       adhikaFilter
     );
 
-    const kshayaNextDay =
-      (event.ruleConfig as Record<string, unknown>)?.kshayaNextDay === true;
+    const kshayaNextDay = config.kshayaNextDay === true;
 
     for (const day of kshayaCandidates) {
       if (maasValues && (!day.maas || !maasValues.includes(day.maas))) continue;
@@ -588,10 +599,7 @@ async function generateYearlyLunarOccurrences(
   }
 
   // Read optional durationDays from ruleConfig (e.g., multi-day festivals)
-  const durationDays =
-    typeof (event.ruleConfig as Record<string, unknown>)?.durationDays === "number"
-      ? ((event.ruleConfig as Record<string, unknown>).durationDays as number)
-      : 1;
+  const durationDays = typeof config.durationDays === "number" ? config.durationDays : 1;
 
   const rawSelectedDays = [...selectedByYear, ...kshayaExtras].sort(
     (a, b) => a.date.getTime() - b.date.getTime()
@@ -619,8 +627,7 @@ async function generateYearlyLunarOccurrences(
   // the tithi started early enough before Nishitakal (at least one muhurta).
   // Used for events like Vaikuntha Chaturdashi where DrikPanchang assigns the
   // observance to the day whose Nishitakal falls during the tithi.
-  const nishitakalDateRule =
-    (event.ruleConfig as Record<string, unknown>)?.nishitakalDateRule === true;
+  const nishitakalDateRule = config.nishitakalDateRule === true;
   if (nishitakalDateRule) {
     const prevDayMap = await fetchPreviousDayData(selectedDays.map((d) => d.date));
     // Also need current-day sunrise (the far end of each night for Nishitakal calc)
@@ -676,8 +683,8 @@ async function generateNakshatraRuleOccurrences(
   _location: { name: string; lat: number; lon: number },
   _timezone: string
 ): Promise<GeneratedOccurrence[]> {
-  const config = (event.ruleConfig as Record<string, unknown>) ?? {};
-  const nakshatraValue = (config.nakshatra ?? event.nakshatra) as string | null;
+  const config = asRuleConfig<NakshatraRuleConfig>(event.ruleConfig);
+  const nakshatraValue = config.nakshatra ?? event.nakshatra;
 
   if (!nakshatraValue) {
     logWarn(`Nakshatra event "${event.name}" has no nakshatra specified`);
@@ -714,7 +721,7 @@ async function generateNakshatraRuleOccurrences(
   }
 
   // Optional maas filter from ruleConfig
-  const maasFilter = config.maas as string | undefined;
+  const maasFilter = config.maas;
 
   // One occurrence per year (first matching day)
   const occurrencesByYear = new Map<number, (typeof dailyData)[0]>();
@@ -756,9 +763,9 @@ async function generateTithiNakshatraRuleOccurrences(
   _location: { name: string; lat: number; lon: number },
   _timezone: string
 ): Promise<GeneratedOccurrence[]> {
-  const config = (event.ruleConfig as Record<string, unknown>) ?? {};
-  const tithiValue = (config.tithi ?? event.tithi) as string | null;
-  const nakshatraValue = (config.nakshatra ?? event.nakshatra) as string | null;
+  const config = asRuleConfig<TithiNakshatraRuleConfig>(event.ruleConfig);
+  const tithiValue = config.tithi ?? event.tithi;
+  const nakshatraValue = config.nakshatra ?? event.nakshatra;
 
   if (!tithiValue) {
     logWarn(`TITHI_NAKSHATRA event "${event.name}" has no tithi specified`);
@@ -784,7 +791,7 @@ async function generateTithiNakshatraRuleOccurrences(
     return [];
   }
 
-  const maasValue = config.maas as string | undefined;
+  const maasValue = config.maas;
   if (maasValue !== undefined) {
     const validMaasValues = Object.values(Maas) as string[];
     if (!validMaasValues.includes(maasValue)) {
@@ -815,10 +822,20 @@ async function generateTithiNakshatraRuleOccurrences(
   return Array.from(occurrencesByYear.values())
     .sort((a, b) => a.date.getTime() - b.date.getTime())
     .map((day) => {
-      // Conjunction window ends when whichever of tithi/nakshatra ends first
-      const t = day.tithiEndTime;
-      const n = day.nakshatraEndTime;
-      const endTime = t && n ? (t < n ? t : n) : (t ?? n ?? undefined);
+      // Conjunction window ends when whichever of tithi/nakshatra ends first.
+      // Times past midnight are stored as early HH:mm (< sunrise) — add 1440 min
+      // so they sort correctly as "later than sunset" times.
+      const sunriseMin = parseTimeToMinutes(day.sunrise);
+      const toEffective = (t: string | null) => {
+        const m = parseTimeToMinutes(t);
+        if (m === null) return null;
+        return sunriseMin !== null && m < sunriseMin ? m + 1440 : m;
+      };
+      const tEff = toEffective(day.tithiEndTime);
+      const nEff = toEffective(day.nakshatraEndTime);
+      const minEff =
+        tEff !== null && nEff !== null ? Math.min(tEff, nEff) : (tEff ?? nEff);
+      const endTime = minEff !== null ? formatMinutesToTime(minEff) : undefined;
       return { date: day.date, endTime };
     });
 }
@@ -849,10 +866,10 @@ async function generateWeekdayTithiOccurrences(
     return [];
   }
 
-  const config = (event.ruleConfig as Record<string, unknown>) ?? {};
+  const config = asRuleConfig<WeekdayTithiRuleConfig>(event.ruleConfig);
   const weekday = config.weekday;
 
-  if (typeof weekday !== "number") {
+  if (weekday === undefined) {
     logWarn(`WEEKDAY_TITHI event "${event.name}" missing numeric weekday in ruleConfig`);
     return [];
   }
@@ -908,16 +925,12 @@ async function generatePradoshOccurrences(
   _location: { name: string; lat: number; lon: number },
   _timezone: string
 ): Promise<GeneratedOccurrence[]> {
-  const config = (event.ruleConfig as Record<string, unknown>) ?? {};
-  const paksha = config.paksha as string | undefined;
+  const config = asRuleConfig<PradoshRuleConfig>(event.ruleConfig);
+  const paksha = config.paksha;
   const weekday = config.weekday;
 
   // paksha is optional — if omitted, generate for both SHUKLA and KRISHNA
-  if (paksha && paksha !== "SHUKLA" && paksha !== "KRISHNA") {
-    logWarn(`PRADOSH event "${event.name}" has invalid paksha value: "${paksha}"`);
-    return [];
-  }
-  if (typeof weekday !== "number") {
+  if (weekday === undefined) {
     logWarn(`PRADOSH event "${event.name}" missing numeric weekday in ruleConfig`);
     return [];
   }
@@ -1105,7 +1118,7 @@ async function generateMonthlyLunarOccurrences(
   // and emit one occurrence per window with real start/end times
   const windows = groupConsecutiveDays(dailyData);
 
-  const config = (event.ruleConfig as Record<string, unknown>) ?? {};
+  const config = asRuleConfig<TithiRuleConfig>(event.ruleConfig);
   const isRatriVyapini = config.dateRule === "RATRI_VYAPINI";
 
   let occurrences: GeneratedOccurrence[];
@@ -1304,12 +1317,16 @@ async function generateMonthlySolarOccurrences(
 /**
  * Generate occurrences for multiple events in batch.
  * More efficient than calling generateOccurrences individually.
+ *
+ * Failed events are excluded from the returned map so that a replace-persist
+ * does NOT delete their existing occurrences.
  */
 export async function generateOccurrencesForEvents(
   events: Event[],
   options: RecurrenceOptions
-): Promise<Map<string, GeneratedOccurrence[]>> {
+): Promise<{ results: Map<string, GeneratedOccurrence[]>; failedCount: number }> {
   const results = new Map<string, GeneratedOccurrence[]>();
+  let failedCount = 0;
 
   for (const event of events) {
     try {
@@ -1317,11 +1334,13 @@ export async function generateOccurrencesForEvents(
       results.set(event.id, occurrences);
     } catch (error) {
       logWarn(`Failed to generate occurrences for "${event.name}": ${error}`);
-      results.set(event.id, []);
+      failedCount++;
+      // Intentionally NOT added to results — skips persist for failed events to
+      // prevent accidental deletion of their existing occurrences with replace:true.
     }
   }
 
-  return results;
+  return { results, failedCount };
 }
 
 /**

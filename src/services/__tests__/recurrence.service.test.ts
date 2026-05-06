@@ -456,7 +456,10 @@ describe("Recurrence Service", () => {
         } as DailyInfo,
       ]);
 
-      const result = await generateOccurrencesForEvents(events, { startDate, endDate });
+      const { results: result } = await generateOccurrencesForEvents(events, {
+        startDate,
+        endDate,
+      });
 
       expect(result.size).toBe(2);
       expect(result.get(MOCK_EVENT_YEARLY.id)).toHaveLength(1);

@@ -7,6 +7,8 @@
  * @module services/sadhana
  */
 
+import "server-only";
+
 import * as sadhanaRepo from "@/repositories/sadhana.repository";
 import type { Prisma } from "@prisma/client";
 import { eachDateOnlyInRange, addDaysDateOnly } from "@/lib/default-location-date";

@@ -111,17 +111,21 @@ describe("findEventOccurrences", () => {
 
   it("orders by event name when sortBy=name", async () => {
     await findEventOccurrences({ sortBy: "name" });
-    expect(getOrderByArg()).toEqual([{ event: { name: "asc" } }]);
+    expect(getOrderByArg()).toEqual([
+      { event: { name: "asc" } },
+      { date: "asc" },
+      { id: "asc" },
+    ]);
   });
 
   it("orders by date by default", async () => {
     await findEventOccurrences({});
-    expect(getOrderByArg()).toEqual([{ date: "asc" }]);
+    expect(getOrderByArg()).toEqual([{ date: "asc" }, { id: "asc" }]);
   });
 
   it("applies desc order when order=desc", async () => {
     await findEventOccurrences({ order: "desc" });
-    expect(getOrderByArg()).toEqual([{ date: "desc" }]);
+    expect(getOrderByArg()).toEqual([{ date: "desc" }, { id: "desc" }]);
   });
 });
 

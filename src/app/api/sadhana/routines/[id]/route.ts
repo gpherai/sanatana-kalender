@@ -22,7 +22,7 @@ export async function PATCH(req: Request, { params }: Params) {
       items !== undefined
         ? await updateSadhanaRoutine(id, {
             ...(name !== undefined && { name }),
-            items,
+            items: items.map((it, idx) => ({ ...it, sort_order: it.sort_order ?? idx })),
           })
         : await updateSadhanaRoutine(id, {
             ...(name !== undefined && { name }),

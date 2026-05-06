@@ -62,7 +62,7 @@ async function main() {
 
   console.log(`📋 Found ${events.length} events with recurrence rules`);
 
-  const occurrencesMap = await generateOccurrencesForEvents(events, {
+  const { results: occurrencesMap } = await generateOccurrencesForEvents(events, {
     startDate,
     endDate,
     location: DEFAULT_LOCATION,

@@ -198,10 +198,11 @@ describe("Recurrence Service Extended", () => {
     expect(res7).toHaveLength(2);
     expect(res7[0]!.date.getUTCDate()).toBe(11);
 
-    // 8. Batch error
+    // 8. Batch error — failed events are excluded from results (not deleted on replace)
     prismaMock.dailyInfo.findMany.mockRejectedValueOnce(new Error("Fail"));
     const res8 = await generateOccurrencesForEvents([BASE_EVENT], options);
-    expect(res8.get(BASE_EVENT.id)).toEqual([]);
+    expect(res8.results.get(BASE_EVENT.id)).toBeUndefined();
+    expect(res8.failedCount).toBe(1);
 
     // 9. Recommended Windows and Fallbacks
     expect(getRecommendedWindow("YEARLY_SOLAR").yearsAhead).toBe(5);

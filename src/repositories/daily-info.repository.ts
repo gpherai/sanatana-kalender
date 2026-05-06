@@ -196,6 +196,7 @@ export function findDailyInfoTithiNakshatraCandidates(
     orderBy: { date: "asc" },
     select: {
       date: true,
+      sunrise: true,
       tithiEndTime: true,
       nakshatraEndTime: true,
       maas: true,

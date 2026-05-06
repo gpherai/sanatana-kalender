@@ -101,3 +101,20 @@ export interface RuleConfigMap {
   PRADOSH: PradoshRuleConfig;
   CUSTOM: CustomRuleConfig;
 }
+
+// ---------------------------------------------------------------------------
+// Runtime helper
+// ---------------------------------------------------------------------------
+
+/**
+ * Safely cast a raw Prisma JsonValue to a typed rule config.
+ * Returns the typed object if `raw` is a plain object, or an empty object if not.
+ * Fields are all optional (Partial<T>) because DB data may be incomplete.
+ * Callers are still responsible for validating required fields at runtime.
+ */
+export function asRuleConfig<T>(raw: unknown): Partial<T> {
+  if (raw !== null && typeof raw === "object" && !Array.isArray(raw)) {
+    return raw as Partial<T>;
+  }
+  return {} as Partial<T>;
+}

@@ -409,7 +409,7 @@ const sadhanaRoutineItemSchema = z.object({
   practice_id: z.string().min(1),
   quantity: z.number().int().min(1),
   unit: z.enum(["malas", "count"]).default("malas"),
-  sort_order: z.number().int().default(0),
+  sort_order: z.number().int().optional(),
 });
 
 export const createSadhanaRoutineSchema = z.object({

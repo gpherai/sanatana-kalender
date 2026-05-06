@@ -42,7 +42,7 @@ describe("Recurrence Service 100% Coverage", () => {
   const options = { startDate, endDate };
 
   it("covers generateOccurrencesForEvents early return", async () => {
-    const res = await generateOccurrencesForEvents([], options);
+    const { results: res } = await generateOccurrencesForEvents([], options);
     expect(res.size).toBe(0);
   });
 
