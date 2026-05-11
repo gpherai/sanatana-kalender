@@ -1,17 +1,28 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { DEFAULT_LOCATION } from "@/lib/domain";
-import { GET } from "../weer/route";
 
 // Mock global fetch
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
 describe("GET /api/weer", () => {
-  const originalEnv = process.env;
+  const originalEnv = { ...process.env };
+
+  async function getResponse() {
+    const { GET } = await import("../weer/route");
+    return GET();
+  }
 
   beforeEach(() => {
+    vi.resetModules();
     vi.clearAllMocks();
-    process.env = { ...originalEnv, OPENWEATHER_API_KEY: "test-key" };
+    process.env = {
+      ...originalEnv,
+      DATABASE_URL:
+        originalEnv.DATABASE_URL ?? "postgresql://user:pass@localhost:5432/test",
+      OPENWEATHER_API_KEY: "test-key",
+    };
+    global.fetch = mockFetch;
   });
 
   const mockWeather = {
@@ -96,7 +107,7 @@ describe("GET /api/weer", () => {
 
   it("returns 503 if API key is missing", async () => {
     delete process.env.OPENWEATHER_API_KEY;
-    const response = await GET();
+    const response = await getResponse();
     const json = await response.json();
     expect(response.status).toBe(503);
     expect(json.message).toContain("niet geconfigureerd");
@@ -116,7 +127,7 @@ describe("GET /api/weer", () => {
       return Promise.reject(new Error("Unknown URL"));
     });
 
-    const response = await GET();
+    const response = await getResponse();
     const json = await response.json();
 
     expect(response.status).toBe(200);
@@ -142,7 +153,7 @@ describe("GET /api/weer", () => {
       return Promise.reject(new Error("Unknown URL"));
     });
 
-    const response = await GET();
+    const response = await getResponse();
     const json = await response.json();
 
     expect(response.status).toBe(200);
@@ -159,7 +170,7 @@ describe("GET /api/weer", () => {
 
   it("returns 503 for invalid API key (401)", async () => {
     mockFetch.mockResolvedValueOnce({ ok: false, status: 401 });
-    const response = await GET();
+    const response = await getResponse();
     const json = await response.json();
     expect(response.status).toBe(503);
     expect(json.message).toContain("Ongeldige");
@@ -167,7 +178,7 @@ describe("GET /api/weer", () => {
 
   it("returns 500 for other OpenWeather errors", async () => {
     mockFetch.mockResolvedValueOnce({ ok: false, status: 500 });
-    const response = await GET();
+    const response = await getResponse();
     const json = await response.json();
     expect(response.status).toBe(500);
     expect(json.message).toContain("OpenWeather fout");
@@ -175,7 +186,7 @@ describe("GET /api/weer", () => {
 
   it("returns 500 on fetch rejection", async () => {
     mockFetch.mockRejectedValueOnce(new Error("Network error"));
-    const response = await GET();
+    const response = await getResponse();
     const json = await response.json();
     expect(response.status).toBe(500);
     expect(json.message).toContain("Kon weerdata niet ophalen");
@@ -192,7 +203,7 @@ describe("GET /api/weer", () => {
       return Promise.reject(new Error("Unknown URL"));
     });
 
-    const response = await GET();
+    const response = await getResponse();
     const json = await response.json();
 
     expect(response.status).toBe(200);
@@ -214,7 +225,7 @@ describe("GET /api/weer", () => {
       return Promise.reject(new Error("Unknown URL"));
     });
 
-    const response = await GET();
+    const response = await getResponse();
     const json = await response.json();
 
     expect(json.current.rain).toBeUndefined();
@@ -245,7 +256,7 @@ describe("GET /api/weer", () => {
       return Promise.reject(new Error("Unknown URL"));
     });
 
-    const response = await GET();
+    const response = await getResponse();
     const json = await response.json();
     expect(json.daily[0].moon_phase).toBeDefined();
   });
@@ -284,7 +295,7 @@ describe("GET /api/weer", () => {
       return Promise.reject(new Error("Unknown URL"));
     });
 
-    const response = await GET();
+    const response = await getResponse();
     const json = await response.json();
     expect(json.current.sea_level).toBe(json.current.pressure);
     expect(json.current.grnd_level).toBe(json.current.pressure);
@@ -302,7 +313,7 @@ describe("GET /api/weer", () => {
       return Promise.reject(new Error("Unknown URL"));
     });
 
-    const response = await GET();
+    const response = await getResponse();
     const json = await response.json();
     expect(json.air_quality).toBeNull();
   });

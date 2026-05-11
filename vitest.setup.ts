@@ -1,5 +1,7 @@
 import "@testing-library/jest-dom";
 
+process.env.DATABASE_URL ??= "postgresql://user:pass@localhost:5432/test";
+
 // Polyfill localStorage when jsdom doesn't provide a full Storage implementation
 if (typeof localStorage === "undefined" || typeof localStorage.clear !== "function") {
   const storage: Record<string, string> = {};
