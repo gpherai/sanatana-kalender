@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import {
+  errorResponse,
   notFoundError,
   parseJsonBody,
   serverError,
   validationError,
 } from "@/lib/api-response";
 import { logError } from "@/lib/utils";
-import { patchSadhanaGoalSchema } from "@/lib/validations";
+import { cuidSchema, patchSadhanaGoalSchema } from "@/lib/validations";
 import {
   deleteSadhanaGoal,
   GoalPracticeNotFoundError,
@@ -19,6 +20,8 @@ type Params = { params: Promise<{ id: string }> };
 export async function PATCH(req: Request, { params }: Params) {
   try {
     const { id } = await params;
+    if (!cuidSchema.safeParse(id).success)
+      return errorResponse("Ongeldig ID formaat", 400);
     const bodyResult = await parseJsonBody(req);
     if (!bodyResult.ok) return bodyResult.response;
     const parsed = patchSadhanaGoalSchema.safeParse(bodyResult.data);
@@ -44,6 +47,8 @@ export async function PATCH(req: Request, { params }: Params) {
 export async function DELETE(_req: Request, { params }: Params) {
   try {
     const { id } = await params;
+    if (!cuidSchema.safeParse(id).success)
+      return errorResponse("Ongeldig ID formaat", 400);
     await deleteSadhanaGoal(id);
     return new NextResponse(null, { status: 204 });
   } catch (error) {

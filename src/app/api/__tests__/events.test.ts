@@ -225,7 +225,7 @@ describe("API Events", () => {
     const response = await POST(request);
     const json = await response.json();
     expect(response.status).toBe(409);
-    expect(json.message).toContain("Er bestaat al een event");
+    expect(json.message).toContain("Uniek veld conflict");
   });
 
   it("handles Prisma foreign key constraint error", async () => {

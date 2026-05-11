@@ -408,10 +408,20 @@ export const patchSadhanaSessionSchema = z
   })
   .strict();
 
-export const sadhanaCalendarQuerySchema = z.object({
-  start: dateStringSchema.optional(),
-  end: dateStringSchema.optional(),
-});
+export const sadhanaCalendarQuerySchema = z
+  .object({
+    start: dateStringSchema.optional(),
+    end: dateStringSchema.optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.start && data.end && data.end < data.start) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["end"],
+        message: "end moet op of na start liggen",
+      });
+    }
+  });
 
 export const createSadhanaGoalSchema = z
   .object({

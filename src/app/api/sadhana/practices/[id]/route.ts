@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
+  errorResponse,
   notFoundError,
   parseJsonBody,
   serverError,
   validationError,
 } from "@/lib/api-response";
 import { logError } from "@/lib/utils";
-import { patchSadhanaPracticeSchema } from "@/lib/validations";
+import { cuidSchema, patchSadhanaPracticeSchema } from "@/lib/validations";
 import {
   deactivateSadhanaPractice,
   SadhanaNotFoundError,
@@ -18,6 +19,8 @@ type Params = { params: Promise<{ id: string }> };
 export async function PATCH(req: NextRequest, { params }: Params) {
   try {
     const { id } = await params;
+    if (!cuidSchema.safeParse(id).success)
+      return errorResponse("Ongeldig ID formaat", 400);
     const bodyResult = await parseJsonBody(req);
     if (!bodyResult.ok) return bodyResult.response;
     const parsed = patchSadhanaPracticeSchema.safeParse(bodyResult.data);
@@ -43,6 +46,8 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 export async function DELETE(_req: NextRequest, { params }: Params) {
   try {
     const { id } = await params;
+    if (!cuidSchema.safeParse(id).success)
+      return errorResponse("Ongeldig ID formaat", 400);
     await deactivateSadhanaPractice(id);
     return new NextResponse(null, { status: 204 });
   } catch (error) {

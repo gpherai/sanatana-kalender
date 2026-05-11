@@ -272,7 +272,8 @@ export async function updateRoutineWithItems(
     quantity: number;
     unit: string;
     sort_order: number;
-  }[]
+  }[],
+  active?: boolean
 ) {
   return prisma.$transaction(async (tx) => {
     await tx.sadhanaRoutineItem.deleteMany({ where: { routineId: id } });
@@ -280,6 +281,7 @@ export async function updateRoutineWithItems(
       where: { id },
       data: {
         name,
+        ...(active !== undefined && { active }),
         items: {
           create: items.map((it) => ({
             practiceId: it.practice_id,

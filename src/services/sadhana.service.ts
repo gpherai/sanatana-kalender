@@ -499,6 +499,7 @@ export async function updateSadhanaRoutine(
   data:
     | {
         name?: string;
+        active?: boolean;
         items: {
           practice_id: string;
           quantity: number;
@@ -513,6 +514,7 @@ export async function updateSadhanaRoutine(
 
   const routineData = data as {
     name?: string;
+    active?: boolean;
     items?: {
       practice_id: string;
       quantity: number;
@@ -525,7 +527,8 @@ export async function updateSadhanaRoutine(
     ? await sadhanaRepo.updateRoutineWithItems(
         id,
         routineData.name || existing.name,
-        routineData.items
+        routineData.items,
+        routineData.active
       )
     : await sadhanaRepo.updateRoutine(id, data as Prisma.SadhanaRoutineUpdateInput);
 

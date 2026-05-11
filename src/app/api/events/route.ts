@@ -95,10 +95,7 @@ export async function POST(request: NextRequest) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       switch (error.code) {
         case "P2002":
-          // Unique constraint violation (namingKey)
-          return errorResponse("Er bestaat al een event met deze sleutel", 409, [
-            { field: "namingKey", message: "Naming key moet uniek zijn" },
-          ]);
+          return errorResponse("Uniek veld conflict", 409);
         case "P2003":
           return errorResponse("Gerelateerde data niet gevonden", 400);
         case "P2025":

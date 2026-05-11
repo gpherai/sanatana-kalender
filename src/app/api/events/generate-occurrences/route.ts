@@ -28,6 +28,7 @@ import { parseCalendarDate } from "@/lib/date-utils";
 import { generateOccurrencesSchema } from "@/lib/validations";
 import {
   errorResponse,
+  parseJsonBody,
   validationError,
   notFoundError,
   serverError,
@@ -37,10 +38,11 @@ import { EventNotFoundError, generateEventOccurrences } from "@/services/event.s
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const bodyResult = await parseJsonBody(request);
+    if (!bodyResult.ok) return bodyResult.response;
 
     // Validate with Zod
-    const result = generateOccurrencesSchema.safeParse(body);
+    const result = generateOccurrencesSchema.safeParse(bodyResult.data);
     if (!result.success) {
       return validationError(result.error);
     }

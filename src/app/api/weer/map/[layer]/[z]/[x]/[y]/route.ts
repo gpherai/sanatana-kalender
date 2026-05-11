@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { errorResponse, serverError } from "@/lib/api-response";
+import { errorResponse } from "@/lib/api-response";
+import { logError } from "@/lib/utils";
 
 const VALID_LAYERS = new Set([
   "clouds_new",
@@ -29,7 +30,7 @@ export async function GET(
     const apiKey = process.env.OPENWEATHER_API_KEY;
 
     if (!apiKey) {
-      return serverError("OpenWeather API key missing");
+      return errorResponse("OpenWeather API key niet geconfigureerd", 503);
     }
 
     const url = `https://tile.openweathermap.org/map/${layer}/${z}/${x}/${y}.png?appid=${apiKey}`;
@@ -52,7 +53,8 @@ export async function GET(
           "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400",
       },
     });
-  } catch {
-    return serverError("Failed to fetch map tile");
+  } catch (error) {
+    logError("[WEER_MAP_TILE]", error);
+    return errorResponse("Kon tegel niet ophalen", 503);
   }
 }

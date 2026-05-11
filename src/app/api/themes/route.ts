@@ -22,8 +22,8 @@ export async function GET() {
     isDefault: t.isDefault,
     isSpecial: t.isSpecial ?? false,
     colors: t.colors,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: "2024-01-01T00:00:00.000Z",
+    updatedAt: "2024-01-01T00:00:00.000Z",
   }));
 
   return NextResponse.json(themes);

@@ -3,6 +3,7 @@ import { updateOccurrenceSchema, cuidSchema } from "@/lib/validations";
 import {
   errorResponse,
   notFoundError,
+  parseJsonBody,
   serverError,
   validationError,
 } from "@/lib/api-response";
@@ -67,10 +68,11 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       return errorResponse("Ongeldig occurrence ID formaat", 400);
     }
 
-    const body = await request.json();
+    const bodyResult = await parseJsonBody(request);
+    if (!bodyResult.ok) return bodyResult.response;
 
     // Validate request body
-    const result = updateOccurrenceSchema.safeParse(body);
+    const result = updateOccurrenceSchema.safeParse(bodyResult.data);
     if (!result.success) {
       return validationError(result.error);
     }
