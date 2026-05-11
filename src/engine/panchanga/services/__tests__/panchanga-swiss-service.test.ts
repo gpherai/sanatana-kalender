@@ -53,6 +53,7 @@ vi.mock("../../utils/astro", () => ({
   swe_julday: sweJulday,
   findEventEnd,
   getAyanamsa,
+  EPHE_PATH: "/mock/ephe",
 }));
 
 vi.mock("swisseph", () => ({

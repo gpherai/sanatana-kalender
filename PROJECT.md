@@ -21,15 +21,15 @@ In productie op VPS (v0.10.0). Volledig werkend: maand/week/dag/agenda kalenderw
 - [ ] Encyclopedie uitbreiden: van 41-term array naar volledige MDX-structuur met /encyclopedie/[slug] routes (plan in conductor/encyclopedia-plan.md)
 - [ ] Locatieflexibiliteit: DEFAULT_LOCATION hardcoded op Den Haag — configureerbaar maken
 - [x] Code review: src/lib/ — DONE (9 fixes: taalconsistentie, JSDoc, cuidSchema Zod4, formatShortDate rename, calculationDate→generatedAt, OPENWEATHER env, sync-comments)
-- [ ] Code review: src/engine/ (panchanga Swiss Ephemeris wrapper, tithi-helpers)
+- [x] Code review: src/engine/ — DONE (13 fixes: panchanga Swiss Ephemeris wrapper, tithi-helpers)
 - [ ] Code review: src/types/ + src/config/ (api.ts, calendar.ts, sadhana.ts, weather.ts, themes, categories, event-naming)
 - [ ] Code review: src/hooks/ (useFetch, useFilters, useSadhanaData, useWeather, useOverlayHistory, useDebounce)
 - [ ] Code review: src/components/ (~70 bestanden — calendar, almanac, sadhana, kundali, weather, ui, settings)
 - [ ] Code review: src/app/ pages (almanac, events, sadhana, settings, kundali, encyclopedie, weer)
-
 ## AI Session Log
 | Datum | Tool | Samenvatting |
 |-------|------|-------------|
+| 2026-05-11 | Claude Code | src/engine code review — 13 bevindingen geverifieerd en 13 opgelost |
 | 2026-05-11 | Claude Code | src/lib code review — 9 bevindingen geverifieerd en opgelost (moon-phases, date-utils, category-styles, panchanga-helpers, api-transformers, sadhana-utils rename, validations cuid Zod4, env OPENWEATHER) |
 | 2026-05-11 | Claude Code | Database credentials fix en db:setup na schema drift reset |
 | 2026-05-11 | Claude Code | API-laag review ronde 2: 9 Codex bevindingen geimplementeerd (parseJsonBody migratie, routine active-bug, P2003 catch sessions/routines, sadhanaCalendar range-invariant, CUID-validatie sadhana routes, generieke P2002, weer map 503+NL, themes vaste timestamps, health version fallback). Reviewstatus gedocumenteerd in PROJECT.md. |
@@ -38,7 +38,7 @@ In productie op VPS (v0.10.0). Volledig werkend: maand/week/dag/agenda kalenderw
 
 ## Notities
 
-Code review status (laag voor laag, binnen naar buiten): repositories DONE, services DONE, app/api DONE (2 rondes Codex), lib DONE. Open: engine, types+config, hooks, components, app/pages.
+Code review status (laag voor laag, binnen naar buiten): repositories DONE, services DONE, app/api DONE (2 rondes Codex), lib DONE, engine DONE. Open: types+config, hooks, components, app/pages.
 
 Lib review bevindingen (2026-05-11): moon-phases "Unknown"→"Onbekend", isSameDay comment gecorrigeerd, category-styles JSDoc swap, panchanga-helpers null-guard + sync-comment TITHI tables, api-transformers calculationDate→generatedAt, sadhana-utils formatDate→formatShortDate (naambotsing), validations practice_id z.string().min(1)→cuidSchema + cuidSchema→z.cuid() (Zod4 top-level), env.ts OPENWEATHER_API_KEY toegevoegd aan schema (weather.service + map route gebruiken nu env.*).
 

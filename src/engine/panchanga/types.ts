@@ -174,7 +174,7 @@ export interface DailyPanchangaFull {
   // Lunar month (Maas) - Amanta or Purnimanta system
   maas?: {
     name: string; // Sanskrit name (e.g., "Pausha", "Magha")
-    type: "Amanta" | "Purnimanta"; // Month system
+    type: "Purnimanta"; // Month system
     lunarDay: number; // Day number within the month (1-30)
     paksha: "Shukla" | "Krishna"; // Which half of the month
     isAdhika: boolean; // Adhika (intercalary) month flag

@@ -1,4 +1,3 @@
-import path from "path";
 import { DateTime } from "luxon";
 import * as swisseph from "swisseph";
 import type {
@@ -16,6 +15,7 @@ import {
   sweHousesEx,
   sweSetTopo,
   withSwissEphLock,
+  EPHE_PATH,
 } from "../utils/astro";
 import {
   NAKSHATRA_NAMES,
@@ -23,11 +23,9 @@ import {
   GRAHA_DEFINITIONS,
   TITHI_NAMES,
   YOGA_NAMES,
-  KARANA_NAMES,
   VARA_NAMES,
+  resolveKaranaName,
 } from "../constants";
-
-const EPHE_PATH = path.join(process.cwd(), "node_modules/swisseph/ephe");
 
 // =============================================================================
 // HELPERS
@@ -214,17 +212,8 @@ export class BirthChartService {
     const yogaIdx = Math.floor(yogaProg) + 1; // 1–27
 
     // 60 half-tithis per lunar month:
-    // 1 = Kimstughna (fixed), 2-57 = 7 movable cycling, 58-60 = Shakuni/Chatushpada/Naga
     const karanaProg = tithiProg * 2; // 0.0–59.998
     const karanaIdx = Math.floor(karanaProg) + 1; // 1–60
-    let karanaName: string;
-    if (karanaIdx === 1) {
-      karanaName = KARANA_NAMES[10]; // Kimstughna
-    } else if (karanaIdx <= 57) {
-      karanaName = KARANA_NAMES[(karanaIdx - 2) % 7]!;
-    } else {
-      karanaName = KARANA_NAMES[karanaIdx - 51]!; // 58→7 Shakuni, 59→8 Chatushpada, 60→9 Naga
-    }
 
     // Vara: weekday of birth local date (Luxon weekday 1=Mon–7=Sun → 0=Sun…6=Sat)
     const varaIdx = localDt.weekday % 7;
@@ -247,7 +236,7 @@ export class BirthChartService {
         tithi: { number: tithiIdx, name: TITHI_NAMES[tithiIdx - 1]!, paksha },
         nakshatra: grahas["chandra"]!.nakshatra,
         yoga: { number: yogaIdx, name: YOGA_NAMES[yogaIdx - 1]! },
-        karana: { number: karanaIdx, name: karanaName },
+        karana: { number: karanaIdx, name: resolveKaranaName(karanaIdx) },
         vara: { name: VARA_NAMES[varaIdx]! },
       },
     };

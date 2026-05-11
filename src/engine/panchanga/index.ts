@@ -19,4 +19,5 @@ if (typeof window !== "undefined") {
 }
 
 export { PanchangaSwissService } from "./services/panchanga-swiss-service";
+export { BirthChartService, BirthChartInputError } from "./services/birth-chart-service";
 export type { DailyPanchangaFull, LocationConfig } from "./types";

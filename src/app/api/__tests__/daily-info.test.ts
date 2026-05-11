@@ -255,7 +255,7 @@ describe("GET /api/daily-info", () => {
       ...basePanchanga,
       maas: {
         name: "PHALGUNA",
-        type: "Amanta",
+        type: "Purnimanta",
         lunarDay: 14,
         paksha: "Krishna",
         isAdhika: false,

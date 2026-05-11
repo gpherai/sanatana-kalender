@@ -6,6 +6,7 @@ import {
   isPredecessorEndsAfterSunrise,
   isNishitakalDateShiftNeeded,
   computeTithiOccurrence,
+  applyRatriVyapiniDateRule,
 } from "../tithi-helpers";
 import type { PrevDayInfo } from "../types";
 
@@ -284,6 +285,118 @@ describe("tithi-helpers", () => {
 
       const res = computeTithiOccurrence(firstDay, lastDay, prevMap);
       expect(res.endTime).toBeUndefined();
+    });
+  });
+
+  describe("applyRatriVyapiniDateRule", () => {
+    // Setup: sunset 18:00, next sunrise 06:00 → nightDuration=720min, pradoshEnd=18:00+144=20:24
+    const firstDay = { date: new Date(Date.UTC(2025, 0, 2)), tithiEndTime: "15:00" };
+    const lastDay = firstDay;
+    const prevInfo: PrevDayInfo = {
+      tithiEndTime: "19:00", // 1140 min — before pradoshEnd 20:24 → observe prevDay
+      sunrise: "06:00",
+      sunset: "18:00",
+    };
+    const firstDaySunrise = "06:00";
+
+    it("returns firstDay when prevInfo is undefined", () => {
+      const res = applyRatriVyapiniDateRule(
+        firstDay,
+        lastDay,
+        undefined,
+        firstDaySunrise
+      );
+      expect(res.date.toISOString()).toBe("2025-01-02T00:00:00.000Z");
+      expect(res.startTime).toBeUndefined();
+    });
+
+    it("returns firstDay when prevInfo.tithiEndTime is missing", () => {
+      const res = applyRatriVyapiniDateRule(
+        firstDay,
+        lastDay,
+        { ...prevInfo, tithiEndTime: null },
+        firstDaySunrise
+      );
+      expect(res.date.toISOString()).toBe("2025-01-02T00:00:00.000Z");
+    });
+
+    it("returns firstDay when prevInfo.sunset is missing", () => {
+      const res = applyRatriVyapiniDateRule(
+        firstDay,
+        lastDay,
+        { ...prevInfo, sunset: null },
+        firstDaySunrise
+      );
+      expect(res.date.toISOString()).toBe("2025-01-02T00:00:00.000Z");
+    });
+
+    it("returns firstDay when firstDaySunrise is null", () => {
+      const res = applyRatriVyapiniDateRule(firstDay, lastDay, prevInfo, null);
+      expect(res.date.toISOString()).toBe("2025-01-02T00:00:00.000Z");
+    });
+
+    it("shifts to prevDay when tithi starts before Pradosh ends (19:00 < 20:24)", () => {
+      const res = applyRatriVyapiniDateRule(firstDay, lastDay, prevInfo, firstDaySunrise);
+      // prevDay = Jan 1
+      expect(res.date.toISOString()).toBe("2025-01-01T00:00:00.000Z");
+      expect(res.startTime).toBe("19:00");
+      // endDate = lastDay (Jan 2) since lastDay !== prevDate
+      expect(res.endDate?.toISOString()).toBe("2025-01-02T00:00:00.000Z");
+      expect(res.endTime).toBe("15:00");
+    });
+
+    it("stays on firstDay when tithi starts after Pradosh ends (21:00 > 20:24)", () => {
+      const lateStart: PrevDayInfo = { ...prevInfo, tithiEndTime: "21:00" };
+      const res = applyRatriVyapiniDateRule(
+        firstDay,
+        lastDay,
+        lateStart,
+        firstDaySunrise
+      );
+      expect(res.date.toISOString()).toBe("2025-01-02T00:00:00.000Z");
+      expect(res.startTime).toBeUndefined();
+    });
+
+    it("treats past-midnight tithiStart (03:00) as on nextDay timeline — after Pradosh", () => {
+      // 03:00 = 180 min < prevSunrise 360 → tithiOnPrevTimeline = 180+1440 = 1620 > 1224
+      const midnightStart: PrevDayInfo = { ...prevInfo, tithiEndTime: "03:00" };
+      const res = applyRatriVyapiniDateRule(
+        firstDay,
+        lastDay,
+        midnightStart,
+        firstDaySunrise
+      );
+      expect(res.date.toISOString()).toBe("2025-01-02T00:00:00.000Z");
+      expect(res.startTime).toBeUndefined();
+    });
+
+    it("sets no endDate when lastDay equals prevDate (single-day prevDay window)", () => {
+      // Make lastDay the same date as prevDate (Jan 1)
+      const prevDayAsLast = {
+        date: new Date(Date.UTC(2025, 0, 1)),
+        tithiEndTime: "15:00",
+      };
+      const res = applyRatriVyapiniDateRule(
+        firstDay,
+        prevDayAsLast,
+        prevInfo,
+        firstDaySunrise
+      );
+      expect(res.date.toISOString()).toBe("2025-01-01T00:00:00.000Z");
+      expect(res.endDate).toBeUndefined();
+    });
+
+    it("sets endDate to lastDay when multi-day window and prevDay shift applies", () => {
+      const multiLast = { date: new Date(Date.UTC(2025, 0, 3)), tithiEndTime: "10:00" };
+      const res = applyRatriVyapiniDateRule(
+        firstDay,
+        multiLast,
+        prevInfo,
+        firstDaySunrise
+      );
+      expect(res.date.toISOString()).toBe("2025-01-01T00:00:00.000Z");
+      expect(res.endDate?.toISOString()).toBe("2025-01-03T00:00:00.000Z");
+      expect(res.endTime).toBe("10:00");
     });
   });
 });

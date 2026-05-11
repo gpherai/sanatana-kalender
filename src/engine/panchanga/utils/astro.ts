@@ -4,11 +4,7 @@ import * as swisseph from "swisseph";
 import type { LocationConfig } from "../types";
 
 // Resolve bundled Swiss Ephemeris data files from the swisseph package
-const EPHE_PATH = path.join(process.cwd(), "node_modules/swisseph/ephe");
-
-// Set ephemeris path and Lahiri ayanamsa globally for this module
-swisseph.swe_set_ephe_path(EPHE_PATH);
-swisseph.swe_set_sid_mode(swisseph.SE_SIDM_LAHIRI, 0, 0);
+export const EPHE_PATH = path.join(process.cwd(), "node_modules/swisseph/ephe");
 
 // =============================================================================
 // PROMISIFIED SWISS EPHEMERIS WRAPPERS
@@ -94,6 +90,15 @@ const swe_revjul = (
 ): { year: number; month: number; day: number; hour: number } => {
   return swisseph.swe_revjul(jd, gregflag as 0 | 1);
 };
+
+function jdToDateTime(jd: number, tz: string): DateTime {
+  const dateUTC = swe_revjul(jd, swisseph.SE_GREG_CAL as 0 | 1);
+  const h = Math.floor(dateUTC.hour);
+  const remainder = (dateUTC.hour - h) * 60;
+  const m = Math.floor(remainder);
+  const s = Math.floor((remainder - m) * 60);
+  return DateTime.utc(dateUTC.year, dateUTC.month, dateUTC.day, h, m, s).setZone(tz);
+}
 
 export const swe_calc_ut = (
   jd: number,
@@ -282,23 +287,11 @@ export async function calculateSunriseSunset(
     0
   );
 
-  const jdToDateTime = (jd: number): DateTime => {
-    const dateUTC = swe_revjul(jd, swisseph.SE_GREG_CAL as 0 | 1);
-    const h = Math.floor(dateUTC.hour);
-    const remainder = (dateUTC.hour - h) * 60;
-    const m = Math.floor(remainder);
-    const s = Math.floor((remainder - m) * 60);
-
-    return DateTime.utc(dateUTC.year, dateUTC.month, dateUTC.day, h, m, s).setZone(
-      loc.tz
-    );
-  };
-
   return {
     sunriseJD: riseTimeJD,
     sunsetJD: setTimeJD,
-    sunriseTime: jdToDateTime(riseTimeJD),
-    sunsetTime: jdToDateTime(setTimeJD),
+    sunriseTime: jdToDateTime(riseTimeJD, loc.tz),
+    sunsetTime: jdToDateTime(setTimeJD, loc.tz),
   };
 }
 
@@ -400,23 +393,11 @@ export async function calculateMoonriseMoonset(
     }
   }
 
-  const jdToDateTime = (jd: number): DateTime => {
-    const dateUTC = swe_revjul(jd, swisseph.SE_GREG_CAL as 0 | 1);
-    const h = Math.floor(dateUTC.hour);
-    const remainder = (dateUTC.hour - h) * 60;
-    const m = Math.floor(remainder);
-    const s = Math.floor((remainder - m) * 60);
-
-    return DateTime.utc(dateUTC.year, dateUTC.month, dateUTC.day, h, m, s).setZone(
-      loc.tz
-    );
-  };
-
   return {
     moonriseJD: riseTimeJD,
     moonsetJD: setTimeJD,
-    moonriseTime: jdToDateTime(riseTimeJD),
-    moonsetTime: jdToDateTime(setTimeJD),
+    moonriseTime: jdToDateTime(riseTimeJD, loc.tz),
+    moonsetTime: jdToDateTime(setTimeJD, loc.tz),
   };
 }
 

@@ -1,9 +1,6 @@
-import path from "path";
 import { DateTime } from "luxon";
 import * as swisseph from "swisseph";
-
-// Resolve bundled Swiss Ephemeris data files from the swisseph package
-const EPHE_PATH = path.join(process.cwd(), "node_modules/swisseph/ephe");
+import swissephPkg from "swisseph/package.json";
 import type { DailyPanchangaFull, LocationConfig } from "../types";
 import {
   calculateSunriseSunset,
@@ -13,16 +10,17 @@ import {
   findEventEnd,
   getAyanamsa,
   swe_julday,
+  EPHE_PATH,
 } from "../utils/astro";
 import {
   TITHI_NAMES,
   NAKSHATRA_NAMES,
   YOGA_NAMES,
-  KARANA_NAMES,
   VARA_NAMES,
   LUNAR_MASA_NAMES,
-  SOLAR_MASA_NAMES,
+  RASHI_NAMES,
   SAMVATSARA_NAMES,
+  resolveKaranaName,
 } from "../constants";
 
 /**
@@ -58,10 +56,6 @@ export class PanchangaSwissService {
     dateStr: string,
     location: LocationConfig
   ): Promise<DailyPanchangaFull> {
-    // Ensure correct settings before every calculation
-    swisseph.swe_set_ephe_path(EPHE_PATH);
-    swisseph.swe_set_sid_mode(swisseph.SE_SIDM_LAHIRI, 0, 0);
-
     // ==========================================================================
     // STEP 1: Calculate Sunrise & Sunset
     // ==========================================================================
@@ -97,39 +91,13 @@ export class PanchangaSwissService {
      */
     const norm360 = (x: number): number => ((x % 360) + 360) % 360;
 
-    /**
-     * Tithi progress: Elongation between Sun and Moon
-     * (Moon longitude - Sun longitude) / 12 degrees = 0.0 to 29.999
-     */
-    const getTithiProgress = (sLon: number, mLon: number): number => {
-      const diff = norm360(mLon - sLon);
-      return diff / 12; // 0.0 to 29.999
-    };
-
-    /**
-     * Nakshatra progress: Moon's position in 27 divisions
-     */
-    const getNakshatraProgress = (mLon: number): number => {
-      return norm360(mLon) / (360 / 27); // 0.0 to 26.999
-    };
-
-    /**
-     * Yoga progress: Sum of Sun and Moon longitudes
-     */
-    const getYogaProgress = (sLon: number, mLon: number): number => {
-      const sum = norm360(sLon + mLon);
-      return sum / (360 / 27); // 0.0 to 26.999
-    };
-
-    /**
-     * Karana progress: Half-tithi (tithi × 2)
-     */
-    const getKaranaProgress = (tithiProg: number): number => {
-      return tithiProg * 2; // 0.0 to 59.998
-    };
+    const getNakshatraProgress = (mLon: number): number => norm360(mLon) / (360 / 27);
+    const getYogaProgress = (sLon: number, mLon: number): number =>
+      norm360(sLon + mLon) / (360 / 27);
+    const getKaranaProgress = (tithiProg: number): number => tithiProg * 2;
 
     // Calculate progress values at sunrise
-    const tithiProg = getTithiProgress(sunPos.longitude, moonPos.longitude);
+    const tithiProg = this.getTithiProgress(sunPos.longitude, moonPos.longitude);
     const nakProg = getNakshatraProgress(moonPos.longitude);
     const yogaProg = getYogaProgress(sunPos.longitude, moonPos.longitude);
     const karanaProg = getKaranaProgress(tithiProg);
@@ -150,7 +118,7 @@ export class PanchangaSwissService {
       async (jd) => {
         const s = await swe_calc_ut(jd, swisseph.SE_SUN, flags);
         const m = await swe_calc_ut(jd, swisseph.SE_MOON, flags);
-        return getTithiProgress(s.longitude, m.longitude);
+        return this.getTithiProgress(s.longitude, m.longitude);
       },
       tithiIdx % 30, // Wrap at 30
       30
@@ -185,7 +153,7 @@ export class PanchangaSwissService {
       async (jd) => {
         const s = await swe_calc_ut(jd, swisseph.SE_SUN, flags);
         const m = await swe_calc_ut(jd, swisseph.SE_MOON, flags);
-        const tp = getTithiProgress(s.longitude, m.longitude);
+        const tp = this.getTithiProgress(s.longitude, m.longitude);
         return getKaranaProgress(tp);
       },
       karanaIdx % 60, // Wrap at 60
@@ -221,16 +189,7 @@ export class PanchangaSwissService {
       | 4;
     const yogaName = YOGA_NAMES[yogaIdx - 1] ?? "Unknown";
 
-    // Karana Name Logic (special handling for fixed karanas)
-    let kName = "";
-    if (karanaIdx === 1) kName = "Kimstughna";
-    else if (karanaIdx === 58) kName = "Shakuni";
-    else if (karanaIdx === 59) kName = "Chatushpada";
-    else if (karanaIdx === 60) kName = "Naga";
-    else {
-      const movableIndex = (karanaIdx - 2) % 7;
-      kName = KARANA_NAMES[movableIndex] ?? "Unknown";
-    }
+    const kName = resolveKaranaName(karanaIdx);
 
     // Time formatting helpers
     const formatTime = (dt: DateTime | null): string | undefined =>
@@ -238,21 +197,10 @@ export class PanchangaSwissService {
     const formatIso = (dt: DateTime | null): string | undefined =>
       dt ? (dt.toUTC().toISO() ?? undefined) : undefined;
 
-    const jdToLocal = (jd: number): DateTime => {
-      const dateUTC = swisseph.swe_revjul(jd, swisseph.SE_GREG_CAL as 0 | 1);
-      const h = Math.floor(dateUTC.hour);
-      const remainder = (dateUTC.hour - h) * 60;
-      const m = Math.floor(remainder);
-      const s = Math.floor((remainder - m) * 60);
-      return DateTime.utc(dateUTC.year, dateUTC.month, dateUTC.day, h, m, s).setZone(
-        location.tz
-      );
-    };
-
-    const tEnd = tithiEndJD ? jdToLocal(tithiEndJD) : null;
-    const nEnd = nakEndJD ? jdToLocal(nakEndJD) : null;
-    const yEnd = yogaEndJD ? jdToLocal(yogaEndJD) : null;
-    const kEnd = karanaEndJD ? jdToLocal(karanaEndJD) : null;
+    const tEnd = tithiEndJD ? this.jdToLocal(tithiEndJD, location.tz) : null;
+    const nEnd = nakEndJD ? this.jdToLocal(nakEndJD, location.tz) : null;
+    const yEnd = yogaEndJD ? this.jdToLocal(yogaEndJD, location.tz) : null;
+    const kEnd = karanaEndJD ? this.jdToLocal(karanaEndJD, location.tz) : null;
 
     // ==========================================================================
     // STEP 6: Calculate Inauspicious Times (Rahu Kalam & Yamagandam)
@@ -285,8 +233,8 @@ export class PanchangaSwissService {
     const sunSignIdx = Math.floor(sunPos.longitude / 30); // 0-11
     const moonSignIdx = Math.floor(moonPos.longitude / 30); // 0-11
 
-    const sunSignName = SOLAR_MASA_NAMES[sunSignIdx] ?? "Unknown";
-    const moonSignName = SOLAR_MASA_NAMES[moonSignIdx] ?? "Unknown";
+    const sunSignName = RASHI_NAMES[sunSignIdx] ?? "Unknown";
+    const moonSignName = RASHI_NAMES[moonSignIdx] ?? "Unknown";
 
     // Find when Sun/Moon transition to next sign (next 30° boundary)
     // Use norm360 for wrap-safe boundary calculation (359° → 0°)
@@ -317,8 +265,8 @@ export class PanchangaSwissService {
       360
     );
 
-    const sunSignEnd = sunSignEndJD ? jdToLocal(sunSignEndJD) : null;
-    const moonSignEnd = moonSignEndJD ? jdToLocal(moonSignEndJD) : null;
+    const sunSignEnd = sunSignEndJD ? this.jdToLocal(sunSignEndJD, location.tz) : null;
+    const moonSignEnd = moonSignEndJD ? this.jdToLocal(moonSignEndJD, location.tz) : null;
 
     // -------------------------------------------------------------------------
     // PRAVISHTE/GATE - Days since last Sankranti
@@ -355,7 +303,7 @@ export class PanchangaSwissService {
       }
     }
 
-    const lastSankrantiDate = jdToLocal(lastSankrantiJD);
+    const lastSankrantiDate = this.jdToLocal(lastSankrantiJD, location.tz);
     // Pravishte counts inclusively (Sankranti day = day 1, not day 0)
     // Traditional Vedic counting: if Sankranti was today, we are in day 1
     const daysSinceSankranti =
@@ -466,13 +414,15 @@ export class PanchangaSwissService {
         async (jd) => {
           const s = await swe_calc_ut(jd, swisseph.SE_SUN, flags);
           const m = await swe_calc_ut(jd, swisseph.SE_MOON, flags);
-          return getTithiProgress(s.longitude, m.longitude);
+          return this.getTithiProgress(s.longitude, m.longitude);
         },
         nextTithiIdx % 30,
         30
       );
 
-      const nextTEnd = nextTithiEndJD ? jdToLocal(nextTithiEndJD) : null;
+      const nextTEnd = nextTithiEndJD
+        ? this.jdToLocal(nextTithiEndJD, location.tz)
+        : null;
 
       nextTithi = {
         number: nextTithiIdx,
@@ -499,7 +449,7 @@ export class PanchangaSwissService {
         27
       );
 
-      const nextNEnd = nextNakEndJD ? jdToLocal(nextNakEndJD) : null;
+      const nextNEnd = nextNakEndJD ? this.jdToLocal(nextNakEndJD, location.tz) : null;
 
       // Calculate pada for next nakshatra
       const nextMoonPos = await swe_calc_ut(nakEndJD + 0.01, swisseph.SE_MOON, flags);
@@ -531,7 +481,7 @@ export class PanchangaSwissService {
         27
       );
 
-      const nextYEnd = nextYogaEndJD ? jdToLocal(nextYogaEndJD) : null;
+      const nextYEnd = nextYogaEndJD ? this.jdToLocal(nextYogaEndJD, location.tz) : null;
 
       nextYoga = {
         number: nextYogaIdx,
@@ -545,33 +495,25 @@ export class PanchangaSwissService {
     if (karanaEndJD && karanaEndJD < nextSunriseJD) {
       const nextKaranaIdx = (karanaIdx % 60) + 1;
 
-      let nextKName = "";
-      if (nextKaranaIdx === 1) nextKName = "Kimstughna";
-      else if (nextKaranaIdx === 58) nextKName = "Shakuni";
-      else if (nextKaranaIdx === 59) nextKName = "Chatushpada";
-      else if (nextKaranaIdx === 60) nextKName = "Naga";
-      else {
-        const movableIndex = (nextKaranaIdx - 2) % 7;
-        nextKName = KARANA_NAMES[movableIndex] ?? "Unknown";
-      }
-
       const nextKaranaEndJD = await findEventEnd(
         karanaEndJD,
         async (jd) => {
           const s = await swe_calc_ut(jd, swisseph.SE_SUN, flags);
           const m = await swe_calc_ut(jd, swisseph.SE_MOON, flags);
-          const tp = getTithiProgress(s.longitude, m.longitude);
+          const tp = this.getTithiProgress(s.longitude, m.longitude);
           return getKaranaProgress(tp);
         },
         nextKaranaIdx % 60,
         60
       );
 
-      const nextKEnd = nextKaranaEndJD ? jdToLocal(nextKaranaEndJD) : null;
+      const nextKEnd = nextKaranaEndJD
+        ? this.jdToLocal(nextKaranaEndJD, location.tz)
+        : null;
 
       nextKarana = {
         number: nextKaranaIdx,
-        name: nextKName,
+        name: resolveKaranaName(nextKaranaIdx),
         type: (nextKaranaIdx >= 2 && nextKaranaIdx <= 57 ? "Movable" : "Fixed") as
           | "Movable"
           | "Fixed",
@@ -715,9 +657,18 @@ export class PanchangaSwissService {
       meta: {
         engine: "swisseph-core",
         flags: ["SEFLG_SIDEREAL", "SEFLG_SWIEPH", "SE_SIDM_LAHIRI"],
-        swissephVersion: "0.5.17",
+        swissephVersion: swissephPkg.version,
       },
     };
+  }
+
+  private jdToLocal(jd: number, tz: string): DateTime {
+    const dateUTC = swisseph.swe_revjul(jd, swisseph.SE_GREG_CAL as 0 | 1);
+    const h = Math.floor(dateUTC.hour);
+    const remainder = (dateUTC.hour - h) * 60;
+    const m = Math.floor(remainder);
+    const s = Math.floor((remainder - m) * 60);
+    return DateTime.utc(dateUTC.year, dateUTC.month, dateUTC.day, h, m, s).setZone(tz);
   }
 
   /**
@@ -888,19 +839,7 @@ export class PanchangaSwissService {
       }
 
       const eventJD = (lo + hi) / 2;
-      const dateUTC = swisseph.swe_revjul(eventJD, swisseph.SE_GREG_CAL as 0 | 1);
-      const h = Math.floor(dateUTC.hour);
-      const rem = (dateUTC.hour - h) * 60;
-      const m = Math.floor(rem);
-      const s = Math.floor((rem - m) * 60);
-      const eventDt = DateTime.utc(
-        dateUTC.year,
-        dateUTC.month,
-        dateUTC.day,
-        h,
-        m,
-        s
-      ).setZone(loc.tz);
+      const eventDt = this.jdToLocal(eventJD, loc.tz);
 
       return {
         type,
@@ -960,18 +899,7 @@ export class PanchangaSwissService {
     }
 
     const transitionJD = (low + high) / 2;
-
-    // Convert JD to time string (HH:mm format)
-    const dateUTC = swisseph.swe_revjul(transitionJD, swisseph.SE_GREG_CAL as 0 | 1);
-    const h = Math.floor(dateUTC.hour);
-    const remainder = (dateUTC.hour - h) * 60;
-    const m = Math.floor(remainder);
-    const s = Math.floor((remainder - m) * 60);
-
-    const dt = DateTime.utc(dateUTC.year, dateUTC.month, dateUTC.day, h, m, s).setZone(
-      tz
-    );
-    const timeStr = dt.toFormat("HH:mm");
+    const timeStr = this.jdToLocal(transitionJD, tz).toFormat("HH:mm");
 
     // Determine which sankranti this is (based on the NEW rashi we're entering)
     const sankrantiNames = [

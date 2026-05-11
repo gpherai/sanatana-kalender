@@ -157,6 +157,18 @@ export const KARANA_NAMES = [
   "Kimstughna",
 ] as const;
 
+/**
+ * Maps a karana index (1-60) to its Sanskrit name.
+ * Index 1 = Kimstughna (fixed), 2-57 = 7 movable in cycle, 58-60 = Shakuni/Chatushpada/Naga.
+ */
+export function resolveKaranaName(idx: number): string {
+  if (idx === 1) return "Kimstughna";
+  if (idx === 58) return "Shakuni";
+  if (idx === 59) return "Chatushpada";
+  if (idx === 60) return "Naga";
+  return KARANA_NAMES[(idx - 2) % 7] ?? "Unknown";
+}
+
 // =============================================================================
 // VARA (7 WEEKDAYS)
 // =============================================================================
