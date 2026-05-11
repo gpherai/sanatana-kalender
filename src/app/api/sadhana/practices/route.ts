@@ -22,12 +22,12 @@ export async function POST(req: NextRequest) {
     const parsed = createSadhanaPracticeSchema.safeParse(bodyResult.data);
     if (!parsed.success) return validationError(parsed.error);
 
-    const { name, type, mantra_text, count_size, notes } = parsed.data;
+    const { name, type, mantraText, countSize, notes } = parsed.data;
     const practice = await createSadhanaPractice({
       name,
       type,
-      mantraText: mantra_text ?? null,
-      countSize: count_size ?? null,
+      mantraText: mantraText ?? null,
+      countSize: countSize ?? null,
       notes: notes ?? null,
     });
     return NextResponse.json(practice, { status: 201 });

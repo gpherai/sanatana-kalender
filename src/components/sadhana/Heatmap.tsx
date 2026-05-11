@@ -44,9 +44,9 @@ export function buildHeatmap(
         const day = map.get(ds);
         week.push({
           date: ds,
-          malas: day?.total_malas ?? 0,
-          count: day?.total_count ?? 0,
-          activity: day?.activity_score ?? 0,
+          malas: day?.totalMalas ?? 0,
+          count: day?.totalCount ?? 0,
+          activity: day?.activityScore ?? 0,
         });
       }
       cur.setDate(cur.getDate() + 1);

@@ -31,10 +31,10 @@ export async function POST(req: Request) {
       name: parsed.data.name,
       items: {
         create: parsed.data.items.map((it, idx) => ({
-          practiceId: it.practice_id,
+          practiceId: it.practiceId,
           quantity: it.quantity,
           unit: it.unit as "malas" | "count",
-          sortOrder: it.sort_order ?? idx,
+          sortOrder: it.sortOrder ?? idx,
         })),
       },
     });

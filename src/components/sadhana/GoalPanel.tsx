@@ -54,8 +54,8 @@ export function GoalPanel({
   const startEdit = (g: Goal) => {
     setEditingId(g.id);
     setEditName(g.name || "");
-    setEditMalas(String(g.target_malas));
-    setEditMinutes(g.target_minutes ? String(g.target_minutes) : "");
+    setEditMalas(String(g.targetMalas));
+    setEditMinutes(g.targetMinutes ? String(g.targetMinutes) : "");
     setEditPracticeIds(g.practices?.map((p) => p.id) || []);
   };
 
@@ -69,9 +69,9 @@ export function GoalPanel({
         body: JSON.stringify({
           type: newType,
           name: newType === "lifetime" ? newName : undefined,
-          target_malas: parseInt(newMalas, 10),
-          target_minutes: newMinutes ? parseInt(newMinutes, 10) : null,
-          practice_ids: newType === "lifetime" ? newPracticeIds : [],
+          targetMalas: parseInt(newMalas, 10),
+          targetMinutes: newMinutes ? parseInt(newMinutes, 10) : null,
+          practiceIds: newType === "lifetime" ? newPracticeIds : [],
         }),
       });
       setNewType("daily");
@@ -93,9 +93,9 @@ export function GoalPanel({
         method: "PATCH",
         body: JSON.stringify({
           name: g.type === "lifetime" ? editName : undefined,
-          target_malas: parseInt(editMalas, 10),
-          target_minutes: editMinutes ? parseInt(editMinutes, 10) : null,
-          practice_ids: g.type === "lifetime" ? editPracticeIds : [],
+          targetMalas: parseInt(editMalas, 10),
+          targetMinutes: editMinutes ? parseInt(editMinutes, 10) : null,
+          practiceIds: g.type === "lifetime" ? editPracticeIds : [],
         }),
       });
       setEditingId(null);
@@ -402,7 +402,7 @@ export function GoalPanel({
 
                 <div className="text-theme-fg flex items-center gap-2 text-sm font-medium">
                   <span className="whitespace-nowrap">
-                    {Math.round(g.progress_malas || 0)} / {g.target_malas} malas
+                    {Math.round(g.progressMalas || 0)} / {g.targetMalas} malas
                   </span>
                   <div className="bg-theme-surface-raised h-2 w-20 overflow-hidden rounded-full lg:w-32">
                     <div
@@ -422,9 +422,9 @@ export function GoalPanel({
                   <span className="text-theme-fg-muted text-xs whitespace-nowrap">
                     {progressPct.toFixed(1)}%
                   </span>
-                  {g.target_minutes ? (
+                  {g.targetMinutes ? (
                     <span className="text-theme-fg-muted text-xs whitespace-nowrap">
-                      · {g.progress_minutes || 0}/{g.target_minutes} min
+                      · {g.progressMinutes || 0}/{g.targetMinutes} min
                     </span>
                   ) : null}
                 </div>

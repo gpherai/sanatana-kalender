@@ -62,7 +62,7 @@ export function GoalProgressWidget({
                       done ? "text-theme-success" : "text-theme-fg-muted"
                     )}
                   >
-                    {g.progress_malas ?? 0} / {g.target_malas} malas
+                    {g.progressMalas ?? 0} / {g.targetMalas} malas
                   </span>
                   <span
                     className={cn(

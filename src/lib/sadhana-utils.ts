@@ -22,18 +22,18 @@ export function todayString(): string {
 // =============================================================================
 
 export function isGoalComplete(goal: Goal): boolean {
-  const malasDone = (goal.progress_malas ?? 0) >= goal.target_malas;
+  const malasDone = (goal.progressMalas ?? 0) >= goal.targetMalas;
   const minutesDone =
-    goal.target_minutes === null ||
-    goal.target_minutes === undefined ||
-    (goal.progress_minutes ?? 0) >= goal.target_minutes;
+    goal.targetMinutes === null ||
+    goal.targetMinutes === undefined ||
+    (goal.progressMinutes ?? 0) >= goal.targetMinutes;
   return malasDone && minutesDone;
 }
 
 export function goalProgressRatio(goal: Goal): number {
-  const malasProgress = Math.min(1, (goal.progress_malas ?? 0) / goal.target_malas);
-  if (!goal.target_minutes) return malasProgress;
-  const minutesProgress = Math.min(1, (goal.progress_minutes ?? 0) / goal.target_minutes);
+  const malasProgress = Math.min(1, (goal.progressMalas ?? 0) / goal.targetMalas);
+  if (!goal.targetMinutes) return malasProgress;
+  const minutesProgress = Math.min(1, (goal.progressMinutes ?? 0) / goal.targetMinutes);
   return Math.min(malasProgress, minutesProgress);
 }
 

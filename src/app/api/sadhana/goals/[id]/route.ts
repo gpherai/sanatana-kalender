@@ -27,13 +27,13 @@ export async function PATCH(req: Request, { params }: Params) {
     const parsed = patchSadhanaGoalSchema.safeParse(bodyResult.data);
     if (!parsed.success) return validationError(parsed.error);
 
-    const { name, target_malas, target_minutes, active, practice_ids } = parsed.data;
+    const { name, targetMalas, targetMinutes, active, practiceIds } = parsed.data;
     const goal = await updateSadhanaGoal(id, {
       ...(name !== undefined && { name }),
-      ...(target_malas !== undefined && { targetMalas: target_malas }),
-      ...(target_minutes !== undefined && { targetMinutes: target_minutes }),
+      ...(targetMalas !== undefined && { targetMalas }),
+      ...(targetMinutes !== undefined && { targetMinutes }),
       ...(active !== undefined && { active }),
-      ...(practice_ids !== undefined && { practice_ids }),
+      ...(practiceIds !== undefined && { practiceIds }),
     });
     return NextResponse.json(goal);
   } catch (error) {

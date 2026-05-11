@@ -126,17 +126,17 @@ export async function getSadhanaOverview() {
   );
 
   return {
-    total_sessions: all.sessions,
-    total_malas_all_time: all.malas,
-    total_minutes_all_time: all.minutes,
-    total_sessions_this_week: week.sessions,
-    total_sessions_this_month: month.sessions,
-    total_malas_this_week: week.malas,
-    total_malas_this_month: month.malas,
-    total_minutes_this_week: week.minutes,
-    total_minutes_this_month: month.minutes,
-    avg_malas_per_session: all.sessions > 0 ? all.malas / all.sessions : 0,
-    avg_minutes_per_session: all.sessions > 0 ? all.minutes / all.sessions : 0,
+    totalSessions: all.sessions,
+    totalMalasAllTime: all.malas,
+    totalMinutesAllTime: all.minutes,
+    totalSessionsThisWeek: week.sessions,
+    totalSessionsThisMonth: month.sessions,
+    totalMalasThisWeek: week.malas,
+    totalMalasThisMonth: month.malas,
+    totalMinutesThisWeek: week.minutes,
+    totalMinutesThisMonth: month.minutes,
+    avgMalasPerSession: all.sessions > 0 ? all.malas / all.sessions : 0,
+    avgMinutesPerSession: all.sessions > 0 ? all.minutes / all.sessions : 0,
     practices: computePracticeStats(completedSessions),
   };
 }
@@ -151,9 +151,9 @@ export async function getSadhanaStreak() {
 
   if (dates.length === 0) {
     return {
-      current_streak: 0,
-      longest_streak: 0,
-      last_session_date: null,
+      currentStreak: 0,
+      longestStreak: 0,
+      lastSessionDate: null,
     };
   }
 
@@ -191,9 +191,9 @@ export async function getSadhanaStreak() {
   }
 
   return {
-    current_streak: currentStreak,
-    longest_streak: Math.max(longestStreak, currentStreak),
-    last_session_date: dates[0]!,
+    currentStreak,
+    longestStreak: Math.max(longestStreak, currentStreak),
+    lastSessionDate: dates[0]!,
   };
 }
 
@@ -225,14 +225,14 @@ export async function getSadhanaToday() {
 
   return {
     date: today,
-    total_malas: totalMalas,
-    total_minutes: totalMinutes,
-    total_mantras: totalMantras,
-    total_count: totalCount,
-    goal_malas_target: goal?.targetMalas ?? null,
-    goal_malas_progress: goal?.targetMalas ? totalMalas / goal.targetMalas : null,
-    goal_minutes_target: goal?.targetMinutes ?? null,
-    goal_minutes_progress: goal?.targetMinutes ? totalMinutes / goal.targetMinutes : null,
+    totalMalas,
+    totalMinutes,
+    totalMantras,
+    totalCount,
+    goalMalasTarget: goal?.targetMalas ?? null,
+    goalMalasProgress: goal?.targetMalas ? totalMalas / goal.targetMalas : null,
+    goalMinutesTarget: goal?.targetMinutes ?? null,
+    goalMinutesProgress: goal?.targetMinutes ? totalMinutes / goal.targetMinutes : null,
     practices: computePracticeStats(sessions, { insertionOrder: true }),
   };
 }
@@ -306,12 +306,12 @@ export async function getSadhanaCalendar(opts: { start?: string; end?: string } 
   return [...dayMap.entries()]
     .map(([date, d]) => ({
       date,
-      total_malas: d.malas,
-      total_mantras: d.mantras,
-      total_count: d.count,
-      activity_score: d.activity,
-      total_minutes: d.minutes,
-      session_count: d.sessions,
+      totalMalas: d.malas,
+      totalMantras: d.mantras,
+      totalCount: d.count,
+      activityScore: d.activity,
+      totalMinutes: d.minutes,
+      sessionCount: d.sessions,
     }))
     .sort((a, b) => a.date.localeCompare(b.date));
 }
@@ -325,23 +325,29 @@ export async function listSadhanaSessions(opts: { from?: string; to?: string }) 
 
 export async function createSadhanaSession(data: {
   date: string;
-  started_at?: string | null;
-  duration_minutes?: number | null;
+  startedAt?: string | null;
+  durationMinutes?: number | null;
   notes?: string | null;
   items: {
-    practice_id: string;
+    practiceId: string;
     quantity: number;
     unit?: string;
-    duration_minutes?: number | null;
+    durationMinutes?: number | null;
     notes?: string | null;
   }[];
 }) {
   const session = await sadhanaRepo.createSessionWithItems(
     data.date,
-    data.started_at,
-    data.duration_minutes,
+    data.startedAt,
+    data.durationMinutes,
     data.notes,
-    data.items
+    data.items.map((it) => ({
+      practiceId: it.practiceId,
+      quantity: it.quantity,
+      unit: it.unit,
+      durationMinutes: it.durationMinutes,
+      notes: it.notes,
+    }))
   );
   return formatSession(session);
 }
@@ -350,14 +356,14 @@ export async function updateSadhanaSession(
   id: string,
   data: {
     date?: string;
-    started_at?: string | null;
-    duration_minutes?: number | null;
+    startedAt?: string | null;
+    durationMinutes?: number | null;
     notes?: string | null;
     items?: {
-      practice_id: string;
+      practiceId: string;
       quantity: number;
       unit?: string;
-      duration_minutes?: number | null;
+      durationMinutes?: number | null;
       notes?: string | null;
     }[];
   }
@@ -368,17 +374,15 @@ export async function updateSadhanaSession(
   const session = await sadhanaRepo.updateSessionWithItems(
     id,
     data.date ?? dateStr(existing.date as Date),
-    data.started_at !== undefined ? data.started_at : existing.startedAt?.toISOString(),
-    data.duration_minutes !== undefined
-      ? data.duration_minutes
-      : existing.durationMinutes,
+    data.startedAt !== undefined ? data.startedAt : existing.startedAt?.toISOString(),
+    data.durationMinutes !== undefined ? data.durationMinutes : existing.durationMinutes,
     data.notes !== undefined ? data.notes : existing.notes,
     data.items ??
       existing.items.map((item) => ({
-        practice_id: item.practiceId,
+        practiceId: item.practiceId,
         quantity: item.quantity,
         unit: item.unit,
-        duration_minutes: item.durationMinutes,
+        durationMinutes: item.durationMinutes,
         notes: item.notes,
       }))
   );
@@ -422,10 +426,10 @@ export async function createSadhanaGoal(data: {
   name?: string | null;
   targetMalas: number;
   targetMinutes?: number | null;
-  practice_ids?: string[];
+  practiceIds?: string[];
 }) {
-  if (data.practice_ids && data.practice_ids.length > 0) {
-    for (const pid of data.practice_ids) {
+  if (data.practiceIds && data.practiceIds.length > 0) {
+    for (const pid of data.practiceIds) {
       const practice = await sadhanaRepo.findPracticeById(pid);
       if (!practice)
         throw new GoalPracticeNotFoundError(`Beoefening niet gevonden: ${pid}`);
@@ -437,9 +441,9 @@ export async function createSadhanaGoal(data: {
     targetMalas: data.targetMalas,
     targetMinutes: data.targetMinutes ?? null,
     active: true,
-    ...(data.practice_ids &&
-      data.practice_ids.length > 0 && {
-        practices: { connect: data.practice_ids.map((pid) => ({ id: pid })) },
+    ...(data.practiceIds &&
+      data.practiceIds.length > 0 && {
+        practices: { connect: data.practiceIds.map((pid) => ({ id: pid })) },
       }),
   });
   return formatGoal(goal);
@@ -452,14 +456,14 @@ export async function updateSadhanaGoal(
     targetMalas?: number;
     targetMinutes?: number | null;
     active?: boolean;
-    practice_ids?: string[];
+    practiceIds?: string[];
   }
 ) {
   const existing = await sadhanaRepo.findGoalById(id);
   if (!existing) throw new SadhanaNotFoundError("Doel niet gevonden");
 
-  if (data.practice_ids !== undefined && data.practice_ids.length > 0) {
-    for (const pid of data.practice_ids) {
+  if (data.practiceIds !== undefined && data.practiceIds.length > 0) {
+    for (const pid of data.practiceIds) {
       const practice = await sadhanaRepo.findPracticeById(pid);
       if (!practice)
         throw new GoalPracticeNotFoundError(`Beoefening niet gevonden: ${pid}`);
@@ -471,8 +475,8 @@ export async function updateSadhanaGoal(
     ...(data.targetMalas !== undefined && { targetMalas: data.targetMalas }),
     ...(data.targetMinutes !== undefined && { targetMinutes: data.targetMinutes }),
     ...(data.active !== undefined && { active: data.active }),
-    ...(data.practice_ids !== undefined && {
-      practices: { set: data.practice_ids.map((pid) => ({ id: pid })) },
+    ...(data.practiceIds !== undefined && {
+      practices: { set: data.practiceIds.map((pid) => ({ id: pid })) },
     }),
   });
   return formatGoal(goal);
@@ -501,10 +505,10 @@ export async function updateSadhanaRoutine(
         name?: string;
         active?: boolean;
         items: {
-          practice_id: string;
+          practiceId: string;
           quantity: number;
           unit: string;
-          sort_order: number;
+          sortOrder: number;
         }[];
       }
     | Prisma.SadhanaRoutineUpdateInput
@@ -516,10 +520,10 @@ export async function updateSadhanaRoutine(
     name?: string;
     active?: boolean;
     items?: {
-      practice_id: string;
+      practiceId: string;
       quantity: number;
       unit: string;
-      sort_order: number;
+      sortOrder: number;
     }[];
   };
 
@@ -624,8 +628,8 @@ export async function getGoalsWithProgress() {
 
     return {
       ...formatGoal(goal),
-      progress_malas: progressMalas,
-      progress_minutes: progressMinutes,
+      progressMalas,
+      progressMinutes,
     };
   });
 }

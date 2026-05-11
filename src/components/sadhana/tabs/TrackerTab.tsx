@@ -145,20 +145,20 @@ export const TrackerTab = memo(function TrackerTab({
             ) : (
               <div className="space-y-2">
                 {todayStats.practices.map((ps) => (
-                  <div key={ps.practice_id} className="flex items-center gap-2">
+                  <div key={ps.practiceId} className="flex items-center gap-2">
                     <span className="text-theme-primary shrink-0">
-                      {ps.practice_type === "mantra_japa" ? (
+                      {ps.practiceType === "mantra_japa" ? (
                         <Sparkles className="h-3 w-3" />
                       ) : (
                         <BookOpen className="h-3 w-3" />
                       )}
                     </span>
                     <span className="text-theme-fg-secondary min-w-0 flex-1 truncate text-xs">
-                      {ps.practice_name}
+                      {ps.practiceName}
                     </span>
                     <span className="text-theme-fg-muted shrink-0 text-xs tabular-nums">
-                      {ps.total_quantity}
-                      {ps.practice_type === "mantra_japa" ? " malas" : "×"}
+                      {ps.totalQuantity}
+                      {ps.practiceType === "mantra_japa" ? " malas" : "×"}
                     </span>
                   </div>
                 ))}
@@ -180,35 +180,35 @@ export const TrackerTab = memo(function TrackerTab({
               icon={<Sparkles className="h-3.5 w-3.5" />}
               label="Vandaag"
               value={
-                todayStats?.goal_malas_target
-                  ? `${todayStats.total_malas}/${todayStats.goal_malas_target}`
-                  : `${todayStats?.total_malas ?? 0} malas`
+                todayStats?.goalMalasTarget
+                  ? `${todayStats.totalMalas}/${todayStats.goalMalasTarget}`
+                  : `${todayStats?.totalMalas ?? 0} malas`
               }
               sub={
-                todayStats?.total_minutes
-                  ? formatDuration(todayStats.total_minutes)
+                todayStats?.totalMinutes
+                  ? formatDuration(todayStats.totalMinutes)
                   : undefined
               }
-              progress={todayStats?.goal_malas_progress ?? undefined}
+              progress={todayStats?.goalMalasProgress ?? undefined}
             />
             <SidebarStat
               icon={<Flame className="h-3.5 w-3.5" />}
               label="Streak"
-              value={`${streak?.current_streak ?? 0} d`}
-              sub={`Langste: ${streak?.longest_streak ?? 0} d`}
+              value={`${streak?.currentStreak ?? 0} d`}
+              sub={`Langste: ${streak?.longestStreak ?? 0} d`}
               accent
             />
             <SidebarStat
               icon={<TrendingUp className="h-3.5 w-3.5" />}
               label="Deze week"
-              value={`${overview?.total_malas_this_week ?? 0} malas`}
-              sub={`${overview?.total_sessions_this_week ?? 0} sessies`}
+              value={`${overview?.totalMalasThisWeek ?? 0} malas`}
+              sub={`${overview?.totalSessionsThisWeek ?? 0} sessies`}
             />
             <SidebarStat
               icon={<Activity className="h-3.5 w-3.5" />}
               label="Deze maand"
-              value={`${overview?.total_malas_this_month ?? 0} malas`}
-              sub={`${overview?.total_sessions_this_month ?? 0} sessies`}
+              value={`${overview?.totalMalasThisMonth ?? 0} malas`}
+              sub={`${overview?.totalSessionsThisMonth ?? 0} sessies`}
             />
           </div>
         </div>

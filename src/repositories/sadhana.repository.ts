@@ -135,10 +135,10 @@ export async function createSessionWithItems(
   durationMinutes: number | null | undefined,
   notes: string | null | undefined,
   items: {
-    practice_id: string;
+    practiceId: string;
     quantity: number;
     unit?: string;
-    duration_minutes?: number | null;
+    durationMinutes?: number | null;
     notes?: string | null;
   }[]
 ) {
@@ -150,10 +150,10 @@ export async function createSessionWithItems(
       notes: notes ?? null,
       items: {
         create: items.map((item) => ({
-          practiceId: item.practice_id,
+          practiceId: item.practiceId,
           quantity: item.quantity,
           unit: (item.unit as "malas" | "count") ?? "malas",
-          durationMinutes: item.duration_minutes ?? null,
+          durationMinutes: item.durationMinutes ?? null,
           notes: item.notes ?? null,
         })),
       },
@@ -174,10 +174,10 @@ export async function updateSessionWithItems(
   durationMinutes: number | null | undefined,
   notes: string | null | undefined,
   items: {
-    practice_id: string;
+    practiceId: string;
     quantity: number;
     unit?: string;
-    duration_minutes?: number | null;
+    durationMinutes?: number | null;
     notes?: string | null;
   }[]
 ) {
@@ -191,10 +191,10 @@ export async function updateSessionWithItems(
       items: {
         deleteMany: {},
         create: items.map((item) => ({
-          practiceId: item.practice_id,
+          practiceId: item.practiceId,
           quantity: item.quantity,
           unit: (item.unit as "malas" | "count") ?? "malas",
-          durationMinutes: item.duration_minutes ?? null,
+          durationMinutes: item.durationMinutes ?? null,
           notes: item.notes ?? null,
         })),
       },
@@ -268,10 +268,10 @@ export async function updateRoutineWithItems(
   id: string,
   name: string,
   items: {
-    practice_id: string;
+    practiceId: string;
     quantity: number;
     unit: string;
-    sort_order: number;
+    sortOrder: number;
   }[],
   active?: boolean
 ) {
@@ -284,10 +284,10 @@ export async function updateRoutineWithItems(
         ...(active !== undefined && { active }),
         items: {
           create: items.map((it) => ({
-            practiceId: it.practice_id,
+            practiceId: it.practiceId,
             quantity: it.quantity,
             unit: it.unit as "malas" | "count",
-            sortOrder: it.sort_order,
+            sortOrder: it.sortOrder,
           })),
         },
       },

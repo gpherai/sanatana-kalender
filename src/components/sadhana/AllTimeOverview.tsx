@@ -20,12 +20,12 @@ export function AllTimeOverview({ overview }: { overview: OverviewStats }) {
       {/* Totalen */}
       <div className="grid grid-cols-3 gap-x-4 gap-y-5">
         {[
-          { label: "Sessies", value: overview.total_sessions.toLocaleString("nl-NL") },
+          { label: "Sessies", value: overview.totalSessions.toLocaleString("nl-NL") },
           {
             label: "Malas",
-            value: overview.total_malas_all_time.toLocaleString("nl-NL"),
+            value: overview.totalMalasAllTime.toLocaleString("nl-NL"),
           },
-          { label: "Uren", value: formatHours(overview.total_minutes_all_time) },
+          { label: "Uren", value: formatHours(overview.totalMinutesAllTime) },
         ].map(({ label, value }) => (
           <div key={label}>
             <div className="text-theme-fg-muted text-xs">{label}</div>
@@ -41,11 +41,11 @@ export function AllTimeOverview({ overview }: { overview: OverviewStats }) {
         {[
           {
             label: "Gem. malas / sessie",
-            value: overview.avg_malas_per_session.toFixed(1),
+            value: overview.avgMalasPerSession.toFixed(1),
           },
           {
             label: "Gem. tijd / sessie",
-            value: `${Math.round(overview.avg_minutes_per_session)} min`,
+            value: `${Math.round(overview.avgMinutesPerSession)} min`,
           },
         ].map(({ label, value }) => (
           <div key={label}>

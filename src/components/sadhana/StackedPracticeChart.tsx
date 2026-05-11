@@ -22,8 +22,8 @@ const MONTH_LABELS = [
 ];
 
 interface PracticeSegment {
-  practice_id: string;
-  practice_name: string;
+  practiceId: string;
+  practiceName: string;
   amount: number;
 }
 
@@ -51,17 +51,17 @@ function buildData(sessions: SessionData[], year: number) {
         const amount =
           item.unit === "malas"
             ? item.quantity
-            : item.practice_type === "mantra_japa"
+            : item.practiceType === "mantra_japa"
               ? item.quantity / MALA_BEAD_COUNT
               : item.quantity;
         if (amount === 0) continue;
-        const ex = map.get(item.practice_id);
+        const ex = map.get(item.practiceId);
         if (ex) {
           ex.amount += amount;
         } else {
-          map.set(item.practice_id, {
-            practice_id: item.practice_id,
-            practice_name: item.practice_name,
+          map.set(item.practiceId, {
+            practiceId: item.practiceId,
+            practiceName: item.practiceName,
             amount,
           });
         }
@@ -83,9 +83,9 @@ function buildData(sessions: SessionData[], year: number) {
   let colorIdx = 0;
   for (const m of months) {
     for (const p of m.practices) {
-      if (!seen.has(p.practice_id)) {
-        seen.set(p.practice_id, {
-          name: p.practice_name,
+      if (!seen.has(p.practiceId)) {
+        seen.set(p.practiceId, {
+          name: p.practiceName,
           color: CHART_COLORS[colorIdx % CHART_COLORS.length]!,
         });
         colorIdx++;
@@ -155,10 +155,10 @@ export function StackedPracticeChart({
                   </div>
                   <div className="space-y-0.5">
                     {m.practices.map((p) => {
-                      const info = colorMap.get(p.practice_id);
+                      const info = colorMap.get(p.practiceId);
                       return (
                         <div
-                          key={p.practice_id}
+                          key={p.practiceId}
                           className="flex items-center justify-between gap-3 whitespace-nowrap"
                         >
                           <span className="flex items-center gap-1">
@@ -167,7 +167,7 @@ export function StackedPracticeChart({
                               style={{ background: info?.color }}
                             />
                             <span className="text-theme-fg-muted max-w-[90px] truncate text-[10px]">
-                              {p.practice_name}
+                              {p.practiceName}
                             </span>
                           </span>
                           <span className="text-theme-fg text-[10px] font-medium tabular-nums">
@@ -199,10 +199,10 @@ export function StackedPracticeChart({
                       .sort((a, b) => a.amount - b.amount)
                       .map((p) => (
                         <div
-                          key={p.practice_id}
+                          key={p.practiceId}
                           style={{
                             flex: p.amount,
-                            background: colorMap.get(p.practice_id)?.color,
+                            background: colorMap.get(p.practiceId)?.color,
                           }}
                         />
                       ))}

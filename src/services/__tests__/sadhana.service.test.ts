@@ -85,12 +85,12 @@ describe("sadhana service", () => {
       "2026-04-26",
     ]);
     expect(days[1]).toMatchObject({
-      total_malas: 0,
-      total_count: 1,
-      total_minutes: 9,
-      session_count: 1,
+      totalMalas: 0,
+      totalCount: 1,
+      totalMinutes: 9,
+      sessionCount: 1,
     });
-    expect(days[1]!.activity_score).toBeGreaterThan(0);
+    expect(days[1]!.activityScore).toBeGreaterThan(0);
   });
 
   it("excludes future sessions from overview practice statistics", async () => {
@@ -127,7 +127,7 @@ describe("sadhana service", () => {
 
     const overview = await getSadhanaOverview();
 
-    expect(overview.practices.map((p) => p.practice_id)).toEqual(["past-practice"]);
+    expect(overview.practices.map((p) => p.practiceId)).toEqual(["past-practice"]);
     vi.useRealTimers();
   });
 });

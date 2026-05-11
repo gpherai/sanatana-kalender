@@ -41,11 +41,11 @@ export function formatPractice(p: SadhanaPractice): Practice {
     id: p.id,
     name: p.name,
     type: p.type as Practice["type"],
-    mantra_text: p.mantraText ?? null,
-    count_size: p.countSize ?? null,
+    mantraText: p.mantraText ?? null,
+    countSize: p.countSize ?? null,
     notes: p.notes,
     active: p.active,
-    created_at: p.createdAt.toISOString(),
+    createdAt: p.createdAt.toISOString(),
   };
 }
 
@@ -53,29 +53,29 @@ export function formatSessionItem(
   item: SadhanaSessionItem & { practice: SadhanaPractice }
 ): SessionItemData {
   const isJapa = item.practice.type === "mantra_japa";
-  const mantra_count = isJapa
+  const mantraCount = isJapa
     ? item.unit === "malas"
       ? item.quantity * MALA_BEAD_COUNT
       : item.quantity
     : null;
 
-  const count_total =
+  const countTotal =
     !isJapa && item.unit === "count" && item.practice.countSize
       ? item.quantity * item.practice.countSize
       : null;
 
   return {
     id: item.id,
-    practice_id: item.practiceId,
-    practice_name: item.practice.name,
-    practice_type: item.practice.type as SessionItemData["practice_type"],
+    practiceId: item.practiceId,
+    practiceName: item.practice.name,
+    practiceType: item.practice.type as SessionItemData["practiceType"],
     quantity: item.quantity,
     unit: item.unit as SessionItemData["unit"],
-    mantra_count,
-    count_total,
-    duration_minutes: item.durationMinutes,
+    mantraCount,
+    countTotal,
+    durationMinutes: item.durationMinutes,
     notes: item.notes,
-    created_at: item.createdAt.toISOString(),
+    createdAt: item.createdAt.toISOString(),
   };
 }
 
@@ -94,13 +94,13 @@ export function formatSession(session: SessionWithItems): SessionData {
   return {
     id: session.id,
     date: (session.date as Date).toISOString().split("T")[0]!,
-    started_at: session.startedAt?.toISOString() ?? null,
-    duration_minutes: session.durationMinutes,
-    total_malas: totalMalas,
-    total_mantras: totalMantras,
-    total_count: nonJapaCount,
+    startedAt: session.startedAt?.toISOString() ?? null,
+    durationMinutes: session.durationMinutes,
+    totalMalas,
+    totalMantras,
+    totalCount: nonJapaCount,
     notes: session.notes,
-    created_at: session.createdAt.toISOString(),
+    createdAt: session.createdAt.toISOString(),
     items: session.items.map(formatSessionItem),
   };
 }
@@ -130,15 +130,15 @@ export function todayStr(): string {
 
 export function formatGoal(
   g: SadhanaGoal & { practices?: SadhanaPractice[] }
-): Omit<Goal, "progress_malas" | "progress_minutes"> {
+): Omit<Goal, "progressMalas" | "progressMinutes"> {
   return {
     id: g.id,
     type: g.type as Goal["type"],
     name: g.name,
-    target_malas: g.targetMalas,
-    target_minutes: g.targetMinutes,
+    targetMalas: g.targetMalas,
+    targetMinutes: g.targetMinutes,
     active: g.active,
-    created_at: g.createdAt.toISOString(),
+    createdAt: g.createdAt.toISOString(),
     practices: g.practices ? g.practices.map((p) => ({ id: p.id, name: p.name })) : [],
   };
 }
@@ -148,15 +148,15 @@ export function formatRoutine(routine: RoutineWithItems): Routine {
     id: routine.id,
     name: routine.name,
     active: routine.active,
-    created_at: routine.createdAt.toISOString(),
+    createdAt: routine.createdAt.toISOString(),
     items: routine.items.map((item) => ({
       id: item.id,
-      practice_id: item.practiceId,
-      practice_name: item.practice.name,
-      practice_type: item.practice.type as Routine["items"][number]["practice_type"],
+      practiceId: item.practiceId,
+      practiceName: item.practice.name,
+      practiceType: item.practice.type as Routine["items"][number]["practiceType"],
       quantity: item.quantity,
       unit: item.unit as Routine["items"][number]["unit"],
-      sort_order: item.sortOrder,
+      sortOrder: item.sortOrder,
     })),
   };
 }
@@ -187,14 +187,14 @@ export function computePracticeStats(
   }
 
   const rows = [...map.values()].map((d) => ({
-    practice_id: d.id,
-    practice_name: d.name,
-    practice_type: d.type as "mantra_japa" | "parayana" | "other",
-    total_quantity: d.type === "mantra_japa" ? d.malas : d.countQty,
-    total_mantras:
+    practiceId: d.id,
+    practiceName: d.name,
+    practiceType: d.type as "mantra_japa" | "parayana" | "other",
+    totalQuantity: d.type === "mantra_japa" ? d.malas : d.countQty,
+    totalMantras:
       d.type === "mantra_japa" ? d.malas * MALA_BEAD_COUNT + d.countQty : null,
   }));
 
   if (opts.insertionOrder) return rows;
-  return rows.sort((a, b) => b.total_quantity - a.total_quantity);
+  return rows.sort((a, b) => b.totalQuantity - a.totalQuantity);
 }

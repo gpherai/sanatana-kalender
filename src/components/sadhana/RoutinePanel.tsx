@@ -21,7 +21,7 @@ function defaultUnit(type: PracticeType | undefined): ItemUnit {
 }
 
 interface RoutineItemForm {
-  practice_id: string;
+  practiceId: string;
   quantity: string;
   unit: ItemUnit;
 }
@@ -41,7 +41,7 @@ function RoutineForm({
 }) {
   const uid = useId();
   const defaultItem: RoutineItemForm = {
-    practice_id: practices[0]?.id ?? "",
+    practiceId: practices[0]?.id ?? "",
     quantity: "",
     unit: defaultUnit(practices[0]?.type),
   };
@@ -58,7 +58,7 @@ function RoutineForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    const valid = items.filter((it) => it.practice_id && it.quantity);
+    const valid = items.filter((it) => it.practiceId && it.quantity);
     if (!valid.length) {
       setError("Voeg minstens één beoefening toe.");
       return;
@@ -103,7 +103,7 @@ function RoutineForm({
       <div className="space-y-2">
         <span className="text-theme-fg-secondary text-xs font-medium">Beoefeningen</span>
         {items.map((item, i) => {
-          const practice = practices.find((p) => p.id === item.practice_id);
+          const practice = practices.find((p) => p.id === item.practiceId);
           return (
             <div key={i} className="bg-theme-surface-raised space-y-2 rounded-xl p-3">
               <div className="flex items-center gap-2">
@@ -112,11 +112,11 @@ function RoutineForm({
                   aria-hidden
                 />
                 <select
-                  value={item.practice_id}
+                  value={item.practiceId}
                   onChange={(e) => {
                     const p = practices.find((p) => p.id === e.target.value);
                     updateItem(i, {
-                      practice_id: e.target.value,
+                      practiceId: e.target.value,
                       unit: defaultUnit(p?.type),
                     });
                   }}
@@ -227,10 +227,10 @@ export function RoutinePanel({
       body: JSON.stringify({
         name: data.name,
         items: data.items.map((it, idx) => ({
-          practice_id: it.practice_id,
+          practiceId: it.practiceId,
           quantity: parseInt(it.quantity, 10),
           unit: it.unit,
-          sort_order: idx,
+          sortOrder: idx,
         })),
       }),
     });
@@ -247,10 +247,10 @@ export function RoutinePanel({
       body: JSON.stringify({
         name: data.name,
         items: data.items.map((it, idx) => ({
-          practice_id: it.practice_id,
+          practiceId: it.practiceId,
           quantity: parseInt(it.quantity, 10),
           unit: it.unit,
-          sort_order: idx,
+          sortOrder: idx,
         })),
       }),
     });
@@ -307,7 +307,7 @@ export function RoutinePanel({
               initial={{
                 name: r.name,
                 items: r.items.map((i) => ({
-                  practice_id: i.practice_id,
+                  practiceId: i.practiceId,
                   quantity: String(i.quantity),
                   unit: i.unit,
                 })),
@@ -324,7 +324,7 @@ export function RoutinePanel({
               <div className="min-w-0 flex-1">
                 <div className="text-theme-fg text-sm font-medium">{r.name}</div>
                 <div className="text-theme-fg-muted mt-1 text-xs">
-                  {r.items.map((i) => `${i.practice_name} ×${i.quantity}`).join(" · ")}
+                  {r.items.map((i) => `${i.practiceName} ×${i.quantity}`).join(" · ")}
                 </div>
               </div>
               <div className="flex shrink-0 items-center gap-1">

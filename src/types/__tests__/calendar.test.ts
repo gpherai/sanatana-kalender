@@ -27,7 +27,7 @@ describe("Calendar types helpers", () => {
         notes: null,
         startTime: "09:00",
         endTime: "10:00",
-        originalEndDate: "2025-01-02T00:00:00.000Z",
+        originalEndDate: "2025-01-02",
         seriesParentEventIds: [],
         seriesDayNumber: null,
         hasSeriesChildren: false,
@@ -38,8 +38,11 @@ describe("Calendar types helpers", () => {
     const parsed = parseCalendarEvent(response as never);
 
     expect(parsed.start).toBeInstanceOf(Date);
+    expect(parsed.start.getTime()).not.toBeNaN();
     expect(parsed.end).toBeInstanceOf(Date);
+    expect(parsed.end.getTime()).not.toBeNaN();
     expect(parsed.resource.originalEndDate).toBeInstanceOf(Date);
+    expect(parsed.resource.originalEndDate?.getTime()).not.toBeNaN();
     expect(parsed.resource.eventType).toBe(EventType.FESTIVAL);
   });
 

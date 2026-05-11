@@ -14,89 +14,89 @@ export interface Practice {
   id: string;
   name: string;
   type: PracticeType;
-  mantra_text: string | null;
-  count_size: number | null;
+  mantraText: string | null;
+  countSize: number | null;
   notes: string | null;
   active: boolean;
-  created_at: string;
+  createdAt: string;
 }
 
 export interface SessionItemData {
   id: string;
-  practice_id: string;
-  practice_name: string;
-  practice_type: PracticeType;
+  practiceId: string;
+  practiceName: string;
+  practiceType: PracticeType;
   quantity: number;
   unit: ItemUnit;
-  mantra_count: number | null;
-  count_total: number | null;
-  duration_minutes: number | null;
+  mantraCount: number | null;
+  countTotal: number | null;
+  durationMinutes: number | null;
   notes: string | null;
-  created_at: string;
+  createdAt: string;
 }
 
 export interface SessionData {
   id: string;
   date: string;
-  started_at: string | null;
-  duration_minutes: number | null;
-  total_malas: number;
-  total_mantras: number;
-  total_count: number;
+  startedAt: string | null;
+  durationMinutes: number | null;
+  totalMalas: number;
+  totalMantras: number;
+  totalCount: number;
   notes: string | null;
-  created_at: string;
+  createdAt: string;
   items: SessionItemData[];
 }
 
 export interface PracticeStat {
-  practice_id: string;
-  practice_name: string;
-  practice_type: PracticeType;
-  total_quantity: number;
-  total_mantras: number | null;
+  practiceId: string;
+  practiceName: string;
+  practiceType: PracticeType;
+  totalQuantity: number;
+  totalMantras: number | null;
 }
 
 export interface TodayStats {
   date: string;
-  total_malas: number;
-  total_minutes: number;
-  total_mantras: number;
-  total_count: number;
-  goal_malas_target: number | null;
-  goal_malas_progress: number | null;
-  goal_minutes_target: number | null;
-  goal_minutes_progress: number | null;
+  totalMalas: number;
+  totalMinutes: number;
+  totalMantras: number;
+  totalCount: number;
+  goalMalasTarget: number | null;
+  goalMalasProgress: number | null;
+  goalMinutesTarget: number | null;
+  goalMinutesProgress: number | null;
   practices: PracticeStat[];
 }
 
 export interface StreakStats {
-  current_streak: number;
-  longest_streak: number;
-  last_session_date: string | null;
+  currentStreak: number;
+  longestStreak: number;
+  lastSessionDate: string | null;
 }
 
 export interface CalendarDay {
   date: string;
-  total_malas: number;
-  total_mantras: number;
-  total_count: number;
-  activity_score: number;
-  total_minutes: number;
-  session_count: number;
+  totalMalas: number;
+  totalMantras: number;
+  totalCount: number;
+  activityScore: number;
+  totalMinutes: number;
+  sessionCount: number;
 }
 
 export interface OverviewStats {
-  total_sessions: number;
-  total_malas_all_time: number;
-  total_minutes_all_time: number;
-  total_sessions_this_week: number;
-  total_malas_this_week: number;
-  total_minutes_this_week: number;
-  total_sessions_this_month: number;
-  total_malas_this_month: number;
-  total_minutes_this_month: number;
-  avg_malas_per_session: number;
-  avg_minutes_per_session: number;
+  totalSessions: number;
+  totalMalasAllTime: number;
+  totalMinutesAllTime: number;
+  totalSessionsThisWeek: number;
+  totalMalasThisWeek: number;
+  totalMinutesThisWeek: number;
+  totalSessionsThisMonth: number;
+  totalMalasThisMonth: number;
+  totalMinutesThisMonth: number;
+  avgMalasPerSession: number;
+  avgMinutesPerSession: number;
   practices: PracticeStat[];
 }
 
@@ -104,35 +104,35 @@ export interface Goal {
   id: string;
   type: GoalType;
   name: string | null;
-  target_malas: number;
-  target_minutes: number | null;
+  targetMalas: number;
+  targetMinutes: number | null;
   active: boolean;
-  created_at: string;
+  createdAt: string;
   practices?: { id: string; name: string }[];
-  progress_malas?: number | null;
-  progress_minutes?: number | null;
+  progressMalas?: number | null;
+  progressMinutes?: number | null;
 }
 
 export interface RoutineItem {
   id: string;
-  practice_id: string;
-  practice_name: string;
-  practice_type: PracticeType;
+  practiceId: string;
+  practiceName: string;
+  practiceType: PracticeType;
   quantity: number;
   unit: ItemUnit;
-  sort_order: number;
+  sortOrder: number;
 }
 
 export interface Routine {
   id: string;
   name: string;
   active: boolean;
-  created_at: string;
+  createdAt: string;
   items: RoutineItem[];
 }
 
 export interface FormItem {
-  practice_id: string;
+  practiceId: string;
   quantity: string;
   unit: ItemUnit;
 }

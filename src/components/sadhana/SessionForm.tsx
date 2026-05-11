@@ -47,7 +47,7 @@ export function SessionForm({
   onCancel,
 }: SessionFormProps) {
   const defaultItem: FormItem = {
-    practice_id: practices[0]?.id ?? "",
+    practiceId: practices[0]?.id ?? "",
     quantity: "",
     unit: defaultUnit(practices[0]?.type),
   };
@@ -67,7 +67,7 @@ export function SessionForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    const valid = items.filter((it) => it.practice_id && it.quantity);
+    const valid = items.filter((it) => it.practiceId && it.quantity);
     if (!valid.length) {
       setError("Voeg minstens één beoefening met hoeveelheid toe.");
       return;
@@ -145,7 +145,7 @@ export function SessionForm({
                 onClick={() =>
                   setItems(
                     r.items.map((i) => ({
-                      practice_id: i.practice_id,
+                      practiceId: i.practiceId,
                       quantity: String(i.quantity),
                       unit: i.unit,
                     }))
@@ -165,16 +165,16 @@ export function SessionForm({
           Beoefeningen
         </label>
         {items.map((item, i) => {
-          const practice = practices.find((p) => p.id === item.practice_id);
+          const practice = practices.find((p) => p.id === item.practiceId);
           return (
             <div key={i} className="bg-theme-surface space-y-2 rounded-xl p-3">
               <div className="flex items-center gap-2">
                 <select
-                  value={item.practice_id}
+                  value={item.practiceId}
                   onChange={(e) => {
                     const p = practices.find((p) => p.id === e.target.value);
                     updateItem(i, {
-                      practice_id: e.target.value,
+                      practiceId: e.target.value,
                       unit: defaultUnit(p?.type),
                     });
                   }}

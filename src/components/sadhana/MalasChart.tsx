@@ -24,8 +24,8 @@ const MONTH_LABELS = [
 ];
 
 interface PracticeMonthTotal {
-  practice_id: string;
-  practice_name: string;
+  practiceId: string;
+  practiceName: string;
   amount: number;
 }
 
@@ -60,17 +60,17 @@ function buildMonthlyData(
         const amount =
           item.unit === "malas"
             ? item.quantity
-            : item.practice_type === "mantra_japa"
+            : item.practiceType === "mantra_japa"
               ? item.quantity / MALA_BEAD_COUNT
               : item.quantity;
         if (amount === 0) continue;
-        const existing = practiceMap.get(item.practice_id);
+        const existing = practiceMap.get(item.practiceId);
         if (existing) {
           existing.amount += amount;
         } else {
-          practiceMap.set(item.practice_id, {
-            practice_id: item.practice_id,
-            practice_name: item.practice_name,
+          practiceMap.set(item.practiceId, {
+            practiceId: item.practiceId,
+            practiceName: item.practiceName,
             amount,
           });
         }
@@ -81,8 +81,8 @@ function buildMonthlyData(
       key,
       label: MONTH_LABELS[d.getMonth()] ?? "",
       fullLabel: d.toLocaleDateString("nl-NL", { month: "long", year: "numeric" }),
-      malas: days.reduce((s, cd) => s + cd.total_malas, 0),
-      sessions: days.reduce((s, cd) => s + cd.session_count, 0),
+      malas: days.reduce((s, cd) => s + cd.totalMalas, 0),
+      sessions: days.reduce((s, cd) => s + cd.sessionCount, 0),
       isCurrentMonth:
         isCurrentYear &&
         d.getMonth() === today.getMonth() &&
@@ -190,11 +190,11 @@ export function MalasChart({
                       <div className="border-theme-border mt-1.5 border-t pt-1.5 text-left">
                         {m.practices.map((p) => (
                           <div
-                            key={p.practice_id}
+                            key={p.practiceId}
                             className="flex items-center justify-between gap-3 whitespace-nowrap"
                           >
                             <span className="text-theme-fg-muted max-w-[100px] truncate text-[10px]">
-                              {p.practice_name}
+                              {p.practiceName}
                             </span>
                             <span className="text-theme-fg text-[10px] font-medium tabular-nums">
                               {p.amount % 1 === 0

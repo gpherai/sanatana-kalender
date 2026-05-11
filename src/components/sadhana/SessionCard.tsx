@@ -61,13 +61,13 @@ export function SessionCard({
       method: "PATCH",
       body: JSON.stringify({
         date: data.date,
-        started_at: data.startedAt
+        startedAt: data.startedAt
           ? new Date(`${data.date}T${data.startedAt}`).toISOString()
           : null,
-        duration_minutes: data.duration ? parseInt(data.duration, 10) : null,
+        durationMinutes: data.duration ? parseInt(data.duration, 10) : null,
         notes: data.notes.trim() || null,
         items: data.items.map((it) => ({
-          practice_id: it.practice_id,
+          practiceId: it.practiceId,
           quantity: parseInt(it.quantity, 10),
           unit: it.unit,
         })),
@@ -85,11 +85,11 @@ export function SessionCard({
           practices={practices}
           initial={{
             date: session.date,
-            startedAt: session.started_at ? isoToLocalTime(session.started_at) : "",
-            duration: session.duration_minutes ? String(session.duration_minutes) : "",
+            startedAt: session.startedAt ? isoToLocalTime(session.startedAt) : "",
+            duration: session.durationMinutes ? String(session.durationMinutes) : "",
             notes: session.notes ?? "",
             items: session.items.map((i) => ({
-              practice_id: i.practice_id,
+              practiceId: i.practiceId,
               quantity: String(i.quantity),
               unit: i.unit,
             })),
@@ -103,33 +103,33 @@ export function SessionCard({
   }
 
   const isToday = session.date === todayString();
-  const bubbleValue = session.total_malas + session.total_count;
+  const bubbleValue = session.totalMalas + session.totalCount;
 
   const countItems = session.items.filter(
-    (i) => i.unit === "count" && i.practice_type !== "mantra_japa"
+    (i) => i.unit === "count" && i.practiceType !== "mantra_japa"
   );
 
   // Build a readable summary for count-based items: list each with quantity and name
   const countSummary =
     countItems.length === 0
       ? ""
-      : countItems.map((i) => `${i.quantity}× ${i.practice_name}`).join(" · ");
+      : countItems.map((i) => `${i.quantity}× ${i.practiceName}`).join(" · ");
 
   const primarySummary =
-    session.total_malas > 0 && session.total_count > 0
-      ? `${session.total_malas} malas · ${countSummary}`
-      : session.total_malas > 0
-        ? `${session.total_malas} malas`
-        : session.total_mantras > 0
-          ? `${session.total_mantras.toLocaleString("nl-NL")} mantras`
-          : session.total_count > 0
+    session.totalMalas > 0 && session.totalCount > 0
+      ? `${session.totalMalas} malas · ${countSummary}`
+      : session.totalMalas > 0
+        ? `${session.totalMalas} malas`
+        : session.totalMantras > 0
+          ? `${session.totalMantras.toLocaleString("nl-NL")} mantras`
+          : session.totalCount > 0
             ? countSummary
             : "Geen telling";
 
   const detailSummary =
-    session.total_mantras > 0
-      ? `${session.total_mantras.toLocaleString("nl-NL")} mantras`
-      : session.total_count > 0
+    session.totalMantras > 0
+      ? `${session.totalMantras.toLocaleString("nl-NL")} mantras`
+      : session.totalCount > 0
         ? countSummary
         : "Geen telling";
 
@@ -152,16 +152,16 @@ export function SessionCard({
           <div className="min-w-0 flex-1">
             <div className="text-theme-fg-secondary text-sm font-medium">
               {primarySummary}
-              {session.started_at && (
+              {session.startedAt && (
                 <span className="text-theme-fg-muted ml-1.5 text-xs font-normal">
-                  {formatTime(session.started_at)}
+                  {formatTime(session.startedAt)}
                 </span>
               )}
             </div>
             <div className="text-theme-fg-muted text-xs">
               {detailSummary}
-              {session.duration_minutes
-                ? ` · ${formatDuration(session.duration_minutes)}`
+              {session.durationMinutes
+                ? ` · ${formatDuration(session.durationMinutes)}`
                 : ""}
             </div>
           </div>
@@ -225,22 +225,22 @@ export function SessionCard({
           {session.items.map((item) => (
             <div key={item.id} className="flex items-center gap-2">
               <div className="text-theme-primary shrink-0">
-                {item.practice_type === "mantra_japa" ? (
+                {item.practiceType === "mantra_japa" ? (
                   <Sparkles className="h-3.5 w-3.5" />
                 ) : (
                   <BookOpen className="h-3.5 w-3.5" />
                 )}
               </div>
               <span className="text-theme-fg-secondary min-w-0 truncate text-sm">
-                {item.practice_name}
+                {item.practiceName}
               </span>
               <span className="text-theme-fg-muted ml-auto shrink-0 text-xs">
                 {item.quantity}
                 {item.unit === "malas" ? " malas" : "×"}
-                {item.mantra_count
-                  ? ` (${item.mantra_count.toLocaleString("nl-NL")} mantras)`
-                  : item.count_total
-                    ? ` (${item.count_total.toLocaleString("nl-NL")} namen)`
+                {item.mantraCount
+                  ? ` (${item.mantraCount.toLocaleString("nl-NL")} mantras)`
+                  : item.countTotal
+                    ? ` (${item.countTotal.toLocaleString("nl-NL")} namen)`
                     : ""}
               </span>
             </div>

@@ -30,16 +30,16 @@ export async function POST(req: Request) {
     const parsed = createSadhanaGoalSchema.safeParse(bodyResult.data);
     if (!parsed.success) return validationError(parsed.error);
 
-    const { type, name, target_malas, target_minutes, practice_ids } = parsed.data;
+    const { type, name, targetMalas, targetMinutes, practiceIds } = parsed.data;
     const goal = await createSadhanaGoal({
       type,
       name: name ?? null,
-      targetMalas: target_malas,
-      targetMinutes: target_minutes ?? null,
-      practice_ids,
+      targetMalas,
+      targetMinutes: targetMinutes ?? null,
+      practiceIds,
     });
     return NextResponse.json(
-      { ...goal, progress_malas: 0, progress_minutes: 0 },
+      { ...goal, progressMalas: 0, progressMinutes: 0 },
       { status: 201 }
     );
   } catch (error) {

@@ -4,9 +4,9 @@
  */
 
 /**
- * Base fields shared by all /api/daily-info responses.
- * The full response shape (with structured tithi, nakshatra, etc.) is in DailyInfoResponse.
- * This interface covers only the scalar fields that DailyInfoResponse does not override.
+ * Scalar fields shared by all /api/daily-info responses.
+ * DailyInfoResponse extends this and adds all structured Panchanga objects
+ * (tithi, nakshatra, yoga, karana, etc.) on top.
  */
 export interface DailyInfoData {
   date: string; // YYYY-MM-DD
@@ -22,31 +22,18 @@ export interface DailyInfoData {
   moonPhasePercent: number;
   moonPhaseType: string | null;
   isWaxing: boolean;
-  // Note: tithi, nakshatra, yoga, karana, maas are structured objects in DailyInfoResponse.
-  // They are omitted here and overridden there via Omit<DailyInfoData, ...>.
 }
 
 /**
  * API response shape for /api/daily-info endpoint
  *
- * This extends DailyInfoData but transforms certain fields from simple strings
- * to structured objects containing the full Panchanga data from Swiss Ephemeris.
- *
- * Key differences from DailyInfoData:
- * - date: Date object → ISO string
- * - tithi: string → { number, name, paksha, endTime }
- * - nakshatra: string → { number, name, pada, endTime }
- * - yogaName: string → yoga: { number, name, endTime }
- * - karanaName: string → karana: { number, name, type, endTime }
- * - Adds: moonPhaseEmoji, moonPhaseName, vara, rahuKalam
+ * Extends DailyInfoData with all structured Panchanga fields from Swiss Ephemeris.
+ * Adds tithi, nakshatra, yoga, karana, vara, moonPhaseEmoji/Name, rahuKalam and more.
  *
  * @see src/lib/api-transformers.ts for the transformation logic
  * @see src/app/api/daily-info/route.ts for the route handler
  */
-export interface DailyInfoResponse extends Omit<
-  DailyInfoData,
-  "date" | "moonPhaseType" | "tithi" | "nakshatra" | "yogaName" | "karanaName" | "maas"
-> {
+export interface DailyInfoResponse extends Omit<DailyInfoData, "date" | "moonPhaseType"> {
   /** ISO date string (YYYY-MM-DD) */
   date: string;
 

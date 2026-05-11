@@ -38,8 +38,8 @@ function getMonthTotals(monthSessions: SessionData[]) {
   let malas = 0;
   let minutes = 0;
   for (const s of monthSessions) {
-    malas += s.total_malas;
-    minutes += s.duration_minutes ?? 0;
+    malas += s.totalMalas;
+    minutes += s.durationMinutes ?? 0;
   }
   return { malas, minutes, count: monthSessions.length };
 }
@@ -135,13 +135,13 @@ export function SessionsSection({
                   method: "POST",
                   body: JSON.stringify({
                     date: data.date,
-                    started_at: data.startedAt
+                    startedAt: data.startedAt
                       ? new Date(`${data.date}T${data.startedAt}`).toISOString()
                       : null,
-                    duration_minutes: data.duration ? parseInt(data.duration, 10) : null,
+                    durationMinutes: data.duration ? parseInt(data.duration, 10) : null,
                     notes: data.notes.trim() || null,
                     items: data.items.map((it) => ({
-                      practice_id: it.practice_id,
+                      practiceId: it.practiceId,
                       quantity: parseInt(it.quantity, 10),
                       unit: it.unit,
                     })),

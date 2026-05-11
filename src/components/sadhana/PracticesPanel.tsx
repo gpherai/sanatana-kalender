@@ -47,8 +47,8 @@ export function PracticesPanel({
     setEditingId(p.id);
     setEditName(p.name);
     setEditType(p.type);
-    setEditMantraText(p.mantra_text ?? "");
-    setEditCountSize(p.count_size ? String(p.count_size) : "");
+    setEditMantraText(p.mantraText ?? "");
+    setEditCountSize(p.countSize ? String(p.countSize) : "");
     setEditNotes(p.notes ?? "");
   };
 
@@ -62,8 +62,8 @@ export function PracticesPanel({
         body: JSON.stringify({
           name: newName.trim(),
           type: newType,
-          mantra_text: newType === "mantra_japa" ? newMantraText.trim() || null : null,
-          count_size:
+          mantraText: newType === "mantra_japa" ? newMantraText.trim() || null : null,
+          countSize:
             newType !== "mantra_japa" && newCountSize ? parseInt(newCountSize, 10) : null,
           notes: newNotes.trim() || null,
         }),
@@ -88,8 +88,8 @@ export function PracticesPanel({
         body: JSON.stringify({
           name: editName.trim(),
           type: editType,
-          mantra_text: editType === "mantra_japa" ? editMantraText.trim() || null : null,
-          count_size:
+          mantraText: editType === "mantra_japa" ? editMantraText.trim() || null : null,
+          countSize:
             editType !== "mantra_japa" && editCountSize
               ? parseInt(editCountSize, 10)
               : null,
@@ -319,14 +319,14 @@ export function PracticesPanel({
             >
               <div className="min-w-0 flex-1">
                 <div className="text-theme-fg text-sm font-medium">{p.name}</div>
-                {p.mantra_text && (
+                {p.mantraText && (
                   <div className="text-theme-fg-secondary mt-0.5 truncate text-xs italic">
-                    {p.mantra_text}
+                    {p.mantraText}
                   </div>
                 )}
                 <div className="text-theme-fg-muted text-xs">
                   {PRACTICE_TYPE_LABELS[p.type]}
-                  {p.count_size ? ` · ${p.count_size} namen/ronde` : ""}
+                  {p.countSize ? ` · ${p.countSize} namen/ronde` : ""}
                   {p.notes ? ` · ${p.notes}` : ""}
                 </div>
               </div>

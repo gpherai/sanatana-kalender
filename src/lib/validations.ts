@@ -380,10 +380,10 @@ export type EventQueryParams = z.infer<typeof eventQuerySchema>;
 
 const sadhanaSessionItemSchema = z
   .object({
-    practice_id: cuidSchema,
+    practiceId: cuidSchema,
     quantity: z.number().int().positive(),
     unit: z.enum(["malas", "count"]).optional(),
-    duration_minutes: z.number().int().positive().nullable().optional(),
+    durationMinutes: z.number().int().positive().nullable().optional(),
     notes: z.string().max(500).nullable().optional(),
   })
   .strict();
@@ -391,8 +391,8 @@ const sadhanaSessionItemSchema = z
 export const createSadhanaSessionSchema = z
   .object({
     date: dateStringSchema,
-    started_at: z.string().nullable().optional(),
-    duration_minutes: z.number().int().positive().nullable().optional(),
+    startedAt: z.string().nullable().optional(),
+    durationMinutes: z.number().int().positive().nullable().optional(),
     notes: z.string().max(1000).nullable().optional(),
     items: z.array(sadhanaSessionItemSchema).min(1),
   })
@@ -401,8 +401,8 @@ export const createSadhanaSessionSchema = z
 export const patchSadhanaSessionSchema = z
   .object({
     date: dateStringSchema.optional(),
-    started_at: z.string().nullable().optional(),
-    duration_minutes: z.number().int().positive().nullable().optional(),
+    startedAt: z.string().nullable().optional(),
+    durationMinutes: z.number().int().positive().nullable().optional(),
     notes: z.string().max(1000).nullable().optional(),
     items: z.array(sadhanaSessionItemSchema).min(1).optional(),
   })
@@ -427,19 +427,19 @@ export const createSadhanaGoalSchema = z
   .object({
     type: z.enum(["daily", "weekly", "lifetime"]),
     name: z.string().min(1).max(100).optional(),
-    target_malas: z.number().int().positive(),
-    target_minutes: z.number().int().positive().nullable().optional(),
-    practice_ids: z.array(cuidSchema).optional(),
+    targetMalas: z.number().int().positive(),
+    targetMinutes: z.number().int().positive().nullable().optional(),
+    practiceIds: z.array(cuidSchema).optional(),
   })
   .strict();
 
 export const patchSadhanaGoalSchema = z
   .object({
     name: z.string().min(1).max(100).optional(),
-    target_malas: z.number().int().positive().optional(),
-    target_minutes: z.number().int().positive().nullable().optional(),
+    targetMalas: z.number().int().positive().optional(),
+    targetMinutes: z.number().int().positive().nullable().optional(),
     active: z.boolean().optional(),
-    practice_ids: z.array(cuidSchema).optional(),
+    practiceIds: z.array(cuidSchema).optional(),
   })
   .strict();
 
@@ -447,8 +447,8 @@ export const createSadhanaPracticeSchema = z
   .object({
     name: z.string().min(1).max(100),
     type: z.enum(["mantra_japa", "parayana", "other"]),
-    mantra_text: z.string().max(2000).nullable().optional(),
-    count_size: z.number().int().min(1).nullable().optional(),
+    mantraText: z.string().max(2000).nullable().optional(),
+    countSize: z.number().int().min(1).nullable().optional(),
     notes: z.string().max(500).nullable().optional(),
   })
   .strict();
@@ -457,8 +457,8 @@ export const patchSadhanaPracticeSchema = z
   .object({
     name: z.string().min(1).max(100).optional(),
     type: z.enum(["mantra_japa", "parayana", "other"]).optional(),
-    mantra_text: z.string().max(2000).nullable().optional(),
-    count_size: z.number().int().min(1).nullable().optional(),
+    mantraText: z.string().max(2000).nullable().optional(),
+    countSize: z.number().int().min(1).nullable().optional(),
     notes: z.string().max(500).nullable().optional(),
     active: z.boolean().optional(),
   })
@@ -466,10 +466,10 @@ export const patchSadhanaPracticeSchema = z
 
 const sadhanaRoutineItemSchema = z
   .object({
-    practice_id: cuidSchema,
+    practiceId: cuidSchema,
     quantity: z.number().int().min(1),
     unit: z.enum(["malas", "count"]).default("malas"),
-    sort_order: z.number().int().optional(),
+    sortOrder: z.number().int().optional(),
   })
   .strict();
 

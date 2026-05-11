@@ -287,23 +287,9 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
 /** All theme names as a readonly array */
 export const THEME_NAMES = THEME_CATALOG.map((t) => t.name) as readonly string[];
 
-/** Default theme definition */
-const foundDefault = THEME_CATALOG.find((t) => t.isDefault);
-const firstTheme = THEME_CATALOG[0];
-// Safety: THEME_CATALOG is guaranteed to have at least one theme
-export const DEFAULT_THEME: ThemeDefinition = foundDefault ??
-  firstTheme ?? {
-    name: "spiritual-minimal",
-    displayName: "Spiritual Minimal",
-    description: "Default fallback theme",
-    isDefault: true,
-    category: "classic" as const,
-    colors: {
-      primary: "oklch(0.65 0.15 45)",
-      secondary: "oklch(0.55 0.10 200)",
-      accent: "oklch(0.70 0.12 85)",
-    },
-  };
+/** Default theme definition — exactly one entry in THEME_CATALOG must have isDefault: true */
+export const DEFAULT_THEME: ThemeDefinition =
+  THEME_CATALOG.find((t) => t.isDefault) ?? THEME_CATALOG[0]!;
 
 /** Default theme name */
 export const DEFAULT_THEME_NAME: string = DEFAULT_THEME.name;
@@ -381,7 +367,7 @@ export function getAllThemeOptions(): readonly ThemeOption[] {
 /**
  * Validate if a theme name exists.
  */
-export function isValidThemeName(name: string): name is string {
+export function isValidThemeName(name: string): boolean {
   return THEME_NAMES.includes(name);
 }
 

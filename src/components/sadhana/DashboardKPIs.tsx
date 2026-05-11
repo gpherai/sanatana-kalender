@@ -8,7 +8,7 @@ function getMonthProgress(calDays: CalendarDay[]) {
   const key = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
   const daysPassed = now.getDate();
   const active = calDays.filter(
-    (d) => d.date.startsWith(key) && d.session_count > 0
+    (d) => d.date.startsWith(key) && d.sessionCount > 0
   ).length;
   return { active, daysPassed };
 }
@@ -19,7 +19,7 @@ function getLastMonthMalas(calDays: CalendarDay[]): number {
   const key = `${lm.getFullYear()}-${String(lm.getMonth() + 1).padStart(2, "0")}`;
   return calDays
     .filter((d) => d.date.startsWith(key))
-    .reduce((s, d) => s + d.total_malas, 0);
+    .reduce((s, d) => s + d.totalMalas, 0);
 }
 
 function DeltaBadge({ current, previous }: { current: number; previous: number }) {
@@ -44,7 +44,7 @@ interface DashboardKPIsProps {
 export function DashboardKPIs({ streak, overview, calDays }: DashboardKPIsProps) {
   const { active, daysPassed } = getMonthProgress(calDays);
   const lastMonthMalas = getLastMonthMalas(calDays);
-  const thisMonthMalas = overview?.total_malas_this_month ?? 0;
+  const thisMonthMalas = overview?.totalMalasThisMonth ?? 0;
   const avgPerActiveDay = active > 0 ? Math.round(thisMonthMalas / active) : 0;
   const consistencyPct = daysPassed > 0 ? Math.round((active / daysPassed) * 100) : 0;
 
@@ -60,12 +60,12 @@ export function DashboardKPIs({ streak, overview, calDays }: DashboardKPIsProps)
         </div>
         <div className="flex items-baseline gap-1">
           <span className="text-theme-accent text-2xl leading-none font-bold tabular-nums">
-            {streak?.current_streak ?? 0}
+            {streak?.currentStreak ?? 0}
           </span>
           <span className="text-theme-fg-muted text-xs">dagen</span>
         </div>
         <div className="text-theme-fg-muted mt-1.5 text-[10px]">
-          Langste: {streak?.longest_streak ?? 0} d
+          Langste: {streak?.longestStreak ?? 0} d
         </div>
       </div>
 
@@ -124,7 +124,7 @@ export function DashboardKPIs({ streak, overview, calDays }: DashboardKPIsProps)
           <span className="text-theme-fg-muted text-xs">malas</span>
         </div>
         <div className="text-theme-fg-muted mt-1.5 text-[10px]">
-          {overview?.total_sessions_this_month ?? 0} sessies deze maand
+          {overview?.totalSessionsThisMonth ?? 0} sessies deze maand
         </div>
       </div>
     </div>

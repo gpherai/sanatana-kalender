@@ -893,7 +893,9 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
 
   // === PRADOSH VRAT (benoemd naar weekdag, 2x per maand) ===
   // Elke Trayodashi (13e tithi) krijgt de naam van de weekdag waarop hij valt.
-  // 7 weekdagen × 2 paksha (Shukla + Krishna) = 14 entries.
+  // 7 entries (één per weekdag); de recurrence-engine genereert per entry
+  // twee occurrences: één voor Shukla Trayodashi en één voor Krishna Trayodashi.
+  // De _shukla-suffix in de keys is historisch; paksha is niet ingesteld in ruleConfig.
   // Shani Pradosh (zaterdag) en Soma Pradosh (maandag) zijn bijzonder gunstig.
   {
     key: "soma_pradosh_shukla",
@@ -1548,7 +1550,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     description:
       "Maa Shailputri ('Dochter van de Bergen') is de eerste vorm van Godin Durga die wordt vereerd tijdens Navratri. Ze is de reïncarnatie van Sati en de dochter van de koning der bergen, Himavat. Ze berijdt een stier (Nandi) en houdt een drietand (Trishula) en een lotusbloem vast. Shailputri symboliseert de wortelchakra (Muladhara) en herinnert toegewijden aan de kracht van vastberadenheid en spirituele ontwaking. Op deze eerste dag vindt het Ghatasthapana-ritueel plaats, waarbij de goddelijke energie wordt uitgenodigd in huis.",
     tags: [
-      "chaturdashi",
       "durga",
       "ghatasthapana",
       "himavat",
@@ -1557,6 +1558,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
       "navadurga",
       "navratri",
       "parvati",
+      "pratipada",
       "shailputri",
       "trishula",
     ],

@@ -34,7 +34,7 @@ export function WeekdayPattern({ sessions }: { sessions: SessionData[] }) {
       const malas =
         item.unit === "malas"
           ? item.quantity
-          : item.practice_type === "mantra_japa"
+          : item.practiceType === "mantra_japa"
             ? item.quantity / MALA_BEAD_COUNT
             : 0;
       malasCounts[idx] = (malasCounts[idx] ?? 0) + malas;
@@ -192,7 +192,7 @@ export function ConsistencyRing({ calDays }: { calDays: CalendarDay[] }) {
     const diff = Math.floor(
       (today.getTime() - new Date(d.date + "T00:00:00").getTime()) / 86400000
     );
-    return diff >= 0 && diff < WINDOW && d.session_count > 0;
+    return diff >= 0 && diff < WINDOW && d.sessionCount > 0;
   }).length;
 
   // Previous 30-day window for comparison
@@ -200,7 +200,7 @@ export function ConsistencyRing({ calDays }: { calDays: CalendarDay[] }) {
     const diff = Math.floor(
       (today.getTime() - new Date(d.date + "T00:00:00").getTime()) / 86400000
     );
-    return diff >= WINDOW && diff < WINDOW * 2 && d.session_count > 0;
+    return diff >= WINDOW && diff < WINDOW * 2 && d.sessionCount > 0;
   }).length;
 
   const pct = activeDays / WINDOW;
@@ -285,7 +285,7 @@ export function PracticeDonut({ practices }: { practices: PracticeStat[] }) {
   const data = practices
     .map((p, i) => ({
       ...p,
-      value: p.total_quantity,
+      value: p.totalQuantity,
       color: CHART_COLORS[i % CHART_COLORS.length]!,
     }))
     .filter((p) => p.value > 0);
@@ -300,9 +300,9 @@ export function PracticeDonut({ practices }: { practices: PracticeStat[] }) {
   const fracs = data.map((d) => d.value / total);
   const offsets = fracs.map((_, i) => fracs.slice(0, i).reduce((s, f) => s + f * C, 0));
   const segments = data.map((d, i) => ({
-    practice_id: d.practice_id,
-    practice_name: d.practice_name,
-    practice_type: d.practice_type,
+    practiceId: d.practiceId,
+    practiceName: d.practiceName,
+    practiceType: d.practiceType,
     color: d.color,
     frac: fracs[i]!,
     value: d.value,
@@ -361,21 +361,21 @@ export function PracticeDonut({ practices }: { practices: PracticeStat[] }) {
         {/* Legend */}
         <div className="min-w-0 flex-1 space-y-2.5">
           {segments.map((seg) => (
-            <div key={seg.practice_id}>
+            <div key={seg.practiceId}>
               <div className="mb-0.5 flex items-center gap-2">
                 <span
                   className="h-2.5 w-2.5 shrink-0 rounded-full"
                   style={{ background: seg.color }}
                 />
                 <span className="text-theme-fg-secondary min-w-0 flex-1 truncate text-xs">
-                  {seg.practice_name}
+                  {seg.practiceName}
                 </span>
                 <span className="text-theme-fg-muted shrink-0 text-right text-xs tabular-nums">
                   <span className="text-theme-fg font-medium">
                     {seg.value % 1 === 0
                       ? seg.value.toLocaleString("nl-NL")
                       : seg.value.toLocaleString("nl-NL", { maximumFractionDigits: 1 })}
-                    {seg.practice_type === "mantra_japa" ? " malas" : "×"}
+                    {seg.practiceType === "mantra_japa" ? " malas" : "×"}
                   </span>
                   {" · "}
                   {Math.round(seg.frac * 100)}%
@@ -407,7 +407,7 @@ const TIME_BUCKETS = [
 
 export function TimeOfDayPattern({ sessions }: { sessions: SessionData[] }) {
   const [hovered, setHovered] = useState<number | null>(null);
-  const timed = sessions.filter((s) => s.started_at);
+  const timed = sessions.filter((s) => s.startedAt);
   if (timed.length < 5)
     return (
       <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
@@ -426,7 +426,7 @@ export function TimeOfDayPattern({ sessions }: { sessions: SessionData[] }) {
   const counts = TIME_BUCKETS.map(
     ({ start, end }) =>
       timed.filter((s) => {
-        const h = new Date(s.started_at!).getHours();
+        const h = new Date(s.startedAt!).getHours();
         return h >= start && h < end;
       }).length
   );
@@ -581,15 +581,15 @@ export function PracticeTrend({ sessions }: { sessions: SessionData[] }) {
         const amount =
           item.unit === "malas"
             ? item.quantity
-            : item.practice_type === "mantra_japa"
+            : item.practiceType === "mantra_japa"
               ? item.quantity / MALA_BEAD_COUNT
               : item.quantity;
         if (amount === 0) continue;
-        const ex = map.get(item.practice_id);
+        const ex = map.get(item.practiceId);
         if (ex) {
           ex.amount += amount;
         } else {
-          map.set(item.practice_id, { name: item.practice_name, amount });
+          map.set(item.practiceId, { name: item.practiceName, amount });
         }
       }
     }
