@@ -91,5 +91,5 @@ export function getMoonPhaseName(type: string): string {
     LAST_QUARTER: "Laatste Kwartier",
     WANING_CRESCENT: "Afnemende Sikkel",
   };
-  return names[type] ?? "Unknown";
+  return names[type] ?? "Onbekend";
 }

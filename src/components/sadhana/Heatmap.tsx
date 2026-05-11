@@ -2,7 +2,7 @@
 
 import { useState, memo } from "react";
 import type { CalendarDay, HeatmapCell, DayInfoMap } from "@/types/sadhana";
-import { localDateString, formatDate, dayContextLabel } from "@/lib/sadhana-utils";
+import { localDateString, formatShortDate, dayContextLabel } from "@/lib/sadhana-utils";
 
 // =============================================================================
 // HELPERS
@@ -196,7 +196,7 @@ export const Heatmap = memo(function Heatmap({
                           ? "var(--theme-heatmap-empty)"
                           : heatColor(cell.activity),
                     }}
-                    title={`${formatDate(cell.date)}: ${activityLabel(cell)}${label ? ` · ${label}` : ""}${eventsTip}`}
+                    title={`${formatShortDate(cell.date)}: ${activityLabel(cell)}${label ? ` · ${label}` : ""}${eventsTip}`}
                     onClick={() =>
                       setTapped((prev) => (prev?.date === cell.date ? null : cell))
                     }
@@ -229,7 +229,7 @@ export const Heatmap = memo(function Heatmap({
 
         {tapped && (
           <div className="text-theme-fg-secondary mt-2 text-xs">
-            {formatDate(tapped.date)}:{" "}
+            {formatShortDate(tapped.date)}:{" "}
             <span className="text-theme-fg font-medium">{activityLabel(tapped)}</span>
             {tappedLabel && <span className="text-theme-fg-muted"> · {tappedLabel}</span>}
             {tappedEvents.length > 0 && (
@@ -366,7 +366,7 @@ export const Heatmap = memo(function Heatmap({
                           ? "var(--theme-heatmap-empty)"
                           : heatColor(cell.activity),
                     }}
-                    title={`${formatDate(cell.date)}: ${activityLabel(cell)}${label ? ` · ${label}` : ""}${eventsTip}`}
+                    title={`${formatShortDate(cell.date)}: ${activityLabel(cell)}${label ? ` · ${label}` : ""}${eventsTip}`}
                     onClick={() =>
                       setTapped((prev) => (prev?.date === cell.date ? null : cell))
                     }
@@ -404,7 +404,7 @@ export const Heatmap = memo(function Heatmap({
         </div>
         {tapped && (
           <div className="text-theme-fg-secondary mt-2 text-xs">
-            {formatDate(tapped.date)}:{" "}
+            {formatShortDate(tapped.date)}:{" "}
             <span className="text-theme-fg font-medium">{activityLabel(tapped)}</span>
             {tappedLabel && <span className="text-theme-fg-muted"> · {tappedLabel}</span>}
             {tappedEvents.length > 0 && (

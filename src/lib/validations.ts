@@ -69,7 +69,7 @@ function isValidCalendarDateString(value: string): boolean {
 }
 
 /** CUID identifier (Prisma default) */
-export const cuidSchema = z.string().cuid();
+export const cuidSchema = z.cuid();
 
 /** Optional CUID (accepts empty string as undefined) */
 const optionalCuidSchema = cuidSchema.optional().or(z.literal(""));
@@ -380,7 +380,7 @@ export type EventQueryParams = z.infer<typeof eventQuerySchema>;
 
 const sadhanaSessionItemSchema = z
   .object({
-    practice_id: z.string().min(1),
+    practice_id: cuidSchema,
     quantity: z.number().int().positive(),
     unit: z.enum(["malas", "count"]).optional(),
     duration_minutes: z.number().int().positive().nullable().optional(),
@@ -429,7 +429,7 @@ export const createSadhanaGoalSchema = z
     name: z.string().min(1).max(100).optional(),
     target_malas: z.number().int().positive(),
     target_minutes: z.number().int().positive().nullable().optional(),
-    practice_ids: z.array(z.string().min(1)).optional(),
+    practice_ids: z.array(cuidSchema).optional(),
   })
   .strict();
 
@@ -439,7 +439,7 @@ export const patchSadhanaGoalSchema = z
     target_malas: z.number().int().positive().optional(),
     target_minutes: z.number().int().positive().nullable().optional(),
     active: z.boolean().optional(),
-    practice_ids: z.array(z.string().min(1)).optional(),
+    practice_ids: z.array(cuidSchema).optional(),
   })
   .strict();
 
@@ -466,7 +466,7 @@ export const patchSadhanaPracticeSchema = z
 
 const sadhanaRoutineItemSchema = z
   .object({
-    practice_id: z.string().min(1),
+    practice_id: cuidSchema,
     quantity: z.number().int().min(1),
     unit: z.enum(["malas", "count"]).default("malas"),
     sort_order: z.number().int().optional(),

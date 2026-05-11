@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { errorResponse } from "@/lib/api-response";
 import { logError } from "@/lib/utils";
+import { env } from "@/lib/env";
 
 const VALID_LAYERS = new Set([
   "clouds_new",
@@ -27,7 +28,7 @@ export async function GET(
       return errorResponse("Ongeldige tegel parameters", 400);
     }
 
-    const apiKey = process.env.OPENWEATHER_API_KEY;
+    const apiKey = env.OPENWEATHER_API_KEY;
 
     if (!apiKey) {
       return errorResponse("OpenWeather API key niet geconfigureerd", 503);

@@ -50,8 +50,8 @@ export function detectSpecialDay(
   tithi: TithiInfo,
   date: Date = new Date()
 ): SpecialDay | null {
+  // Guard for JS callers that may pass undefined despite the TypeScript type.
   if (!tithi) return null;
-
   const { number, paksha } = tithi;
 
   // Purnima (Full Moon) - 15th Shukla Paksha
@@ -137,6 +137,8 @@ export function detectSpecialDay(
 // DB → DayInfo derivation (avoids Swiss Ephemeris re-computation)
 // =============================================================================
 
+// These lookup tables mirror the TITHIS catalog in src/config (via domain.ts).
+// If new tithis are added there, update these tables accordingly.
 const TITHI_BASE_TO_NUMBER: Record<string, number> = {
   PRATIPADA: 1,
   DWITIYA: 2,

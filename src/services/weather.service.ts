@@ -1,6 +1,7 @@
 import "server-only";
 
 import { DEFAULT_LOCATION } from "@/lib/domain";
+import { env } from "@/lib/env";
 import type { AirQuality, WeatherApiResponse, WeatherCondition } from "@/types/weather";
 
 const OPENWEATHER_BASE_URL = "https://api.openweathermap.org/data/2.5";
@@ -208,7 +209,7 @@ function mapAirQuality(data: AirPollutionResponse): AirQuality | null {
 }
 
 export async function getWeatherDashboard(): Promise<WeatherApiResponse> {
-  const apiKey = process.env.OPENWEATHER_API_KEY;
+  const apiKey = env.OPENWEATHER_API_KEY;
 
   if (!apiKey) {
     throw new WeatherServiceError(

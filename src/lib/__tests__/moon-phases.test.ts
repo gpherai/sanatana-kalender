@@ -89,8 +89,8 @@ describe("Moon Phase Utilities", () => {
       expect(getMoonPhaseName("NEW_MOON")).toBe("Nieuwe Maan");
     });
 
-    it("should return Unknown for invalid types", () => {
-      expect(getMoonPhaseName("SUPER_MOON")).toBe("Unknown");
+    it("should return Onbekend for invalid types", () => {
+      expect(getMoonPhaseName("SUPER_MOON")).toBe("Onbekend");
     });
   });
 });

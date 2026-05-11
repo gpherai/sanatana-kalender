@@ -361,6 +361,6 @@ export interface DailyInfoResponse extends Omit<
   /** Response metadata for calculation/debugging. */
   meta?: {
     engine: string;
-    calculationDate: string;
+    generatedAt: string;
   };
 }

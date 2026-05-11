@@ -33,6 +33,9 @@ const envSchema = z.object({
 
   // Node environment
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+
+  // OpenWeatherMap API key (optional — weather features are disabled when absent)
+  OPENWEATHER_API_KEY: z.string().min(1).optional(),
 });
 
 // =============================================================================
@@ -47,6 +50,7 @@ function validateEnv() {
   const envVars = {
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
+    OPENWEATHER_API_KEY: process.env.OPENWEATHER_API_KEY,
   };
 
   const result = envSchema.safeParse(envVars);

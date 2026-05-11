@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import type { SessionData, Practice, Routine, DayInfoMap } from "@/types/sadhana";
 import { apiFetch } from "@/lib/sadhana-api";
 import {
-  formatDate,
+  formatShortDate,
   formatDuration,
   dayContextLabel,
   todayString,
@@ -207,7 +207,7 @@ export function SessionsSection({
                         <div key={date} className="space-y-2">
                           <div className="flex flex-wrap items-center gap-2 px-1">
                             <span className="text-theme-fg-secondary text-xs font-semibold">
-                              {formatDate(date)}
+                              {formatShortDate(date)}
                             </span>
                             {isToday && (
                               <span className="bg-theme-primary/15 text-theme-primary rounded-full px-2 py-0.5 text-xs font-medium">

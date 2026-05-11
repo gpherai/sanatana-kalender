@@ -98,7 +98,7 @@ const MONTHS_NL = [
   "dec",
 ];
 
-export function formatDate(dateStr: string): string {
+export function formatShortDate(dateStr: string): string {
   const d = new Date(dateStr + "T00:00:00");
   return `${d.getDate()} ${MONTHS_NL[d.getMonth()]} ${d.getFullYear()}`;
 }

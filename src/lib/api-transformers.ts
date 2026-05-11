@@ -290,7 +290,7 @@ export function transformToApiResponse(panchanga: DailyPanchangaFull) {
     // Metadata
     meta: {
       engine: panchanga.meta.engine,
-      calculationDate: new Date().toISOString(),
+      generatedAt: new Date().toISOString(),
     },
   };
 }

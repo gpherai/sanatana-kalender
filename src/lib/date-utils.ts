@@ -240,11 +240,11 @@ export function endOfDayUTC(date: Date): Date {
 // =============================================================================
 
 /**
- * Check if two dates are the same day (in UTC)
+ * Check if two dates are the same local calendar day.
  *
  * @param date1 - First date to compare
  * @param date2 - Second date to compare
- * @returns true if dates are the same UTC day
+ * @returns true if both dates fall on the same local day
  *
  * @example
  * ```ts
