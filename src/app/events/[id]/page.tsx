@@ -11,10 +11,7 @@ import {
   getCategoryTextClass,
   FALLBACK_CATEGORY_COLOR,
 } from "@/lib/category-styles";
-import {
-  findEventByIdBasic,
-  findEventByIdForDisplay,
-} from "@/repositories/event.repository";
+import { findEventByIdForDisplay } from "@/repositories/event.repository";
 import { DEFAULT_LOCATION } from "@/lib/domain";
 import { DeleteEventButton } from "@/components/events/DeleteEventButton";
 
@@ -24,7 +21,7 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
-  const event = await findEventByIdBasic(id);
+  const event = await findEventByIdForDisplay(id);
   return { title: event?.name ?? "Event" };
 }
 

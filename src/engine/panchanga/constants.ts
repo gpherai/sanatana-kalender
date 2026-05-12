@@ -217,36 +217,6 @@ export const LUNAR_MASA_NAMES = [
 ] as const;
 
 // =============================================================================
-// SOLAR MASA (12 SOLAR MONTHS / RASHI)
-// =============================================================================
-
-/**
- * 12 Solar Masas (Sankranti-based months when Sun enters each rashi)
- *
- * IMPORTANT: These are SOLAR months based on Sun's position in zodiac.
- * This is DIFFERENT from lunar māsa.
- *
- * Solar months are used in some regional calendars (Tamil, Bengali, etc.)
- * and for agricultural/festival calculations.
- *
- * TODO: Can be exposed as separate "sunRashi" field in future if needed.
- */
-export const SOLAR_MASA_NAMES = [
-  "Mesha", // Aries (mid-April)
-  "Vrishabha", // Taurus (mid-May)
-  "Mithuna", // Gemini (mid-June)
-  "Karka", // Cancer (mid-July)
-  "Simha", // Leo (mid-August)
-  "Kanya", // Virgo (mid-September)
-  "Tula", // Libra (mid-October)
-  "Vrishchika", // Scorpio (mid-November)
-  "Dhanu", // Sagittarius (mid-December)
-  "Makara", // Capricorn (mid-January)
-  "Kumbha", // Aquarius (mid-February)
-  "Mina", // Pisces (mid-March)
-] as const;
-
-// =============================================================================
 // SAMVATSARA (60-YEAR CYCLE)
 // =============================================================================
 

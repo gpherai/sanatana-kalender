@@ -12,7 +12,7 @@ export default function EventNotFound() {
         </p>
         <Link
           href="/events"
-          className="text-theme-primary mt-2 inline-flex items-center gap-2 text-sm hover:opacity-80"
+          className="text-theme-primary focus-visible:ring-theme-primary mt-2 inline-flex items-center gap-2 rounded text-sm hover:opacity-80 focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none"
         >
           <ArrowLeft className="h-4 w-4" />
           Terug naar Events

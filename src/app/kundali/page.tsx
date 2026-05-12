@@ -652,12 +652,10 @@ export default function KundaliPage() {
               </div>
               <p className="text-theme-fg-muted mt-4 text-xs">
                 R = Retrograde · Mean Node voor Rahu/Ketu ·{" "}
-                <span className="text-amber-600 dark:text-amber-400">Uchcha</span> =
-                verheven · <span className="text-red-600 dark:text-red-400">Neecha</span>{" "}
-                = verzwakt · <span className="text-theme-primary">Mūlatrik.</span> =
-                moolatrikona ·{" "}
-                <span className="text-emerald-600 dark:text-emerald-400">Swarashi</span> =
-                eigen teken
+                <span className="text-theme-accent">Uchcha</span> = verheven ·{" "}
+                <span className="text-theme-error">Neecha</span> = verzwakt ·{" "}
+                <span className="text-theme-primary">Mūlatrik.</span> = moolatrikona ·{" "}
+                <span className="text-theme-success">Swarashi</span> = eigen teken
               </p>
             </div>
           )}

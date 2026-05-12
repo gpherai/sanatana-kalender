@@ -1,20 +1,13 @@
-import { MoonStar, Clock, Sparkles, Users, Sun, Info } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 import { PageLayout } from "@/components/layout";
 import { getAllTerms } from "@/lib/encyclopedia";
 import {
   EncyclopediaOverview,
   type TermSummary,
 } from "@/components/encyclopedia/EncyclopediaOverview";
-
-const HERO_CATEGORY_CONFIG: Record<string, { icon: LucideIcon; chipClass: string }> = {
-  Astronomie: { icon: MoonStar, chipClass: "encyl-chip-astronomie" },
-  Tijd: { icon: Clock, chipClass: "encyl-chip-tijd" },
-  "Speciale dagen": { icon: Sparkles, chipClass: "encyl-chip-speciale" },
-  Devatās: { icon: Users, chipClass: "encyl-chip-devatas" },
-  Navagraha: { icon: Sun, chipClass: "encyl-chip-navagraha" },
-  Algemeen: { icon: Info, chipClass: "encyl-chip-algemeen" },
-};
+import {
+  ENCYCLOPEDIA_CATEGORY_CONFIG,
+  ENCYCLOPEDIA_CATEGORY_FALLBACK,
+} from "@/components/encyclopedia/category-config";
 
 export const metadata = {
   title: "Encyclopedie",
@@ -111,10 +104,8 @@ export default function DictionaryPage() {
 
           <div className="mt-8 flex flex-wrap justify-center gap-2">
             {categories.map((cat) => {
-              const cfg = HERO_CATEGORY_CONFIG[cat] ?? {
-                icon: Info,
-                chipClass: "encyl-chip-algemeen",
-              };
+              const cfg =
+                ENCYCLOPEDIA_CATEGORY_CONFIG[cat] ?? ENCYCLOPEDIA_CATEGORY_FALLBACK;
               const Icon = cfg.icon;
               const count = visibleCounts[cat] ?? 0;
               return (

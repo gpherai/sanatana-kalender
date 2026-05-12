@@ -13,17 +13,19 @@
  * DEFAULT_LOCATION is fixed in code for panchanga/weather/event calculations.
  */
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useFetch } from "@/hooks/useFetch";
+import { useAutoSave } from "@/hooks/useAutoSave";
 import { useRouter } from "next/navigation";
 import { Loader2, Check, CloudOff, Cloud } from "lucide-react";
-import { logError } from "@/lib/utils";
 import { useToast } from "@/components/ui/Toast";
 import { useTheme } from "@/components/theme/ThemeProvider";
 import { THEME_STORAGE_KEY } from "@/config/themes";
 import { PageLayout } from "@/components/layout";
 import { ThemeSection, CalendarSection, LocationSection } from "@/components/settings";
 import { DEFAULT_LOCATION } from "@/lib/domain";
+import { logError } from "@/lib/utils";
+import type { DailyInfoResponse } from "@/types";
 
 // =============================================================================
 // TYPES
@@ -35,119 +37,16 @@ interface Preferences {
   defaultView: string;
 }
 
-interface DailyInfo {
-  sunrise: string | null;
-  sunset: string | null;
-  moonPhasePercent: number;
-  moonPhaseName: string;
-  isWaxing: boolean;
-}
-
-type SaveStatus = "idle" | "saving" | "saved" | "error";
+type DailyInfo = Pick<
+  DailyInfoResponse,
+  "sunrise" | "sunset" | "moonPhasePercent" | "moonPhaseName" | "isWaxing"
+>;
 
 // =============================================================================
 // CONSTANTS
 // =============================================================================
 
 const AUTO_SAVE_DELAY = 800; // ms
-
-// =============================================================================
-// HOOK: useAutoSave
-// =============================================================================
-
-function useAutoSave<T>(
-  data: T,
-  saveFn: (data: T) => Promise<void>,
-  delay: number = AUTO_SAVE_DELAY,
-  enabled: boolean = true,
-  resetKey: number = 0
-) {
-  const [status, setStatus] = useState<SaveStatus>("idle");
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const isMountedRef = useRef(true);
-  const isFirstRender = useRef(true);
-  const lastSavedData = useRef<string>("");
-  const lastResetKey = useRef(resetKey);
-
-  // Track mounted state to prevent setState after unmount
-  useEffect(() => {
-    isMountedRef.current = true;
-    return () => {
-      isMountedRef.current = false;
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
-  }, []);
-
-  useEffect(() => {
-    const currentData = JSON.stringify(data);
-
-    if (!enabled) {
-      isFirstRender.current = false;
-      lastSavedData.current = currentData;
-      lastResetKey.current = resetKey;
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
-      }
-      return;
-    }
-
-    if (lastResetKey.current !== resetKey) {
-      isFirstRender.current = false;
-      lastSavedData.current = currentData;
-      lastResetKey.current = resetKey;
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
-      }
-      return;
-    }
-
-    // Skip first render
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      lastSavedData.current = currentData;
-      return;
-    }
-
-    // Check if data actually changed
-    if (currentData === lastSavedData.current) {
-      return;
-    }
-
-    // Clear previous timeout
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-
-    setStatus("saving");
-
-    // Debounced save
-    timeoutRef.current = setTimeout(async () => {
-      try {
-        await saveFn(data);
-        if (isMountedRef.current) {
-          lastSavedData.current = currentData;
-          setStatus("saved");
-          setTimeout(() => {
-            if (isMountedRef.current) setStatus("idle");
-          }, 2000);
-        }
-      } catch (error) {
-        logError("Auto-save failed", error);
-        if (isMountedRef.current) setStatus("error");
-      }
-    }, delay);
-
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, [data, saveFn, delay, enabled, resetKey]);
-
-  return status;
-}
 
 // =============================================================================
 // COMPONENT
@@ -263,14 +162,14 @@ export default function SettingsPage() {
         );
       case "saved":
         return (
-          <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
+          <div className="text-theme-success-fg flex items-center gap-2 text-sm">
             <Check className="h-4 w-4" />
             <span>Opgeslagen</span>
           </div>
         );
       case "error":
         return (
-          <div className="flex items-center gap-2 text-sm text-red-600 dark:text-red-400">
+          <div className="text-theme-error-fg flex items-center gap-2 text-sm">
             <CloudOff className="h-4 w-4" />
             <span>Fout bij opslaan</span>
           </div>

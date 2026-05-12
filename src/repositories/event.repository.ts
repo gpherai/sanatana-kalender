@@ -7,6 +7,7 @@
  * @module repositories/event
  */
 
+import { cache } from "react";
 import {
   Prisma,
   EventType,
@@ -256,7 +257,7 @@ export async function findEventById(id: string) {
  * Find a single event by ID with only the data needed for the detail display page.
  * Excludes series relationship entries (not shown on the page) to keep the query lean.
  */
-export async function findEventByIdForDisplay(id: string) {
+export const findEventByIdForDisplay = cache(async (id: string) => {
   return prisma.event.findUnique({
     where: { id },
     include: {
@@ -267,12 +268,12 @@ export async function findEventByIdForDisplay(id: string) {
       },
     },
   });
-}
+});
 
 /**
  * Find a single event by ID with just its first occurrence for update flows.
  */
-export async function findEventForUpdate(id: string) {
+export const findEventForUpdate = cache(async (id: string) => {
   return prisma.event.findUnique({
     where: { id },
     include: {
@@ -286,7 +287,7 @@ export async function findEventForUpdate(id: string) {
       },
     },
   });
-}
+});
 
 /**
  * Find a single event by ID without eager-loading relations.

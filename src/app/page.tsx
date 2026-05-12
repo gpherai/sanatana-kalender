@@ -141,8 +141,8 @@ export default async function Home() {
       {/* Footer */}
       <footer className="border-theme-border border-t py-6 text-center">
         <p className="text-theme-fg-muted text-sm">
-          <span aria-hidden="true">🕉️</span> Dharma Calendar • Built with Next.js 16,
-          Prisma 7, PostgreSQL
+          <span aria-hidden="true">🕉️</span> Dharma Calendar • Built with Next.js, Prisma,
+          PostgreSQL
         </p>
       </footer>
     </PageLayout>

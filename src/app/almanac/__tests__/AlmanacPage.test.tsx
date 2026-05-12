@@ -68,7 +68,7 @@ vi.mock("@/components/calendar/EventDetailModal", () => ({
 describe("AlmanacPage 100% Coverage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockUseFetch.mockReturnValue({ data: [], loading: false });
+    mockUseFetch.mockReturnValue({ data: [], loading: false, refetch: vi.fn() });
     window.scrollTo = vi.fn();
     window.requestAnimationFrame = vi.fn((cb: FrameRequestCallback) => {
       cb(0);
@@ -102,9 +102,11 @@ describe("AlmanacPage 100% Coverage", () => {
     ];
 
     mockUseFetch.mockImplementation((url) => {
-      if (url.includes("daily-info")) return { data: mockData, loading: false };
-      if (url.includes("events")) return { data: mockEvents, loading: false };
-      return { data: [], loading: false };
+      if (url.includes("daily-info"))
+        return { data: mockData, loading: false, refetch: vi.fn() };
+      if (url.includes("events"))
+        return { data: mockEvents, loading: false, refetch: vi.fn() };
+      return { data: [], loading: false, refetch: vi.fn() };
     });
 
     const { rerender } = render(<AlmanacPage />);

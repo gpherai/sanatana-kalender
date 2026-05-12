@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   },
   description:
     "Hindu Festival & Spiritual Events Calendar - Track festivals, puja, vrat, and more",
-  keywords: "hindu, calendar, festival, puja, vrad, tithi, nakshatra",
+  keywords: "hindu, calendar, festival, puja, vrat, tithi, nakshatra",
 };
 
 // =============================================================================

@@ -3,8 +3,11 @@ import { notFound } from "next/navigation";
 import { PageLayout } from "@/components/layout";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import Link from "next/link";
-import { ArrowLeft, MoonStar, Clock, Sparkles, Users, Sun, Info } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import {
+  ENCYCLOPEDIA_CATEGORY_CONFIG,
+  ENCYCLOPEDIA_CATEGORY_FALLBACK,
+} from "@/components/encyclopedia/category-config";
 
 export async function generateStaticParams() {
   const terms = getAllTerms();
@@ -32,15 +35,6 @@ export async function generateMetadata({
     description: term.shortDescription,
   };
 }
-
-const CATEGORY_CONFIG: Record<string, { icon: LucideIcon; chipClass: string }> = {
-  Astronomie: { icon: MoonStar, chipClass: "encyl-chip-astronomie" },
-  Tijd: { icon: Clock, chipClass: "encyl-chip-tijd" },
-  "Speciale dagen": { icon: Sparkles, chipClass: "encyl-chip-speciale" },
-  Devatās: { icon: Users, chipClass: "encyl-chip-devatas" },
-  Navagraha: { icon: Sun, chipClass: "encyl-chip-navagraha" },
-  Algemeen: { icon: Info, chipClass: "encyl-chip-algemeen" },
-};
 
 // Custom components for MDX rendering to match the theme
 const components = {
@@ -75,26 +69,26 @@ const components = {
   strong: (props: React.ComponentProps<"strong">) => (
     <strong className="text-theme-fg font-semibold" {...props} />
   ),
-  a: (props: React.ComponentProps<"a">) => {
-    const isInternal = props.href?.startsWith("/");
-    if (isInternal) {
+  a: ({ children, href, ...rest }: React.ComponentProps<"a">) => {
+    if (href?.startsWith("/")) {
       return (
         <Link
-          href={props.href!}
+          href={href}
           className="text-theme-primary focus-visible:ring-theme-primary rounded font-medium hover:underline focus-visible:ring-2 focus-visible:outline-none"
         >
-          {props.children}
+          {children}
         </Link>
       );
     }
     return (
       <a
+        href={href}
         target="_blank"
         rel="noopener noreferrer"
         className="text-theme-primary focus-visible:ring-theme-primary rounded font-medium hover:underline focus-visible:ring-2 focus-visible:outline-none"
-        {...props}
+        {...rest}
       >
-        {props.children}
+        {children}
       </a>
     );
   },
@@ -215,10 +209,9 @@ export default async function TermPage({
           <div className="bg-theme-bg-subtle border-theme-border-subtle border-b p-8 md:p-12">
             <div className="mb-6 flex items-center gap-3">
               {(() => {
-                const catCfg = CATEGORY_CONFIG[term.category] ?? {
-                  icon: Info,
-                  chipClass: "encyl-chip-algemeen",
-                };
+                const catCfg =
+                  ENCYCLOPEDIA_CATEGORY_CONFIG[term.category] ??
+                  ENCYCLOPEDIA_CATEGORY_FALLBACK;
                 const CatIcon = catCfg.icon;
                 return (
                   <span

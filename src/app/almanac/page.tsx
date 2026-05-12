@@ -106,6 +106,7 @@ export default function AlmanacPage() {
   const {
     data: fetchedMonthEvents,
     loading: eventsLoading,
+    error: eventsError,
     refetch: refetchEvents,
   } = useFetch<CalendarEventResponse[]>(`/api/events?start=${start}&end=${end}`, {
     skip: !!cachedEvents,
@@ -113,7 +114,7 @@ export default function AlmanacPage() {
   const monthData = cachedDailyInfo ?? fetchedMonthData;
   const monthEvents = cachedEvents ?? fetchedMonthEvents;
   const loading = dailyLoading || eventsLoading;
-  const error = dailyError;
+  const error = dailyError ?? eventsError;
   const location = monthData?.[0]?.locationName ?? DEFAULT_LOCATION.name;
 
   // Preserve scroll position when selecting different dates within same month
@@ -247,8 +248,8 @@ export default function AlmanacPage() {
       const endKey = e.resource.originalEndDate ?? startKey;
       // Add event to every calendar day it spans (handles tithi spanning + multi-day festivals)
       let current = new Date(startKey + "T00:00:00Z");
-      const end = new Date(endKey + "T00:00:00Z");
-      while (current <= end) {
+      const spanEnd = new Date(endKey + "T00:00:00Z");
+      while (current <= spanEnd) {
         const key = formatDateLocal(current);
         const existing = map.get(key) ?? [];
         existing.push(e);
@@ -353,8 +354,9 @@ export default function AlmanacPage() {
             </span>
             <span className="text-theme-fg-muted text-xs">{error.message}</span>
             <button
+              type="button"
               onClick={handleRetry}
-              className="bg-theme-primary mt-1 rounded-lg px-4 py-2 text-sm text-white hover:opacity-90"
+              className="bg-theme-primary focus-visible:ring-theme-primary mt-1 cursor-pointer rounded-lg px-4 py-2 text-sm text-white hover:opacity-90 focus-visible:ring-2 focus-visible:outline-none"
             >
               Opnieuw proberen
             </button>

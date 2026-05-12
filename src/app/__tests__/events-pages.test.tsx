@@ -88,7 +88,18 @@ describe("Events Pages", () => {
         eventType: "FESTIVAL",
         recurrenceType: "YEARLY_LUNAR",
         tags: ["tag1"],
-        categories: [{ category: { id: "cat1", category: { name: "cat1" } } }],
+        categories: [
+          {
+            categoryId: "cat1",
+            category: {
+              id: "cat1",
+              name: "cat1",
+              displayName: "Cat 1",
+              color: "red",
+              icon: null,
+            },
+          },
+        ],
         occurrences: [
           {
             date: new Date("2026-01-01"),
@@ -107,6 +118,7 @@ describe("Events Pages", () => {
       expect(eventFormMock).toHaveBeenCalled();
       const props = eventFormMock.mock.calls.find((c: any) => c[0].mode === "edit")![0];
       expect(props.initialData.name).toBe("Edit Event");
+      expect(props.initialData.categoryId).toBe("cat1");
       expect(props.initialData.notes).toBe("Some notes");
     });
 
