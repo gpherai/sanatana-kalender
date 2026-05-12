@@ -37,11 +37,11 @@ describe("ColorModeToggle", () => {
       </ThemeProvider>
     );
 
-    const button = await screen.findByLabelText(/Switch to dark mode/i);
+    const button = await screen.findByLabelText(/Schakel naar donkere modus/i);
     await userEvent.click(button);
 
     await waitFor(() => {
-      expect(screen.getByLabelText(/Switch to light mode/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/Schakel naar lichte modus/i)).toBeInTheDocument();
     });
   });
 });

@@ -23,8 +23,8 @@ describe("Header Component", () => {
     const links = ["Home", "Almanac", "Events", "Instellingen"];
 
     links.forEach((link) => {
-      // Note: text might be hidden on small screens, but present in DOM
-      expect(screen.getByText(link)).toBeInTheDocument();
+      // Two spans per link (hidden lg:inline + sr-only lg:hidden) — use getAllByText
+      expect(screen.getAllByText(link)[0]).toBeInTheDocument();
     });
   });
 
