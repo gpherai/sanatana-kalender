@@ -12,7 +12,7 @@ Een Next.js applicatie voor het bijhouden van Hindu festivals, puja's, ekadashi'
 - Eerstvolgende maanopkomst en -ondergang op basis van huidige tijd
 - **Kundali** — Jyotisha geboortehoroscoop met alle 9 navagrahas, lagna en nakshatra (Lahiri ayanamsa, Whole Sign huizen, Mean Node)
 - **Sadhana tracker** — mantra japa, parayana en meditatie bijhouden; gepersonaliseerde routines, streaks, doelen en analytics
-- **Encyclopedie** — MDX-artikelen over Sanatana Dharma met zoekfunctie
+- **Encyclopedie** — 273 MDX-artikelen over Sanatana Dharma met zoekfunctie en sticky inhoudsopgave per artikel
 - **Weermodule** — vijfdaagse prognose, interactieve kaart, luchtkwaliteit en astronomische tijden
 - iCal export — abonneer op de kalender vanuit Google Calendar, Apple Calendar etc.
 - Categorisatie per godheid (Ganesha, Shiva, Krishna, etc.)
@@ -66,6 +66,7 @@ npm run dev
 |-----------|-----------|--------------|
 | `DATABASE_URL` | Ja | PostgreSQL connection string |
 | `NODE_ENV` | Nee | `development` / `production` |
+| `OPENWEATHER_API_KEY` | Nee | OpenWeatherMap API key — weermodule uitgeschakeld zonder |
 | `POSTGRES_USER` | Docker | Database gebruiker |
 | `POSTGRES_PASSWORD` | Docker | Database wachtwoord |
 | `POSTGRES_DB` | Docker | Database naam |
@@ -204,17 +205,19 @@ sanatana-kalender/
 │   ├── components/
 │   │   ├── almanac/         # MonthGrid, DayDetailsPanel, AlmanacFilters, MoonPhasesTimeline
 │   │   ├── calendar/        # DharmaCalendar, EventDetailModal
+│   │   ├── encyclopedia/    # EncyclopediaOverview, TableOfContents, category-config
 │   │   ├── events/          # EventCard, EventForm
 │   │   ├── sadhana/         # SadhanaTracker + tabs (tracker, dashboard, analytics, instellingen)
 │   │   ├── weather/         # 16 componenten: CurrentWeatherCard, TemperatureChart, WeatherMap, ...
 │   │   └── ui/              # TodayHero, MoonPhase, gedeelde componenten
 │   ├── config/              # Configuratie (events, categorieën, thema's)
-│   ├── engine/              # Pure recurrence helpers (geen DB, unit-testbaar)
+│   ├── content/
+│   │   └── encyclopedia/    # 273 MDX-artikelen (Devatās, Astronomie, Tijd, Speciale dagen, ...)
+│   ├── engine/              # Swiss Ephemeris engine + pure recurrence helpers (geen DB, unit-testbaar)
 │   ├── hooks/               # useSadhanaData, useWeather, useFilters, useFetch, useDebounce
-│   ├── lib/                 # Utilities + api-response helpers + validations
+│   ├── lib/                 # Utilities, api-response helpers, validations, mdx-headings
 │   ├── repositories/        # Data access layer: event, sadhana, category, daily-info, preference
 │   ├── scripts/             # TypeScript scripts (seed, generate, check)
-│   ├── server/panchanga/    # Swiss Ephemeris engine + services
 │   ├── services/            # Business logic: panchanga, recurrence, event, sadhana, weather, sadhana-formatters
 │   ├── styles/              # Tailwind v4 native theme CSS modules
 │   └── types/               # TypeScript types
@@ -280,4 +283,4 @@ Private project — Alle rechten voorbehouden.
 
 ---
 
-**Versie:** 0.10.0 | **Laatst bijgewerkt:** 24 april 2026
+**Versie:** 0.10.0 | **Laatst bijgewerkt:** 12 mei 2026
