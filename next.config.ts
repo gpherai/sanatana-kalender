@@ -29,7 +29,7 @@ const securityHeaders = [
   // Controls browser features like camera, microphone, geolocation
   {
     key: "Permissions-Policy",
-    value: "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+    value: "camera=(), microphone=(), geolocation=()",
   },
   // Enforces HTTPS (only enable if you have SSL configured)
   // Uncomment in production when behind a reverse proxy with SSL:

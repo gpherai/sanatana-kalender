@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import {
   errorResponse,
   notFoundError,
@@ -17,7 +17,7 @@ import { Prisma } from "@prisma/client";
 
 type Params = { params: Promise<{ id: string }> };
 
-export async function PATCH(req: Request, { params }: Params) {
+export async function PATCH(req: NextRequest, { params }: Params) {
   try {
     const { id } = await params;
     if (!cuidSchema.safeParse(id).success)
@@ -52,7 +52,7 @@ export async function PATCH(req: Request, { params }: Params) {
   }
 }
 
-export async function DELETE(_req: Request, { params }: Params) {
+export async function DELETE(_req: NextRequest, { params }: Params) {
   try {
     const { id } = await params;
     if (!cuidSchema.safeParse(id).success)

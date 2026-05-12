@@ -96,7 +96,7 @@ export default function RootLayout({
         {/* Theme initialization script - runs before paint to prevent flash */}
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
-      <body className="app-body font-sans antialiased">
+      <body className="app-body antialiased">
         <ThemeProvider>
           <ToastProvider>
             <a

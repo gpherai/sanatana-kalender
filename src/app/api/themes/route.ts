@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { THEME_CATALOG } from "@/config/themes";
 
+export const dynamic = "force-static";
+
 /**
  * GET /api/themes
  *

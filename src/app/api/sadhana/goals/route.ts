@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import {
   createSadhanaGoal,
   getGoalsWithProgress,
@@ -23,7 +23,7 @@ export async function GET() {
   }
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const bodyResult = await parseJsonBody(req);
     if (!bodyResult.ok) return bodyResult.response;
