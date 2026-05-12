@@ -33,9 +33,10 @@ export function MoonPhasesTimeline({
         Maanfases in {MONTHS_LONG[month]}
       </h3>
       <div className="flex flex-wrap items-center justify-center gap-6">
-        {moonPhases.map((phase, index) => (
+        {moonPhases.map((phase) => (
           <button
-            key={`${phase.type}-${index}`}
+            key={phase.date.toISOString()}
+            type="button"
             onClick={() => onSelectDate(phase.date)}
             className={cn(
               "hover:bg-theme-surface-hover focus-visible:ring-theme-primary flex flex-col items-center rounded-lg p-2 transition-colors focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none",
@@ -48,7 +49,7 @@ export function MoonPhasesTimeline({
             </span>
             <span className="text-theme-fg mt-1 text-xs font-medium">{phase.name}</span>
             <span className="text-theme-fg-muted text-xs">
-              {phase.date.getDate()} {MONTHS_SHORT[month]}
+              {phase.date.getDate()} {MONTHS_SHORT[phase.date.getMonth()]}
             </span>
           </button>
         ))}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Plus, Trash2, Loader2, Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type {
@@ -55,14 +55,25 @@ export function SessionForm({
   const [startedAt, setStartedAt] = useState(initial?.startedAt ?? "");
   const [duration, setDuration] = useState(initial?.duration ?? "");
   const [notes, setNotes] = useState(initial?.notes ?? "");
-  const [items, setItems] = useState<FormItem[]>(initial?.items ?? [defaultItem]);
+  type KeyedItem = { key: string; item: FormItem };
+  const keyCounter = useRef(0);
+  const [keyedItems, setKeyedItems] = useState<KeyedItem[]>(() =>
+    (initial?.items ?? [defaultItem]).map((item, i) => ({ key: String(i), item }))
+  );
+  const items = keyedItems.map((k) => k.item);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const addItem = () => setItems((p) => [...p, { ...defaultItem }]);
-  const removeItem = (i: number) => setItems((p) => p.filter((_, idx) => idx !== i));
+  const addItem = () =>
+    setKeyedItems((p) => [
+      ...p,
+      { key: `add-${++keyCounter.current}`, item: { ...defaultItem } },
+    ]);
+  const removeItem = (i: number) => setKeyedItems((p) => p.filter((_, idx) => idx !== i));
   const updateItem = (i: number, patch: Partial<FormItem>) =>
-    setItems((p) => p.map((item, idx) => (idx === i ? { ...item, ...patch } : item)));
+    setKeyedItems((p) =>
+      p.map((ki, idx) => (idx === i ? { ...ki, item: { ...ki.item, ...patch } } : ki))
+    );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -143,11 +154,14 @@ export function SessionForm({
                 key={r.id}
                 type="button"
                 onClick={() =>
-                  setItems(
-                    r.items.map((i) => ({
-                      practiceId: i.practiceId,
-                      quantity: String(i.quantity),
-                      unit: i.unit,
+                  setKeyedItems(
+                    r.items.map((i, idx) => ({
+                      key: `routine-${++keyCounter.current}-${idx}`,
+                      item: {
+                        practiceId: i.practiceId,
+                        quantity: String(i.quantity),
+                        unit: i.unit,
+                      },
                     }))
                   )
                 }
@@ -164,10 +178,10 @@ export function SessionForm({
         <label className="text-theme-fg-secondary text-xs font-medium">
           Beoefeningen
         </label>
-        {items.map((item, i) => {
+        {keyedItems.map(({ key, item }, i) => {
           const practice = practices.find((p) => p.id === item.practiceId);
           return (
-            <div key={i} className="bg-theme-surface space-y-2 rounded-xl p-3">
+            <div key={key} className="bg-theme-surface space-y-2 rounded-xl p-3">
               <div className="flex items-center gap-2">
                 <select
                   value={item.practiceId}

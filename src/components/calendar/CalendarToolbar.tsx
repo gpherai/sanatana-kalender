@@ -28,6 +28,7 @@ export function CalendarToolbar({
       {/* Navigation */}
       <div className="flex items-center gap-2">
         <button
+          type="button"
           onClick={goToToday}
           className={cn(
             "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium",
@@ -41,6 +42,7 @@ export function CalendarToolbar({
 
         <div className="flex items-center">
           <button
+            type="button"
             onClick={goToBack}
             className={cn("rounded-lg p-3", "hover:bg-theme-hover", "transition-colors")}
             aria-label="Vorige"
@@ -48,6 +50,7 @@ export function CalendarToolbar({
             <ChevronLeft className="text-theme-fg-secondary h-5 w-5" />
           </button>
           <button
+            type="button"
             onClick={goToNext}
             className={cn("rounded-lg p-3", "hover:bg-theme-hover", "transition-colors")}
             aria-label="Volgende"
@@ -68,6 +71,7 @@ export function CalendarToolbar({
           {viewButtons.map(({ key, label }) => (
             <button
               key={key}
+              type="button"
               onClick={() => onView(key)}
               className={cn(
                 "rounded-md px-3 py-1 text-sm font-medium transition-colors",

@@ -50,6 +50,11 @@ function getRelativeDateLabel(date: Date): string | null {
   return formatRelativeDate(date);
 }
 
+interface EventRelations {
+  parentEvents: { id: string; name: string }[];
+  childEvents: { id: string; name: string; dayNumber?: number | null }[];
+}
+
 export function EventDetailModal({
   event,
   isOpen,
@@ -69,10 +74,6 @@ export function EventDetailModal({
     onClose,
     stateKey: "event-detail-modal",
   });
-  interface EventRelations {
-    parentEvents: { id: string; name: string }[];
-    childEvents: { id: string; name: string; dayNumber?: number | null }[];
-  }
   const { data: eventRelationsData, loading: relationsLoading } =
     useFetch<EventRelations>(isOpen ? `/api/events/${event.eventId}` : null);
   const { data: dayInfo, loading: dayInfoLoading } = useFetch<DailyInfoResponse>(
@@ -179,7 +180,7 @@ export function EventDetailModal({
       requestClose(() => onDeleted?.());
     } catch (error) {
       logError("Failed to delete occurrence", error);
-      showError("Kon occurrence niet verwijderen");
+      showError("Kon deze herhaling niet verwijderen");
     } finally {
       setIsDeleting(false);
       setShowDeleteConfirm(false);

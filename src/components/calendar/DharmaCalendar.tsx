@@ -125,11 +125,11 @@ export function DharmaCalendar() {
   }, []);
 
   // Build URL for current month range (with ±1 month buffer for multi-day events)
-  const eventsUrl = (() => {
+  const eventsUrl = useMemo(() => {
     const start = startOfMonth(addMonths(currentDate, -1));
     const end = endOfMonth(addMonths(currentDate, 1));
     return `/api/events?start=${formatDateLocal(start)}&end=${formatDateLocal(end)}`;
-  })();
+  }, [currentDate]);
 
   // Daily-info for the full calendar grid (including overflow days from adjacent months)
   const dailyInfoUrl = useMemo(() => {
@@ -327,7 +327,7 @@ export function DharmaCalendar() {
       {selectedEvent && (
         <EventDetailModal
           event={selectedEvent}
-          isOpen={!!selectedEvent}
+          isOpen
           onClose={handleCloseModal}
           onDeleted={refetch}
         />

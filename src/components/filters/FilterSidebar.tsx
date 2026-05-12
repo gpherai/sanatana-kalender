@@ -46,6 +46,7 @@ function FilterSection({
   return (
     <div className="border-theme-border mb-4 border-b pb-4 last:mb-0 last:border-0 last:pb-0">
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="hover:text-theme-primary text-theme-fg-secondary mb-2 flex w-full cursor-pointer items-center justify-between text-left font-medium transition-colors"
       >
@@ -161,6 +162,7 @@ function SearchInput({
       />
       {value && (
         <button
+          type="button"
           onClick={handleClear}
           className="text-theme-fg-subtle hover:text-theme-fg-secondary absolute top-1/2 right-3 -translate-y-1/2"
         >
@@ -213,6 +215,7 @@ export function FilterSidebar({
         </h2>
         {activeFilterCount > 0 && (
           <button
+            type="button"
             onClick={onClearFilters}
             className="hover:text-theme-primary text-theme-fg-muted flex items-center gap-1 text-xs transition-colors"
           >
@@ -265,6 +268,7 @@ export function FilterSidebar({
             />
             {(filters.dateFrom || filters.dateTo) && (
               <button
+                type="button"
                 onClick={() => {
                   onFilterChange("dateFrom", "");
                   onFilterChange("dateTo", "");

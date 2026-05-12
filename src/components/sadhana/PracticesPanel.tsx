@@ -134,6 +134,7 @@ export function PracticesPanel({
         <div className="flex items-center gap-2">
           {inactivePracticeCount > 0 && (
             <button
+              type="button"
               onClick={() => setShowInactive((v) => !v)}
               className="text-theme-fg-muted hover:text-theme-fg focus-visible:ring-theme-primary min-h-[44px] cursor-pointer rounded text-xs transition-colors focus-visible:ring-2 focus-visible:outline-none"
             >
@@ -143,6 +144,7 @@ export function PracticesPanel({
             </button>
           )}
           <button
+            type="button"
             onClick={() => setShowAdd((v) => !v)}
             className="bg-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1 rounded-lg px-3 py-2 text-xs font-medium text-white hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none"
           >
@@ -295,12 +297,14 @@ export function PracticesPanel({
               />
               <div className="flex justify-end gap-2">
                 <button
+                  type="button"
                   onClick={() => setEditingId(null)}
                   className="text-theme-fg-secondary hover:text-theme-fg focus-visible:ring-theme-primary min-h-[44px] cursor-pointer rounded text-sm focus-visible:ring-2 focus-visible:outline-none"
                 >
                   Annuleren
                 </button>
                 <button
+                  type="button"
                   onClick={() => handleSave(p.id)}
                   disabled={saving}
                   className="bg-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm text-white hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
@@ -332,6 +336,7 @@ export function PracticesPanel({
               </div>
               <div className="flex shrink-0 items-center gap-1">
                 <button
+                  type="button"
                   onClick={() => startEdit(p)}
                   className="text-theme-fg-muted hover:text-theme-primary focus-visible:ring-theme-primary flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors focus-visible:ring-2 focus-visible:outline-none"
                   aria-label={`${p.name} bewerken`}
@@ -340,6 +345,7 @@ export function PracticesPanel({
                   <Pencil className="h-3.5 w-3.5" />
                 </button>
                 <button
+                  type="button"
                   onClick={() => handleToggle(p)}
                   className="text-theme-fg-muted hover:text-theme-primary focus-visible:ring-theme-primary flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors focus-visible:ring-2 focus-visible:outline-none"
                   aria-label={p.active ? `${p.name} deactiveren` : `${p.name} activeren`}
@@ -354,6 +360,7 @@ export function PracticesPanel({
                 {confirmDeleteId === p.id ? (
                   <>
                     <button
+                      type="button"
                       onClick={() => handleDelete(p.id)}
                       className="text-theme-error flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors hover:opacity-70 focus-visible:ring-2 focus-visible:ring-[var(--theme-error-fg)] focus-visible:outline-none"
                       aria-label="Verwijderen bevestigen"
@@ -362,6 +369,7 @@ export function PracticesPanel({
                       <Check className="h-3.5 w-3.5" />
                     </button>
                     <button
+                      type="button"
                       onClick={() => setConfirmDeleteId(null)}
                       className="text-theme-fg-muted hover:text-theme-fg focus-visible:ring-theme-primary flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors focus-visible:ring-2 focus-visible:outline-none"
                       aria-label="Annuleren"
@@ -371,6 +379,7 @@ export function PracticesPanel({
                   </>
                 ) : (
                   <button
+                    type="button"
                     onClick={() => setConfirmDeleteId(p.id)}
                     className="text-theme-fg-muted hover:text-theme-error flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors focus-visible:ring-2 focus-visible:ring-[var(--theme-error-fg)] focus-visible:outline-none"
                     aria-label={`${p.name} verwijderen`}

@@ -76,7 +76,7 @@ export function LocationSection({
           </h3>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <div className="flex items-center gap-2">
-              <Sun className="h-5 w-5 text-amber-500" />
+              <Sun className="text-theme-icon-mode-sun h-5 w-5" />
               <div>
                 <div className="text-theme-fg-muted text-xs">Zonsopgang</div>
                 <div className="text-theme-fg font-medium">
@@ -85,21 +85,21 @@ export function LocationSection({
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Sun className="h-5 w-5 text-orange-500" />
+              <Sun className="text-theme-icon-mode-sun h-5 w-5 opacity-75" />
               <div>
                 <div className="text-theme-fg-muted text-xs">Zonsondergang</div>
                 <div className="text-theme-fg font-medium">{dailyInfo.sunset ?? "-"}</div>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Moon className="h-5 w-5 text-indigo-500" />
+              <Moon className="text-theme-icon-mode-moon h-5 w-5" />
               <div>
                 <div className="text-theme-fg-muted text-xs">Maanfase</div>
                 <div className="text-theme-fg font-medium">{dailyInfo.moonPhaseName}</div>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Moon className="h-5 w-5 text-purple-500" />
+              <Moon className="text-theme-icon-mode-moon h-5 w-5 opacity-75" />
               <div>
                 <div className="text-theme-fg-muted text-xs">Verlicht</div>
                 <div className="text-theme-fg font-medium">

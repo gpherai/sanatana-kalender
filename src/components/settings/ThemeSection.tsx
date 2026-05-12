@@ -30,6 +30,93 @@ const COLOR_MODE_OPTIONS: ReadonlyArray<{
 ];
 
 // =============================================================================
+// SUB-COMPONENTS
+// =============================================================================
+
+function ThemeCard({
+  theme,
+  isSelected,
+  onSelect,
+}: {
+  theme: ThemeOption;
+  isSelected: boolean;
+  onSelect: () => void;
+}) {
+  const isSpecial = theme.category === "special";
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      className={cn(
+        "relative rounded-xl border-2 p-4 text-left transition-all",
+        isSpecial
+          ? isSelected
+            ? "border-amber-500 bg-gradient-to-br from-amber-500/10 to-orange-500/10 shadow-lg ring-2 ring-amber-500/30"
+            : "border-theme-border hover:border-amber-500/50 hover:shadow-md hover:shadow-amber-500/10"
+          : cn(
+              "theme-interactive theme-focus-ring",
+              isSelected
+                ? "theme-interactive-selected"
+                : "border-theme-border hover:border-theme-border-strong hover:shadow-md"
+            )
+      )}
+    >
+      {isSelected && (
+        <div
+          className={cn(
+            "absolute top-2 right-2 rounded-full p-1 text-white",
+            isSpecial
+              ? "bg-gradient-to-r from-amber-500 to-orange-500 shadow-lg"
+              : "bg-theme-primary"
+          )}
+        >
+          <Check className="h-3 w-3" />
+        </div>
+      )}
+
+      {theme.category === "revamped" && (
+        <div className="absolute top-2 left-2">
+          <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-br from-white/20 to-white/5 px-2 py-0.5 text-[10px] font-medium text-white/90 ring-1 ring-white/20 backdrop-blur-sm">
+            🎨 Gradient
+          </span>
+        </div>
+      )}
+
+      <div
+        className={cn("flex gap-2", theme.category === "revamped" ? "mt-6 mb-3" : "mb-3")}
+      >
+        {(["primary", "secondary", "accent"] as const).map((color) => (
+          <div
+            key={color}
+            className="h-8 w-8 rounded-full shadow-inner ring-1 ring-black/10"
+            style={{ backgroundColor: theme.colors[color] }}
+          />
+        ))}
+      </div>
+
+      <h3 className="text-theme-fg font-medium">{theme.displayName}</h3>
+      <p className="text-theme-fg-muted mt-1 text-xs">{theme.description}</p>
+
+      {theme.isDefault && (
+        <div className="mt-2">
+          <span className="bg-theme-surface-raised text-theme-fg-secondary inline-block rounded-full px-2 py-0.5 text-xs">
+            Standaard
+          </span>
+        </div>
+      )}
+
+      {isSpecial && (
+        <div className="mt-2">
+          <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-2 py-0.5 text-xs font-medium text-white shadow-sm">
+            ✨ Speciaal
+          </span>
+        </div>
+      )}
+    </button>
+  );
+}
+
+// =============================================================================
 // COMPONENT
 // =============================================================================
 
@@ -82,223 +169,85 @@ export function ThemeSection({
         )}
       </div>
 
-      {/* Theme Grid - CATEGORIZED */}
+      {/* Theme Grid */}
       <div className="space-y-8">
-        {/* Classic Themes Section */}
-        {(() => {
-          const classicThemes = themes.filter((t) => t.category === "classic");
-          if (classicThemes.length === 0) return null;
-
-          return (
-            <div>
-              <div className="mb-4 flex items-center gap-2">
-                <div className="bg-theme-border h-px flex-1"></div>
-                <h3 className="text-theme-fg-muted text-sm font-semibold tracking-wider uppercase">
-                  Classic Themes
-                </h3>
-                <div className="bg-theme-border h-px flex-1"></div>
-              </div>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {classicThemes.map((theme) => {
-                  const isSelected = themeName === theme.name;
-                  return (
-                    <button
-                      key={theme.name}
-                      type="button"
-                      onClick={() => onThemeChange(theme.name)}
-                      className={cn(
-                        "theme-interactive theme-focus-ring relative rounded-xl border-2 p-4 text-left",
-                        isSelected
-                          ? "theme-interactive-selected"
-                          : "border-theme-border hover:border-theme-border-strong hover:shadow-md"
-                      )}
-                    >
-                      {isSelected && (
-                        <div className="bg-theme-primary absolute top-2 right-2 rounded-full p-1 text-white">
-                          <Check className="h-3 w-3" />
-                        </div>
-                      )}
-
-                      {/* Color preview circles */}
-                      <div className="mb-3 flex gap-2">
-                        <div
-                          className="h-8 w-8 rounded-full shadow-inner ring-1 ring-black/10"
-                          style={{ backgroundColor: theme.colors.primary }}
-                        />
-                        <div
-                          className="h-8 w-8 rounded-full shadow-inner ring-1 ring-black/10"
-                          style={{ backgroundColor: theme.colors.secondary }}
-                        />
-                        <div
-                          className="h-8 w-8 rounded-full shadow-inner ring-1 ring-black/10"
-                          style={{ backgroundColor: theme.colors.accent }}
-                        />
-                      </div>
-
-                      <h3 className="text-theme-fg font-medium">{theme.displayName}</h3>
-                      <p className="text-theme-fg-muted mt-1 text-xs">
-                        {theme.description}
-                      </p>
-
-                      {theme.isDefault && (
-                        <div className="mt-2">
-                          <span className="bg-theme-surface-raised text-theme-fg-secondary inline-block rounded-full px-2 py-0.5 text-xs">
-                            Standaard
-                          </span>
-                        </div>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
+        {themes.some((t) => t.category === "classic") && (
+          <div>
+            <div className="mb-4 flex items-center gap-2">
+              <div className="bg-theme-border h-px flex-1" />
+              <h3 className="text-theme-fg-muted text-sm font-semibold tracking-wider uppercase">
+                Klassieke thema&apos;s
+              </h3>
+              <div className="bg-theme-border h-px flex-1" />
             </div>
-          );
-        })()}
-
-        {/* Revamped Themes Section */}
-        {(() => {
-          const revampedThemes = themes.filter((t) => t.category === "revamped");
-          if (revampedThemes.length === 0) return null;
-
-          return (
-            <div>
-              <div className="mb-4 flex items-center gap-2">
-                <div className="bg-theme-border h-px flex-1"></div>
-                <h3 className="text-theme-fg-muted flex items-center gap-1.5 text-sm font-semibold tracking-wider uppercase">
-                  <span className="text-base">✨</span> Revamped Themes
-                </h3>
-                <div className="bg-theme-border h-px flex-1"></div>
-              </div>
-              <p className="text-theme-fg-muted mb-4 text-center text-xs">
-                Enhanced with subtle gradient backgrounds
-              </p>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {revampedThemes.map((theme) => {
-                  const isSelected = themeName === theme.name;
-                  return (
-                    <button
-                      key={theme.name}
-                      type="button"
-                      onClick={() => onThemeChange(theme.name)}
-                      className={cn(
-                        "theme-interactive theme-focus-ring relative rounded-xl border-2 p-4 text-left",
-                        isSelected
-                          ? "theme-interactive-selected"
-                          : "border-theme-border hover:border-theme-border-strong hover:shadow-md"
-                      )}
-                    >
-                      {isSelected && (
-                        <div className="bg-theme-primary absolute top-2 right-2 rounded-full p-1 text-white">
-                          <Check className="h-3 w-3" />
-                        </div>
-                      )}
-
-                      {/* Gradient preview badge */}
-                      <div className="absolute top-2 left-2">
-                        <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-br from-white/20 to-white/5 px-2 py-0.5 text-[10px] font-medium text-white/90 ring-1 ring-white/20 backdrop-blur-sm">
-                          🎨 Gradient
-                        </span>
-                      </div>
-
-                      {/* Color preview circles */}
-                      <div className="mt-6 mb-3 flex gap-2">
-                        <div
-                          className="h-8 w-8 rounded-full shadow-inner ring-1 ring-black/10"
-                          style={{ backgroundColor: theme.colors.primary }}
-                        />
-                        <div
-                          className="h-8 w-8 rounded-full shadow-inner ring-1 ring-black/10"
-                          style={{ backgroundColor: theme.colors.secondary }}
-                        />
-                        <div
-                          className="h-8 w-8 rounded-full shadow-inner ring-1 ring-black/10"
-                          style={{ backgroundColor: theme.colors.accent }}
-                        />
-                      </div>
-
-                      <h3 className="text-theme-fg font-medium">{theme.displayName}</h3>
-                      <p className="text-theme-fg-muted mt-1 text-xs">
-                        {theme.description}
-                      </p>
-                    </button>
-                  );
-                })}
-              </div>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {themes
+                .filter((t) => t.category === "classic")
+                .map((theme) => (
+                  <ThemeCard
+                    key={theme.name}
+                    theme={theme}
+                    isSelected={themeName === theme.name}
+                    onSelect={() => onThemeChange(theme.name)}
+                  />
+                ))}
             </div>
-          );
-        })()}
+          </div>
+        )}
 
-        {/* Special Themes Section */}
-        {(() => {
-          const specialThemes = themes.filter((t) => t.category === "special");
-          if (specialThemes.length === 0) return null;
-
-          return (
-            <div>
-              <div className="mb-4 flex items-center gap-2">
-                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-amber-500/30 to-transparent"></div>
-                <h3 className="flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-sm font-semibold tracking-wider text-transparent uppercase">
-                  <span className="text-base">✨</span> Special Themes
-                </h3>
-                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-amber-500/30 to-transparent"></div>
-              </div>
-              <p className="text-theme-fg-muted mb-4 text-center text-xs">
-                Premium themes with enhanced visual effects
-              </p>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {specialThemes.map((theme) => {
-                  const isSelected = themeName === theme.name;
-                  return (
-                    <button
-                      key={theme.name}
-                      type="button"
-                      onClick={() => onThemeChange(theme.name)}
-                      className={cn(
-                        "relative rounded-xl border-2 p-4 text-left transition-all",
-                        isSelected
-                          ? "border-amber-500 bg-gradient-to-br from-amber-500/10 to-orange-500/10 shadow-lg ring-2 ring-amber-500/30"
-                          : "border-theme-border hover:border-amber-500/50 hover:shadow-md hover:shadow-amber-500/10"
-                      )}
-                    >
-                      {isSelected && (
-                        <div className="absolute top-2 right-2 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 p-1 text-white shadow-lg">
-                          <Check className="h-3 w-3" />
-                        </div>
-                      )}
-
-                      {/* Color preview circles */}
-                      <div className="mb-3 flex gap-2">
-                        <div
-                          className="h-8 w-8 rounded-full shadow-inner ring-1 ring-black/10"
-                          style={{ backgroundColor: theme.colors.primary }}
-                        />
-                        <div
-                          className="h-8 w-8 rounded-full shadow-inner ring-1 ring-black/10"
-                          style={{ backgroundColor: theme.colors.secondary }}
-                        />
-                        <div
-                          className="h-8 w-8 rounded-full shadow-inner ring-1 ring-black/10"
-                          style={{ backgroundColor: theme.colors.accent }}
-                        />
-                      </div>
-
-                      <h3 className="text-theme-fg font-medium">{theme.displayName}</h3>
-                      <p className="text-theme-fg-muted mt-1 text-xs">
-                        {theme.description}
-                      </p>
-
-                      <div className="mt-2">
-                        <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-2 py-0.5 text-xs font-medium text-white shadow-sm">
-                          ✨ Special
-                        </span>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
+        {themes.some((t) => t.category === "revamped") && (
+          <div>
+            <div className="mb-4 flex items-center gap-2">
+              <div className="bg-theme-border h-px flex-1" />
+              <h3 className="text-theme-fg-muted flex items-center gap-1.5 text-sm font-semibold tracking-wider uppercase">
+                <span className="text-base">✨</span> Vernieuwde thema&apos;s
+              </h3>
+              <div className="bg-theme-border h-px flex-1" />
             </div>
-          );
-        })()}
+            <p className="text-theme-fg-muted mb-4 text-center text-xs">
+              Met subtiele verloopachtergronden
+            </p>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {themes
+                .filter((t) => t.category === "revamped")
+                .map((theme) => (
+                  <ThemeCard
+                    key={theme.name}
+                    theme={theme}
+                    isSelected={themeName === theme.name}
+                    onSelect={() => onThemeChange(theme.name)}
+                  />
+                ))}
+            </div>
+          </div>
+        )}
+
+        {themes.some((t) => t.category === "special") && (
+          <div>
+            <div className="mb-4 flex items-center gap-2">
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
+              <h3 className="flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-sm font-semibold tracking-wider text-transparent uppercase">
+                <span className="text-base">✨</span> Speciale thema&apos;s
+              </h3>
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
+            </div>
+            <p className="text-theme-fg-muted mb-4 text-center text-xs">
+              Premium thema&apos;s met verbeterde visuele effecten
+            </p>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {themes
+                .filter((t) => t.category === "special")
+                .map((theme) => (
+                  <ThemeCard
+                    key={theme.name}
+                    theme={theme}
+                    isSelected={themeName === theme.name}
+                    onSelect={() => onThemeChange(theme.name)}
+                  />
+                ))}
+            </div>
+          </div>
+        )}
       </div>
     </Section>
   );

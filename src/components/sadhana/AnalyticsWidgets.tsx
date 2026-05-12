@@ -57,6 +57,7 @@ export function WeekdayPattern({ sessions }: { sessions: SessionData[] }) {
           {(["sessions", "malas"] as const).map((m) => (
             <button
               key={m}
+              type="button"
               onClick={() => setMetric(m)}
               className={[
                 "cursor-pointer rounded-full px-3 py-1.5 text-[10px] font-medium transition-colors",

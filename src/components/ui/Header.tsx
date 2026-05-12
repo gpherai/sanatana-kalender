@@ -68,7 +68,6 @@ export function Header() {
                   <Link
                     key={href}
                     href={href}
-                    aria-label={label}
                     aria-current={isActive ? "page" : undefined}
                     className={cn(
                       "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-all",
@@ -77,8 +76,9 @@ export function Header() {
                         : "text-theme-fg-secondary hover:bg-theme-hover hover:text-theme-fg"
                     )}
                   >
-                    <Icon className="h-4 w-4" />
+                    <Icon className="h-4 w-4" aria-hidden="true" />
                     <span className="hidden lg:inline">{label}</span>
+                    <span className="sr-only lg:hidden">{label}</span>
                   </Link>
                 );
               })}

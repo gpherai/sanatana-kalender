@@ -77,6 +77,7 @@ export function MonthGrid({
           return (
             <button
               key={dateStr}
+              type="button"
               onClick={() => onSelectDate(date)}
               style={{ touchAction: "manipulation" }}
               className={cn(

@@ -72,7 +72,7 @@ export function ColorModeToggle({ className }: ColorModeToggleProps) {
         "focus-visible:ring-theme-primary focus-visible:ring-2 focus-visible:outline-none",
         className
       )}
-      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      aria-label={isDark ? "Schakel naar lichte modus" : "Schakel naar donkere modus"}
       title={isDark ? "Lichte modus" : "Donkere modus"}
     >
       {isDark ? (

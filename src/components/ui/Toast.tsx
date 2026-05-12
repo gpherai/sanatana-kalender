@@ -1,6 +1,14 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+  ReactNode,
+} from "react";
 import { X, CheckCircle, AlertCircle, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -52,8 +60,18 @@ interface ToastProviderProps {
 
 export function ToastProvider({ children }: ToastProviderProps) {
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const timersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+
+  useEffect(() => {
+    const timers = timersRef.current;
+    return () => {
+      timers.forEach((id) => clearTimeout(id));
+      timers.clear();
+    };
+  }, []);
 
   const removeToast = useCallback((id: string) => {
+    timersRef.current.delete(id);
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
@@ -62,10 +80,10 @@ export function ToastProvider({ children }: ToastProviderProps) {
       const id = Math.random().toString(36).substring(2, 9);
       setToasts((prev) => [...prev, { id, message, type }]);
 
-      // Auto remove after configured duration
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         removeToast(id);
       }, TOAST_DURATION_MS);
+      timersRef.current.set(id, timer);
     },
     [removeToast]
   );
@@ -146,6 +164,7 @@ function ToastItem({ toast, onRemove }: ToastItemProps) {
       <Icon className={cn("h-5 w-5 flex-shrink-0", iconStyles[toast.type])} />
       <p className="flex-1 text-sm font-medium">{toast.message}</p>
       <button
+        type="button"
         onClick={() => onRemove(toast.id)}
         className="hover:bg-theme-surface-hover focus-visible:ring-theme-primary rounded p-1 transition-colors focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none"
         aria-label="Sluiten"

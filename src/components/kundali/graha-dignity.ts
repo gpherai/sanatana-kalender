@@ -88,42 +88,6 @@ export const DIGNITY_LABEL: Record<NonNullable<Dignity>, string> = {
   swarashi: "Swarashi",
 };
 
-// =============================================================================
-// GRAHA DISPLAY CONFIG
-// =============================================================================
-
-import type { GrahaKey } from "@/engine/panchanga/types";
-
-export const GRAHA_ORDER: GrahaKey[] = [
-  "surya",
-  "chandra",
-  "mangala",
-  "budha",
-  "guru",
-  "shukra",
-  "shani",
-  "rahu",
-  "ketu",
-  "uranus",
-  "neptune",
-  "pluto",
-];
-
-export const GRAHA_SYMBOL: Record<GrahaKey, string> = {
-  surya: "☉",
-  chandra: "☽",
-  mangala: "♂",
-  budha: "☿",
-  guru: "♃",
-  shukra: "♀",
-  shani: "♄",
-  rahu: "☊",
-  ketu: "☋",
-  uranus: "♅",
-  neptune: "♆",
-  pluto: "♇",
-};
-
 export const DIGNITY_STYLE: Record<NonNullable<Dignity>, string> = {
   uchcha: "bg-amber-500/15 text-amber-600 dark:text-amber-400",
   neecha: "bg-red-500/15 text-red-600 dark:text-red-400",

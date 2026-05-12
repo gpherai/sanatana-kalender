@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useToast } from "@/components/ui/Toast";
 import { useSearchParams } from "next/navigation";
 import {
   Flame,
@@ -44,6 +45,7 @@ export function SadhanaTracker({ initialData }: { initialData?: SadhanaInitialDa
   const searchParams = useSearchParams();
   const rawTab = searchParams.get("tab") ?? "tracker";
   const activeTab: TabId = VALID_TABS.has(rawTab) ? (rawTab as TabId) : "tracker";
+  const { success: toastSuccess } = useToast();
 
   const setTab = useCallback(
     (id: TabId) => window.history.replaceState(null, "", `/sadhana?tab=${id}`),
@@ -74,8 +76,6 @@ export function SadhanaTracker({ initialData }: { initialData?: SadhanaInitialDa
   const [expandedMonths, setExpandedMonths] = useState<Set<string>>(
     () => new Set([todayString().slice(0, 7)])
   );
-  const [toast, setToast] = useState<string | null>(null);
-  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const prevGoalProgressRef = useRef<Map<string, number>>(new Map());
   const [selectedHeatmapEvent, setSelectedHeatmapEvent] = useState<CalendarEvent | null>(
     null
@@ -109,17 +109,16 @@ export function SadhanaTracker({ initialData }: { initialData?: SadhanaInitialDa
     }
     prevGoalProgressRef.current = newMap;
     if (hasNewCompletion) {
-      setToast("Doel bereikt!");
-      if (toastTimer.current) clearTimeout(toastTimer.current);
-      toastTimer.current = setTimeout(() => setToast(null), 3000);
+      toastSuccess("Doel bereikt!");
     }
-  }, [goals]);
+  }, [goals, toastSuccess]);
 
-  const showToast = useCallback((msg: string) => {
-    setToast(msg);
-    if (toastTimer.current) clearTimeout(toastTimer.current);
-    toastTimer.current = setTimeout(() => setToast(null), 2500);
-  }, []);
+  const showToast = useCallback(
+    (msg: string) => {
+      toastSuccess(msg);
+    },
+    [toastSuccess]
+  );
 
   const toggleMonth = useCallback((month: string) => {
     setExpandedMonths((prev) => {
@@ -154,6 +153,7 @@ export function SadhanaTracker({ initialData }: { initialData?: SadhanaInitialDa
       <div className="bg-theme-warning-subtle border-theme-warning rounded-2xl border p-6 text-center">
         <p className="text-theme-warning text-sm">{error}</p>
         <button
+          type="button"
           onClick={loadAll}
           className="text-theme-primary focus-visible:ring-theme-primary mt-3 inline-flex cursor-pointer items-center gap-2 rounded text-sm hover:opacity-70 focus-visible:ring-2 focus-visible:outline-none"
         >
@@ -179,6 +179,7 @@ export function SadhanaTracker({ initialData }: { initialData?: SadhanaInitialDa
           {TABS.map(({ id, label, Icon }) => (
             <button
               key={id}
+              type="button"
               onClick={() => setTab(id)}
               style={{ touchAction: "manipulation" }}
               className={cn(
@@ -248,12 +249,6 @@ export function SadhanaTracker({ initialData }: { initialData?: SadhanaInitialDa
           isOpen
           onClose={() => setSelectedHeatmapEvent(null)}
         />
-      )}
-
-      {toast && (
-        <div className="bg-theme-primary fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full px-5 py-2.5 text-sm font-medium text-white shadow-lg">
-          {toast}
-        </div>
       )}
     </div>
   );

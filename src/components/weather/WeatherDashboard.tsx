@@ -39,7 +39,7 @@ export function WeatherDashboard() {
     timezone_offset: timezoneOffset,
     air_quality: airQuality,
   } = weather;
-  // eslint-disable-next-line react-hooks/purity -- stable enough for local-day bucketing during a render pass
+  // eslint-disable-next-line react-hooks/purity -- Date.now() is stable enough for local-day bucketing during a render pass
   const nowUnix = Math.floor(Date.now() / 1000);
   const { today, todayHourlyInterp, futureItems, allMin, tempRange } =
     prepareWeatherDashboardData(weather, nowUnix);

@@ -22,6 +22,7 @@ import {
   useEffect,
   useState,
   useCallback,
+  useMemo,
   type ReactNode,
 } from "react";
 import {
@@ -216,31 +217,28 @@ export function ThemeProvider({
     });
   }, [systemColorMode]);
 
-  // Current theme data
-  const foundTheme = THEME_OPTIONS.find((t) => t.name === themeName);
-  const fallbackTheme = THEME_OPTIONS[0];
-  // Safety: THEME_OPTIONS is guaranteed to have at least one theme (defined in THEME_CATALOG)
-  const currentTheme: ThemeOption = foundTheme ??
-    fallbackTheme ?? {
-      name: DEFAULT_THEME_NAME,
-      displayName: "Default",
-      description: "",
-      colors: { primary: "", secondary: "", accent: "" },
-      isDefault: true,
-      category: "classic" as const,
+  const value = useMemo<ThemeContextValue>(() => {
+    const foundTheme = THEME_OPTIONS.find((t) => t.name === themeName);
+    const currentTheme: ThemeOption = foundTheme ??
+      THEME_OPTIONS[0] ?? {
+        name: DEFAULT_THEME_NAME,
+        displayName: "Default",
+        description: "",
+        colors: { primary: "", secondary: "", accent: "" },
+        isDefault: true,
+        category: "classic" as const,
+      };
+    return {
+      themeName,
+      colorMode,
+      resolvedColorMode,
+      setTheme,
+      setColorMode,
+      toggleColorMode,
+      themes: THEME_OPTIONS,
+      currentTheme,
     };
-
-  // Context value (stable reference via individual deps)
-  const value: ThemeContextValue = {
-    themeName,
-    colorMode,
-    resolvedColorMode,
-    setTheme,
-    setColorMode,
-    toggleColorMode,
-    themes: THEME_OPTIONS,
-    currentTheme,
-  };
+  }, [themeName, colorMode, resolvedColorMode, setTheme, setColorMode, toggleColorMode]);
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }

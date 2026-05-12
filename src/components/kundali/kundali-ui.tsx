@@ -2,16 +2,10 @@
 
 import { cn } from "@/lib/utils";
 import type { BirthChart, GrahaKey } from "@/engine/panchanga/types";
-import { RASHI_NAMES } from "./KundaliChart";
+import { RASHI_NAMES, GRAHA_ORDER, GRAHA_SYMBOL } from "./KundaliChart";
 import { navamshaDegree, navamshaRashi } from "./NavamshaChart";
 import { dashamshaDegree, dashamshaRashi } from "./DashamshaChart";
-import {
-  getGrahaDignity,
-  DIGNITY_LABEL,
-  GRAHA_ORDER,
-  GRAHA_SYMBOL,
-  DIGNITY_STYLE,
-} from "./graha-dignity";
+import { getGrahaDignity, DIGNITY_LABEL, DIGNITY_STYLE } from "./graha-dignity";
 
 export { GRAHA_ORDER };
 

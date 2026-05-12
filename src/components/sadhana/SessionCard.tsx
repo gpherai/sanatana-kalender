@@ -143,6 +143,7 @@ export function SessionCard({
       <div className="flex items-start gap-3">
         {/* Expand toggle */}
         <button
+          type="button"
           className="hover:bg-theme-hover focus-visible:ring-theme-primary -m-2 flex flex-1 cursor-pointer items-start gap-3 rounded-xl p-2 text-left transition-colors focus-visible:ring-2 focus-visible:outline-none"
           onClick={() => setOpen((v) => !v)}
         >
@@ -177,6 +178,7 @@ export function SessionCard({
         {/* Actions */}
         <div className="flex shrink-0 items-center gap-1">
           <button
+            type="button"
             onClick={() => setEditing(true)}
             className="text-theme-fg-muted hover:text-theme-primary focus-visible:ring-theme-primary flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors focus-visible:ring-2 focus-visible:outline-none"
             aria-label="Sessie bewerken"
@@ -187,6 +189,7 @@ export function SessionCard({
           {confirmDelete ? (
             <div className="flex items-center gap-1">
               <button
+                type="button"
                 onClick={handleDelete}
                 disabled={deleting}
                 className="text-theme-error flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors hover:opacity-70 focus-visible:ring-2 focus-visible:ring-[var(--theme-error-fg)] focus-visible:outline-none"
@@ -200,6 +203,7 @@ export function SessionCard({
                 )}
               </button>
               <button
+                type="button"
                 onClick={() => setConfirmDelete(false)}
                 className="text-theme-fg-muted hover:text-theme-fg focus-visible:ring-theme-primary flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors focus-visible:ring-2 focus-visible:outline-none"
                 aria-label="Annuleren"
@@ -209,6 +213,7 @@ export function SessionCard({
             </div>
           ) : (
             <button
+              type="button"
               onClick={() => setConfirmDelete(true)}
               className="text-theme-fg-muted hover:text-theme-error flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors focus-visible:ring-2 focus-visible:ring-[var(--theme-error-fg)] focus-visible:outline-none"
               aria-label="Sessie verwijderen"
