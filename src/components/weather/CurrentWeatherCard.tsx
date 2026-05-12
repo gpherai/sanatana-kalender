@@ -50,7 +50,7 @@ export function CurrentWeatherCard({ current: c, today }: CurrentWeatherCardProp
             alt={c.weather[0].description}
             width={80}
             height={80}
-            priority
+            preload
             className="-mt-3 -ml-3 shrink-0 drop-shadow-sm"
           />
         )}

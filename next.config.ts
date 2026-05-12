@@ -52,6 +52,7 @@ const securityHeaders = [
       "frame-ancestors 'self'",
       "form-action 'self'",
       "base-uri 'self'",
+      "object-src 'none'",
     ].join("; "),
   },
 ];
@@ -70,6 +71,9 @@ const nextConfig: NextConfig = {
         pathname: "/img/wn/**",
       },
     ],
+    // Required from Next.js 16: restricts which quality values can be requested
+    // via the /_next/image optimization API (security measure)
+    qualities: [75],
   },
 
   reactCompiler: true,

@@ -6,6 +6,7 @@
  * @module repositories/daily-info
  */
 
+import "server-only";
 import type {
   Maas,
   MoonPhaseType,

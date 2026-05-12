@@ -117,7 +117,6 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
                     alt={currentWeather.weather[0].description}
                     width={40}
                     height={40}
-                    unoptimized
                   />
                   <span className="text-xl leading-none font-semibold text-white">
                     {Math.round(currentWeather.temp)}°

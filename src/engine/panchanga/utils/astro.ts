@@ -1,3 +1,4 @@
+import "server-only";
 import path from "path";
 import { DateTime } from "luxon";
 import * as swisseph from "swisseph";

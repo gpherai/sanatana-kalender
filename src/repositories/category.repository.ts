@@ -6,6 +6,7 @@
  * @module repositories/category
  */
 
+import "server-only";
 import { prisma } from "@/lib/db";
 
 /**

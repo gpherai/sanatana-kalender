@@ -5,6 +5,7 @@
  * User-facing messages are in Dutch, error codes are in English.
  */
 
+import "server-only";
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 

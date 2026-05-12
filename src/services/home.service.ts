@@ -1,3 +1,4 @@
+import "server-only";
 import { DateTime } from "luxon";
 import { findAllCategories } from "@/repositories/category.repository";
 import { findUpcomingOccurrences } from "@/repositories/event.repository";

@@ -11,6 +11,7 @@
  * @see https://env.t3.gg/ for pattern inspiration
  */
 
+import "server-only";
 import { z } from "zod";
 
 // =============================================================================

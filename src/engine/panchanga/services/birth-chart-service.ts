@@ -1,3 +1,4 @@
+import "server-only";
 import { DateTime } from "luxon";
 import * as swisseph from "swisseph";
 import type {

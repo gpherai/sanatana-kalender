@@ -6,6 +6,7 @@
  * @module repositories/preference
  */
 
+import "server-only";
 import { prisma } from "@/lib/db";
 import { DEFAULT_PREFERENCES_ID } from "@/lib/domain";
 import { Prisma } from "@prisma/client";

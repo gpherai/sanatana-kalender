@@ -41,6 +41,13 @@ export const metadata: Metadata = {
   description:
     "Hindu Festival & Spiritual Events Calendar - Track festivals, puja, vrat, and more",
   keywords: "hindu, calendar, festival, puja, vrat, tithi, nakshatra",
+  openGraph: {
+    title: "Dharma Calendar",
+    description:
+      "Hindu Festival & Spiritual Events Calendar - Track festivals, puja, vrat, and more",
+    type: "website",
+    locale: "nl_NL",
+  },
 };
 
 // =============================================================================

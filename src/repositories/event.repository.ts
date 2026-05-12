@@ -7,6 +7,7 @@
  * @module repositories/event
  */
 
+import "server-only";
 import { cache } from "react";
 import {
   Prisma,

@@ -14,6 +14,7 @@
  * @module services/recurrence
  */
 
+import "server-only";
 import type { Event, RecurrenceType } from "@prisma/client";
 import { EventType, Maas, Nakshatra, Sankranti, Tithi } from "@prisma/client";
 import {

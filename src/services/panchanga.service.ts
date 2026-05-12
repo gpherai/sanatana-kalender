@@ -11,6 +11,7 @@
  * - UI never imports from this service directly
  */
 
+import "server-only";
 import {
   PanchangaSwissService,
   type DailyPanchangaFull,
