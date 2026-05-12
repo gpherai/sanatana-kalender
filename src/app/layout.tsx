@@ -89,6 +89,7 @@ export default function RootLayout({
     <html
       lang="nl"
       suppressHydrationWarning
+      data-scroll-behavior="smooth"
       className={`${geistSans.variable} ${geistMono.variable} font-sans`}
     >
       <head>
