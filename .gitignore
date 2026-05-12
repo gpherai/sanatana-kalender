@@ -58,6 +58,8 @@ node_modules/
 CLAUDE.md
 GEMINI.md
 AGENTS.md
+AGENTS.MD
+PROJECT.md
 .mcp.json
 .codex
 /.claude/
@@ -119,3 +121,5 @@ __pycache__/
 /update_*.js
 /test-*.js
 .gitnexus
+# next-agents-md
+.next-docs/
