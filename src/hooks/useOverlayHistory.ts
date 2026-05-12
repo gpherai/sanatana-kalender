@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useRef } from "react";
+"use client";
+
+import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 
 interface UseOverlayHistoryOptions {
   isOpen: boolean;
@@ -12,6 +14,14 @@ export function useOverlayHistory({
   stateKey,
 }: UseOverlayHistoryOptions) {
   const hasHistoryEntryRef = useRef(false);
+
+  // Keep onClose in a ref so the popstate handler always calls the latest version
+  // without needing onClose in the effect dependency array (which would break
+  // re-registration when the caller re-creates the callback mid-session).
+  const onCloseRef = useRef(onClose);
+  useLayoutEffect(() => {
+    onCloseRef.current = onClose;
+  });
 
   useEffect(() => {
     if (!isOpen || hasHistoryEntryRef.current) {
@@ -27,14 +37,14 @@ export function useOverlayHistory({
       }
 
       hasHistoryEntryRef.current = false;
-      onClose();
+      onCloseRef.current();
     };
 
     window.addEventListener("popstate", handlePopState);
     return () => {
       window.removeEventListener("popstate", handlePopState);
     };
-  }, [isOpen, onClose, stateKey]);
+  }, [isOpen, stateKey]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -55,10 +65,10 @@ export function useOverlayHistory({
         }
       }
 
-      onClose();
+      onCloseRef.current();
       afterClose?.();
     },
-    [isOpen, onClose]
+    [isOpen]
   );
 
   return { requestClose };

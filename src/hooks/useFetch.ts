@@ -17,6 +17,8 @@
  * ```
  */
 
+"use client";
+
 import { useState, useEffect, useLayoutEffect, useCallback, useRef } from "react";
 
 // =============================================================================
@@ -63,7 +65,7 @@ export function useFetch<T = unknown>(
   const { skip = false, onSuccess, onError, errorMessage } = options;
 
   const [data, setData] = useState<T | null>(null);
-  const [loading, setLoading] = useState(!skip);
+  const [loading, setLoading] = useState(!!url && !skip);
   const [error, setError] = useState<Error | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
 

@@ -68,7 +68,7 @@ export interface SadhanaData {
 }
 
 export interface SadhanaInitialData extends Partial<
-  Omit<SadhanaData, "dayInfoMap" | "loadAll">
+  Omit<SadhanaData, "dayInfoMap" | "loadAll" | "activePractices">
 > {
   dayInfoMapEntries?: [string, DayInfo][];
   heatmapStart?: string;

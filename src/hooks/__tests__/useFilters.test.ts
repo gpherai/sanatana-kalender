@@ -5,7 +5,7 @@ import { useFilters, DEFAULT_FILTERS } from "../useFilters";
 // Mock Next.js navigation
 const mockSearchParams = new URLSearchParams();
 const mockPathname = "/events";
-let pushStateSpy: ReturnType<typeof vi.spyOn>;
+let replaceStateSpy: ReturnType<typeof vi.spyOn>;
 
 vi.mock("next/navigation", () => ({
   useSearchParams: () => mockSearchParams,
@@ -15,14 +15,16 @@ vi.mock("next/navigation", () => ({
 describe("useFilters Hook", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    pushStateSpy = vi.spyOn(window.history, "pushState").mockImplementation(() => {});
+    replaceStateSpy = vi
+      .spyOn(window.history, "replaceState")
+      .mockImplementation(() => {});
     // Reset search params
     const keys = Array.from(mockSearchParams.keys());
     keys.forEach((key) => mockSearchParams.delete(key));
   });
 
   afterEach(() => {
-    pushStateSpy.mockRestore();
+    replaceStateSpy.mockRestore();
   });
 
   it("should return default filters when URL is empty", () => {
@@ -56,7 +58,7 @@ describe("useFilters Hook", () => {
       result.current.setFilter("search", "new search");
     });
 
-    expect(pushStateSpy).toHaveBeenCalledWith(null, "", "/events?search=new+search");
+    expect(replaceStateSpy).toHaveBeenCalledWith(null, "", "/events?search=new+search");
   });
 
   it("should toggle array filters", () => {
@@ -69,7 +71,7 @@ describe("useFilters Hook", () => {
     });
 
     // Expect URL update
-    expect(pushStateSpy).toHaveBeenCalledWith(
+    expect(replaceStateSpy).toHaveBeenCalledWith(
       null,
       "",
       expect.stringContaining("types=PUJA")
@@ -83,7 +85,7 @@ describe("useFilters Hook", () => {
       result.current.clearFilters();
     });
 
-    expect(pushStateSpy).toHaveBeenCalledWith(null, "", "/events");
+    expect(replaceStateSpy).toHaveBeenCalledWith(null, "", "/events");
   });
 
   it("should count active filters correctly", () => {
@@ -125,7 +127,7 @@ describe("useFilters Hook", () => {
       result.current.setFilter("search", "");
     });
 
-    expect(pushStateSpy).toHaveBeenCalledWith(null, "", "/events");
+    expect(replaceStateSpy).toHaveBeenCalledWith(null, "", "/events");
   });
 
   it("should build correct query string for API", () => {
@@ -149,7 +151,7 @@ describe("useFilters Hook", () => {
       result.current.setFilter("eventTypes", ["PUJA", "VRAT"]);
     });
 
-    expect(pushStateSpy).toHaveBeenCalledWith(
+    expect(replaceStateSpy).toHaveBeenCalledWith(
       null,
       "",
       expect.stringContaining("types=PUJA%2CVRAT")

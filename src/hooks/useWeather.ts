@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { WeatherApiResponse } from "@/types/weather";
 
 export function useWeather() {
@@ -9,6 +9,8 @@ export function useWeather() {
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+
+  const manualCtrlRef = useRef<AbortController | null>(null);
 
   const fetchWeather = useCallback(async (isRefresh = false, signal?: AbortSignal) => {
     if (isRefresh) {
@@ -48,12 +50,25 @@ export function useWeather() {
     return () => controller.abort();
   }, [fetchWeather]);
 
+  // Abort any in-flight manual fetch on unmount
+  useEffect(() => {
+    return () => {
+      manualCtrlRef.current?.abort();
+    };
+  }, []);
+
   const refresh = useCallback(() => {
-    void fetchWeather(true);
+    manualCtrlRef.current?.abort();
+    const ctrl = new AbortController();
+    manualCtrlRef.current = ctrl;
+    void fetchWeather(true, ctrl.signal);
   }, [fetchWeather]);
 
   const retry = useCallback(() => {
-    void fetchWeather();
+    manualCtrlRef.current?.abort();
+    const ctrl = new AbortController();
+    manualCtrlRef.current = ctrl;
+    void fetchWeather(false, ctrl.signal);
   }, [fetchWeather]);
 
   return {

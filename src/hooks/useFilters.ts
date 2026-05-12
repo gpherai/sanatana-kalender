@@ -161,7 +161,7 @@ export function useFilters() {
     (newParams: URLSearchParams) => {
       const query = newParams.toString();
       const url = query ? `${pathname}?${query}` : pathname;
-      window.history.pushState(null, "", url);
+      window.history.replaceState(null, "", url);
     },
     [pathname]
   );
@@ -217,7 +217,7 @@ export function useFilters() {
 
   // Clear all filters
   const clearFilters = useCallback(() => {
-    window.history.pushState(null, "", pathname);
+    window.history.replaceState(null, "", pathname);
   }, [pathname]);
 
   /**
