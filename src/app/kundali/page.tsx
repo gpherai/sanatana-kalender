@@ -91,6 +91,7 @@ let cachedRaw: string | null = null;
 let cachedParsed: FormState | null = null;
 
 function getSnapshot() {
+  if (typeof window === "undefined") return null;
   const raw = window.localStorage.getItem(STORAGE_KEY);
   if (raw !== cachedRaw) {
     cachedRaw = raw;
