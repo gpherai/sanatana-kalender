@@ -133,19 +133,19 @@ describe("Kundali Page", () => {
     expect(screen.getByText("Purva Ashadha")).toBeInTheDocument();
 
     // Switch to table view to see full names
-    fireEvent.click(screen.getByRole("button", { name: /D1 Tabel/i }));
+    fireEvent.click(screen.getByRole("tab", { name: /D1 Tabel/i }));
 
     // Check Graha row
     expect(screen.getAllByText("Surya")[0]).toBeInTheDocument();
     expect(screen.getAllByText("Rashi").length).toBeGreaterThan(0);
 
     // Switch to D9 Chart
-    fireEvent.click(screen.getByRole("button", { name: /D9 Grafiek/i }));
+    fireEvent.click(screen.getByRole("tab", { name: /D9 Grafiek/i }));
     // "Navamsha" appears in both summary and chart, use getAll or within
     expect(screen.getAllByText("Navamsha").length).toBeGreaterThan(0);
 
     // Switch to D9 Table
-    fireEvent.click(screen.getByRole("button", { name: /D9 Tabel/i }));
+    fireEvent.click(screen.getByRole("tab", { name: /D9 Tabel/i }));
     expect(screen.getByText("Navagrahas — D9 Navamsha")).toBeInTheDocument();
 
     // Toggle Technical Details

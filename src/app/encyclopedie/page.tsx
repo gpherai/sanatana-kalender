@@ -133,7 +133,14 @@ export default function DictionaryPage() {
       <footer className="border-theme-border mt-20 border-t py-12 text-center">
         <div className="bg-theme-surface-raised border-theme-border-subtle inline-flex items-center gap-2 rounded-full border px-6 py-3 shadow-sm">
           <p className="text-theme-fg-muted text-sm font-semibold">
-            Staat een term er niet bij? Neem contact op voor toevoegingen.
+            Staat een term er niet bij?{" "}
+            <a
+              href="mailto:gpherai@gmail.com?subject=Encyclopedie%20toevoeging"
+              className="text-theme-primary underline-offset-2 transition-colors hover:underline"
+            >
+              Neem contact op
+            </a>{" "}
+            voor toevoegingen.
           </p>
         </div>
       </footer>

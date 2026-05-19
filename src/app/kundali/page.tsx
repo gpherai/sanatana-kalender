@@ -467,8 +467,14 @@ export default function KundaliPage() {
               </div>
 
               {/* View toggle */}
-              <div className="bg-theme-surface border-theme-border flex items-center gap-1 rounded-lg border p-1">
+              <div
+                role="tablist"
+                aria-label="Horoscoop weergave"
+                className="bg-theme-surface border-theme-border flex items-center gap-1 rounded-lg border p-1"
+              >
                 <button
+                  role="tab"
+                  aria-selected={resultView === "d1-chart"}
                   onClick={() => setResultView("d1-chart")}
                   style={{ touchAction: "manipulation" }}
                   title="D1 Grafiek"
@@ -484,6 +490,8 @@ export default function KundaliPage() {
                   D1
                 </button>
                 <button
+                  role="tab"
+                  aria-selected={resultView === "d1-table"}
                   onClick={() => setResultView("d1-table")}
                   style={{ touchAction: "manipulation" }}
                   title="D1 Tabel"
@@ -497,8 +505,13 @@ export default function KundaliPage() {
                 >
                   <Table2 className="h-3.5 w-3.5" />
                 </button>
-                <div className="bg-theme-border mx-0.5 h-4 w-px shrink-0" />
+                <div
+                  role="presentation"
+                  className="bg-theme-border mx-0.5 h-4 w-px shrink-0"
+                />
                 <button
+                  role="tab"
+                  aria-selected={resultView === "d9-chart"}
                   onClick={() => setResultView("d9-chart")}
                   style={{ touchAction: "manipulation" }}
                   title="D9 Grafiek"
@@ -514,6 +527,8 @@ export default function KundaliPage() {
                   D9
                 </button>
                 <button
+                  role="tab"
+                  aria-selected={resultView === "d9-table"}
                   onClick={() => setResultView("d9-table")}
                   style={{ touchAction: "manipulation" }}
                   title="D9 Tabel"
@@ -527,8 +542,13 @@ export default function KundaliPage() {
                 >
                   <Table2 className="h-3.5 w-3.5" />
                 </button>
-                <div className="bg-theme-border mx-0.5 h-4 w-px shrink-0" />
+                <div
+                  role="presentation"
+                  className="bg-theme-border mx-0.5 h-4 w-px shrink-0"
+                />
                 <button
+                  role="tab"
+                  aria-selected={resultView === "d10-chart"}
                   onClick={() => setResultView("d10-chart")}
                   style={{ touchAction: "manipulation" }}
                   title="D10 Grafiek"
@@ -544,6 +564,8 @@ export default function KundaliPage() {
                   D10
                 </button>
                 <button
+                  role="tab"
+                  aria-selected={resultView === "d10-table"}
                   onClick={() => setResultView("d10-table")}
                   style={{ touchAction: "manipulation" }}
                   title="D10 Tabel"

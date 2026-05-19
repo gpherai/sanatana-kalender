@@ -10,6 +10,7 @@ import {
   ENCYCLOPEDIA_CATEGORY_FALLBACK,
 } from "@/components/encyclopedia/category-config";
 import { TableOfContents } from "@/components/encyclopedia/TableOfContents";
+import { MobileTOC } from "@/components/encyclopedia/MobileTOC";
 
 function childrenToText(children: React.ReactNode): string {
   if (typeof children === "string") return children;
@@ -228,6 +229,7 @@ export default async function TermPage({
 
         <div className="xl:grid xl:grid-cols-[1fr_15rem] xl:gap-12">
           <div>
+            <MobileTOC headings={headings} />
             <article className="border-theme-border-subtle bg-theme-surface overflow-hidden rounded-[2rem] border shadow-xl">
               <div className="bg-theme-bg-subtle border-theme-border-subtle border-b p-8 md:p-12">
                 <div className="mb-6 flex items-center gap-3">

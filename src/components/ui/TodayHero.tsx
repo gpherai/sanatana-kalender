@@ -98,11 +98,14 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
 
           {/* Current Time + Weather */}
           <div className="shrink-0 text-right">
-            <div className="text-3xl font-light text-white tabular-nums md:text-4xl">
-              {currentTime?.toLocaleTimeString("nl-NL", {
+            <div
+              suppressHydrationWarning
+              className="text-3xl font-light text-white tabular-nums md:text-4xl"
+            >
+              {(currentTime ?? new Date()).toLocaleTimeString("nl-NL", {
                 hour: "2-digit",
                 minute: "2-digit",
-              }) ?? "--:--"}
+              })}
             </div>
             <div className="mt-1 text-sm text-white/50">
               {dailyInfo?.locationName || DEFAULT_LOCATION.name}

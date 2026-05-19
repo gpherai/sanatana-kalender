@@ -176,11 +176,18 @@ export function SadhanaTracker({ initialData }: { initialData?: SadhanaInitialDa
           </p>
         </div>
 
-        <div className="bg-theme-surface-raised flex items-center rounded-xl p-1 shadow-sm">
+        <div
+          role="tablist"
+          aria-label="Sadhana navigatie"
+          className="bg-theme-surface-raised flex items-center rounded-xl p-1 shadow-sm"
+        >
           {TABS.map(({ id, label, Icon }) => (
             <button
               key={id}
               type="button"
+              role="tab"
+              aria-selected={activeTab === id}
+              aria-label={label}
               onClick={() => setTab(id)}
               style={{ touchAction: "manipulation" }}
               className={cn(
@@ -189,7 +196,6 @@ export function SadhanaTracker({ initialData }: { initialData?: SadhanaInitialDa
                   ? "bg-theme-primary-15 text-theme-primary"
                   : "text-theme-fg-muted hover:text-theme-fg"
               )}
-              aria-label={label}
             >
               <Icon className="h-4 w-4 shrink-0" />
               <span className="hidden sm:inline">{label}</span>
