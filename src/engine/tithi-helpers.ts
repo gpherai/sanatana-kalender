@@ -4,7 +4,7 @@
  * All functions are free of DB access and side effects — they operate only on
  * data passed in as arguments. This makes them fully unit-testable.
  *
- * Used by: src/services/recurrence.service.ts
+ * Used by: src/services/recurrence/
  */
 
 import {

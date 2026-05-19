@@ -8,7 +8,7 @@ const { generateOccurrences, generateOccurrencesForEvents } = vi.hoisted(() => (
   generateOccurrencesForEvents: vi.fn(),
 }));
 
-vi.mock("@/services/recurrence.service", () => ({
+vi.mock("@/services/recurrence", () => ({
   generateOccurrences,
   generateOccurrencesForEvents,
 }));

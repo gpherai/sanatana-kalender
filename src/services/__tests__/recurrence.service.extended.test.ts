@@ -4,7 +4,7 @@ import {
   generateOccurrences,
   generateOccurrencesForEvents,
   getRecommendedWindow,
-} from "../recurrence.service";
+} from "../recurrence";
 import { EventType } from "@prisma/client";
 import type { Event } from "@prisma/client";
 

@@ -24,10 +24,7 @@ import {
   updateEventWithPrimaryOccurrence,
   updateOccurrenceById,
 } from "@/repositories/event.repository";
-import {
-  generateOccurrences,
-  generateOccurrencesForEvents,
-} from "@/services/recurrence.service";
+import { generateOccurrences, generateOccurrencesForEvents } from "@/services/recurrence";
 
 // ============================================================================
 // ERROR TYPES

@@ -1,3 +1,4 @@
+import "server-only";
 import { getMoonPhaseType, getMoonPhaseEmoji, getMoonPhaseName } from "@/lib/moon-phases";
 import { detectSpecialDay } from "@/lib/panchanga-helpers";
 import type { DailyPanchangaFull } from "@/engine/panchanga";

@@ -26,6 +26,24 @@ import { groupChildrenUnderParents } from "@/lib/events";
 
 type ViewMode = "grid" | "list";
 
+// Reverse the order of top-level groups (parents + their children) without
+// breaking the parent-before-children invariant required for series events.
+function applySortDirection(
+  events: CalendarEventResponse[],
+  order: "asc" | "desc"
+): CalendarEventResponse[] {
+  if (order === "asc") return events;
+  const groups: CalendarEventResponse[][] = [];
+  for (const event of events) {
+    if (event.resource.seriesParentEventIds.length > 0) {
+      groups[groups.length - 1]!.push(event);
+    } else {
+      groups.push([event]);
+    }
+  }
+  return groups.reverse().flat();
+}
+
 function applyFilters(
   events: CalendarEventResponse[],
   filters: FilterState
@@ -99,7 +117,11 @@ export function EventsContent({ initialEvents }: EventsContentProps) {
     useFilters();
 
   const events = useMemo(
-    () => groupChildrenUnderParents(applyFilters(initialEvents, filters)),
+    () =>
+      applySortDirection(
+        groupChildrenUnderParents(applyFilters(initialEvents, filters)),
+        filters.sortOrder
+      ),
     [initialEvents, filters]
   );
 
@@ -129,16 +151,8 @@ export function EventsContent({ initialEvents }: EventsContentProps) {
 
         {/* Actions */}
         <div className="flex items-center gap-3">
-          {/* Sort controls */}
+          {/* Sort direction toggle */}
           <div className="flex items-center gap-1.5">
-            <select
-              value={filters.sortBy}
-              onChange={(e) => setFilter("sortBy", e.target.value as "date" | "name")}
-              className="bg-theme-surface-raised border-theme-border text-theme-fg-muted focus:border-theme-primary rounded-lg border px-2 py-1 text-sm focus:outline-none"
-            >
-              <option value="date">Datum</option>
-              <option value="name">Naam</option>
-            </select>
             <button
               type="button"
               onClick={() =>

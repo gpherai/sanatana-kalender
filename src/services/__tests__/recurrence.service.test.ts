@@ -4,7 +4,7 @@ import {
   generateOccurrences,
   generateOccurrencesForEvents,
   getRecommendedWindow,
-} from "../recurrence.service";
+} from "../recurrence";
 import type { Event, DailyInfo } from "@prisma/client";
 
 // Mock event for testing

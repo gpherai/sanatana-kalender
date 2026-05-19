@@ -13,7 +13,8 @@ import type {
   DayInfo,
   DayInfoMap,
 } from "@/types/sadhana";
-import { apiFetch, fetchDayInfoMap } from "@/lib/sadhana-api";
+import { apiFetch } from "@/lib/sadhana-api";
+import { fetchDayInfoMap } from "@/lib/panchanga-api";
 import { todayString, SADHANA_START_DATE } from "@/lib/sadhana-utils";
 import type { CalendarEventResponse } from "@/types/calendar";
 import { addDaysDateOnly } from "@/lib/default-location-date";

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { prismaMock } from "../../__tests__/helpers/prisma-mock";
-import { generateOccurrences, generateOccurrencesForEvents } from "../recurrence.service";
+import { generateOccurrences, generateOccurrencesForEvents } from "../recurrence";
 import { EventType } from "@prisma/client";
 import type { Event } from "@prisma/client";
 

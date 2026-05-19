@@ -17,7 +17,7 @@
 
 import "dotenv/config";
 import { prisma } from "@/lib/db";
-import { generateOccurrencesForEvents } from "@/services/recurrence.service";
+import { generateOccurrencesForEvents } from "@/services/recurrence";
 import { DEFAULT_LOCATION } from "@/lib/domain";
 import { parseCalendarDate } from "@/lib/date-utils";
 
