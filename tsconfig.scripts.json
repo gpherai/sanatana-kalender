@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "paths": {
+      "@/*": ["./src/*"],
+      "server-only": ["./__mocks__/server-only.ts"]
+    }
+  }
+}
