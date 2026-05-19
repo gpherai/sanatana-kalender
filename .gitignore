@@ -102,6 +102,7 @@ yarn-error.log*
 # -----------------------------------------------------------------------------
 /backups/
 /_dev/
+/.project/
 
 # Temporary development files in root
 /*.log
