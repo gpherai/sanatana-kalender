@@ -45,7 +45,7 @@ async function main() {
   console.log("\n📋 Next steps (regenerate from catalog):");
   console.log("   npm run db:events");
   console.log(
-    "   npm run db:occurrences -- --start 2025-01-01 --end 2027-12-31 --replace\n"
+    "   npm run db:occurrences -- --start 2026-01-01 --end 2029-12-31 --replace\n"
   );
 }
 

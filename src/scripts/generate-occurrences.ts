@@ -7,11 +7,11 @@
  *
  * Usage:
  *   npm run db:occurrences
- *   npm run db:occurrences -- --start 2025-01-01 --end 2027-12-31 --replace
+ *   npm run db:occurrences -- --start 2026-01-01 --end 2029-12-31 --replace
  *
  * Options:
- *   --start   Start date (default: 2025-01-01)
- *   --end     End date   (default: 2027-12-31)
+ *   --start   Start date (default: 2026-01-01)
+ *   --end     End date   (default: 2029-12-31)
  *   --replace Delete existing occurrences in range before inserting (default: false)
  */
 
@@ -30,8 +30,8 @@ function getArg(name: string): string | undefined {
   return idx !== -1 ? process.argv[idx + 1] : undefined;
 }
 
-const startArg = getArg("start") ?? "2025-01-01";
-const endArg = getArg("end") ?? "2027-12-31";
+const startArg = getArg("start") ?? "2026-01-01";
+const endArg = getArg("end") ?? "2029-12-31";
 const replace = process.argv.includes("--replace");
 
 // ---------------------------------------------------------------------------

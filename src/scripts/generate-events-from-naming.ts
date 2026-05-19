@@ -279,7 +279,7 @@ async function generateEventsFromNaming() {
   console.log(`\n✅ Event auto-generation complete!`);
   console.log(`\n⚠️  NEXT STEP: Regenerate occurrences`);
   console.log(
-    `   npm run db:occurrences -- --start 2025-01-01 --end 2027-12-31 --replace\n`
+    `   npm run db:occurrences -- --start 2026-01-01 --end 2029-12-31 --replace\n`
   );
 }
 

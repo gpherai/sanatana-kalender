@@ -2,7 +2,7 @@
 // Run met: npm run db:seed
 //
 // Wat dit script doet (pure infrastructuur):
-//   0. DailyInfo: Panchanga-data via Swiss Ephemeris (2025-2027)
+//   0. DailyInfo: Panchanga-data via Swiss Ephemeris (2026-2029)
 //   1. Categories: upsert vanuit config/categories.ts
 //   2. UserPreferences: aanmaken indien nog niet aanwezig
 //
@@ -32,14 +32,14 @@ async function main() {
   // ============================================
   // 0. DAILY INFO (populate Panchanga data using Swiss Ephemeris)
   // ============================================
-  console.log("🌙 Generating DailyInfo for 2025-2030...");
+  console.log("🌙 Generating DailyInfo for 2026-2029...");
 
   const dailyInfoStart = DateTime.fromObject(
-    { year: 2025, month: 1, day: 1 },
+    { year: 2026, month: 1, day: 1 },
     { zone: DEFAULT_LOCATION.timezone }
   );
   const dailyInfoEnd = DateTime.fromObject(
-    { year: 2030, month: 12, day: 31 },
+    { year: 2029, month: 12, day: 31 },
     { zone: DEFAULT_LOCATION.timezone }
   );
 
@@ -330,7 +330,7 @@ async function main() {
 
   console.log("\n✅ Seeding complete!");
   console.log(
-    "   Volgende stap: npm run db:events && npm run db:occurrences -- --start 2026-01-01 --end 2030-12-31 --replace"
+    "   Volgende stap: npm run db:events && npm run db:occurrences -- --start 2026-01-01 --end 2029-12-31 --replace"
   );
   console.log("   Of alles in één keer: npm run db:setup\n");
 }
