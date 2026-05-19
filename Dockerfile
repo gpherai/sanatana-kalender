@@ -37,7 +37,7 @@ COPY . .
 # Generate Prisma client
 # Prisma 7 resolves DATABASE_URL even during 'generate' (no DB connection needed).
 # A placeholder value is enough — the real URL is injected at runtime via docker-compose.
-RUN DATABASE_URL="postgresql://build:build@localhost:5432/build" npx prisma generate
+RUN DATABASE_URL="postgresql://build:build@localhost:5432/build" node_modules/.bin/prisma generate
 
 # Build Next.js application
 # Disable telemetry during build

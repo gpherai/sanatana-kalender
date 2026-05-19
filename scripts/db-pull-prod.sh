@@ -7,7 +7,7 @@
 # Optionele omgevingsvariabelen (met standaardwaarden):
 #   VPS_SSH_PORT  SSH poort van de VPS                (standaard: 22)
 #   VPS_PATH      Pad naar de app op de VPS           (standaard: ~/app)
-#   DB_USER       PostgreSQL gebruiker                 (standaard: postgres)
+#   DB_USER       PostgreSQL gebruiker                 (standaard: dharma)
 #   DB_NAME       Naam van de database                 (standaard: uitgelezen uit .env)
 #
 # Gebruik:

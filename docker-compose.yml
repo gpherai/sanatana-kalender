@@ -103,6 +103,8 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       TZ: Europe/Amsterdam
     entrypoint: ["sh"]
+    stdin_open: true
+    tty: true
     depends_on:
       db:
         condition: service_healthy

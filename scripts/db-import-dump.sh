@@ -8,7 +8,14 @@
 set -euo pipefail
 
 DUMP_FILE="${1:-}"
-DB_USER="${DB_USER:-postgres}"
+
+# Lees DB_USER uit lokale .env als niet opgegeven
+if [ -z "${DB_USER:-}" ]; then
+  if [ -f ".env" ]; then
+    DB_USER=$(grep -E "^POSTGRES_USER=" .env | cut -d= -f2 | tr -d '"')
+  fi
+  DB_USER="${DB_USER:-postgres}"
+fi
 
 # Lees DB_NAME uit lokale .env als niet opgegeven
 if [ -z "${DB_NAME:-}" ]; then

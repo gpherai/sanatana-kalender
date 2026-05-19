@@ -90,8 +90,13 @@ docker-compose*.yml
 # Project specific
 # -----------------------------------------------------------------------------
 backups/
+scripts/backup.sh
 scripts/backup.ps1
 scripts/backup.bat
+scripts/backup-db.sh
+scripts/db-pull-prod.sh
+scripts/db-import-dump.sh
+scripts/deploy-prod.sh
 
 # -----------------------------------------------------------------------------
 # Git hooks (not needed in production)
