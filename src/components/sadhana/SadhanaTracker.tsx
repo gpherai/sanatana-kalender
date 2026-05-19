@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useToast } from "@/components/ui/Toast";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import {
   Flame,
   Loader2,
@@ -42,15 +42,18 @@ const VALID_TABS = new Set<string>(TABS.map((t) => t.id));
 // =============================================================================
 
 export function SadhanaTracker({ initialData }: { initialData?: SadhanaInitialData }) {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const rawTab = searchParams.get("tab") ?? "tracker";
   const activeTab: TabId = VALID_TABS.has(rawTab) ? (rawTab as TabId) : "tracker";
   const { success: toastSuccess } = useToast();
 
   const setTab = useCallback(
-    (id: TabId) => router.replace(`/sadhana?tab=${id}`, { scroll: false }),
-    [router]
+    (id: TabId) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("tab", id);
+      window.history.replaceState(null, "", `?${params.toString()}`);
+    },
+    [searchParams]
   );
 
   // ── Data via hook ────────────────────────────────────────────────────────────

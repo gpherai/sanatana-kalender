@@ -16,7 +16,7 @@ import { FilterSidebar } from "@/components/filters";
 import { EventDetailModal } from "@/components/calendar/EventDetailModal";
 import { EventCard } from "@/components/events/EventCard";
 import { PageLayout } from "@/components/layout";
-import { useFilters } from "@/hooks/useFilters";
+import { useFilters, type FilterState } from "@/hooks/useFilters";
 import type { CalendarEvent, CalendarEventResponse } from "@/types/calendar";
 import { parseCalendarEvent } from "@/types/calendar";
 import { parseLocalDate } from "@/lib/date-utils";
@@ -25,6 +25,46 @@ import { useOverlayHistory } from "@/hooks/useOverlayHistory";
 import { groupChildrenUnderParents } from "@/lib/events";
 
 type ViewMode = "grid" | "list";
+
+function applyFilters(
+  events: CalendarEventResponse[],
+  filters: FilterState
+): CalendarEventResponse[] {
+  let result = events;
+
+  if (filters.search) {
+    const q = filters.search.toLowerCase();
+    result = result.filter(
+      (e) =>
+        e.title.toLowerCase().includes(q) ||
+        e.resource.description?.toLowerCase().includes(q)
+    );
+  }
+
+  if (filters.dateFrom) {
+    result = result.filter((e) => e.start >= filters.dateFrom);
+  }
+  if (filters.dateTo) {
+    result = result.filter((e) => e.start <= filters.dateTo);
+  }
+
+  if (filters.categories.length > 0) {
+    const catSet = new Set(filters.categories);
+    result = result.filter((e) => e.resource.categories.some((c) => catSet.has(c.name)));
+  }
+
+  if (filters.eventTypes.length > 0) {
+    const typeSet = new Set(filters.eventTypes);
+    result = result.filter((e) => typeSet.has(e.resource.eventType));
+  }
+
+  if (filters.specialTithis.length > 0) {
+    const tithiSet = new Set(filters.specialTithis);
+    result = result.filter((e) => e.resource.tithi && tithiSet.has(e.resource.tithi));
+  }
+
+  return result;
+}
 
 interface EventsContentProps {
   initialEvents: CalendarEventResponse[];
@@ -58,7 +98,10 @@ export function EventsContent({ initialEvents }: EventsContentProps) {
   const { filters, setFilter, toggleFilter, clearFilters, activeFilterCount } =
     useFilters();
 
-  const events = useMemo(() => groupChildrenUnderParents(initialEvents), [initialEvents]);
+  const events = useMemo(
+    () => groupChildrenUnderParents(applyFilters(initialEvents, filters)),
+    [initialEvents, filters]
+  );
 
   const handleEventClick = (event: CalendarEventResponse) => {
     setSelectedEvent(parseCalendarEvent(event));

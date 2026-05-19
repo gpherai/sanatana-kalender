@@ -18,7 +18,6 @@ describe("useFilters Hook", () => {
     replaceStateSpy = vi
       .spyOn(window.history, "replaceState")
       .mockImplementation(() => {});
-    // Reset search params
     const keys = Array.from(mockSearchParams.keys());
     keys.forEach((key) => mockSearchParams.delete(key));
   });
@@ -37,12 +36,6 @@ describe("useFilters Hook", () => {
   it("should parse filters from URL", () => {
     mockSearchParams.set("search", "diwali");
     mockSearchParams.set("types", "FESTIVAL");
-    // Note: categories must match VALID_CATEGORIES to be parsed
-    // Assuming 'ganesha' is valid based on constants
-
-    // We need to know VALID_CATEGORIES from constants file to test valid parsing.
-    // But since the hook imports them, we assume real constants are used.
-    // Let's rely on basic types which usually includes FESTIVAL.
 
     const { result } = renderHook(() => useFilters());
 
@@ -62,15 +55,12 @@ describe("useFilters Hook", () => {
   });
 
   it("should toggle array filters", () => {
-    // Start with empty
     const { result } = renderHook(() => useFilters());
 
-    // Add value
     act(() => {
       result.current.toggleFilter("eventTypes", "PUJA");
     });
 
-    // Expect URL update
     expect(replaceStateSpy).toHaveBeenCalledWith(
       null,
       "",
@@ -107,16 +97,12 @@ describe("useFilters Hook", () => {
     mockSearchParams.set("sortBy", "invalid_field");
     mockSearchParams.set("order", "invalid_order");
 
-    // We need at least one valid category to test. Assuming 'shiva' or similar exists.
-    // Let's mock CATEGORIES in domain.ts if possible, or just use what's likely there.
-    // Based on src/config/categories.ts (checked via domain.ts), 'festival' or 'puja' might be names.
-
     const { result } = renderHook(() => useFilters());
 
     expect(result.current.filters.eventTypes).toEqual(["PUJA"]);
     expect(result.current.filters.eventTypes).not.toContain("INVALID_TYPE");
-    expect(result.current.filters.sortBy).toBe("date"); // Reset to default
-    expect(result.current.filters.sortOrder).toBe("asc"); // Reset to default
+    expect(result.current.filters.sortBy).toBe("date");
+    expect(result.current.filters.sortOrder).toBe("asc");
   });
 
   it("should remove filter from URL when set to empty or default", () => {

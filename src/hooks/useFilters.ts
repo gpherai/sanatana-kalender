@@ -156,7 +156,6 @@ export function useFilters() {
     };
   }, [searchParams]);
 
-  // Update URL with new params
   const updateURL = useCallback(
     (newParams: URLSearchParams) => {
       const query = newParams.toString();
@@ -215,7 +214,6 @@ export function useFilters() {
     [filters, setFilter]
   );
 
-  // Clear all filters
   const clearFilters = useCallback(() => {
     window.history.replaceState(null, "", pathname);
   }, [pathname]);
