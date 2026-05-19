@@ -3,7 +3,7 @@ services:
   # PostgreSQL Database
   # ---------------------------------------------------------------------------
   db:
-    image: postgres:17
+    image: postgres:18
     container_name: dharma-db
     restart: always
     environment:
@@ -13,7 +13,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - dharma_db_data:/var/lib/postgresql/data
+      - dharma_db_data:/var/lib/postgresql
     networks:
       - dharma-network
     healthcheck:
@@ -113,7 +113,7 @@ services:
   # Backup Service (optioneel — gebruik: docker compose --profile backup run --rm backup)
   # ---------------------------------------------------------------------------
   backup:
-    image: postgres:17
+    image: postgres:18
     container_name: dharma-backup
     profiles:
       - backup

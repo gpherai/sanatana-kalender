@@ -8,7 +8,7 @@
 # -----------------------------------------------------------------------------
 # Stage 1: Dependencies
 # -----------------------------------------------------------------------------
-FROM node:24.14.1-alpine AS deps
+FROM node:26.1.0-alpine AS deps
 
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine
 RUN apk add --no-cache libc6-compat python3 make g++ py3-setuptools
@@ -26,7 +26,7 @@ RUN npm ci && npm cache clean --force
 # -----------------------------------------------------------------------------
 # Stage 2: Builder
 # -----------------------------------------------------------------------------
-FROM node:24.14.1-alpine AS builder
+FROM node:26.1.0-alpine AS builder
 
 WORKDIR /app
 
@@ -49,7 +49,7 @@ RUN DATABASE_URL="postgresql://build:build@localhost:5432/build" npm run build
 # -----------------------------------------------------------------------------
 # Stage 3: Runner (Production)
 # -----------------------------------------------------------------------------
-FROM node:24.14.1-alpine AS runner
+FROM node:26.1.0-alpine AS runner
 
 WORKDIR /app
 
