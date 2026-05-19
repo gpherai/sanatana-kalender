@@ -33,6 +33,7 @@
     "backup:db": "docker compose --profile backup run --rm backup",
     "backup:windows": "powershell -ExecutionPolicy Bypass -File scripts/backup.ps1",
     "deploy:prod": "bash scripts/deploy-prod.sh",
+    "deploy:prod:pull": "bash scripts/deploy-prod.sh --pull",
     "db:pull-prod": "bash scripts/db-pull-prod.sh",
     "db:import-dump": "bash scripts/db-import-dump.sh",
     "test": "vitest run",

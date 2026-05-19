@@ -13,11 +13,16 @@ cd "$PROJECT_DIR"
 
 on_error() {
   echo ""
-  echo "ERROR: Deploy mislukt. Migrate logs (laatste 50 regels):"
+  echo "ERROR: Deploy mislukt."
   echo "──────────────────────────────────────────────────────"
-  "${COMPOSE[@]}" logs --tail=50 migrate 2>/dev/null || true
+  echo "Migrate logs (laatste 30 regels):"
+  "${COMPOSE[@]}" logs --tail=30 migrate 2>/dev/null || true
   echo ""
-  echo "Tip: draai 'docker compose ps' en 'docker compose logs app' voor meer context."
+  echo "App logs (laatste 30 regels):"
+  "${COMPOSE[@]}" logs --tail=30 app 2>/dev/null || true
+  echo ""
+  echo "Status:"
+  "${COMPOSE[@]}" ps 2>/dev/null || true
 }
 
 show_help() {
@@ -112,10 +117,10 @@ if [[ "$NO_CACHE" == true || "$PULL" == true ]]; then
 
   echo ""
   echo "Starting application stack..."
-  "${COMPOSE[@]}" up -d "${SERVICES[@]}"
+  "${COMPOSE[@]}" up -d --wait --wait-timeout 120 "${SERVICES[@]}"
 else
   echo "Rebuilding and starting application stack..."
-  "${COMPOSE[@]}" up -d --build "${SERVICES[@]}"
+  "${COMPOSE[@]}" up -d --build --wait --wait-timeout 120 "${SERVICES[@]}"
 fi
 
 echo ""
