@@ -22,17 +22,20 @@ export async function UpcomingEventsSection({ eventsPromise, todayYear }: Props)
       </h2>
 
       {upcomingEvents.length === 0 ? (
-        <div className="py-8 text-center">
-          <div className="mb-3 text-4xl" aria-hidden="true">
+        <div className="border-theme-border rounded-xl border-2 border-dashed px-6 py-10 text-center">
+          <div className="mb-3 text-5xl" aria-hidden="true">
             🙏
           </div>
-          <p className="text-theme-fg-muted text-sm">Geen aankomende events</p>
+          <p className="text-theme-fg mb-1 text-sm font-medium">Geen aankomende events</p>
+          <p className="text-theme-fg-muted mb-5 text-xs">
+            Voeg een festival, puja of viering toe aan je kalender.
+          </p>
           <Link
             href="/events/new"
-            className="text-theme-primary focus-visible:ring-theme-primary mt-2 inline-flex items-center gap-1 rounded text-sm hover:opacity-80 focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none"
+            className="bg-theme-primary focus-visible:ring-theme-primary inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white shadow-md transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
           >
             <Plus className="h-4 w-4" />
-            Voeg er een toe
+            Event toevoegen
           </Link>
         </div>
       ) : (
