@@ -1,19 +1,8 @@
 "use client";
 
-/**
- * Header Component
- *
- * Main navigation header with:
- * - Logo linking to home
- * - Navigation links
- * - New event button
- * - Color mode toggle
- *
- * Uses native Tailwind v4 theme utilities and app-level theme hooks.
- */
-
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   Home,
   ListTodo,
@@ -41,9 +30,18 @@ const navItems = [
 
 export function Header() {
   const pathname = usePathname();
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <header className="app-header sticky top-0 z-40 w-full border-b backdrop-blur-sm">
+    <header
+      className={`app-header sticky top-0 z-40 w-full border-b backdrop-blur-md transition-shadow duration-300 ${scrolled ? "shadow-md" : "shadow-none"}`}
+    >
       <div className="container mx-auto px-3 sm:px-4">
         <div className="flex min-h-14 flex-wrap items-center justify-between gap-y-2 py-2 sm:h-14 sm:flex-nowrap sm:py-0">
           {/* Logo - uses theme color */}
@@ -60,7 +58,7 @@ export function Header() {
           </Link>
 
           {/* Navigation */}
-          <div className="order-3 w-full min-w-0 overflow-x-auto [scrollbar-width:none] sm:order-none sm:w-auto sm:flex-1 [&::-webkit-scrollbar]:hidden">
+          <div className="order-3 w-full min-w-0 [scrollbar-width:none] overflow-x-auto sm:order-none sm:w-auto sm:flex-1 [&::-webkit-scrollbar]:hidden">
             <nav className="flex min-w-max items-center justify-start gap-1 pb-1 sm:min-w-0 sm:justify-center sm:pb-0">
               {navItems.map(({ href, label, icon: Icon }) => {
                 const isActive = pathname === href;

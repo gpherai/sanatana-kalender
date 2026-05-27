@@ -18,20 +18,20 @@ export async function CategoriesSection({ categoriesPromise }: Props) {
         </span>
         Godheden
       </h2>
-      <div className="grid grid-cols-2 gap-1.5">
+      <div className="flex flex-wrap gap-1.5">
         {categories.map((cat) => (
           <Link
             key={cat.id}
             href={`/events?categories=${encodeURIComponent(cat.name)}`}
-            className="focus-visible:ring-theme-primary flex cursor-pointer items-center gap-2 rounded-r-lg border-l-[3px] px-2.5 py-1.5 transition-opacity hover:opacity-75 focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none active:opacity-60"
+            className="focus-visible:ring-theme-primary flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none active:opacity-70 motion-safe:hover:scale-105"
             style={{
-              borderLeftColor: cat.color,
-              background: `color-mix(in oklch, ${cat.color} 10%, transparent)`,
+              borderColor: `color-mix(in oklch, ${cat.color} 50%, transparent)`,
+              background: `color-mix(in oklch, ${cat.color} 12%, transparent)`,
             }}
             title={`Filter op ${cat.displayName}`}
           >
             <span className="text-sm leading-none">{cat.icon}</span>
-            <span className="text-theme-fg-secondary truncate text-xs font-medium">
+            <span className="text-theme-fg-secondary text-xs font-medium">
               {cat.displayName}
             </span>
           </Link>
