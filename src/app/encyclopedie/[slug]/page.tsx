@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { PageLayout } from "@/components/layout";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import {
   ENCYCLOPEDIA_CATEGORY_CONFIG,
   ENCYCLOPEDIA_CATEGORY_FALLBACK,
@@ -130,6 +130,12 @@ export default async function TermPage({
   const headings = extractHeadings(term.content);
   const allTerms = getAllTerms();
   const parentTerm = term.parents?.[0] ? getTermBySlug(term.parents[0]) : null;
+
+  // Prev/next — alphabetical order over all terms
+  const sortedAll = [...allTerms].sort((a, b) => a.title.localeCompare(b.title, "nl"));
+  const currentIdx = sortedAll.findIndex((t) => t.slug === term.slug);
+  const prevTerm = currentIdx > 0 ? sortedAll[currentIdx - 1] : null;
+  const nextTerm = currentIdx < sortedAll.length - 1 ? sortedAll[currentIdx + 1] : null;
 
   const isChildOf = (t: EncyclopediaTerm, slug: string) =>
     (t.parents ?? []).includes(slug);
@@ -394,6 +400,43 @@ export default async function TermPage({
                 </div>
               </div>
             )}
+
+            {/* Prev / Next article navigation */}
+            <nav aria-label="Artikel navigatie" className="mt-16 grid grid-cols-2 gap-4">
+              {prevTerm ? (
+                <Link
+                  href={`/encyclopedie/${prevTerm.slug}`}
+                  className="theme-card theme-focus-ring group flex flex-col gap-1 p-4 transition-all duration-200 hover:shadow-md motion-safe:hover:-translate-y-0.5"
+                >
+                  <span className="text-theme-fg-muted flex items-center gap-1 text-xs font-medium tracking-wide uppercase">
+                    <ArrowLeft className="h-3 w-3 transition-transform duration-200 motion-safe:group-hover:-translate-x-1" />
+                    Vorige
+                  </span>
+                  <span className="text-theme-fg line-clamp-2 text-sm font-semibold">
+                    {prevTerm.title}
+                  </span>
+                </Link>
+              ) : (
+                <div />
+              )}
+
+              {nextTerm ? (
+                <Link
+                  href={`/encyclopedie/${nextTerm.slug}`}
+                  className="theme-card theme-focus-ring group flex flex-col items-end gap-1 p-4 text-right transition-all duration-200 hover:shadow-md motion-safe:hover:-translate-y-0.5"
+                >
+                  <span className="text-theme-fg-muted flex items-center gap-1 text-xs font-medium tracking-wide uppercase">
+                    Volgende
+                    <ArrowRight className="h-3 w-3 transition-transform duration-200 motion-safe:group-hover:translate-x-1" />
+                  </span>
+                  <span className="text-theme-fg line-clamp-2 text-sm font-semibold">
+                    {nextTerm.title}
+                  </span>
+                </Link>
+              ) : (
+                <div />
+              )}
+            </nav>
           </div>
 
           {headings.length >= 2 && (
