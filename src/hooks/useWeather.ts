@@ -49,7 +49,7 @@ export function useWeather(initialData?: WeatherApiResponse | null) {
   useEffect(() => {
     if (skipInitialFetch.current) return;
     const controller = new AbortController();
-     
+
     void fetchWeather(false, controller.signal);
     return () => controller.abort();
   }, [fetchWeather]);

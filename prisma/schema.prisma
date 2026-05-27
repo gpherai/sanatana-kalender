@@ -32,6 +32,7 @@ model Category {
   eventCategories EventCategory[]
 
   @@index([sortOrder])
+  @@map("categories")
 }
 
 /// Master event definition
@@ -66,6 +67,7 @@ model Event {
   @@index([eventType])
   @@index([recurrenceType])
   @@index([tags], type: Gin)
+  @@map("events")
 }
 
 /// Join table for Event ↔ Category many-to-many.
@@ -82,6 +84,7 @@ model EventCategory {
   @@unique([eventId, categoryId])
   @@index([eventId, sortOrder])
   @@index([categoryId])
+  @@map("event_categories")
 }
 
 /// Junction table for many-to-many parent-child event series relationships.
@@ -100,6 +103,7 @@ model EventSeriesEntry {
   @@unique([parentEventId, childEventId])
   @@index([parentEventId])
   @@index([childEventId])
+  @@map("event_series_entries")
 }
 
 /// Specific occurrence of an event on a date
@@ -118,6 +122,7 @@ model EventOccurrence {
   @@unique([eventId, date])
   @@index([date])
   @@index([endDate])
+  @@map("event_occurrences")
 }
 
 /// Daily astronomical/lunar information
@@ -125,9 +130,9 @@ model EventOccurrence {
 model DailyInfo {
   id                   String         @id @default(cuid())
   date                 DateTime       @unique @db.Date
-  locationName         String         @default("Den Haag")
-  locationLat          Float          @default(52.07809868016908)
-  locationLon          Float          @default(4.33091146659494)
+  locationName         String
+  locationLat          Float
+  locationLon          Float
   sunrise              String?
   sunset               String?
   moonrise             String?
@@ -187,6 +192,7 @@ model DailyInfo {
   @@index([tithi])
   @@index([sankranti])
   @@index([sankranti, date])
+  @@map("daily_info")
 }
 
 /// User preferences (single-user for now)
@@ -200,6 +206,8 @@ model UserPreference {
   notificationDaysBefore Int          @default(1)
   createdAt              DateTime     @default(now())
   updatedAt              DateTime     @updatedAt
+
+  @@map("user_preferences")
 }
 
 enum EventType {
