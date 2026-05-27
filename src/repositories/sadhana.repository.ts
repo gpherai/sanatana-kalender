@@ -15,7 +15,7 @@ import { utcDateFromDateOnly } from "@/lib/default-location-date";
 // SESSIONS
 // =============================================================================
 
-export async function findAllSessions() {
+export async function findAllSessions(opts?: { take?: number; skip?: number }) {
   return prisma.sadhanaSession.findMany({
     include: {
       items: {
@@ -24,6 +24,8 @@ export async function findAllSessions() {
       },
     },
     orderBy: { date: "desc" },
+    ...(opts?.take !== undefined && { take: opts.take }),
+    ...(opts?.skip !== undefined && { skip: opts.skip }),
   });
 }
 

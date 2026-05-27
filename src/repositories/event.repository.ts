@@ -231,7 +231,10 @@ export async function findUpcomingOccurrences(
 /**
  * Find all occurrences needed to generate an iCal export.
  */
-export async function findOccurrencesForIcalExport() {
+export async function findOccurrencesForIcalExport(opts?: {
+  take?: number;
+  skip?: number;
+}) {
   return prisma.eventOccurrence.findMany({
     include: {
       event: {
@@ -241,6 +244,8 @@ export async function findOccurrencesForIcalExport() {
       },
     },
     orderBy: { date: "asc" },
+    ...(opts?.take !== undefined && { take: opts.take }),
+    ...(opts?.skip !== undefined && { skip: opts.skip }),
   });
 }
 
@@ -533,8 +538,11 @@ export async function persistGeneratedOccurrencesForEvent(
   });
 }
 
+const PERSIST_CHUNK_SIZE = 50;
+
 /**
- * Replace or append generated occurrences for multiple events in one transaction.
+ * Replace or append generated occurrences for multiple events in chunked transactions.
+ * Processes events in batches of PERSIST_CHUNK_SIZE to avoid oversized transactions.
  */
 export async function persistGeneratedOccurrencesForEvents(
   occurrencesMap: Map<string, GeneratedOccurrence[]>,
@@ -543,36 +551,42 @@ export async function persistGeneratedOccurrencesForEvents(
   let totalGenerated = 0;
   let totalDeleted = 0;
 
-  await prisma.$transaction(async (tx) => {
-    for (const [eventId, occurrences] of occurrencesMap.entries()) {
-      if (window.replace) {
-        const deleteResult = await tx.eventOccurrence.deleteMany({
-          where: {
+  const entries = [...occurrencesMap.entries()];
+
+  for (let i = 0; i < entries.length; i += PERSIST_CHUNK_SIZE) {
+    const chunk = entries.slice(i, i + PERSIST_CHUNK_SIZE);
+
+    await prisma.$transaction(async (tx) => {
+      for (const [eventId, occurrences] of chunk) {
+        if (window.replace) {
+          const deleteResult = await tx.eventOccurrence.deleteMany({
+            where: {
+              eventId,
+              date: { gte: window.startDate, lte: window.endDate },
+            },
+          });
+          totalDeleted += deleteResult.count;
+        }
+
+        if (occurrences.length === 0) {
+          continue;
+        }
+
+        const createResult = await tx.eventOccurrence.createMany({
+          data: occurrences.map((occ) => ({
             eventId,
-            date: { gte: window.startDate, lte: window.endDate },
-          },
+            date: occ.date,
+            endDate: occ.endDate,
+            startTime: occ.startTime,
+            endTime: occ.endTime,
+            notes: occ.notes,
+          })),
+          skipDuplicates: true,
         });
-        totalDeleted += deleteResult.count;
+        totalGenerated += createResult.count;
       }
-
-      if (occurrences.length === 0) {
-        continue;
-      }
-
-      const createResult = await tx.eventOccurrence.createMany({
-        data: occurrences.map((occ) => ({
-          eventId,
-          date: occ.date,
-          endDate: occ.endDate,
-          startTime: occ.startTime,
-          endTime: occ.endTime,
-          notes: occ.notes,
-        })),
-        skipDuplicates: true,
-      });
-      totalGenerated += createResult.count;
-    }
-  });
+    });
+  }
 
   return { deletedCount: totalDeleted, generatedCount: totalGenerated };
 }

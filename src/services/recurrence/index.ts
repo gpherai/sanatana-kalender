@@ -133,6 +133,8 @@ export async function generateOccurrences(
 // BATCH GENERATION UTILITIES
 // =============================================================================
 
+const GENERATION_CONCURRENCY = 5;
+
 export async function generateOccurrencesForEvents(
   events: Event[],
   options: RecurrenceOptions
@@ -140,14 +142,20 @@ export async function generateOccurrencesForEvents(
   const results = new Map<string, GeneratedOccurrence[]>();
   let failedCount = 0;
 
-  for (const event of events) {
-    try {
-      const occurrences = await generateOccurrences(event, options);
-      results.set(event.id, occurrences);
-    } catch (error) {
-      logWarn(`Failed to generate occurrences for "${event.name}": ${error}`);
-      failedCount++;
-    }
+  for (let i = 0; i < events.length; i += GENERATION_CONCURRENCY) {
+    const chunk = events.slice(i, i + GENERATION_CONCURRENCY);
+
+    await Promise.all(
+      chunk.map(async (event) => {
+        try {
+          const occurrences = await generateOccurrences(event, options);
+          results.set(event.id, occurrences);
+        } catch (error) {
+          logWarn(`Failed to generate occurrences for "${event.name}": ${error}`);
+          failedCount++;
+        }
+      })
+    );
   }
 
   return { results, failedCount };
