@@ -1,13 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, act, waitFor } from "@testing-library/react";
-import SettingsPage from "../page";
-
-// Mock dependencies
-const mockUseFetch = vi.fn();
-vi.mock("@/hooks/useFetch", () => ({
-  useFetch: (url: string, options: any) => mockUseFetch(url, options),
-}));
+import { SettingsContent } from "@/components/settings/SettingsContent";
 
 const mockTheme = {
   themeName: "light",
@@ -38,9 +32,7 @@ vi.mock("next/navigation", () => ({
 }));
 
 vi.mock("@/components/layout", () => ({
-  PageLayout: ({ children, loading }: any) => (
-    <div data-testid="page-layout">{loading ? "Loading..." : children}</div>
-  ),
+  PageLayout: ({ children }: any) => <div data-testid="page-layout">{children}</div>,
 }));
 
 vi.mock("@/components/settings", () => ({
@@ -53,11 +45,13 @@ vi.mock("@/components/settings", () => ({
   LocationSection: () => <div>Fixed Location</div>,
 }));
 
-describe("SettingsPage", () => {
+const defaultPreferences = { currentTheme: "light", defaultView: "month" };
+
+describe("SettingsContent", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.stubGlobal("fetch", vi.fn());
-    mockUseFetch.mockReturnValue({ data: null, loading: false, refetch: vi.fn() });
+    localStorage.clear();
   });
 
   afterEach(() => {
@@ -65,107 +59,77 @@ describe("SettingsPage", () => {
     vi.unstubAllGlobals();
   });
 
-  it("handles full lifecycle and all handlers", async () => {
+  it("handles full save lifecycle", async () => {
     const fetchMock = vi.mocked(fetch);
     fetchMock.mockResolvedValue({ ok: true, json: async () => ({}) } as any);
-    const refetchDaily = vi.fn();
-    mockUseFetch.mockImplementation((url) => {
-      if (url === "/api/daily-info")
-        return { data: {}, loading: false, refetch: refetchDaily };
-      return { data: null, loading: false, refetch: vi.fn() };
-    });
 
-    const { unmount } = render(<SettingsPage />);
+    const { unmount } = render(
+      <SettingsContent initialPreferences={defaultPreferences} initialDailyInfo={null} />
+    );
 
-    // Trigger changes
-    fireEvent.click(screen.getByText("Change Theme")); // Line 230-231
+    fireEvent.click(screen.getByText("Change Theme"));
     expect(mockTheme.setTheme).toHaveBeenCalledWith("dark-theme");
 
     fireEvent.click(screen.getByText("Change View"));
 
-    // Wait for save cycle (AUTO_SAVE_DELAY = 800ms)
     await waitFor(
       () => {
-        expect(fetchMock).toHaveBeenCalled();
+        expect(fetchMock).toHaveBeenCalledWith(
+          "/api/preferences",
+          expect.objectContaining({ method: "PUT" })
+        );
       },
       { timeout: 2000 }
     );
 
-    // Status: Opgeslagen (exact match to avoid description text)
     expect(screen.getByText("Opgeslagen")).toBeInTheDocument();
 
-    expect(refetchDaily).not.toHaveBeenCalled();
-
-    unmount(); // Line 113 cleanup
+    unmount();
   });
 
-  it("handles initial fetch and error callbacks", async () => {
-    let successCb: any;
-    let errorCb: any;
-    mockUseFetch.mockImplementation((url, options) => {
-      if (url === "/api/preferences") {
-        successCb = options?.onSuccess;
-        errorCb = options?.onError;
-      }
-      return { data: null, loading: false, refetch: vi.fn() };
-    });
+  it("shows error toast when initialPreferences is null", () => {
+    render(<SettingsContent initialPreferences={null} initialDailyInfo={null} />);
 
-    render(<SettingsPage />);
-
-    act(() => {
-      successCb({ currentTheme: "ocean", defaultView: "month" });
-    });
-    expect(mockTheme.setTheme).toHaveBeenCalledWith("ocean");
-
-    act(() => {
-      errorCb(new Error("fail"));
-    });
-    expect(mockToast.showToast).toHaveBeenCalled();
+    expect(mockToast.showToast).toHaveBeenCalledWith(
+      "Kon instellingen niet laden",
+      "error"
+    );
   });
 
-  it("does not autosave immediately after loading initial preferences", async () => {
+  it("does not autosave immediately after mount with initial preferences", async () => {
     vi.useFakeTimers();
-
-    let successCb: any;
-    mockUseFetch.mockImplementation((url, options) => {
-      if (url === "/api/preferences") {
-        successCb = options?.onSuccess;
-      }
-      return { data: null, loading: false, refetch: vi.fn() };
-    });
 
     const fetchMock = vi
       .fn()
       .mockResolvedValue({ ok: true, json: async () => ({}) } as any);
     vi.stubGlobal("fetch", fetchMock);
 
-    render(<SettingsPage />);
-
-    act(() => {
-      successCb({
-        currentTheme: "ocean",
-        defaultView: "month",
-      });
-    });
+    render(
+      <SettingsContent
+        initialPreferences={{ currentTheme: "ocean", defaultView: "month" }}
+        initialDailyInfo={null}
+      />
+    );
 
     await act(async () => {
       vi.advanceTimersByTime(2000);
     });
 
     expect(fetchMock).not.toHaveBeenCalled();
-
-    vi.useRealTimers();
   });
 
   it("handles save failure", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockImplementation(() => {
-        return Promise.resolve({ ok: false, json: async () => ({ message: "FAIL" }) });
-      })
+      vi.fn().mockResolvedValue({
+        ok: false,
+        json: async () => ({ message: "FAIL" }),
+      } as any)
     );
 
-    render(<SettingsPage />);
+    render(
+      <SettingsContent initialPreferences={defaultPreferences} initialDailyInfo={null} />
+    );
     fireEvent.click(screen.getByText("Change View"));
 
     await waitFor(
