@@ -6,7 +6,12 @@ import {
   BirthChartService,
 } from "@/engine/panchanga/services/birth-chart-service";
 import type { BirthData } from "@/engine/panchanga/types";
-import { errorResponse, serverError, validationError } from "@/lib/api-response";
+import {
+  errorResponse,
+  parseJsonBody,
+  serverError,
+  validationError,
+} from "@/lib/api-response";
 import { logError } from "@/lib/utils";
 
 const service = new BirthChartService();
@@ -52,14 +57,10 @@ const birthDataSchema = z
   .strict();
 
 export async function POST(req: NextRequest) {
-  let body: unknown;
-  try {
-    body = await req.json();
-  } catch {
-    return errorResponse("Ongeldig JSON", 400);
-  }
+  const bodyResult = await parseJsonBody(req);
+  if (!bodyResult.ok) return bodyResult.response;
 
-  const parsed = birthDataSchema.safeParse(body);
+  const parsed = birthDataSchema.safeParse(bodyResult.data);
   if (!parsed.success) {
     return validationError(parsed.error);
   }

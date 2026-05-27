@@ -23,7 +23,7 @@ describe("API Kundali", () => {
 
     expect(response.status).toBe(400);
     expect(json.error).toBe("VALIDATION_ERROR");
-    expect(json.message).toBe("Ongeldig JSON");
+    expect(json.message).toBe("Ongeldige JSON");
   });
 
   it("rejects coordinates outside valid ranges", async () => {
