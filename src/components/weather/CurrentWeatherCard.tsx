@@ -21,17 +21,6 @@ export function CurrentWeatherCard({ current: c, today }: CurrentWeatherCardProp
 
   return (
     <div className="theme-card relative overflow-hidden p-5 md:p-6">
-      {c.weather[0] && (
-        <Image
-          src={owmIcon(c.weather[0].icon, 4)}
-          alt=""
-          aria-hidden="true"
-          width={200}
-          height={200}
-          className="pointer-events-none absolute -right-8 -bottom-8 opacity-[0.04] select-none"
-        />
-      )}
-
       <div className="mb-4 flex items-center justify-between gap-3">
         <span className="text-theme-fg-muted text-[10px] font-bold tracking-[0.12em] uppercase">
           Huidig weer
@@ -50,7 +39,8 @@ export function CurrentWeatherCard({ current: c, today }: CurrentWeatherCardProp
             alt={c.weather[0].description}
             width={80}
             height={80}
-            preload
+            loading="eager"
+            fetchPriority="high"
             className="-mt-3 -ml-3 shrink-0 drop-shadow-sm"
           />
         )}

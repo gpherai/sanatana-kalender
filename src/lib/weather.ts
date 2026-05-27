@@ -76,21 +76,21 @@ export function fmtHour(unix: number, tz: number) {
 
 export function fmtDayLabel(unix: number, tz: number, nowUnix: number): string {
   const d = toLocal(unix, tz);
-  const now = toLocal(nowUnix, tz);
-  if (d.getUTCDate() === now.getUTCDate()) return "Vandaag";
-  const tom = new Date(now);
-  tom.setUTCDate(now.getUTCDate() + 1);
-  if (d.getUTCDate() === tom.getUTCDate()) return "Morgen";
+  const targetKey = dayKey(unix, tz);
+  const todayKey = dayKey(nowUnix, tz);
+  if (targetKey === todayKey) return "Vandaag";
+  const tomorrowKey = dayKey(localDayStartUnix(nowUnix, tz) + 86400, tz);
+  if (targetKey === tomorrowKey) return "Morgen";
   return d.toLocaleDateString("nl-NL", { weekday: "long", timeZone: "UTC" });
 }
 
 export function fmtDayShort(unix: number, tz: number, nowUnix: number): string {
   const d = toLocal(unix, tz);
-  const now = toLocal(nowUnix, tz);
-  if (d.getUTCDate() === now.getUTCDate()) return "Vandaag";
-  const tom = new Date(now);
-  tom.setUTCDate(now.getUTCDate() + 1);
-  if (d.getUTCDate() === tom.getUTCDate()) return "Morgen";
+  const targetKey = dayKey(unix, tz);
+  const todayKey = dayKey(nowUnix, tz);
+  if (targetKey === todayKey) return "Vandaag";
+  const tomorrowKey = dayKey(localDayStartUnix(nowUnix, tz) + 86400, tz);
+  if (targetKey === tomorrowKey) return "Morgen";
   return d.toLocaleDateString("nl-NL", {
     weekday: "short",
     day: "numeric",
@@ -221,7 +221,7 @@ export function prepareWeatherDashboardData(
     : todayHourly;
   const nextMidnightUnix = localDayStartUnix(nowUnix, tz) + 86400;
   const todayHourlyInterp = interpolateHourly(interpolationSource).filter(
-    (h) => h.dt <= nextMidnightUnix
+    (h) => h.dt < nextMidnightUnix
   );
 
   const tempMins = weather.daily.map((d) => d.temp.min);
@@ -230,7 +230,7 @@ export function prepareWeatherDashboardData(
   const allMax = tempMaxes.length > 0 ? Math.max(...tempMaxes) : 1;
 
   return {
-    today: weather.daily[0],
+    today: weather.daily.find((d) => dayKey(d.dt, tz) === nowKey) ?? weather.daily[0],
     todayHourlyInterp,
     futureItems,
     allMin,

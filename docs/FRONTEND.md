@@ -90,7 +90,7 @@ Elke major route heeft een `error.tsx` (`"use client"`) als Next.js error bounda
 - `src/app/weer/error.tsx`
 - `src/app/kundali/error.tsx`
 
-Ze tonen een Nederlandse foutmelding met een retry-knop via de `reset()` callback van de Next.js error boundary API.
+Ze tonen een Nederlandse foutmelding met een retry-knop via de `unstable_retry()` callback van de Next.js 16 error boundary API.
 
 ---
 

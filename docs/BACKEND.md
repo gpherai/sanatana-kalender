@@ -69,7 +69,7 @@ Alle routes gebruiken response helpers uit `src/lib/api-response.ts` (`serverErr
 | `/api/themes` | GET | Theme catalog voor externe callers |
 | `/api/kundali` | POST | Jyotisha geboortehoroscoop (9 navagrahas + lagna, Lahiri ayanamsa) |
 | `/api/ical/export` | GET | iCal export (.ics) van alle events |
-| `/api/weer` | GET | Weerdashboard (huidig, uurlijks, dagelijks, lucht, astronomie) |
+| `/api/weer` | GET | Weerdashboard (huidig, uurlijks, dagelijks, lucht, alarmen, astronomie) |
 | `/api/weer/map/[layer]/[z]/[x]/[y]` | GET | Proxy voor OpenWeatherMap kaarttegels |
 | `/api/sadhana/sessions` | GET / POST | Sessies lijst + aanmaken |
 | `/api/sadhana/sessions/[id]` | GET / PATCH / DELETE | Individuele sessie |
@@ -95,9 +95,11 @@ Alle routes gebruiken response helpers uit `src/lib/api-response.ts` (`serverErr
 | `eventService` | `event.service.ts` | Event mutations, occurrence ownership, category validatie en conflictregels |
 | `sadhanaService` | `sadhana.service.ts` | Streaks, goals progress, aggregatie van sessiedata naar statistieken |
 | `sadhanaFormatters` | `lib/sadhana-formatters.ts` | DTO-formatting: `formatSession`, `formatGoal`, `formatPractice`, `computePracticeStats` |
-| `weatherService` | `weather.service.ts` | OpenWeather orchestratie, foutnormalisatie, dashboard-response mapping |
+| `weatherService` | `weather.service.ts` | OpenWeather orchestratie, foutnormalisatie, dashboard-response mapping; luchtkwaliteit en alerts degraderen optioneel |
 | `getHomePageData` | `home.service.ts` | SSR aggregatie home page: upcomingEvents, categories, panchanga en weather parallel; timezone-aware todayEvents |
 | `getSadhanaDashboardInit` | `sadhana-dashboard.service.ts` | SSR aggregatie sadhana pagina: DB queries parallel, daarna panchanga gescheiden om connection pool timeouts te voorkomen |
+
+`weatherService` gebruikt geen One Call API. Het dashboard combineert OpenWeather Current Weather, 5 Day Forecast, Air Pollution, kaarttegels en optioneel OpenWeather Alerts. Alerts worden via de aparte Alerts API opgehaald met een GeoJSON `Point` locatie (`coordinates: [lon, lat]`), zodat ontbrekende Alerts-toegang geen harde fout voor `/api/weer` wordt.
 
 ---
 

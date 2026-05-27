@@ -105,6 +105,55 @@ describe("GET /api/weer", () => {
     ],
   };
 
+  const mockAlerts = {
+    items: [
+      {
+        date: "2022-04-04T12:00:00+00:00",
+        date_epoch: 1649073600,
+        alerts: [
+          {
+            source: "KNMI",
+            title: "Code geel voor windstoten",
+            industry: [
+              { description: "Kans op zware windstoten.", severity: "moderate" },
+            ],
+            certainty: "likely",
+            urgency: "expected",
+            tag: "Wind",
+          },
+        ],
+      },
+    ],
+  };
+
+  function jsonResponse(body: unknown) {
+    return { ok: true, status: 200, json: () => Promise.resolve(body) };
+  }
+
+  function statusResponse(status: number) {
+    return { ok: false, status, json: () => Promise.resolve({}) };
+  }
+
+  function mockSuccessfulWeatherFetch({
+    weather = mockWeather,
+    forecast = mockForecast,
+    air = mockAirPollution,
+    alerts = { items: [] },
+  }: {
+    weather?: unknown;
+    forecast?: unknown;
+    air?: unknown;
+    alerts?: unknown;
+  } = {}) {
+    mockFetch.mockImplementation((url: string) => {
+      if (url.includes("/weather?")) return Promise.resolve(jsonResponse(weather));
+      if (url.includes("/forecast?")) return Promise.resolve(jsonResponse(forecast));
+      if (url.includes("/air_pollution?")) return Promise.resolve(jsonResponse(air));
+      if (url.includes("/alerts/1.0?")) return Promise.resolve(jsonResponse(alerts));
+      return Promise.reject(new Error("Unknown URL"));
+    });
+  }
+
   it("returns 503 if API key is missing", async () => {
     delete process.env.OPENWEATHER_API_KEY;
     const response = await getResponse();
@@ -114,18 +163,7 @@ describe("GET /api/weer", () => {
   });
 
   it("returns weather data when API calls are successful", async () => {
-    mockFetch.mockImplementation((url: string) => {
-      if (url.includes("/weather"))
-        return Promise.resolve({ ok: true, json: () => Promise.resolve(mockWeather) });
-      if (url.includes("/forecast"))
-        return Promise.resolve({ ok: true, json: () => Promise.resolve(mockForecast) });
-      if (url.includes("/air_pollution"))
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve(mockAirPollution),
-        });
-      return Promise.reject(new Error("Unknown URL"));
-    });
+    mockSuccessfulWeatherFetch({ alerts: mockAlerts });
 
     const response = await getResponse();
     const json = await response.json();
@@ -136,22 +174,20 @@ describe("GET /api/weer", () => {
     expect(json.hourly).toHaveLength(2);
     expect(json.daily).toHaveLength(1);
     expect(json.air_quality.aqi).toBe(1);
+    expect(json.alerts).toHaveLength(1);
+    expect(json.alerts[0]).toMatchObject({
+      sender_name: "KNMI",
+      event: "Code geel voor windstoten",
+      title: "Code geel voor windstoten",
+      description: "Kans op zware windstoten.",
+      severity: "moderate",
+      tags: ["Wind"],
+    });
     expect(json.daily[0].moon_phase).toBeDefined();
   });
 
   it("uses DEFAULT_LOCATION for weather requests", async () => {
-    mockFetch.mockImplementation((url: string) => {
-      if (url.includes("/weather"))
-        return Promise.resolve({ ok: true, json: () => Promise.resolve(mockWeather) });
-      if (url.includes("/forecast"))
-        return Promise.resolve({ ok: true, json: () => Promise.resolve(mockForecast) });
-      if (url.includes("/air_pollution"))
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve(mockAirPollution),
-        });
-      return Promise.reject(new Error("Unknown URL"));
-    });
+    mockSuccessfulWeatherFetch();
 
     const response = await getResponse();
     const json = await response.json();
@@ -166,10 +202,25 @@ describe("GET /api/weer", () => {
       expect.stringContaining(`lon=${DEFAULT_LOCATION.lon}`),
       expect.any(Object)
     );
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringContaining(
+        encodeURIComponent(
+          JSON.stringify({
+            type: "Point",
+            coordinates: [DEFAULT_LOCATION.lon, DEFAULT_LOCATION.lat],
+          })
+        )
+      ),
+      expect.any(Object)
+    );
   });
 
   it("returns 503 for invalid API key (401)", async () => {
-    mockFetch.mockResolvedValueOnce({ ok: false, status: 401 });
+    mockFetch.mockImplementation((url: string) => {
+      if (url.includes("/weather?")) return Promise.resolve(statusResponse(401));
+      if (url.includes("/forecast?")) return Promise.resolve(jsonResponse(mockForecast));
+      return Promise.reject(new Error("Unexpected optional call"));
+    });
     const response = await getResponse();
     const json = await response.json();
     expect(response.status).toBe(503);
@@ -177,7 +228,11 @@ describe("GET /api/weer", () => {
   });
 
   it("returns 500 for other OpenWeather errors", async () => {
-    mockFetch.mockResolvedValueOnce({ ok: false, status: 500 });
+    mockFetch.mockImplementation((url: string) => {
+      if (url.includes("/weather?")) return Promise.resolve(statusResponse(500));
+      if (url.includes("/forecast?")) return Promise.resolve(jsonResponse(mockForecast));
+      return Promise.reject(new Error("Unexpected optional call"));
+    });
     const response = await getResponse();
     const json = await response.json();
     expect(response.status).toBe(500);
@@ -185,7 +240,11 @@ describe("GET /api/weer", () => {
   });
 
   it("returns 500 on fetch rejection", async () => {
-    mockFetch.mockRejectedValueOnce(new Error("Network error"));
+    mockFetch.mockImplementation((url: string) => {
+      if (url.includes("/weather?")) return Promise.reject(new Error("Network error"));
+      if (url.includes("/forecast?")) return Promise.resolve(jsonResponse(mockForecast));
+      return Promise.reject(new Error("Unexpected optional call"));
+    });
     const response = await getResponse();
     const json = await response.json();
     expect(response.status).toBe(500);
@@ -194,12 +253,11 @@ describe("GET /api/weer", () => {
 
   it("handles missing air quality data gracefully", async () => {
     mockFetch.mockImplementation((url: string) => {
-      if (url.includes("/weather"))
-        return Promise.resolve({ ok: true, json: () => Promise.resolve(mockWeather) });
-      if (url.includes("/forecast"))
-        return Promise.resolve({ ok: true, json: () => Promise.resolve(mockForecast) });
-      if (url.includes("/air_pollution"))
-        return Promise.resolve({ ok: false, status: 404 });
+      if (url.includes("/weather?")) return Promise.resolve(jsonResponse(mockWeather));
+      if (url.includes("/forecast?")) return Promise.resolve(jsonResponse(mockForecast));
+      if (url.includes("/air_pollution?")) return Promise.resolve(statusResponse(404));
+      if (url.includes("/alerts/1.0?"))
+        return Promise.resolve(jsonResponse({ items: [] }));
       return Promise.reject(new Error("Unknown URL"));
     });
 
@@ -210,20 +268,49 @@ describe("GET /api/weer", () => {
     expect(json.air_quality).toBeNull();
   });
 
-  it("correctly calculates dew point and handles optional fields", async () => {
-    const weatherNoRain = { ...mockWeather, rain: undefined, snow: { "1h": 0.1 } };
+  it("keeps weather available when optional air quality fetch rejects", async () => {
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
     mockFetch.mockImplementation((url: string) => {
-      if (url.includes("/weather"))
-        return Promise.resolve({ ok: true, json: () => Promise.resolve(weatherNoRain) });
-      if (url.includes("/forecast"))
-        return Promise.resolve({ ok: true, json: () => Promise.resolve(mockForecast) });
-      if (url.includes("/air_pollution"))
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve(mockAirPollution),
-        });
+      if (url.includes("/weather?")) return Promise.resolve(jsonResponse(mockWeather));
+      if (url.includes("/forecast?")) return Promise.resolve(jsonResponse(mockForecast));
+      if (url.includes("/air_pollution?"))
+        return Promise.reject(new Error("Air unavailable"));
+      if (url.includes("/alerts/1.0?"))
+        return Promise.resolve(jsonResponse({ items: [] }));
       return Promise.reject(new Error("Unknown URL"));
     });
+
+    try {
+      const response = await getResponse();
+      const json = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(json.air_quality).toBeNull();
+    } finally {
+      consoleError.mockRestore();
+    }
+  });
+
+  it("keeps weather available when OpenWeather Alerts access is unavailable", async () => {
+    mockFetch.mockImplementation((url: string) => {
+      if (url.includes("/weather?")) return Promise.resolve(jsonResponse(mockWeather));
+      if (url.includes("/forecast?")) return Promise.resolve(jsonResponse(mockForecast));
+      if (url.includes("/air_pollution?"))
+        return Promise.resolve(jsonResponse(mockAirPollution));
+      if (url.includes("/alerts/1.0?")) return Promise.resolve(statusResponse(401));
+      return Promise.reject(new Error("Unknown URL"));
+    });
+
+    const response = await getResponse();
+    const json = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(json.alerts).toEqual([]);
+  });
+
+  it("correctly calculates dew point and handles optional fields", async () => {
+    const weatherNoRain = { ...mockWeather, rain: undefined, snow: { "1h": 0.1 } };
+    mockSuccessfulWeatherFetch({ weather: weatherNoRain });
 
     const response = await getResponse();
     const json = await response.json();
@@ -243,18 +330,7 @@ describe("GET /api/weer", () => {
       ],
     };
 
-    mockFetch.mockImplementation((url: string) => {
-      if (url.includes("/weather"))
-        return Promise.resolve({ ok: true, json: () => Promise.resolve(febWeather) });
-      if (url.includes("/forecast"))
-        return Promise.resolve({ ok: true, json: () => Promise.resolve(febForecast) });
-      if (url.includes("/air_pollution"))
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve(mockAirPollution),
-        });
-      return Promise.reject(new Error("Unknown URL"));
-    });
+    mockSuccessfulWeatherFetch({ weather: febWeather, forecast: febForecast });
 
     const response = await getResponse();
     const json = await response.json();
@@ -279,21 +355,7 @@ describe("GET /api/weer", () => {
       ],
     };
 
-    mockFetch.mockImplementation((url: string) => {
-      if (url.includes("/weather"))
-        return Promise.resolve({ ok: true, json: () => Promise.resolve(weatherMinimal) });
-      if (url.includes("/forecast"))
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve(forecastMinimal),
-        });
-      if (url.includes("/air_pollution"))
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve(mockAirPollution),
-        });
-      return Promise.reject(new Error("Unknown URL"));
-    });
+    mockSuccessfulWeatherFetch({ weather: weatherMinimal, forecast: forecastMinimal });
 
     const response = await getResponse();
     const json = await response.json();
@@ -303,15 +365,7 @@ describe("GET /api/weer", () => {
   });
 
   it("handles empty air pollution list", async () => {
-    mockFetch.mockImplementation((url: string) => {
-      if (url.includes("/weather"))
-        return Promise.resolve({ ok: true, json: () => Promise.resolve(mockWeather) });
-      if (url.includes("/forecast"))
-        return Promise.resolve({ ok: true, json: () => Promise.resolve(mockForecast) });
-      if (url.includes("/air_pollution"))
-        return Promise.resolve({ ok: true, json: () => Promise.resolve({ list: [] }) });
-      return Promise.reject(new Error("Unknown URL"));
-    });
+    mockSuccessfulWeatherFetch({ air: { list: [] } });
 
     const response = await getResponse();
     const json = await response.json();

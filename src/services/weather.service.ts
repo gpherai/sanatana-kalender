@@ -2,9 +2,16 @@ import "server-only";
 
 import { DEFAULT_LOCATION } from "@/lib/domain";
 import { env } from "@/lib/env";
-import type { AirQuality, WeatherApiResponse, WeatherCondition } from "@/types/weather";
+import { logError } from "@/lib/utils";
+import type {
+  AirQuality,
+  WeatherAlert,
+  WeatherApiResponse,
+  WeatherCondition,
+} from "@/types/weather";
 
 const OPENWEATHER_BASE_URL = "https://api.openweathermap.org/data/2.5";
+const OPENWEATHER_ALERTS_URL = "https://api.openweathermap.org/alerts/1.0";
 
 type WeatherServiceErrorCode = "missing_api_key" | "invalid_api_key" | "upstream";
 
@@ -82,6 +89,57 @@ interface AirPollutionResponse {
       nh3: number;
     };
   }>;
+}
+
+interface OpenWeatherAlert {
+  alert_ID?: string;
+  source?: string;
+  event?: string;
+  title?: string;
+  description?: string;
+  tag?: string | string[];
+  tags?: string[];
+  severity?: string;
+  certainty?: string;
+  urgency?: string;
+  industry?: Array<{
+    industry_name?: string;
+    description?: string;
+    severity?: string;
+  }>;
+  regions?: string[];
+}
+
+interface AlertItem {
+  date?: string;
+  date_epoch?: number;
+  alerts?: OpenWeatherAlert[];
+}
+
+interface AlertsResponse {
+  items?: AlertItem[];
+}
+
+function weatherFetchOptions(revalidate = 600) {
+  return {
+    next: { revalidate },
+    signal: AbortSignal.timeout(10_000),
+  };
+}
+
+function cleanText(value: string | undefined): string | undefined {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : undefined;
+}
+
+function alertTags(alert: OpenWeatherAlert): string[] | undefined {
+  const raw = alert.tags ?? alert.tag;
+  if (!raw) return undefined;
+  const tags = Array.isArray(raw) ? raw : raw.split(",");
+  const cleaned = tags
+    .map((tag) => cleanText(tag))
+    .filter((tag): tag is string => Boolean(tag));
+  return cleaned.length > 0 ? cleaned : undefined;
 }
 
 function calculateMoonPhase(unixTs: number): number {
@@ -208,6 +266,80 @@ function mapAirQuality(data: AirPollutionResponse): AirQuality | null {
   };
 }
 
+function alertStartUnix(item: AlertItem) {
+  if (typeof item.date_epoch === "number" && Number.isFinite(item.date_epoch)) {
+    return item.date_epoch;
+  }
+
+  const parsed = item.date ? Date.parse(item.date) : Number.NaN;
+  return Number.isFinite(parsed)
+    ? Math.floor(parsed / 1000)
+    : Math.floor(Date.now() / 1000);
+}
+
+function mapAlerts(data: AlertsResponse): WeatherAlert[] {
+  return (data.items ?? []).flatMap((item) => {
+    const alerts = Array.isArray(item.alerts) ? item.alerts : [];
+    const start = alertStartUnix(item);
+    const end = start + 3600;
+
+    return alerts.map((alert) => {
+      const industry = Array.isArray(alert.industry) ? alert.industry[0] : undefined;
+      const tags = alertTags(alert);
+      const regions = alert.regions?.filter(Boolean);
+      const event =
+        cleanText(alert.event) ?? cleanText(alert.title) ?? tags?.[0] ?? "Weeralarm";
+      const title = cleanText(alert.title);
+
+      return {
+        sender_name: cleanText(alert.source) ?? "OpenWeather",
+        event,
+        title,
+        start,
+        end,
+        description:
+          cleanText(alert.description) ??
+          cleanText(industry?.description) ??
+          title ??
+          event,
+        severity: cleanText(alert.severity) ?? cleanText(industry?.severity),
+        certainty: cleanText(alert.certainty),
+        urgency: cleanText(alert.urgency),
+        tags,
+        regions,
+      };
+    });
+  });
+}
+
+async function fetchAirQuality(airParams: string): Promise<AirQuality | null> {
+  try {
+    const res = await fetch(
+      `${OPENWEATHER_BASE_URL}/air_pollution?${airParams}`,
+      weatherFetchOptions()
+    );
+    if (!res.ok) return null;
+    return mapAirQuality((await res.json()) as AirPollutionResponse);
+  } catch (error) {
+    logError("[Weather] Optional air quality fetch failed", error);
+    return null;
+  }
+}
+
+async function fetchWeatherAlerts(alertParams: string): Promise<WeatherAlert[]> {
+  try {
+    const res = await fetch(
+      `${OPENWEATHER_ALERTS_URL}?${alertParams}`,
+      weatherFetchOptions()
+    );
+    if (!res.ok) return [];
+    return mapAlerts((await res.json()) as AlertsResponse);
+  } catch (error) {
+    logError("[Weather] Optional alerts fetch failed", error);
+    return [];
+  }
+}
+
 export async function getWeatherDashboard(): Promise<WeatherApiResponse> {
   const apiKey = env.OPENWEATHER_API_KEY;
 
@@ -221,16 +353,21 @@ export async function getWeatherDashboard(): Promise<WeatherApiResponse> {
 
   const lat = String(DEFAULT_LOCATION.lat);
   const lon = String(DEFAULT_LOCATION.lon);
+  const alertLocation = JSON.stringify({
+    type: "Point",
+    coordinates: [DEFAULT_LOCATION.lon, DEFAULT_LOCATION.lat],
+  });
 
   const params = `lat=${lat}&lon=${lon}&units=metric&lang=nl&appid=${apiKey}`;
   const airParams = `lat=${lat}&lon=${lon}&appid=${apiKey}`;
+  const alertParams = new URLSearchParams({
+    location: alertLocation,
+    appid: apiKey,
+  }).toString();
 
-  const opts = { next: { revalidate: 600 }, signal: AbortSignal.timeout(10_000) };
-
-  const [weatherRes, forecastRes, airRes] = await Promise.all([
-    fetch(`${OPENWEATHER_BASE_URL}/weather?${params}`, opts),
-    fetch(`${OPENWEATHER_BASE_URL}/forecast?${params}`, opts),
-    fetch(`${OPENWEATHER_BASE_URL}/air_pollution?${airParams}`, opts),
+  const [weatherRes, forecastRes] = await Promise.all([
+    fetch(`${OPENWEATHER_BASE_URL}/weather?${params}`, weatherFetchOptions()),
+    fetch(`${OPENWEATHER_BASE_URL}/forecast?${params}`, weatherFetchOptions()),
   ]);
 
   if (!weatherRes.ok || !forecastRes.ok) {
@@ -248,9 +385,10 @@ export async function getWeatherDashboard(): Promise<WeatherApiResponse> {
   const weather = (await weatherRes.json()) as CurrentResponse;
   const forecast = (await forecastRes.json()) as ForecastResponse;
   const tzOffset = weather.timezone;
-  const airQuality = airRes.ok
-    ? mapAirQuality((await airRes.json()) as AirPollutionResponse)
-    : null;
+  const [airQuality, alerts] = await Promise.all([
+    fetchAirQuality(airParams),
+    fetchWeatherAlerts(alertParams),
+  ]);
 
   return {
     location: DEFAULT_LOCATION.name,
@@ -259,7 +397,7 @@ export async function getWeatherDashboard(): Promise<WeatherApiResponse> {
     current: mapCurrent(weather),
     hourly: mapHourly(forecast.list),
     daily: mapDaily(forecast.list, tzOffset),
-    alerts: [],
+    alerts,
     air_quality: airQuality,
   };
 }

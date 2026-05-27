@@ -13,7 +13,7 @@ Een Next.js applicatie voor het bijhouden van Hindu festivals, puja's, ekadashi'
 - **Kundali** — Jyotisha geboortehoroscoop met alle 9 navagrahas, lagna en nakshatra (Lahiri ayanamsa, Whole Sign huizen, Mean Node)
 - **Sadhana tracker** — mantra japa, parayana en meditatie bijhouden; gepersonaliseerde routines, streaks, doelen en analytics
 - **Encyclopedie** — 273 MDX-artikelen over Sanatana Dharma met zoekfunctie en sticky inhoudsopgave per artikel
-- **Weermodule** — vijfdaagse prognose, interactieve kaart, luchtkwaliteit en astronomische tijden
+- **Weermodule** — vijfdaagse prognose, interactieve kaart, luchtkwaliteit, weeralarmen en astronomische tijden
 - iCal export — abonneer op de kalender vanuit Google Calendar, Apple Calendar etc.
 - Categorisatie per godheid (Ganesha, Shiva, Krishna, etc.)
 - Geavanceerd filteren en zoeken
@@ -66,7 +66,7 @@ npm run dev
 |-----------|-----------|--------------|
 | `DATABASE_URL` | Ja | PostgreSQL connection string |
 | `NODE_ENV` | Nee | `development` / `production` |
-| `OPENWEATHER_API_KEY` | Nee | OpenWeatherMap API key — weermodule uitgeschakeld zonder |
+| `OPENWEATHER_API_KEY` | Nee | OpenWeather API key — weermodule uitgeschakeld zonder; weeralarmen verschijnen alleen met OpenWeather Alerts-toegang |
 | `POSTGRES_USER` | Docker | Database gebruiker |
 | `POSTGRES_PASSWORD` | Docker | Database wachtwoord |
 | `POSTGRES_DB` | Docker | Database naam |
@@ -188,7 +188,7 @@ sanatana-kalender/
 │   │   ├── api/
 │   │   │   ├── events/      # CRUD voor events en occurrences
 │   │   │   ├── sadhana/     # CRUD: sessions, practices, goals, routines, stats/*
-│   │   │   ├── weer/        # Weerdata + /map/[layer]/... + /search
+│   │   │   ├── weer/        # Weerdata + /map/[layer]/...
 │   │   │   ├── kundali/     # Geboortehoroscoop berekening
 │   │   │   ├── daily-info/  # Dagelijkse panchanga data
 │   │   │   ├── preferences/ # Gebruikersvoorkeuren
@@ -240,7 +240,7 @@ sanatana-kalender/
 | `/api/themes` | GET | Beschikbare thema's |
 | `/api/kundali` | POST | Jyotisha geboortehoroscoop (alle 9 navagrahas + lagna) |
 | `/api/ical/export` | GET | iCal export van alle events (.ics) |
-| `/api/weer` | GET | Weerdashboard data (huidig, uurlijks, dagelijks, lucht, astronomie) |
+| `/api/weer` | GET | Weerdashboard data (huidig, uurlijks, dagelijks, lucht, alarmen, astronomie) |
 | `/api/weer/map/[layer]/[z]/[x]/[y]` | GET | Proxy voor OpenWeatherMap kaarttegels |
 | `/api/sadhana/sessions` | GET/POST | Sadhana sessies |
 | `/api/sadhana/sessions/[id]` | GET/PATCH/DELETE | Individuele sessie |

@@ -63,6 +63,7 @@ PROJECT.md
 .mcp.json
 .codex
 /.claude/
+/.antigravitycli/
 /.gemini/
 /.gemini_security/
 /docs/superpowers/

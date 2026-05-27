@@ -5,20 +5,11 @@ import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
 import L from "leaflet";
 import { cn } from "@/lib/utils";
 
-// Fix Leaflet's default icon paths in Next.js
-const iconUrl = "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png";
-const iconRetinaUrl = "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png";
-const shadowUrl = "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png";
-
-const defaultIcon = new L.Icon({
-  iconUrl,
-  iconRetinaUrl,
-  shadowUrl,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  tooltipAnchor: [16, -28],
-  shadowSize: [41, 41],
+const defaultIcon = L.divIcon({
+  className: "weather-map-marker",
+  html: '<span style="display:block;width:20px;height:20px;border-radius:9999px;background:var(--theme-primary);border:3px solid var(--theme-surface);box-shadow:0 2px 10px rgba(15,23,42,.35)"></span>',
+  iconSize: [20, 20],
+  iconAnchor: [10, 10],
 });
 
 interface WeatherMapProps {

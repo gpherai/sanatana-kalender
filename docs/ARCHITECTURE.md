@@ -278,6 +278,7 @@ src/scripts/generate-occurrences.ts
 | Single user | Scope beperking | Uitbreidbaar met auth later |
 | Handmatige event invoer | Geen externe Panchang API | Handmatig invoeren via EventForm |
 | Locatie vast (Den Haag) | Bewuste single-user scope | Wijzig `DEFAULT_LOCATION` en hergenereer |
-| Weerdata externe afhankelijkheid | OpenWeatherMap API key vereist | Degradeert graceful zonder key |
-| Geen server-side caching voor weer | Elke request roept OpenWeatherMap aan | Uitbreidbaar met Redis/ISR |
+| Weerdata externe afhankelijkheid | OpenWeather API key vereist | Degradeert graceful zonder key |
+| OpenWeather Alerts optioneel product | Alerts API toegang kan ontbreken op dezelfde key | Dashboard blijft werken; alarmen blijven leeg |
+| Weerdata kort gecached | Next.js `fetch` revalidate: dashboard 10 minuten, kaarttegels 1 uur | TTL aanpassen in `weather.service.ts` of map route |
 | Sadhana heatmap start op 2025-01-01 | App launch datum (`SADHANA_START_DATE`) | Aanpassen in `sadhana-utils.ts` |

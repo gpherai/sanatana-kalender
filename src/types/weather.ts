@@ -91,10 +91,16 @@ export interface DailyWeather {
 export interface WeatherAlert {
   sender_name: string;
   event: string;
+  title?: string;
   /** Unix timestamp */
   start: number;
   end: number;
   description: string;
+  severity?: string;
+  certainty?: string;
+  urgency?: string;
+  tags?: string[];
+  regions?: string[];
 }
 
 export interface AirQualityComponents {

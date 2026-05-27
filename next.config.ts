@@ -46,7 +46,7 @@ const securityHeaders = [
       "default-src 'self'",
       `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
       "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: blob: https://openweathermap.org",
+      "img-src 'self' data: blob: https://openweathermap.org https://*.tile.openstreetmap.org",
       "font-src 'self' data:",
       "connect-src 'self'",
       "frame-ancestors 'self'",
