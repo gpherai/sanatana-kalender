@@ -162,23 +162,20 @@ export const swe_pheno_ut = (
  * @returns Julian Day of crossing, or null if not found within search window
  */
 /**
- * Find when a cyclic value (tithi/nakshatra/yoga) reaches a target
- *
- * NOTE: Has wrap-handling logic but not fully wrap-safe for all edge cases
- * (per Codex/ChatGPT feedback). Works well for most scenarios.
- * Also has limited search window (1.5 days) - insufficient for long events
- * like sun sign changes (~30 days).
+ * Find when a cyclic value (tithi/nakshatra/yoga/sun-sign) reaches a target.
+ * maxScanDays controls the search window: 1.5 days (default) for lunar events,
+ * 35 for Sankranti (sun stays in one sign ~30 days), 3 for moon sign changes.
  */
 export async function findEventEnd(
   startJD: number,
   getVal: (jd: number) => Promise<number>,
   targetVal: number,
-  wrapAt: number
+  wrapAt: number,
+  maxScanDays = 1.5
 ): Promise<number | null> {
   // 1. Bracket the crossing
   let t1 = startJD;
   let t2 = startJD + 0.05; // Start with ~1.2 hours step
-  const maxScanDays = 1.5; // Look ahead max 36 hours
   let foundBracket = false;
 
   let v1 = await getVal(t1);

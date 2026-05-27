@@ -242,9 +242,7 @@ export class PanchangaSwissService {
     const nextSunSignBoundary = norm360((sunSignIdx + 1) * 30);
     const nextMoonSignBoundary = norm360((moonSignIdx + 1) * 30);
 
-    // Sun sign transition time (Sankranti)
-    // NOTE: findEventEnd has limited search window (~1.5 days), insufficient for sun (30 days)
-    // This means sunSign.uptoLocal will often be null - acceptable limitation
+    // Sun sign transition time (Sankranti) — sun stays in one sign ~30 days, scan 35
     const sunSignEndJD = await findEventEnd(
       astro.sunriseJD,
       async (jd) => {
@@ -252,10 +250,11 @@ export class PanchangaSwissService {
         return norm360(s.longitude);
       },
       nextSunSignBoundary,
-      360
+      360,
+      35
     );
 
-    // Moon sign transition time
+    // Moon sign transition time — moon changes sign every ~2.5 days, scan 3
     const moonSignEndJD = await findEventEnd(
       astro.sunriseJD,
       async (jd) => {
@@ -263,7 +262,8 @@ export class PanchangaSwissService {
         return norm360(m.longitude);
       },
       nextMoonSignBoundary,
-      360
+      360,
+      3
     );
 
     const sunSignEnd = sunSignEndJD ? this.jdToLocal(sunSignEndJD, location.tz) : null;

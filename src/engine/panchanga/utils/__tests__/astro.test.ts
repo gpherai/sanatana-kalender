@@ -171,9 +171,24 @@ describe("Astro Utilities", () => {
     expect(Math.abs((result ?? 0) - 200.3)).toBeLessThan(0.01);
   });
 
-  it("returns null when no bracket is found", async () => {
+  it("returns null when no bracket is found within default window", async () => {
     const startJD = 300;
     const result = await findEventEnd(startJD, async () => 1, 10, 30);
+    expect(result).toBeNull();
+  });
+
+  it("finds crossing beyond 1.5 days when maxScanDays is extended", async () => {
+    const startJD = 500;
+    // Target at +2 days — beyond default 1.5 day window, reachable with maxScanDays=3
+    const result = await findEventEnd(startJD, async (jd) => jd - startJD, 2.0, 360, 3);
+    expect(result).not.toBeNull();
+    expect(Math.abs((result ?? 0) - (startJD + 2.0))).toBeLessThan(0.001);
+  });
+
+  it("returns null when target is beyond maxScanDays", async () => {
+    const startJD = 600;
+    // Target at +2 days, but maxScanDays=1.5 — should not find it
+    const result = await findEventEnd(startJD, async (jd) => jd - startJD, 2.0, 360, 1.5);
     expect(result).toBeNull();
   });
 
