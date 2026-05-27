@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-  errorResponse,
+  handlePrismaError,
   parseJsonBody,
   serverError,
   validationError,
@@ -8,7 +8,6 @@ import {
 import { logError } from "@/lib/utils";
 import { createSadhanaRoutineSchema } from "@/lib/validations";
 import { createSadhanaRoutine, listSadhanaRoutines } from "@/services/sadhana.service";
-import { Prisma } from "@prisma/client";
 
 export async function GET() {
   try {
@@ -41,9 +40,11 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(routine, { status: 201 });
   } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2003") {
-      return errorResponse("Beoefening niet gevonden", 400);
-    }
+    const prismaError = handlePrismaError(error, {
+      foreignKey: "Beoefening niet gevonden",
+    });
+    if (prismaError) return prismaError;
+
     logError("[SADHANA_ROUTINES_POST]", error);
     return serverError("Kon routine niet aanmaken");
   }

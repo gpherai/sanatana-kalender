@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
+  handlePrismaError,
   parseJsonBody,
   serverError,
   validationError,
-  errorResponse,
 } from "@/lib/api-response";
 import { logError } from "@/lib/utils";
 import { createSadhanaSessionSchema, optionalDateStringSchema } from "@/lib/validations";
 import { createSadhanaSession, listSadhanaSessions } from "@/services/sadhana.service";
 import { z } from "zod";
-import { Prisma } from "@prisma/client";
 
 const sessionQuerySchema = z.object({
   from: optionalDateStringSchema,
@@ -48,9 +47,11 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(session, { status: 201 });
   } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2003") {
-      return errorResponse("Beoefening niet gevonden", 400);
-    }
+    const prismaError = handlePrismaError(error, {
+      foreignKey: "Beoefening niet gevonden",
+    });
+    if (prismaError) return prismaError;
+
     logError("[SADHANA_SESSIONS_POST]", error);
     return serverError("Kon sessie niet aanmaken");
   }

@@ -2,12 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { createEventSchema, eventQuerySchema } from "@/lib/validations";
 import {
   errorResponse,
+  handlePrismaError,
   parseJsonBody,
   serverError,
   validationError,
 } from "@/lib/api-response";
 import { logError } from "@/lib/utils";
-import { Prisma } from "@prisma/client";
 import { findEventOccurrences } from "@/repositories/event.repository";
 import { CategoryNotFoundError, createEvent } from "@/services/event.service";
 import { transformOccurrenceToCalendarEvent } from "@/lib/api-transformers";
@@ -91,18 +91,8 @@ export async function POST(request: NextRequest) {
       ]);
     }
 
-    // Handle specific Prisma errors
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      switch (error.code) {
-        case "P2002":
-          return errorResponse("Uniek veld conflict", 409);
-        case "P2003":
-          return errorResponse("Gerelateerde data niet gevonden", 400);
-        case "P2025":
-          // Record not found
-          return errorResponse("Record niet gevonden", 404);
-      }
-    }
+    const prismaError = handlePrismaError(error);
+    if (prismaError) return prismaError;
 
     return serverError("Kon event niet aanmaken");
   }

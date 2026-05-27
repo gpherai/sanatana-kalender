@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createEventSchema, updateEventSchema, cuidSchema } from "@/lib/validations";
 import {
   errorResponse,
+  handlePrismaError,
   notFoundError,
   parseJsonBody,
   serverError,
@@ -9,7 +10,6 @@ import {
 } from "@/lib/api-response";
 import { logError } from "@/lib/utils";
 import { formatDateLocal } from "@/lib/date-utils";
-import { Prisma } from "@prisma/client";
 import { findEventForUpdate } from "@/repositories/event.repository";
 import {
   CategoryNotFoundError,
@@ -129,17 +129,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       ]);
     }
 
-    // Handle specific Prisma errors
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      switch (error.code) {
-        case "P2002":
-          return errorResponse("Uniek veld conflict", 409);
-        case "P2003":
-          return errorResponse("Gerelateerde data niet gevonden", 400);
-        case "P2025":
-          return notFoundError("Event");
-      }
-    }
+    const prismaError = handlePrismaError(error, { notFound: "Event niet gevonden" });
+    if (prismaError) return prismaError;
 
     return serverError("Kon event niet bijwerken");
   }
@@ -169,12 +160,8 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
       return notFoundError("Event");
     }
 
-    // Handle Prisma errors
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === "P2025") {
-        return notFoundError("Event");
-      }
-    }
+    const prismaError = handlePrismaError(error, { notFound: "Event niet gevonden" });
+    if (prismaError) return prismaError;
 
     return serverError("Kon event niet verwijderen");
   }

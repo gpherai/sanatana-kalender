@@ -7,6 +7,7 @@
 
 import "server-only";
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import { ZodError } from "zod";
 
 // =============================================================================
@@ -182,6 +183,40 @@ export function serverError(
   message: string = "Er is een fout opgetreden"
 ): NextResponse<ApiErrorResponse> {
   return errorResponse(message, 500);
+}
+
+// =============================================================================
+// PRISMA ERROR HELPERS
+// =============================================================================
+
+export interface PrismaErrorMessages {
+  unique?: string;
+  foreignKey?: string;
+  notFound?: string;
+}
+
+/**
+ * Convert known Prisma client errors to standardized API responses.
+ * Returns null when the error is not a known, user-actionable Prisma error.
+ */
+export function handlePrismaError(
+  error: unknown,
+  messages: PrismaErrorMessages = {}
+): NextResponse<ApiErrorResponse> | null {
+  if (!(error instanceof Prisma.PrismaClientKnownRequestError)) {
+    return null;
+  }
+
+  switch (error.code) {
+    case "P2002":
+      return errorResponse(messages.unique ?? "Uniek veld conflict", 409);
+    case "P2003":
+      return errorResponse(messages.foreignKey ?? "Gerelateerde data niet gevonden", 400);
+    case "P2025":
+      return errorResponse(messages.notFound ?? "Record niet gevonden", 404);
+    default:
+      return null;
+  }
 }
 
 // =============================================================================

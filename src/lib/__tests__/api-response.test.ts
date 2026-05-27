@@ -1,8 +1,10 @@
 import { describe, it, expect } from "vitest";
+import { Prisma } from "@prisma/client";
 import { z } from "zod";
 import {
   getErrorCode,
   errorResponse,
+  handlePrismaError,
   validationError,
   notFoundError,
   conflictError,
@@ -103,6 +105,61 @@ describe("API Response Helpers", () => {
         error: "INTERNAL_ERROR",
         message: "Er is een fout opgetreden",
       });
+    });
+  });
+
+  describe("handlePrismaError", () => {
+    it("maps known Prisma errors to standardized responses", async () => {
+      const unique = handlePrismaError(
+        new Prisma.PrismaClientKnownRequestError("Conflict", {
+          code: "P2002",
+          clientVersion: "test",
+        })
+      );
+      const foreignKey = handlePrismaError(
+        new Prisma.PrismaClientKnownRequestError("Foreign key", {
+          code: "P2003",
+          clientVersion: "test",
+        }),
+        { foreignKey: "Beoefening niet gevonden" }
+      );
+      const notFound = handlePrismaError(
+        new Prisma.PrismaClientKnownRequestError("Not found", {
+          code: "P2025",
+          clientVersion: "test",
+        }),
+        { notFound: "Event niet gevonden" }
+      );
+
+      expect(unique?.status).toBe(409);
+      await expect(unique?.json()).resolves.toMatchObject({
+        error: "CONFLICT",
+        message: "Uniek veld conflict",
+      });
+
+      expect(foreignKey?.status).toBe(400);
+      await expect(foreignKey?.json()).resolves.toMatchObject({
+        error: "VALIDATION_ERROR",
+        message: "Beoefening niet gevonden",
+      });
+
+      expect(notFound?.status).toBe(404);
+      await expect(notFound?.json()).resolves.toMatchObject({
+        error: "NOT_FOUND",
+        message: "Event niet gevonden",
+      });
+    });
+
+    it("returns null for unknown errors and unmapped Prisma codes", () => {
+      expect(handlePrismaError(new Error("Unknown"))).toBeNull();
+      expect(
+        handlePrismaError(
+          new Prisma.PrismaClientKnownRequestError("Other", {
+            code: "P2034",
+            clientVersion: "test",
+          })
+        )
+      ).toBeNull();
     });
   });
 });

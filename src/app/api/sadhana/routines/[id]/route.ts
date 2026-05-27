@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   errorResponse,
+  handlePrismaError,
   notFoundError,
   parseJsonBody,
   serverError,
@@ -13,7 +14,6 @@ import {
   SadhanaNotFoundError,
   updateSadhanaRoutine,
 } from "@/services/sadhana.service";
-import { Prisma } from "@prisma/client";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -44,9 +44,12 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     return NextResponse.json(routine);
   } catch (error) {
     if (error instanceof SadhanaNotFoundError) return notFoundError("Routine");
-    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2003") {
-      return errorResponse("Beoefening niet gevonden", 400);
-    }
+
+    const prismaError = handlePrismaError(error, {
+      foreignKey: "Beoefening niet gevonden",
+    });
+    if (prismaError) return prismaError;
+
     logError("[SADHANA_ROUTINE_PATCH]", error);
     return serverError("Kon routine niet bijwerken");
   }
