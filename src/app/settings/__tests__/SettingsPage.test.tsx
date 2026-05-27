@@ -45,24 +45,25 @@ vi.mock("@/components/settings", () => ({
   LocationSection: () => <div>Fixed Location</div>,
 }));
 
+const mockSavePreferencesAction = vi.fn();
+vi.mock("@/app/settings/actions", () => ({
+  savePreferencesAction: (...args: any[]) => mockSavePreferencesAction(...args),
+}));
+
 const defaultPreferences = { currentTheme: "light", defaultView: "month" };
 
 describe("SettingsContent", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.stubGlobal("fetch", vi.fn());
+    mockSavePreferencesAction.mockResolvedValue({ success: true });
     localStorage.clear();
   });
 
   afterEach(() => {
     vi.useRealTimers();
-    vi.unstubAllGlobals();
   });
 
   it("handles full save lifecycle", async () => {
-    const fetchMock = vi.mocked(fetch);
-    fetchMock.mockResolvedValue({ ok: true, json: async () => ({}) } as any);
-
     const { unmount } = render(
       <SettingsContent initialPreferences={defaultPreferences} initialDailyInfo={null} />
     );
@@ -74,10 +75,7 @@ describe("SettingsContent", () => {
 
     await waitFor(
       () => {
-        expect(fetchMock).toHaveBeenCalledWith(
-          "/api/preferences",
-          expect.objectContaining({ method: "PUT" })
-        );
+        expect(mockSavePreferencesAction).toHaveBeenCalled();
       },
       { timeout: 2000 }
     );
@@ -99,11 +97,6 @@ describe("SettingsContent", () => {
   it("does not autosave immediately after mount with initial preferences", async () => {
     vi.useFakeTimers();
 
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValue({ ok: true, json: async () => ({}) } as any);
-    vi.stubGlobal("fetch", fetchMock);
-
     render(
       <SettingsContent
         initialPreferences={{ currentTheme: "ocean", defaultView: "month" }}
@@ -115,17 +108,11 @@ describe("SettingsContent", () => {
       vi.advanceTimersByTime(2000);
     });
 
-    expect(fetchMock).not.toHaveBeenCalled();
+    expect(mockSavePreferencesAction).not.toHaveBeenCalled();
   });
 
   it("handles save failure", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({
-        ok: false,
-        json: async () => ({ message: "FAIL" }),
-      } as any)
-    );
+    mockSavePreferencesAction.mockResolvedValue({ success: false, error: "FAIL" });
 
     render(
       <SettingsContent initialPreferences={defaultPreferences} initialDailyInfo={null} />

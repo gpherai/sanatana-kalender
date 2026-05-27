@@ -6,6 +6,7 @@ import { Save, Loader2, X, Plus } from "lucide-react";
 import { cn, logError } from "@/lib/utils";
 import { useToast } from "@/components/ui/Toast";
 import { useFetch } from "@/hooks/useFetch";
+import { createEventAction, updateEventAction } from "@/app/events/actions";
 import {
   eventFormSchema,
   transformFormToApi,
@@ -128,21 +129,18 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
 
     try {
       const payload = transformFormToApi(result.data);
-      if (mode === "edit" && !initialData?.id) {
+      const editId = initialData?.id;
+      if (mode === "edit" && !editId) {
         throw new Error("Event ID is required in edit mode");
       }
-      const url = mode === "create" ? "/api/events" : `/api/events/${initialData!.id}`;
-      const method = mode === "create" ? "POST" : "PUT";
 
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const actionResult =
+        mode === "create"
+          ? await createEventAction(payload)
+          : await updateEventAction(editId!, payload);
 
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || "Er is iets misgegaan");
+      if (!actionResult.success) {
+        throw new Error(actionResult.error);
       }
 
       success(mode === "create" ? "Event aangemaakt!" : "Event bijgewerkt!");

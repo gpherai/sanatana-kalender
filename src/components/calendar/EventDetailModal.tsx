@@ -31,6 +31,7 @@ import {
 import { getEventType, getTithi, getNakshatra, getMaas } from "@/lib/domain";
 import { cn, logError } from "@/lib/utils";
 import { useToast } from "@/components/ui/Toast";
+import { deleteEventAction, deleteOccurrenceAction } from "@/app/events/actions";
 import { MoonPhase } from "@/components/ui/MoonPhase";
 import { resolveCategoryColor } from "@/lib/category-styles";
 import { useTheme } from "@/components/theme/ThemeProvider";
@@ -147,14 +148,10 @@ export function EventDetailModal({
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
-      const response = await fetch(`/api/events/${event.eventId}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete event");
+      const result = await deleteEventAction(event.eventId);
+      if (!result.success) {
+        throw new Error(result.error);
       }
-
       requestClose(() => onDeleted?.());
     } catch (error) {
       logError("Failed to delete event", error);
@@ -168,15 +165,10 @@ export function EventDetailModal({
   const handleDeleteOccurrence = async () => {
     setIsDeleting(true);
     try {
-      const response = await fetch(
-        `/api/events/${event.eventId}/occurrences/${event.id}`,
-        { method: "DELETE" }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to delete occurrence");
+      const result = await deleteOccurrenceAction(event.eventId, event.id);
+      if (!result.success) {
+        throw new Error(result.error);
       }
-
       requestClose(() => onDeleted?.());
     } catch (error) {
       logError("Failed to delete occurrence", error);

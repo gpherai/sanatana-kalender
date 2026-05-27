@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { EventDetailModal } from "../EventDetailModal";
@@ -15,9 +16,17 @@ vi.mock("@/components/ui/Toast", () => ({
   useToast: () => ({ error: mockError }),
 }));
 
-// Mock global fetch
+// Mock global fetch (used by useFetch reads for event details and daily info)
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
+
+// Mock Server Actions
+const mockDeleteEventAction = vi.fn();
+const mockDeleteOccurrenceAction = vi.fn();
+vi.mock("@/app/events/actions", () => ({
+  deleteEventAction: (...args: any[]) => mockDeleteEventAction(...args),
+  deleteOccurrenceAction: (...args: any[]) => mockDeleteOccurrenceAction(...args),
+}));
 
 // Test Data
 const MOCK_EVENT: CalendarEvent = {
@@ -61,8 +70,9 @@ const MOCK_EVENT: CalendarEvent = {
 describe("EventDetailModal", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Reset fetch implementation
     mockFetch.mockResolvedValue({ ok: true });
+    mockDeleteEventAction.mockResolvedValue({ success: true });
+    mockDeleteOccurrenceAction.mockResolvedValue({ success: true });
   });
 
   it("renders nothing when closed", () => {
@@ -143,13 +153,8 @@ describe("EventDetailModal", () => {
     // 3. Click "Ja, verwijderen"
     fireEvent.click(screen.getByText("Ja, verwijderen"));
 
-    // 4. Expect fetch DELETE
-    expect(mockFetch).toHaveBeenCalledWith(
-      "/api/events/evt_1",
-      expect.objectContaining({
-        method: "DELETE",
-      })
-    );
+    // 4. Expect delete action called
+    expect(mockDeleteEventAction).toHaveBeenCalledWith("evt_1");
 
     // 5. Wait for callbacks
     await waitFor(() => {

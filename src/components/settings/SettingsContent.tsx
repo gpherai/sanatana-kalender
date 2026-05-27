@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { useRouter } from "next/navigation";
+import { savePreferencesAction } from "@/app/settings/actions";
 import { Loader2, Check, CloudOff, Cloud } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { useTheme } from "@/components/theme/ThemeProvider";
@@ -60,17 +61,10 @@ export function SettingsContent({
 
   const savePreferences = useCallback(
     async (data: typeof formData) => {
-      const response = await fetch("/api/preferences", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || "Failed to save preferences");
+      const result = await savePreferencesAction(data);
+      if (!result.success) {
+        throw new Error(result.error);
       }
-
       router.refresh();
     },
     [router]

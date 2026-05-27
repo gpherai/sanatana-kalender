@@ -3,12 +3,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { WeatherApiResponse } from "@/types/weather";
 
-export function useWeather() {
-  const [weather, setWeather] = useState<WeatherApiResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+export function useWeather(initialData?: WeatherApiResponse | null) {
+  const [weather, setWeather] = useState<WeatherApiResponse | null>(initialData ?? null);
+  const [loading, setLoading] = useState(!initialData);
   const [error, setError] = useState<string | null>(null);
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(() =>
+    initialData ? new Date() : null
+  );
   const [refreshing, setRefreshing] = useState(false);
+  const skipInitialFetch = useRef(Boolean(initialData));
 
   const manualCtrlRef = useRef<AbortController | null>(null);
 
@@ -44,8 +47,9 @@ export function useWeather() {
   }, []);
 
   useEffect(() => {
+    if (skipInitialFetch.current) return;
     const controller = new AbortController();
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetchWeather owns the loading/error state for this fetch cycle
+     
     void fetchWeather(false, controller.signal);
     return () => controller.abort();
   }, [fetchWeather]);

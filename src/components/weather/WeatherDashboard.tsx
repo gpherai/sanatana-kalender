@@ -14,6 +14,7 @@ import { WeatherHeader } from "@/components/weather/WeatherHeader";
 import { WeatherSkeleton } from "@/components/weather/WeatherSkeleton";
 import { useWeather } from "@/hooks/useWeather";
 import { prepareWeatherDashboardData } from "@/lib/weather";
+import type { WeatherApiResponse } from "@/types/weather";
 import dynamic from "next/dynamic";
 
 const WeatherMap = dynamic(() => import("@/components/weather/WeatherMap"), {
@@ -23,9 +24,13 @@ const WeatherMap = dynamic(() => import("@/components/weather/WeatherMap"), {
   ),
 });
 
-export function WeatherDashboard() {
+interface WeatherDashboardProps {
+  initialData?: WeatherApiResponse | null;
+}
+
+export function WeatherDashboard({ initialData }: WeatherDashboardProps = {}) {
   const { weather, loading, error, lastUpdated, refreshing, refresh, retry } =
-    useWeather();
+    useWeather(initialData);
 
   if (loading) return <WeatherSkeleton />;
   if (error) return <WeatherErrorState error={error} onRetry={retry} />;

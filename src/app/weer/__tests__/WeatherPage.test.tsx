@@ -1,16 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import WeatherPage from "../page";
+import WeerPage from "../page";
 import { DEFAULT_LOCATION } from "@/lib/domain";
 
-// Mock next/image
+// SSR fetch fails → initialData = null → WeatherDashboard falls back to CSR
+vi.mock("@/services/weather.service", () => ({
+  getWeatherDashboard: vi.fn().mockRejectedValue(new Error("SSR skipped in test")),
+  WeatherServiceError: class WeatherServiceError extends Error {},
+}));
+
 vi.mock("next/image", () => ({
   // eslint-disable-next-line @next/next/no-img-element
   default: (props: any) => <img {...props} alt={props.alt || "weather icon"} />,
 }));
 
-// Mock components
 vi.mock("@/components/layout", () => ({
   PageLayout: ({ children, loading }: any) => (
     <div data-testid="page-layout">{loading ? "Loading..." : children}</div>
@@ -100,16 +104,17 @@ describe("WeatherPage 100% Coverage", () => {
 
   it("covers alerts, refresh and retry", async () => {
     const fetchMock = vi.mocked(fetch);
-    // Failure first
+    // SSR failed (mocked), so WeatherDashboard uses CSR — first CSR fetch fails
     fetchMock.mockResolvedValueOnce({
       ok: false,
       json: async () => ({ message: "FAIL" }),
     } as any);
 
-    render(<WeatherPage />);
+    const ui = await WeerPage();
+    render(ui);
     expect(await screen.findByText(/FAIL/i)).toBeInTheDocument();
 
-    // Retry (line 364)
+    // Retry
     const alertData = generateMockData({
       alerts: [
         {
@@ -146,7 +151,8 @@ describe("WeatherPage 100% Coverage", () => {
       ok: true,
       json: async () => testData,
     } as any);
-    render(<WeatherPage />);
+    const ui = await WeerPage();
+    render(ui);
     await screen.findAllByText(/Den Haag/i);
     expect(
       (await screen.findAllByText(/Ernstige gezondheidsrisico's/i)).length

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Trash2, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { logError } from "@/lib/utils";
+import { deleteEventAction } from "@/app/events/actions";
 
 interface DeleteEventButtonProps {
   eventId: string;
@@ -20,10 +21,9 @@ export function DeleteEventButton({ eventId, eventName }: DeleteEventButtonProps
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
-      const response = await fetch(`/api/events/${eventId}`, { method: "DELETE" });
-      if (!response.ok) {
-        const data = await response.json().catch(() => ({}));
-        throw new Error((data as { message?: string }).message ?? "Failed");
+      const result = await deleteEventAction(eventId);
+      if (!result.success) {
+        throw new Error(result.error);
       }
       router.push("/events");
       router.refresh();

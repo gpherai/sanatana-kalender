@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { EventForm } from "../EventForm";
@@ -9,6 +9,13 @@ import type { Category } from "@/types/calendar";
 const mockUseFetch = vi.fn();
 const toastSuccess = vi.fn();
 const toastError = vi.fn();
+const mockCreateEventAction = vi.fn();
+const mockUpdateEventAction = vi.fn();
+
+vi.mock("@/app/events/actions", () => ({
+  createEventAction: (...args: any[]) => mockCreateEventAction(...args),
+  updateEventAction: (...args: any[]) => mockUpdateEventAction(...args),
+}));
 
 vi.mock("@/hooks/useFetch", async () => {
   const actual =
@@ -59,16 +66,13 @@ describe("EventForm", () => {
       error: null,
       refetch: vi.fn(),
     });
-    vi.stubGlobal("fetch", vi.fn());
+    mockCreateEventAction.mockResolvedValue({ success: true });
+    mockUpdateEventAction.mockResolvedValue({ success: true });
     toastSuccess.mockClear();
     toastError.mockClear();
     push.mockClear();
     refresh.mockClear();
     back.mockClear();
-  });
-
-  afterEach(() => {
-    vi.unstubAllGlobals();
   });
 
   it("shows validation errors and handles field updates", async () => {
@@ -99,12 +103,6 @@ describe("EventForm", () => {
   });
 
   it("handles edit mode and onSuccess callback", async () => {
-    const fetchMock = vi.mocked(fetch);
-    fetchMock.mockResolvedValue({
-      ok: true,
-      json: async () => ({}),
-    } as Response);
-
     const onSuccess = vi.fn();
     render(
       <EventForm
@@ -135,12 +133,6 @@ describe("EventForm", () => {
   });
 
   it("handles successful submission without onSuccess (redirects)", async () => {
-    const fetchMock = vi.mocked(fetch);
-    fetchMock.mockResolvedValue({
-      ok: true,
-      json: async () => ({}),
-    } as Response);
-
     render(
       <EventForm mode="create" initialData={{ name: "Test", date: "2025-01-01" }} />
     );
@@ -153,11 +145,7 @@ describe("EventForm", () => {
   });
 
   it("handles API error with message", async () => {
-    const fetchMock = vi.mocked(fetch);
-    fetchMock.mockResolvedValue({
-      ok: false,
-      json: async () => ({ message: "Server Error" }),
-    } as Response);
+    mockCreateEventAction.mockResolvedValue({ success: false, error: "Server Error" });
 
     render(
       <EventForm mode="create" initialData={{ name: "Test", date: "2025-01-01" }} />
