@@ -7,6 +7,7 @@ import { cuidSchema, dateStringSchema } from "./shared";
 
 const sadhanaSessionItemSchema = z
   .object({
+    id: cuidSchema.optional(),
     practiceId: cuidSchema,
     quantity: z.number().int().positive(),
     unit: z.enum(["malas", "count"]).optional(),
@@ -105,6 +106,7 @@ export const patchSadhanaPracticeSchema = z
 
 const sadhanaRoutineItemSchema = z
   .object({
+    id: cuidSchema.optional(),
     practiceId: cuidSchema,
     quantity: z.number().int().min(1),
     unit: z.enum(["malas", "count"]).default("malas"),

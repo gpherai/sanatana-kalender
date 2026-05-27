@@ -21,6 +21,7 @@ function defaultUnit(type: PracticeType | undefined): ItemUnit {
 }
 
 interface RoutineItemForm {
+  id?: string;
   practiceId: string;
   quantity: string;
   unit: ItemUnit;
@@ -247,6 +248,7 @@ export function RoutinePanel({
       body: JSON.stringify({
         name: data.name,
         items: data.items.map((it, idx) => ({
+          ...(it.id && { id: it.id }),
           practiceId: it.practiceId,
           quantity: parseInt(it.quantity, 10),
           unit: it.unit,
@@ -307,6 +309,7 @@ export function RoutinePanel({
               initial={{
                 name: r.name,
                 items: r.items.map((i) => ({
+                  id: i.id,
                   practiceId: i.practiceId,
                   quantity: String(i.quantity),
                   unit: i.unit,

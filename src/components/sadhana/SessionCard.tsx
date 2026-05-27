@@ -67,6 +67,7 @@ export function SessionCard({
         durationMinutes: data.duration ? parseInt(data.duration, 10) : null,
         notes: data.notes.trim() || null,
         items: data.items.map((it) => ({
+          ...(it.id && { id: it.id }),
           practiceId: it.practiceId,
           quantity: parseInt(it.quantity, 10),
           unit: it.unit,
@@ -89,6 +90,7 @@ export function SessionCard({
             duration: session.durationMinutes ? String(session.durationMinutes) : "",
             notes: session.notes ?? "",
             items: session.items.map((i) => ({
+              id: i.id,
               practiceId: i.practiceId,
               quantity: String(i.quantity),
               unit: i.unit,

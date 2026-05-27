@@ -175,6 +175,7 @@ export async function updateSessionWithItems(
   durationMinutes: number | null | undefined,
   notes: string | null | undefined,
   items: {
+    id?: string;
     practiceId: string;
     quantity: number;
     unit?: string;
@@ -182,30 +183,57 @@ export async function updateSessionWithItems(
     notes?: string | null;
   }[]
 ) {
-  return prisma.sadhanaSession.update({
-    where: { id },
-    data: {
-      date: utcDateFromDateOnly(date),
-      startedAt: startedAt ? new Date(startedAt) : null,
-      durationMinutes: durationMinutes ?? null,
-      notes: notes ?? null,
-      items: {
-        deleteMany: {},
-        create: items.map((item) => ({
-          practiceId: item.practiceId,
-          quantity: item.quantity,
-          unit: (item.unit as "malas" | "count") ?? "malas",
-          durationMinutes: item.durationMinutes ?? null,
-          notes: item.notes ?? null,
-        })),
+  const keptIds = items.filter((it) => it.id).map((it) => it.id as string);
+
+  return prisma.$transaction(async (tx) => {
+    await tx.sadhanaSessionItem.deleteMany({
+      where: {
+        sessionId: id,
+        ...(keptIds.length > 0 && { id: { notIn: keptIds } }),
       },
-    },
-    include: {
-      items: {
-        include: { practice: true },
-        orderBy: { createdAt: "asc" as const },
+    });
+
+    for (const item of items) {
+      if (item.id) {
+        await tx.sadhanaSessionItem.updateMany({
+          where: { id: item.id, sessionId: id },
+          data: {
+            practiceId: item.practiceId,
+            quantity: item.quantity,
+            unit: (item.unit as "malas" | "count") ?? "malas",
+            durationMinutes: item.durationMinutes ?? null,
+            notes: item.notes ?? null,
+          },
+        });
+      } else {
+        await tx.sadhanaSessionItem.create({
+          data: {
+            sessionId: id,
+            practiceId: item.practiceId,
+            quantity: item.quantity,
+            unit: (item.unit as "malas" | "count") ?? "malas",
+            durationMinutes: item.durationMinutes ?? null,
+            notes: item.notes ?? null,
+          },
+        });
+      }
+    }
+
+    return tx.sadhanaSession.update({
+      where: { id },
+      data: {
+        date: utcDateFromDateOnly(date),
+        startedAt: startedAt ? new Date(startedAt) : null,
+        durationMinutes: durationMinutes ?? null,
+        notes: notes ?? null,
       },
-    },
+      include: {
+        items: {
+          include: { practice: true },
+          orderBy: { createdAt: "asc" as const },
+        },
+      },
+    });
   });
 }
 
@@ -269,6 +297,7 @@ export async function updateRoutineWithItems(
   id: string,
   name: string,
   items: {
+    id?: string;
     practiceId: string;
     quantity: number;
     unit: string;
@@ -276,21 +305,45 @@ export async function updateRoutineWithItems(
   }[],
   active?: boolean
 ) {
+  const keptIds = items.filter((it) => it.id).map((it) => it.id as string);
+
   return prisma.$transaction(async (tx) => {
-    await tx.sadhanaRoutineItem.deleteMany({ where: { routineId: id } });
+    await tx.sadhanaRoutineItem.deleteMany({
+      where: {
+        routineId: id,
+        ...(keptIds.length > 0 && { id: { notIn: keptIds } }),
+      },
+    });
+
+    for (const item of items) {
+      if (item.id) {
+        await tx.sadhanaRoutineItem.updateMany({
+          where: { id: item.id, routineId: id },
+          data: {
+            practiceId: item.practiceId,
+            quantity: item.quantity,
+            unit: item.unit as "malas" | "count",
+            sortOrder: item.sortOrder,
+          },
+        });
+      } else {
+        await tx.sadhanaRoutineItem.create({
+          data: {
+            routineId: id,
+            practiceId: item.practiceId,
+            quantity: item.quantity,
+            unit: item.unit as "malas" | "count",
+            sortOrder: item.sortOrder,
+          },
+        });
+      }
+    }
+
     return tx.sadhanaRoutine.update({
       where: { id },
       data: {
         name,
         ...(active !== undefined && { active }),
-        items: {
-          create: items.map((it) => ({
-            practiceId: it.practiceId,
-            quantity: it.quantity,
-            unit: it.unit as "malas" | "count",
-            sortOrder: it.sortOrder,
-          })),
-        },
       },
       include: {
         items: { include: { practice: true }, orderBy: { sortOrder: "asc" } },

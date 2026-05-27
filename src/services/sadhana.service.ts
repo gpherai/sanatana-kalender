@@ -360,6 +360,7 @@ export async function updateSadhanaSession(
     durationMinutes?: number | null;
     notes?: string | null;
     items?: {
+      id?: string;
       practiceId: string;
       quantity: number;
       unit?: string;
@@ -379,6 +380,7 @@ export async function updateSadhanaSession(
     data.notes !== undefined ? data.notes : existing.notes,
     data.items ??
       existing.items.map((item) => ({
+        id: item.id,
         practiceId: item.practiceId,
         quantity: item.quantity,
         unit: item.unit,
@@ -505,6 +507,7 @@ export async function updateSadhanaRoutine(
         name?: string;
         active?: boolean;
         items: {
+          id?: string;
           practiceId: string;
           quantity: number;
           unit: string;
@@ -520,6 +523,7 @@ export async function updateSadhanaRoutine(
     name?: string;
     active?: boolean;
     items?: {
+      id?: string;
       practiceId: string;
       quantity: number;
       unit: string;

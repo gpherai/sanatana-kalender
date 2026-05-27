@@ -132,6 +132,7 @@ export interface Routine {
 }
 
 export interface FormItem {
+  id?: string;
   practiceId: string;
   quantity: string;
   unit: ItemUnit;
