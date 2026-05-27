@@ -7,6 +7,7 @@
  */
 
 import "server-only";
+import { cache } from "react";
 import { prisma } from "@/lib/db";
 import { DEFAULT_PREFERENCES_ID } from "@/lib/domain";
 import { Prisma } from "@prisma/client";
@@ -14,11 +15,11 @@ import { Prisma } from "@prisma/client";
 /**
  * Find preferences for the default user.
  */
-export async function findPreferences() {
+export const findPreferences = cache(async function findPreferences() {
   return prisma.userPreference.findUnique({
     where: { id: DEFAULT_PREFERENCES_ID },
   });
-}
+});
 
 /**
  * Upsert preferences for the default user.

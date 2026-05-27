@@ -7,16 +7,17 @@
  */
 
 import "server-only";
+import { cache } from "react";
 import { prisma } from "@/lib/db";
 
 /**
  * Find all categories ordered by sortOrder.
  */
-export async function findAllCategories() {
+export const findAllCategories = cache(async function findAllCategories() {
   return prisma.category.findMany({
     orderBy: { sortOrder: "asc" },
   });
-}
+});
 
 /**
  * Find a specific category by ID.
