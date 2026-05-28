@@ -141,6 +141,8 @@ type CandidateDay = {
   tithiEndTime: string | null;
   maas: string | null;
   isAdhika: boolean;
+  sunrise?: string | null;
+  moonrise?: string | null;
 };
 
 export async function correctToAstronomicalPhaseDay(

@@ -78,6 +78,8 @@ export async function generateYearlyLunarOccurrences(
     tithiEndTime: string | null;
     maas: string | null;
     isAdhika: boolean;
+    sunrise: string | null;
+    moonrise: string | null;
   }> = [];
 
   const predecessorTithi = TITHI_PREDECESSOR[event.tithi];
@@ -113,6 +115,8 @@ export async function generateYearlyLunarOccurrences(
         tithiEndTime: null,
         maas: day.maas,
         isAdhika: day.isAdhika,
+        sunrise: null,
+        moonrise: null,
       });
       coveredKeys.add(key);
     }
@@ -192,6 +196,30 @@ export async function generateYearlyLunarOccurrences(
             const endMin = day.tithiEndTime ? parseTimeToMinutes(day.tithiEndTime) : null;
             const endTime = endMin !== null ? formatMinutesToTime(endMin) : undefined;
             return { date: prevDate, startTime, endDate: day.date, endTime };
+          }
+
+          // Moonrise rule: if the moon rises AFTER Chaturthi starts but still
+          // before sunrise, the moonrise belongs to the previous night in Hindu
+          // timekeeping → observe on D-1. The start of Chaturthi is prevInfo's
+          // tithiEndTime (when the predecessor tithi ended on D-1).
+          // NOTE: moonrise must be AFTER the Chaturthi start — if moonrise is
+          // before Chaturthi starts, the moon rose while the wrong tithi was
+          // active and does not qualify for the fast-breaking sighting.
+          if (prevInfo) {
+            const chaturthi_startMin = parseTimeToMinutes(prevInfo.tithiEndTime ?? "");
+            const moonriseMin = parseTimeToMinutes(day.moonrise ?? "");
+            const sunriseMin = parseTimeToMinutes(day.sunrise ?? "");
+            if (
+              chaturthi_startMin !== null &&
+              moonriseMin !== null &&
+              sunriseMin !== null &&
+              moonriseMin > chaturthi_startMin &&
+              moonriseMin < sunriseMin
+            ) {
+              const prevDate = new Date(day.date);
+              prevDate.setUTCDate(prevDate.getUTCDate() - 1);
+              return { date: prevDate };
+            }
           }
         }
         return occ;

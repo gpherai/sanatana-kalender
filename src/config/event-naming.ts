@@ -2418,6 +2418,27 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ],
   },
   {
+    key: "magha_lambodara_sankashti",
+    name: "Lambodara Sankashti Chaturthi",
+    categories: ["ganesha"],
+    aliases: ["Sakat Chauth"],
+    eventType: "VRAT",
+    ruleType: "TITHI",
+    ruleConfig: { tithi: "CHATURTHI_KRISHNA", maas: "MAGHA" },
+    description:
+      "Lambodara betekent 'hij met de grote buik' — de kosmische buik die het gehele universum omvat. Deze vorm vertegenwoordigt Ganesha als bewaarder van alle kennis en wijsheid van de schepping. Magha is een heilige wintermaand gewijd aan vooroudervering en spirituele zuivering. Lambodara Sankashti staat ook bekend als Sakat Chauth, waarbij moeders vasten voor het welzijn en de lange levensduur van hun kinderen. Devotees vasten van zonsopgang tot maanopkomst.",
+    tags: [
+      "arghya",
+      "darshan",
+      "ganesha",
+      "lambodara",
+      "magha",
+      "sakat",
+      "sankashti",
+      "vasten",
+    ],
+  },
+  {
     key: "bhadrapada_bahula_chaturthi",
     name: "Bahula Chaturthi",
     categories: ["general"],

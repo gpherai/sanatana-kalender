@@ -162,9 +162,16 @@ export async function findDailyInfoYearlyLunarCandidates(
       tithiEndTime: true,
       maas: true,
       isAdhika: true,
+      sunrise: true,
+      moonrise: true,
     },
   });
-  return rows.map((r) => ({ ...r, tithiEndTime: dbTimeToStr(r.tithiEndTime) }));
+  return rows.map((r) => ({
+    ...r,
+    tithiEndTime: dbTimeToStr(r.tithiEndTime),
+    sunrise: dbTimeToStr(r.sunrise),
+    moonrise: dbTimeToStr(r.moonrise),
+  }));
 }
 
 export async function findDailyInfoKshayaCandidates(
