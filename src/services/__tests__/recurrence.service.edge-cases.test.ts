@@ -323,9 +323,9 @@ describe("Sankashti moonrise-before-sunrise shift", () => {
     expect(result[0]!.date.toISOString()).toContain("2027-04-23");
   });
 
-  it("does NOT shift when moonrise is before Chaturthi start (moon rose before Chaturthi was active)", async () => {
-    // Apr 2027 real case: Chaturthi starts 00:51, moonrise 00:45 in our DB
-    // Moonrise (00:45) < Chaturthi start (00:51) → moon rose while wrong tithi was active → no shift
+  it("shifts to D-1 for Apr 2027: chaturthi starts in first hour after midnight AND moonrise before sunrise", async () => {
+    // Apr 2027 real case: Chaturthi starts 00:51 (51 min < 60), moonrise 00:45, sunrise 06:28
+    // Both Chaturthi start and moonrise are in the pre-dawn "night of Apr 23" window → observe Apr 23
     prismaMock.dailyInfo.findMany.mockImplementation((async (args: any) => {
       if (args.where?.tithi === "CHATURTHI_KRISHNA") {
         return [
@@ -344,8 +344,7 @@ describe("Sankashti moonrise-before-sunrise shift", () => {
         return [
           {
             date: new Date("2027-04-23T00:00:00.000Z"),
-            // Chaturthi starts 00:51 — moonrise (00:45) is BEFORE this → no shift
-            tithiEndTime: new Date("1970-01-01T00:51:00.000Z"),
+            tithiEndTime: new Date("1970-01-01T00:51:00.000Z"), // 51 min < 60 threshold
             sunrise: new Date("1970-01-01T06:31:00.000Z"),
             sunset: new Date("1970-01-01T20:52:00.000Z"),
             tithi: "TRITIYA_KRISHNA",
@@ -358,7 +357,53 @@ describe("Sankashti moonrise-before-sunrise shift", () => {
     const result = await generateOccurrences(sankashtiEvent, options);
 
     expect(result).toHaveLength(1);
-    expect(result[0]!.date.toISOString()).toContain("2027-04-24");
+    expect(result[0]!.date.toISOString()).toContain("2027-04-23");
+  });
+
+  it("does NOT shift when chaturthi starts after first hour (chaturthi_startMin >= 60)", async () => {
+    // May 2026 protection: Chaturthi starts 01:54 (114 min ≥ 60), moonrise 01:00, sunrise 06:08
+    // Chaturthi start is past the midnight-hour threshold → udaya tithi rule applies → no shift
+    const jyeshthaEvent: Event = {
+      ...sankashtiEvent,
+      maas: "JYESHTHA",
+      ruleConfig: { maas: "JYESHTHA", tithi: "CHATURTHI_KRISHNA" },
+    };
+    prismaMock.dailyInfo.findMany.mockImplementation((async (args: any) => {
+      if (args.where?.tithi === "CHATURTHI_KRISHNA") {
+        return [
+          {
+            date: new Date("2026-05-05T00:00:00.000Z"),
+            tithiEndTime: new Date("1970-01-01T04:21:00.000Z"),
+            maas: "JYESHTHA",
+            isAdhika: false,
+            sunrise: new Date("1970-01-01T06:07:00.000Z"),
+            moonrise: new Date("1970-01-01T01:00:00.000Z"),
+          },
+        ] as any;
+      }
+      if (args.where?.tithi === "TRITIYA_KRISHNA") return [] as any;
+      if (args.where?.date?.in) {
+        return [
+          {
+            date: new Date("2026-05-04T00:00:00.000Z"),
+            tithiEndTime: new Date("1970-01-01T01:54:00.000Z"), // 114 min ≥ 60 → no shift
+            sunrise: new Date("1970-01-01T06:08:00.000Z"),
+            sunset: new Date("1970-01-01T21:11:00.000Z"),
+            tithi: "TRITIYA_KRISHNA",
+          },
+        ] as any;
+      }
+      return [] as any;
+    }) as any);
+
+    const options2026 = {
+      startDate: new Date("2026-01-01"),
+      endDate: new Date("2026-12-31"),
+    };
+    const result = await generateOccurrences(jyeshthaEvent, options2026);
+
+    expect(result).toHaveLength(1);
+    expect(result[0]!.date.toISOString()).toContain("2026-05-05");
   });
 
   it("does NOT shift when moonrise is after sunrise (normal evening moonrise)", async () => {

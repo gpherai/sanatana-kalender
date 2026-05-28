@@ -198,22 +198,21 @@ export async function generateYearlyLunarOccurrences(
             return { date: prevDate, startTime, endDate: day.date, endTime };
           }
 
-          // Moonrise rule: if the moon rises AFTER Chaturthi starts but still
-          // before sunrise, the moonrise belongs to the previous night in Hindu
-          // timekeeping → observe on D-1. The start of Chaturthi is prevInfo's
-          // tithiEndTime (when the predecessor tithi ended on D-1).
-          // NOTE: moonrise must be AFTER the Chaturthi start — if moonrise is
-          // before Chaturthi starts, the moon rose while the wrong tithi was
-          // active and does not qualify for the fast-breaking sighting.
+          // Midnight Chaturthi rule: when Chaturthi starts in the first hour
+          // after midnight (< 60 min), both the tithi start and the moonrise
+          // fall in the pre-dawn window that Hindu timekeeping assigns to the
+          // previous day (days run sunrise-to-sunrise). DP observes on D-1.
+          // The 60-minute threshold ensures this only fires for genuine
+          // midnight-start cases; Chaturthi starting at 01:30+ uses udaya tithi.
           if (prevInfo) {
             const chaturthi_startMin = parseTimeToMinutes(prevInfo.tithiEndTime ?? "");
             const moonriseMin = parseTimeToMinutes(day.moonrise ?? "");
             const sunriseMin = parseTimeToMinutes(day.sunrise ?? "");
             if (
               chaturthi_startMin !== null &&
+              chaturthi_startMin < 60 &&
               moonriseMin !== null &&
               sunriseMin !== null &&
-              moonriseMin > chaturthi_startMin &&
               moonriseMin < sunriseMin
             ) {
               const prevDate = new Date(day.date);
