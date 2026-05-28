@@ -92,10 +92,15 @@ export async function findDailyInfoSankrantiOccurrences(
       date: { gte: startDate, lte: endDate },
       sankranti,
     },
-    select: { date: true, sankrantiTime: true },
+    select: { date: true, sankrantiTime: true, sunrise: true, sunset: true },
     orderBy: { date: "asc" },
   });
-  return rows.map((r) => ({ ...r, sankrantiTime: dbTimeToStr(r.sankrantiTime) }));
+  return rows.map((r) => ({
+    ...r,
+    sankrantiTime: dbTimeToStr(r.sankrantiTime),
+    sunrise: dbTimeToStr(r.sunrise),
+    sunset: dbTimeToStr(r.sunset),
+  }));
 }
 
 export async function findDailyInfoAllSankrantiOccurrences({
@@ -107,10 +112,21 @@ export async function findDailyInfoAllSankrantiOccurrences({
       date: { gte: startDate, lte: endDate },
       sankranti: { not: null },
     },
-    select: { date: true, sankranti: true, sankrantiTime: true },
+    select: {
+      date: true,
+      sankranti: true,
+      sankrantiTime: true,
+      sunrise: true,
+      sunset: true,
+    },
     orderBy: { date: "asc" },
   });
-  return rows.map((r) => ({ ...r, sankrantiTime: dbTimeToStr(r.sankrantiTime) }));
+  return rows.map((r) => ({
+    ...r,
+    sankrantiTime: dbTimeToStr(r.sankrantiTime),
+    sunrise: dbTimeToStr(r.sunrise),
+    sunset: dbTimeToStr(r.sunset),
+  }));
 }
 
 export function findDailyInfoMoonPhaseCandidates(

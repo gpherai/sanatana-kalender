@@ -164,13 +164,25 @@ export async function generateYearlyLunarOccurrences(
     if (event.tithi === Tithi.CHATURTHI_KRISHNA) {
       return selectedDays.map((day) => {
         const occ = computeTithiOccurrence(day, day, prevDayMap);
+        const key = day.date.toISOString().split("T")[0]!;
+        const prevInfo = prevDayMap.get(key);
+
+        // When computeTithiOccurrence shifted to D-1 (evening start), verify
+        // that Chaturthi actually started within Pradosh Kaal (sunset + 120 min).
+        // If it started after Pradosh, DP uses the udaya tithi day instead.
+        if (occ.date.getTime() !== day.date.getTime() && prevInfo) {
+          const endMin = parseTimeToMinutes(prevInfo.tithiEndTime ?? "");
+          const sunsetMin = parseTimeToMinutes(prevInfo.sunset ?? "");
+          if (endMin !== null && sunsetMin !== null && endMin > sunsetMin + 120) {
+            return { date: day.date };
+          }
+        }
+
         // Pradosh rule for Sankashti Chaturthi: if Chaturthi started during the
         // daytime of the previous day (between sunrise and sunset), it is present
         // during Pradosh Kaal → observe on that previous day instead of the
         // Udaya Tithi day.
         if (occ.date.getTime() === day.date.getTime()) {
-          const key = day.date.toISOString().split("T")[0]!;
-          const prevInfo = prevDayMap.get(key);
           if (prevInfo && isSankashtiPradoshShiftNeeded(prevInfo)) {
             const prevDate = new Date(day.date);
             prevDate.setUTCDate(prevDate.getUTCDate() - 1);

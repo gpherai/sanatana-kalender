@@ -192,7 +192,7 @@ describe("Recurrence Service Extended", () => {
       return [];
     }) as any);
     const res7 = await generateOccurrences(eventPradosh, options);
-    expect(res7).toHaveLength(2);
+    expect(res7).toHaveLength(3);
     expect(res7[0]!.date.getUTCDate()).toBe(11);
 
     // 8. Batch error — failed events are excluded from results (not deleted on replace)

@@ -107,6 +107,9 @@ export async function generatePradoshOccurrences(
   const trayodashiDateSet = new Set(
     trayodashiDays.map((d) => d.date.toISOString().split("T")[0]!)
   );
+  const dwadasiDateSet = new Set(
+    dwadasiDays.map((d) => d.date.toISOString().split("T")[0]!)
+  );
 
   // ── STEP 1: Case 2 (Dwadashi udaya, higher priority) ──────────────────────
   for (const day of dwadasiDays) {
@@ -121,7 +124,15 @@ export async function generatePradoshOccurrences(
     // Skip if tithiEndTime is a next-day time (tithiEndTime < sunrise)
     if (sunriseMin !== null && tithiEndMin < sunriseMin) continue;
 
-    if (tithiEndMin < sunsetMin + 45) {
+    // Vriddhi Dwadashi: when Dwadashi spans two sunrises, skip the first day —
+    // Trayodashi only starts on the second day, so the Pradosh window is there.
+    const nextDay = new Date(day.date);
+    nextDay.setUTCDate(nextDay.getUTCDate() + 1);
+    if (dwadasiDateSet.has(nextDay.toISOString().split("T")[0]!)) continue;
+
+    // Extended window (150 min) to catch late-summer cases where Dwadashi ends
+    // well after sunset but Trayodashi still starts within Pradosh Kaal.
+    if (tithiEndMin < sunsetMin + 150) {
       validDates.set(day.date.toISOString().split("T")[0]!, day.date);
     }
   }

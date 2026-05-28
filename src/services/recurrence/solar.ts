@@ -6,8 +6,32 @@ import {
   findDailyInfoSankrantiOccurrences,
   findDailyInfoAllSankrantiOccurrences,
 } from "@/repositories/daily-info.repository";
+import { parseTimeToMinutes } from "@/lib/timing-utils";
 import { logWarn } from "@/lib/utils";
 import type { GeneratedOccurrence } from "./types";
+
+/**
+ * Sankranti before sunrise or after sunset → Punya Kaal shifts to the next day.
+ * DP rule: transit outside the solar day (sunrise..sunset) → observe D+1.
+ */
+function resolveSankrantiDate(day: {
+  date: Date;
+  sankrantiTime: string | null;
+  sunrise: string | null;
+  sunset: string | null;
+}): Date {
+  if (!day.sankrantiTime || !day.sunrise || !day.sunset) return day.date;
+  const st = parseTimeToMinutes(day.sankrantiTime);
+  const sr = parseTimeToMinutes(day.sunrise);
+  const ss = parseTimeToMinutes(day.sunset);
+  if (st === null || sr === null || ss === null) return day.date;
+  if (st < sr || st > ss) {
+    const next = new Date(day.date);
+    next.setUTCDate(next.getUTCDate() + 1);
+    return next;
+  }
+  return day.date;
+}
 
 // =============================================================================
 // SOLAR RULE-BASED GENERATION
@@ -40,7 +64,7 @@ export async function generateSolarRuleOccurrences(
   );
 
   return dailyData.map((day) => ({
-    date: day.date,
+    date: resolveSankrantiDate(day),
     startTime: day.sankrantiTime ?? undefined,
   }));
 }
@@ -73,7 +97,7 @@ export async function generateYearlySolarOccurrences(
   );
 
   return dailyData.map((day) => ({
-    date: day.date,
+    date: resolveSankrantiDate(day),
     startTime: day.sankrantiTime ?? undefined,
   }));
 }
@@ -90,7 +114,7 @@ export async function generateMonthlySolarOccurrences(
   const dailyData = await findDailyInfoAllSankrantiOccurrences({ startDate, endDate });
 
   return dailyData.map((day) => ({
-    date: day.date,
+    date: resolveSankrantiDate(day),
     startTime: day.sankrantiTime ?? undefined,
     notes: day.sankranti
       ? `${day.sankranti.replace(/_/g, " ").replace("SANKRANTI", "").trim()} Sankranti`
