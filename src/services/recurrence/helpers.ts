@@ -53,12 +53,11 @@ export const TITHI_PREDECESSOR: Partial<Record<Tithi, Tithi>> = {
 // PHASE CORRECTION MAP
 // =============================================================================
 
-// PURNIMA uses strict tithi-at-sunrise rule (matches DrikPanchang convention).
-// Astronomical peak can fall on D+1 but the observance day is always the
-// sunrise-rule PURNIMA day — do NOT shift.
-export const PHASE_CORRECTION_TITHI: Partial<Record<Tithi, "FULL_MOON" | "NEW_MOON">> = {
-  AMAVASYA: "NEW_MOON",
-};
+// Both PURNIMA and AMAVASYA use strict tithi-at-sunrise (udaya tithi) rule,
+// matching DrikPanchang convention. Astronomical peak can fall on D+1 but
+// the observance day is always the sunrise-rule tithi day — do NOT shift.
+export const PHASE_CORRECTION_TITHI: Partial<Record<Tithi, "FULL_MOON" | "NEW_MOON">> =
+  {};
 
 // =============================================================================
 // ADHIKA FILTER

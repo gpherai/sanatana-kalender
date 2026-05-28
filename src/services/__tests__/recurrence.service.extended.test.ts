@@ -132,30 +132,18 @@ describe("Recurrence Service Extended", () => {
       )
     ).toEqual([]);
 
-    // 5. Peak Correction (shift and no-shift)
+    // 5. AMAVASYA uses udaya tithi rule (no phase correction), same as PURNIMA.
+    // Candidates are returned as-is regardless of moonPhasePercent.
     const eventPhase: Event = { ...BASE_EVENT, tithi: "AMAVASYA", maas: null };
     const d1 = new Date(Date.UTC(2025, 4, 12));
-    const d2 = new Date(Date.UTC(2025, 4, 13));
     const d3 = new Date(Date.UTC(2026, 5, 10));
-    const d4 = new Date(Date.UTC(2026, 5, 11));
-    prismaMock.dailyInfo.findMany.mockImplementation((async (args: any) => {
-      if (args.where.tithi === "AMAVASYA")
-        return [
-          { date: d1, maas: "PAUSHA", isAdhika: false },
-          { date: d3, maas: "MAGHA", isAdhika: false },
-        ] as any;
-      if (args.where.moonPhaseType === "NEW_MOON")
-        return [
-          { date: d1, moonPhasePercent: 1.0 },
-          { date: d2, moonPhasePercent: 0.0 },
-          { date: d3, moonPhasePercent: 0.0 },
-          { date: d4, moonPhasePercent: 1.0 },
-        ] as any;
-      return [];
-    }) as any);
+    prismaMock.dailyInfo.findMany.mockResolvedValueOnce([
+      { date: d1, maas: "PAUSHA", isAdhika: false },
+      { date: d3, maas: "MAGHA", isAdhika: false },
+    ] as any);
     const res5 = await generateOccurrences(eventPhase, options);
     expect(res5).toHaveLength(2);
-    expect(res5[0]!.date.getUTCDate()).toBe(13);
+    expect(res5[0]!.date.getUTCDate()).toBe(12);
     expect(res5[1]!.date.getUTCDate()).toBe(10);
 
     // 6. Multi-day duration
