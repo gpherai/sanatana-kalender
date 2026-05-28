@@ -263,9 +263,7 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
                     </div>
                   )}
                   {dailyInfo?.sunSign?.uptoLocal && (
-                    <div>
-                      Volgende teken om {dailyInfo.sunSign.uptoLocal.substring(0, 5)}
-                    </div>
+                    <div>Volgende teken om {dailyInfo.sunSign.uptoLocal.slice(0, 5)}</div>
                   )}
                 </div>
               )}
@@ -348,7 +346,7 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
               {/* Moon Sign transition info */}
               {dailyInfo?.moonSign?.uptoLocal && (
                 <div className="border-t border-white/10 pt-3 text-xs text-white/50">
-                  Volgende teken om {dailyInfo.moonSign.uptoLocal.substring(0, 5)}
+                  Volgende teken om {dailyInfo.moonSign.uptoLocal.slice(0, 5)}
                 </div>
               )}
             </div>
@@ -357,7 +355,7 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
 
         {/* Yoga / Karana / Rahu Kalam */}
         {(dailyInfo?.yoga || dailyInfo?.karana || dailyInfo?.rahuKalam) && (
-          <div className="mt-6 grid grid-cols-3 gap-2 sm:gap-3">
+          <div className="mt-6 grid grid-cols-3 gap-1.5 sm:gap-3">
             {dailyInfo?.yoga && (
               <div className="rounded-xl border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] p-2.5 backdrop-blur-md sm:p-3">
                 <div className="mb-1 text-xs text-white/50">Yoga</div>
@@ -388,7 +386,8 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
               <div className="rounded-xl border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] p-2.5 backdrop-blur-md sm:p-3">
                 <div className="mb-1 text-xs text-white/50">Rahu Kalam</div>
                 <div className="text-xs font-medium text-white sm:text-sm">
-                  {dailyInfo.rahuKalam.start} – {dailyInfo.rahuKalam.end}
+                  <span className="block">{dailyInfo.rahuKalam.start}</span>
+                  <span className="block">– {dailyInfo.rahuKalam.end}</span>
                 </div>
               </div>
             )}

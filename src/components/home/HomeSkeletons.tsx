@@ -87,12 +87,13 @@ export function CategoriesSkeleton() {
         <div className="bg-theme-border h-5 w-24 rounded" />
       </div>
 
-      {/* Category pills grid */}
-      <div className="grid grid-cols-2 gap-1.5">
-        {Array.from({ length: 8 }).map((_, i) => (
+      {/* Category pills — matches actual flex-wrap layout to prevent CLS */}
+      <div className="flex flex-wrap gap-1.5">
+        {[56, 72, 64, 80, 60, 68, 76, 52].map((w, i) => (
           <div
             key={i}
-            className="border-theme-border bg-theme-border/30 h-8 rounded-r-lg border-l-[3px] px-2.5"
+            className="border-theme-border bg-theme-border/30 h-7 rounded-full border"
+            style={{ width: `${w}px` }}
           />
         ))}
       </div>
