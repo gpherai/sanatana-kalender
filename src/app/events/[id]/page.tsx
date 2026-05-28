@@ -13,6 +13,7 @@ import {
 } from "@/lib/category-styles";
 import { findEventByIdForDisplay } from "@/repositories/event.repository";
 import { DEFAULT_LOCATION } from "@/lib/domain";
+import { dbTimeToStr } from "@/lib/timing-utils";
 import { DeleteEventButton } from "@/components/events/DeleteEventButton";
 
 interface PageProps {
@@ -135,8 +136,8 @@ export default async function EventDetailPage({ params }: PageProps) {
               <div className="flex items-center gap-2 text-sm">
                 <Clock className="text-theme-info h-4 w-4 shrink-0" />
                 <span className="text-theme-fg">
-                  {firstOcc.startTime}
-                  {firstOcc.endTime && ` – ${firstOcc.endTime}`}
+                  {dbTimeToStr(firstOcc.startTime)}
+                  {firstOcc.endTime && ` – ${dbTimeToStr(firstOcc.endTime)}`}
                 </span>
               </div>
             )}

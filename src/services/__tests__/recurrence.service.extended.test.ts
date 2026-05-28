@@ -48,7 +48,10 @@ describe("Recurrence Service Extended", () => {
 
   it("hits all recurrence service branches", async () => {
     // 1. Dynamic Timing Fallback
-    const eventStatic: Event = { ...BASE_EVENT, startTime: "10:00" };
+    const eventStatic: Event = {
+      ...BASE_EVENT,
+      startTime: new Date("1970-01-01T10:00:00.000Z"),
+    };
     prismaMock.dailyInfo.findMany.mockResolvedValueOnce([
       { date: new Date("2025-01-10T00:00:00.000Z"), maas: "PAUSHA" },
     ] as any);

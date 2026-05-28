@@ -64,7 +64,7 @@ describe("Recurrence Service", () => {
         const mockDbResponse = [
           {
             date: new Date("2025-02-26T00:00:00.000Z"),
-            tithiEndTime: "23:45",
+            tithiEndTime: new Date("1970-01-01T23:45:00.000Z"),
             maas: "PHALGUNA",
           },
         ];
@@ -92,12 +92,12 @@ describe("Recurrence Service", () => {
         const mockDbResponse = [
           {
             date: new Date("2025-02-10T00:00:00.000Z"),
-            tithiEndTime: "10:00",
+            tithiEndTime: new Date("1970-01-01T10:00:00.000Z"),
             maas: "MAGHA",
           },
           {
             date: new Date("2025-02-26T00:00:00.000Z"),
-            tithiEndTime: "23:45",
+            tithiEndTime: new Date("1970-01-01T23:45:00.000Z"),
             maas: "PHALGUNA",
           },
         ];
@@ -138,12 +138,12 @@ describe("Recurrence Service", () => {
         const mockDbResponse = [
           {
             date: new Date("2025-01-11T00:00:00.000Z"),
-            tithiEndTime: "10:00",
+            tithiEndTime: new Date("1970-01-01T10:00:00.000Z"),
             maas: "PAUSHA",
           },
           {
             date: new Date("2025-02-10T00:00:00.000Z"),
-            tithiEndTime: "11:00",
+            tithiEndTime: new Date("1970-01-01T11:00:00.000Z"),
             maas: "MAGHA",
           },
         ];
@@ -168,7 +168,7 @@ describe("Recurrence Service", () => {
           }, // Day 1
           {
             date: new Date("2025-01-12T00:00:00.000Z"),
-            tithiEndTime: "08:00",
+            tithiEndTime: new Date("1970-01-01T08:00:00.000Z"),
             maas: "PAUSHA",
           }, // Day 2
         ];
@@ -188,12 +188,12 @@ describe("Recurrence Service", () => {
         const mockDbResponse = [
           {
             date: new Date("2025-01-11T00:00:00.000Z"),
-            tithiEndTime: "10:00",
+            tithiEndTime: new Date("1970-01-01T10:00:00.000Z"),
             maas: "PAUSHA",
           },
           {
             date: new Date("2025-01-13T00:00:00.000Z"),
-            tithiEndTime: "11:00",
+            tithiEndTime: new Date("1970-01-01T11:00:00.000Z"),
             maas: "PAUSHA",
           },
         ];
@@ -223,7 +223,7 @@ describe("Recurrence Service", () => {
         const mockDbResponse = [
           {
             date: new Date("2025-01-14T00:00:00.000Z"),
-            sankrantiTime: "14:30",
+            sankrantiTime: new Date("1970-01-01T14:30:00.000Z"),
             sankranti: "MAKARA_SANKRANTI",
           },
         ];
@@ -316,8 +316,14 @@ describe("Recurrence Service", () => {
       it("should only return tithi dates that fall on the specified weekday", async () => {
         // Jan 7 2025 = dinsdag, Jan 8 2025 = woensdag
         const mockDbResponse = [
-          { date: new Date("2025-01-07T00:00:00.000Z"), tithiEndTime: "18:30" }, // dinsdag
-          { date: new Date("2025-02-05T00:00:00.000Z"), tithiEndTime: "20:00" }, // woensdag — skip
+          {
+            date: new Date("2025-01-07T00:00:00.000Z"),
+            tithiEndTime: new Date("1970-01-01T18:30:00.000Z"),
+          }, // dinsdag
+          {
+            date: new Date("2025-02-05T00:00:00.000Z"),
+            tithiEndTime: new Date("1970-01-01T20:00:00.000Z"),
+          }, // woensdag — skip
         ];
 
         prismaMock.dailyInfo.findMany.mockResolvedValue(mockDbResponse as DailyInfo[]);
@@ -331,7 +337,10 @@ describe("Recurrence Service", () => {
 
       it("should return empty array when no tithi dates fall on the weekday", async () => {
         const mockDbResponse = [
-          { date: new Date("2025-02-05T00:00:00.000Z"), tithiEndTime: "20:00" }, // woensdag
+          {
+            date: new Date("2025-02-05T00:00:00.000Z"),
+            tithiEndTime: new Date("1970-01-01T20:00:00.000Z"),
+          }, // woensdag
         ];
 
         prismaMock.dailyInfo.findMany.mockResolvedValue(mockDbResponse as DailyInfo[]);
@@ -419,12 +428,12 @@ describe("Recurrence Service", () => {
         const mockDbResponse = [
           {
             date: new Date("2025-01-11T00:00:00.000Z"),
-            tithiEndTime: "10:00",
+            tithiEndTime: new Date("1970-01-01T10:00:00.000Z"),
             maas: "PAUSHA",
           },
           {
             date: new Date("2025-01-25T00:00:00.000Z"),
-            tithiEndTime: "11:00",
+            tithiEndTime: new Date("1970-01-01T11:00:00.000Z"),
             maas: "PAUSHA",
           },
         ];
@@ -451,7 +460,7 @@ describe("Recurrence Service", () => {
       prismaMock.dailyInfo.findMany.mockResolvedValue([
         {
           date: new Date("2025-01-15T00:00:00.000Z"),
-          tithiEndTime: "12:00",
+          tithiEndTime: new Date("1970-01-01T12:00:00.000Z"),
           maas: "PHALGUNA",
         } as DailyInfo,
       ]);

@@ -7,6 +7,7 @@ import { PageLayout } from "@/components/layout";
 import { formatDateForInput } from "@/lib/date-utils";
 import type { EventFormData } from "@/lib/validations";
 import { findEventForUpdate } from "@/repositories/event.repository";
+import { dbTimeToStr } from "@/lib/timing-utils";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -38,8 +39,8 @@ export default async function EditEventPage({ params }: PageProps) {
     recurrenceType: event.recurrenceType as EventFormData["recurrenceType"],
     date: firstOccurrence ? formatDateForInput(firstOccurrence.date) : "",
     endDate: firstOccurrence?.endDate ? formatDateForInput(firstOccurrence.endDate) : "",
-    startTime: firstOccurrence?.startTime ?? "",
-    endTime: firstOccurrence?.endTime ?? "",
+    startTime: dbTimeToStr(firstOccurrence?.startTime) ?? "",
+    endTime: dbTimeToStr(firstOccurrence?.endTime) ?? "",
     tithi: (event.tithi ?? "") as EventFormData["tithi"],
     nakshatra: (event.nakshatra ?? "") as EventFormData["nakshatra"],
     maas: (event.maas ?? "") as EventFormData["maas"],

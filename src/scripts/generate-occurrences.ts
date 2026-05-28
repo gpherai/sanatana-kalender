@@ -18,6 +18,7 @@
 import "dotenv/config";
 import { prisma } from "@/lib/db";
 import { generateOccurrencesForEvents } from "@/services/recurrence";
+import { strToDbTime } from "@/lib/timing-utils";
 import { DEFAULT_LOCATION } from "@/lib/domain";
 import { parseCalendarDate } from "@/lib/date-utils";
 
@@ -87,8 +88,8 @@ async function main() {
             eventId,
             date: occ.date,
             endDate: occ.endDate,
-            startTime: occ.startTime,
-            endTime: occ.endTime,
+            startTime: strToDbTime(occ.startTime ?? null),
+            endTime: strToDbTime(occ.endTime ?? null),
             notes: occ.notes,
           })),
           skipDuplicates: true,

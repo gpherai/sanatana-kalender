@@ -12,6 +12,7 @@
 import "dotenv/config";
 import { prisma } from "@/lib/db";
 import { EVENT_NAMING_CATALOG } from "@/config/event-naming";
+import { strToDbTime } from "@/lib/timing-utils";
 
 async function generateEventsFromNaming() {
   console.log(
@@ -101,8 +102,8 @@ async function generateEventsFromNaming() {
 
       // Timing configuration
       timingType: naming.timingType ?? null,
-      startTime: naming.startTime ?? null,
-      endTime: naming.endTime ?? null,
+      startTime: strToDbTime(naming.startTime ?? null),
+      endTime: strToDbTime(naming.endTime ?? null),
 
       // Alternative names
       aliases: naming.aliases ?? [],

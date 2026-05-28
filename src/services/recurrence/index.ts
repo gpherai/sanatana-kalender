@@ -1,6 +1,7 @@
 import "server-only";
 import type { Event, RecurrenceType } from "@prisma/client";
 import { DEFAULT_LOCATION } from "@/lib/domain";
+import { dbTimeToStr } from "@/lib/timing-utils";
 import { logDebug, logWarn } from "@/lib/utils";
 import { applyDynamicTiming } from "./helpers";
 import {
@@ -119,8 +120,8 @@ export async function generateOccurrences(
   } else if (event.startTime || event.endTime) {
     occurrences = occurrences.map((occ) => ({
       ...occ,
-      startTime: occ.startTime ?? event.startTime ?? undefined,
-      endTime: occ.endTime ?? event.endTime ?? undefined,
+      startTime: occ.startTime ?? dbTimeToStr(event.startTime) ?? undefined,
+      endTime: occ.endTime ?? dbTimeToStr(event.endTime) ?? undefined,
     }));
   }
 

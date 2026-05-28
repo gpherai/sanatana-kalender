@@ -4,6 +4,7 @@ import { detectSpecialDay } from "@/lib/panchanga-helpers";
 import type { DailyPanchangaFull } from "@/engine/panchanga";
 import { addDayForDisplay, formatDateLocal } from "@/lib/date-utils";
 import type { findEventOccurrences } from "@/repositories/event.repository";
+import { dbTimeToStr } from "@/lib/timing-utils";
 
 type EventOccurrence = Awaited<ReturnType<typeof findEventOccurrences>>[number];
 
@@ -30,8 +31,8 @@ export function transformOccurrenceToCalendarEvent(occ: EventOccurrence) {
       maas: occ.event.maas,
       tags: occ.event.tags,
       notes: occ.notes,
-      startTime: occ.startTime,
-      endTime: occ.endTime,
+      startTime: dbTimeToStr(occ.startTime),
+      endTime: dbTimeToStr(occ.endTime),
       originalEndDate: occ.endDate ? formatDateLocal(occ.endDate) : null,
       seriesParentEventIds: occ.event.seriesChildEntries.map((e) => e.parentEventId),
       seriesDayNumber: occ.event.seriesChildEntries[0]?.dayNumber ?? null,

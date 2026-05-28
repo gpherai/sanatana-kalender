@@ -11,6 +11,7 @@ import {
 import { logError } from "@/lib/utils";
 import { formatDateLocal } from "@/lib/date-utils";
 import { findEventForUpdate } from "@/repositories/event.repository";
+import { dbTimeToStr } from "@/lib/timing-utils";
 import {
   CategoryNotFoundError,
   deleteEvent,
@@ -105,9 +106,11 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       startTime:
         data.startTime !== undefined
           ? data.startTime
-          : (firstOccurrence?.startTime ?? null),
+          : (dbTimeToStr(firstOccurrence?.startTime) ?? null),
       endTime:
-        data.endTime !== undefined ? data.endTime : (firstOccurrence?.endTime ?? null),
+        data.endTime !== undefined
+          ? data.endTime
+          : (dbTimeToStr(firstOccurrence?.endTime) ?? null),
       notes: data.notes !== undefined ? data.notes : (firstOccurrence?.notes ?? null),
     });
 

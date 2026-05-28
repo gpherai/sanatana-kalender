@@ -17,6 +17,33 @@ export interface TimeWindow {
 }
 
 /**
+ * Convert a "HH:mm" or "HH:mm:ss" string to a Date for @db.Time storage.
+ * The date part is always 1970-01-01 UTC; only the UTC hour/minute matter.
+ */
+export function strToDbTime(time: string | null | undefined): Date | null {
+  if (!time) return null;
+  const match = /^(\d{1,2}):(\d{2})(?::\d{2})?$/.exec(time);
+  if (!match) return null;
+  const h = parseInt(match[1]!, 10);
+  const m = parseInt(match[2]!, 10);
+  if (h > 23 || m > 59) return null;
+  const d = new Date(0);
+  d.setUTCHours(h, m, 0, 0);
+  return d;
+}
+
+/**
+ * Convert a @db.Time Date back to a "HH:mm" string.
+ * Uses UTC hours/minutes (Prisma stores @db.Time as 1970-01-01 UTC).
+ */
+export function dbTimeToStr(date: Date | null | undefined): string | null {
+  if (!date) return null;
+  const h = date.getUTCHours();
+  const m = date.getUTCMinutes();
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+}
+
+/**
  * Parse "HH:MM" string into total minutes since midnight.
  * Returns null if the string is invalid.
  */

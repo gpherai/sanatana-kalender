@@ -19,6 +19,7 @@ import {
   RecurrenceType,
 } from "@prisma/client";
 import { prisma } from "@/lib/db";
+import { strToDbTime } from "@/lib/timing-utils";
 import { DateTime } from "luxon";
 import { DEFAULT_LOCATION } from "@/lib/domain";
 import type { EventQueryParams } from "@/lib/validations";
@@ -351,8 +352,8 @@ export async function createEventWithInitialOccurrence(input: CreateEventRecordI
         eventId: newEvent.id,
         date: input.date,
         endDate: input.endDate ?? null,
-        startTime: input.startTime ?? null,
-        endTime: input.endTime ?? null,
+        startTime: strToDbTime(input.startTime ?? null),
+        endTime: strToDbTime(input.endTime ?? null),
         notes: input.notes ?? null,
       },
     });
@@ -407,8 +408,8 @@ export async function updateEventWithPrimaryOccurrence(
       const occurrenceData = {
         ...(input.date !== undefined && { date: input.date }),
         ...(input.endDate !== undefined && { endDate: input.endDate }),
-        ...(input.startTime !== undefined && { startTime: input.startTime }),
-        ...(input.endTime !== undefined && { endTime: input.endTime }),
+        ...(input.startTime !== undefined && { startTime: strToDbTime(input.startTime) }),
+        ...(input.endTime !== undefined && { endTime: strToDbTime(input.endTime) }),
         ...(input.notes !== undefined && { notes: input.notes }),
       };
 
@@ -490,8 +491,8 @@ export async function updateOccurrenceById(
     data: {
       ...(input.date !== undefined && { date: input.date }),
       ...(input.endDate !== undefined && { endDate: input.endDate }),
-      ...(input.startTime !== undefined && { startTime: input.startTime }),
-      ...(input.endTime !== undefined && { endTime: input.endTime }),
+      ...(input.startTime !== undefined && { startTime: strToDbTime(input.startTime) }),
+      ...(input.endTime !== undefined && { endTime: strToDbTime(input.endTime) }),
       ...(input.notes !== undefined && { notes: input.notes }),
     },
   });
@@ -527,8 +528,8 @@ export async function persistGeneratedOccurrencesForEvent(
         eventId,
         date: occ.date,
         endDate: occ.endDate,
-        startTime: occ.startTime,
-        endTime: occ.endTime,
+        startTime: strToDbTime(occ.startTime ?? null),
+        endTime: strToDbTime(occ.endTime ?? null),
         notes: occ.notes,
       })),
       skipDuplicates: true,
@@ -577,8 +578,8 @@ export async function persistGeneratedOccurrencesForEvents(
             eventId,
             date: occ.date,
             endDate: occ.endDate,
-            startTime: occ.startTime,
-            endTime: occ.endTime,
+            startTime: strToDbTime(occ.startTime ?? null),
+            endTime: strToDbTime(occ.endTime ?? null),
             notes: occ.notes,
           })),
           skipDuplicates: true,
