@@ -12,7 +12,7 @@ export type { GeneratedOccurrence, PrevDayInfo } from "./types";
 export {
   isConsecutiveDay,
   groupConsecutiveDays,
-  selectFirstPerYear,
+  selectFirstWindowPerLunarCycle,
   isPredecessorEndsAfterSunrise,
   isNishitakalDateShiftNeeded,
   isSankashtiPradoshShiftNeeded,

@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   isConsecutiveDay,
   groupConsecutiveDays,
-  selectFirstPerYear,
+  selectFirstWindowPerLunarCycle,
   isPredecessorEndsAfterSunrise,
   isNishitakalDateShiftNeeded,
   computeTithiOccurrence,
@@ -48,51 +48,65 @@ describe("tithi-helpers", () => {
     });
   });
 
-  describe("selectFirstPerYear", () => {
-    it("selects first occurrence per year", () => {
-      const rows = [
-        { date: new Date(Date.UTC(2025, 0, 1)), maas: "Chaitra" },
-        { date: new Date(Date.UTC(2025, 1, 1)), maas: "Vaisakha" },
-        { date: new Date(Date.UTC(2026, 0, 1)), maas: "Chaitra" },
-      ];
+  describe("selectFirstWindowPerLunarCycle", () => {
+    const mkWindow = (dateUTC: Date, maas: string | null) => {
+      const row = { date: dateUTC, maas };
+      return { firstDay: row, lastDay: row };
+    };
 
-      const res = selectFirstPerYear(rows, null, false);
-      expect(res).toHaveLength(2);
-      expect(res[0]?.date.getUTCFullYear()).toBe(2025);
-      expect(res[1]?.date.getUTCFullYear()).toBe(2026);
+    it("selects all occurrences for single-maas, even two in the same Gregorian year", () => {
+      // Saphala Ekadashi (PAUSHA): Jan 3 2027 AND Dec 23 2027 are both valid.
+      const w1 = mkWindow(new Date(Date.UTC(2027, 0, 3)), "PAUSHA");
+      const w2 = mkWindow(new Date(Date.UTC(2027, 11, 23)), "PAUSHA");
+      const w3 = mkWindow(new Date(Date.UTC(2029, 0, 9)), "PAUSHA");
+
+      const res = selectFirstWindowPerLunarCycle([w1, w2, w3], ["PAUSHA"], false);
+      expect(res).toHaveLength(3);
+      expect(res[0]!.firstDay.date).toEqual(w1.firstDay.date);
+      expect(res[1]!.firstDay.date).toEqual(w2.firstDay.date);
+      expect(res[2]!.firstDay.date).toEqual(w3.firstDay.date);
     });
 
-    it("filters by maas values", () => {
-      const rows = [
-        { date: new Date(Date.UTC(2025, 0, 1)), maas: "Chaitra" },
-        { date: new Date(Date.UTC(2025, 1, 1)), maas: "Vaisakha" },
-      ];
+    it("filters by maas values (single-maas)", () => {
+      const w1 = mkWindow(new Date(Date.UTC(2025, 0, 1)), "CHAITRA");
+      const w2 = mkWindow(new Date(Date.UTC(2025, 1, 1)), "VAISHAKHA");
 
-      const res = selectFirstPerYear(rows, ["Chaitra"], false);
+      const res = selectFirstWindowPerLunarCycle([w1, w2], ["CHAITRA"], false);
       expect(res).toHaveLength(1);
-      expect(res[0]?.maas).toBe("Chaitra");
+      expect(res[0]!.firstDay.maas).toBe("CHAITRA");
     });
 
-    it("selects first occurrence per year and maas when isMultiMaas is true", () => {
-      const rows = [
-        { date: new Date(Date.UTC(2025, 0, 1)), maas: "Chaitra" },
-        { date: new Date(Date.UTC(2025, 0, 15)), maas: "Chaitra" },
-        { date: new Date(Date.UTC(2025, 1, 1)), maas: "Vaisakha" },
-      ];
+    it("deduplicates by year+maas when isMultiMaas is true", () => {
+      const w1 = mkWindow(new Date(Date.UTC(2025, 0, 1)), "CHAITRA");
+      const w2 = mkWindow(new Date(Date.UTC(2025, 0, 15)), "CHAITRA");
+      const w3 = mkWindow(new Date(Date.UTC(2025, 1, 1)), "VAISHAKHA");
 
-      const res = selectFirstPerYear(rows, null, true);
+      const res = selectFirstWindowPerLunarCycle([w1, w2, w3], null, true);
       expect(res).toHaveLength(2);
-      expect(res[0]?.maas).toBe("Chaitra");
-      expect(res[1]?.maas).toBe("Vaisakha");
+      expect(res[0]!.firstDay.maas).toBe("CHAITRA");
+      expect(res[1]!.firstDay.maas).toBe("VAISHAKHA");
     });
 
-    it("handles missing maas when isMultiMaas is true", () => {
-      const rows = [
-        { date: new Date(Date.UTC(2025, 0, 1)), maas: null },
-        { date: new Date(Date.UTC(2025, 0, 15)), maas: null },
-      ];
-      const res = selectFirstPerYear(rows, null, true);
+    it("handles null maas rows when isMultiMaas is true", () => {
+      const w1 = mkWindow(new Date(Date.UTC(2025, 0, 1)), null);
+      const w2 = mkWindow(new Date(Date.UTC(2025, 0, 15)), null);
+      const res = selectFirstWindowPerLunarCycle([w1, w2], null, true);
       expect(res).toHaveLength(1);
+    });
+
+    it("preserves firstDay/lastDay pair from multi-day window", () => {
+      const row1 = { date: new Date(Date.UTC(2025, 2, 6)), maas: "PHALGUNA" };
+      const row2 = { date: new Date(Date.UTC(2025, 2, 7)), maas: "PHALGUNA" };
+      const window = { firstDay: row1, lastDay: row2 };
+
+      const res = selectFirstWindowPerLunarCycle([window], ["PHALGUNA"], false);
+      expect(res).toHaveLength(1);
+      expect(res[0]!.firstDay).toBe(row1);
+      expect(res[0]!.lastDay).toBe(row2);
+    });
+
+    it("returns empty array for empty input", () => {
+      expect(selectFirstWindowPerLunarCycle([], null, false)).toEqual([]);
     });
   });
 

@@ -15,7 +15,7 @@ import {
   isPredecessorEndsAfterSunrise,
   isNishitakalDateShiftNeeded,
   isSankashtiPradoshShiftNeeded,
-  selectFirstPerYear,
+  selectFirstWindowPerLunarCycle,
   applyRatriVyapiniDateRule,
 } from "@/engine";
 import { parseTimeToMinutes, formatMinutesToTime } from "@/lib/timing-utils";
@@ -64,23 +64,22 @@ export async function generateYearlyLunarOccurrences(
         : null;
   const isMultiMaas = maasValues !== null && maasValues.length > 1;
 
-  const selectedByYear = selectFirstPerYear(dailyData, maasValues, isMultiMaas);
-
-  const coveredKeys = new Set(
-    selectedByYear.map((d) => {
-      const year = d.date.getUTCFullYear();
-      return isMultiMaas && d.maas ? `${year}-${d.maas}` : String(year);
-    })
+  // Group consecutive udaya-tithi days into windows before deduping.
+  // A long tithi (> 24 h) can be the udaya tithi on two or more consecutive
+  // calendar days; groupConsecutiveDays collapses those into a single window
+  // so that selectFirstWindowPerLunarCycle receives one entry per occurrence.
+  const dataWindows = groupConsecutiveDays(dailyData);
+  const selectedWindows = selectFirstWindowPerLunarCycle(
+    dataWindows,
+    maasValues,
+    isMultiMaas
   );
 
-  const kshayaExtras: Array<{
-    date: Date;
-    tithiEndTime: string | null;
-    maas: string | null;
-    isAdhika: boolean;
-    sunrise: string | null;
-    moonrise: string | null;
-  }> = [];
+  // Proximity threshold: two windows within 45 days → same lunar-month occurrence.
+  const CYCLE_GAP_MS = 45 * 24 * 60 * 60 * 1000;
+
+  type WindowEntry = (typeof selectedWindows)[0];
+  const kshayaWindowExtras: WindowEntry[] = [];
 
   const predecessorTithi = TITHI_PREDECESSOR[event.tithi];
   if (predecessorTithi) {
@@ -102,83 +101,101 @@ export async function generateYearlyLunarOccurrences(
       )
         continue;
 
-      const year = day.date.getUTCFullYear();
-      const key = isMultiMaas && day.maas ? `${year}-${day.maas}` : String(year);
-      if (coveredKeys.has(key)) continue;
-
       const occDate = kshayaNextDay
         ? new Date(day.date.getTime() + 24 * 60 * 60 * 1000)
         : day.date;
 
-      kshayaExtras.push({
+      // Skip if a normal window already covers this lunar-month occurrence.
+      const alreadyCovered = selectedWindows.some(
+        (w) => Math.abs(w.firstDay.date.getTime() - occDate.getTime()) < CYCLE_GAP_MS
+      );
+      if (alreadyCovered) continue;
+
+      const extra = {
         date: occDate,
-        tithiEndTime: null,
+        tithiEndTime: null as string | null,
         maas: day.maas,
         isAdhika: day.isAdhika,
-        sunrise: null,
-        moonrise: null,
-      });
-      coveredKeys.add(key);
+        sunrise: null as string | null,
+        moonrise: null as string | null,
+      };
+      kshayaWindowExtras.push({ firstDay: extra, lastDay: extra });
     }
   }
 
   const durationDays = typeof config.durationDays === "number" ? config.durationDays : 1;
 
-  const rawSelectedDays = [...selectedByYear, ...kshayaExtras].sort(
-    (a, b) => a.date.getTime() - b.date.getTime()
+  const rawSelectedWindows = [...selectedWindows, ...kshayaWindowExtras].sort(
+    (a, b) => a.firstDay.date.getTime() - b.firstDay.date.getTime()
   );
 
   const targetPhase = PHASE_CORRECTION_TITHI[event.tithi];
-  const selectedDays = targetPhase
-    ? await correctToAstronomicalPhaseDay(rawSelectedDays, targetPhase)
-    : rawSelectedDays;
+  let finalWindows: WindowEntry[];
+  if (targetPhase) {
+    const correctedDays = await correctToAstronomicalPhaseDay(
+      rawSelectedWindows.map((w) => w.firstDay),
+      targetPhase
+    );
+    finalWindows = correctedDays.map((day, i) => ({
+      firstDay: day as WindowEntry["firstDay"],
+      lastDay: rawSelectedWindows[i]!.lastDay,
+    }));
+  } else {
+    finalWindows = rawSelectedWindows;
+  }
 
   if (durationDays > 1) {
-    return selectedDays.map((day) => ({
-      date: day.date,
-      endDate: new Date(day.date.getTime() + (durationDays - 1) * 24 * 60 * 60 * 1000),
+    return finalWindows.map(({ firstDay }) => ({
+      date: firstDay.date,
+      endDate: new Date(
+        firstDay.date.getTime() + (durationDays - 1) * 24 * 60 * 60 * 1000
+      ),
       startTime: undefined,
-      endTime: day.tithiEndTime ?? undefined,
+      endTime: firstDay.tithiEndTime ?? undefined,
     }));
   }
 
   const nishitakalDateRule = config.nishitakalDateRule === true;
   if (nishitakalDateRule) {
-    const prevDayMap = await fetchPreviousDayData(selectedDays.map((d) => d.date));
+    const prevDayMap = await fetchPreviousDayData(
+      finalWindows.map((w) => w.firstDay.date)
+    );
     const currentDayRows = await findDailyInfoSunriseByDates(
-      selectedDays.map((d) => d.date)
+      finalWindows.map((w) => w.firstDay.date)
     );
     const currentSunriseMap = new Map(
       currentDayRows.map((r) => [r.date.toISOString().split("T")[0]!, r.sunrise])
     );
-    return selectedDays.map((day) => {
-      const key = day.date.toISOString().split("T")[0]!;
+    return finalWindows.map(({ firstDay }) => {
+      const key = firstDay.date.toISOString().split("T")[0]!;
       const prevInfo = prevDayMap.get(key);
       const currentSunrise = currentSunriseMap.get(key) ?? null;
       if (prevInfo && isNishitakalDateShiftNeeded(prevInfo, currentSunrise)) {
-        const prevDate = new Date(day.date.getTime() - 24 * 60 * 60 * 1000);
+        const prevDate = new Date(firstDay.date.getTime() - 24 * 60 * 60 * 1000);
         return { date: prevDate };
       }
-      return { date: day.date };
+      return { date: firstDay.date };
     });
   }
 
   if (event.eventType === EventType.VRAT) {
-    const prevDayMap = await fetchPreviousDayData(selectedDays.map((d) => d.date));
+    const prevDayMap = await fetchPreviousDayData(
+      finalWindows.map((w) => w.firstDay.date)
+    );
     if (event.tithi === Tithi.CHATURTHI_KRISHNA) {
-      return selectedDays.map((day) => {
-        const occ = computeTithiOccurrence(day, day, prevDayMap);
-        const key = day.date.toISOString().split("T")[0]!;
+      return finalWindows.map(({ firstDay, lastDay }) => {
+        const occ = computeTithiOccurrence(firstDay, lastDay, prevDayMap);
+        const key = firstDay.date.toISOString().split("T")[0]!;
         const prevInfo = prevDayMap.get(key);
 
         // When computeTithiOccurrence shifted to D-1 (evening start), verify
         // that Chaturthi actually started within Pradosh Kaal (sunset + 120 min).
         // If it started after Pradosh, DP uses the udaya tithi day instead.
-        if (occ.date.getTime() !== day.date.getTime() && prevInfo) {
+        if (occ.date.getTime() !== firstDay.date.getTime() && prevInfo) {
           const endMin = parseTimeToMinutes(prevInfo.tithiEndTime ?? "");
           const sunsetMin = parseTimeToMinutes(prevInfo.sunset ?? "");
           if (endMin !== null && sunsetMin !== null && endMin > sunsetMin + 120) {
-            return { date: day.date };
+            return { date: firstDay.date };
           }
         }
 
@@ -186,16 +203,18 @@ export async function generateYearlyLunarOccurrences(
         // daytime of the previous day (between sunrise and sunset), it is present
         // during Pradosh Kaal → observe on that previous day instead of the
         // Udaya Tithi day.
-        if (occ.date.getTime() === day.date.getTime()) {
+        if (occ.date.getTime() === firstDay.date.getTime()) {
           if (prevInfo && isSankashtiPradoshShiftNeeded(prevInfo)) {
-            const prevDate = new Date(day.date);
+            const prevDate = new Date(firstDay.date);
             prevDate.setUTCDate(prevDate.getUTCDate() - 1);
             const startMin = parseTimeToMinutes(prevInfo.tithiEndTime ?? "");
             const startTime =
               startMin !== null ? formatMinutesToTime(startMin) : undefined;
-            const endMin = day.tithiEndTime ? parseTimeToMinutes(day.tithiEndTime) : null;
+            const endMin = firstDay.tithiEndTime
+              ? parseTimeToMinutes(firstDay.tithiEndTime)
+              : null;
             const endTime = endMin !== null ? formatMinutesToTime(endMin) : undefined;
-            return { date: prevDate, startTime, endDate: day.date, endTime };
+            return { date: prevDate, startTime, endDate: firstDay.date, endTime };
           }
 
           // Midnight Chaturthi rule: when Chaturthi starts in the first hour
@@ -206,8 +225,8 @@ export async function generateYearlyLunarOccurrences(
           // midnight-start cases; Chaturthi starting at 01:30+ uses udaya tithi.
           if (prevInfo) {
             const chaturthi_startMin = parseTimeToMinutes(prevInfo.tithiEndTime ?? "");
-            const moonriseMin = parseTimeToMinutes(day.moonrise ?? "");
-            const sunriseMin = parseTimeToMinutes(day.sunrise ?? "");
+            const moonriseMin = parseTimeToMinutes(firstDay.moonrise ?? "");
+            const sunriseMin = parseTimeToMinutes(firstDay.sunrise ?? "");
             if (
               chaturthi_startMin !== null &&
               chaturthi_startMin < 60 &&
@@ -215,7 +234,7 @@ export async function generateYearlyLunarOccurrences(
               sunriseMin !== null &&
               moonriseMin < sunriseMin
             ) {
-              const prevDate = new Date(day.date);
+              const prevDate = new Date(firstDay.date);
               prevDate.setUTCDate(prevDate.getUTCDate() - 1);
               return { date: prevDate };
             }
@@ -224,10 +243,17 @@ export async function generateYearlyLunarOccurrences(
         return occ;
       });
     }
-    return selectedDays.map((day) => computeTithiOccurrence(day, day, prevDayMap));
+    return finalWindows.map(({ firstDay, lastDay }) =>
+      computeTithiOccurrence(firstDay, lastDay, prevDayMap)
+    );
   }
 
-  return selectedDays.map((day) => ({ date: day.date }));
+  // FESTIVAL: udaya tithi date; add endDate for multi-day tithi spans.
+  return finalWindows.map(({ firstDay, lastDay }) => ({
+    date: firstDay.date,
+    endDate:
+      lastDay.date.getTime() !== firstDay.date.getTime() ? lastDay.date : undefined,
+  }));
 }
 
 // =============================================================================

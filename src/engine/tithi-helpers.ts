@@ -60,27 +60,64 @@ export function groupConsecutiveDays<T extends { date: Date }>(
   return windows;
 }
 
+// Minimum gap between two windows of the same maas to be treated as separate
+// lunar-month occurrences. One lunar month is ~29.5 days; 45 days is a safe
+// threshold that allows a winter maas (e.g. PAUSHA) to appear in both January
+// and December of the same Gregorian year without being deduped.
+const LUNAR_CYCLE_GAP_MS = 45 * 24 * 60 * 60 * 1000;
+
 /**
- * From an ordered, maas-filtered set of daily rows, returns the first row per
- * year (or per year+maas for multi-maas events).
+ * From ordered, maas-filtered tithi windows, selects one window per lunar-month
+ * occurrence.
  *
- * @param rows        - Ordered rows already filtered to the desired tithi
+ * - Single-maas events: take every window that matches the maas filter — no
+ *   Gregorian-year dedup. A winter maas (e.g. PAUSHA) legitimately produces two
+ *   occurrences in the same Gregorian year (January and December). The 45-day
+ *   gap guard prevents pathological duplicates from malformed data.
+ * - Multi-maas or no-maas: dedup by Gregorian year + maas key (original
+ *   behaviour required for events like Navadurga).
+ *
+ * @param windows     - Ordered {firstDay, lastDay} pairs from groupConsecutiveDays
  * @param maasValues  - Maas whitelist (null = no filter)
- * @param isMultiMaas - When true, use year+maas as the dedup key (e.g. Navadurga)
+ * @param isMultiMaas - When true, use year+maas as the dedup key
  */
-export function selectFirstPerYear<T extends { date: Date; maas: string | null }>(
-  rows: T[],
+export function selectFirstWindowPerLunarCycle<
+  T extends { date: Date; maas: string | null },
+>(
+  windows: Array<{ firstDay: T; lastDay: T }>,
   maasValues: string[] | null,
   isMultiMaas: boolean
-): T[] {
-  const seen = new Map<string, T>();
-  for (const row of rows) {
-    if (maasValues && (!row.maas || !maasValues.includes(row.maas))) continue;
-    const year = row.date.getUTCFullYear();
-    const key = isMultiMaas && row.maas ? `${year}-${row.maas}` : String(year);
-    if (!seen.has(key)) seen.set(key, row);
+): Array<{ firstDay: T; lastDay: T }> {
+  if (maasValues !== null && !isMultiMaas) {
+    const selected: Array<{ firstDay: T; lastDay: T }> = [];
+    for (const w of windows) {
+      if (!w.firstDay.maas || !maasValues.includes(w.firstDay.maas)) continue;
+      const prev = selected[selected.length - 1];
+      if (
+        !prev ||
+        w.firstDay.date.getTime() - prev.firstDay.date.getTime() > LUNAR_CYCLE_GAP_MS
+      ) {
+        selected.push(w);
+      }
+    }
+    return selected;
   }
-  return Array.from(seen.values()).sort((a, b) => a.date.getTime() - b.date.getTime());
+
+  // Multi-maas or no-maas: dedup by Gregorian year + maas key.
+  const seen = new Map<string, true>();
+  const selected: Array<{ firstDay: T; lastDay: T }> = [];
+  for (const w of windows) {
+    if (maasValues && (!w.firstDay.maas || !maasValues.includes(w.firstDay.maas)))
+      continue;
+    const year = w.firstDay.date.getUTCFullYear();
+    const key =
+      isMultiMaas && w.firstDay.maas ? `${year}-${w.firstDay.maas}` : String(year);
+    if (!seen.has(key)) {
+      seen.set(key, true);
+      selected.push(w);
+    }
+  }
+  return selected.sort((a, b) => a.firstDay.date.getTime() - b.firstDay.date.getTime());
 }
 
 /**

@@ -29,6 +29,7 @@
     "db:setup": "npm run db:seed && npm run db:events && npm run db:occurrences -- --start 2026-01-01 --end 2029-12-31 --replace",
     "db:studio": "prisma studio",
     "db:reset": "prisma migrate reset --force && npm run db:setup",
+    "check:events": "tsx --tsconfig tsconfig.scripts.json src/scripts/check-event-references.ts",
     "backup": "bash scripts/backup.sh",
     "backup:db": "docker compose --profile backup run --rm backup",
     "backup:windows": "powershell -ExecutionPolicy Bypass -File scripts/backup.ps1",
