@@ -228,6 +228,28 @@ export function applyRatriVyapiniDateRule(
 }
 
 // ---------------------------------------------------------------------------
+// Pradosh tithi shift (Sankashti Chaturthi rule)
+// ---------------------------------------------------------------------------
+
+/**
+ * Returns true when Chaturthi started between sunrise and sunset of the
+ * previous day — meaning it's present during Pradosh Kaal and the correct
+ * observance date is that previous day (not the Udaya Tithi day).
+ *
+ * Only applies to CHATURTHI_KRISHNA (Sankashti). The `tithi` guard prevents
+ * false triggers when two tithis fit in one day (double-transition case) where
+ * tithiEndTime belongs to a different predecessor.
+ */
+export function isSankashtiPradoshShiftNeeded(prev: PrevDayInfo): boolean {
+  if (prev.tithi !== "TRITIYA_KRISHNA") return false;
+  const endMin = parseTimeToMinutes(prev.tithiEndTime ?? "");
+  const sunriseMin = parseTimeToMinutes(prev.sunrise ?? "");
+  const sunsetMin = parseTimeToMinutes(prev.sunset ?? "");
+  if (endMin === null || sunriseMin === null || sunsetMin === null) return false;
+  return endMin >= sunriseMin && endMin < sunsetMin;
+}
+
+// ---------------------------------------------------------------------------
 // Occurrence computation
 // ---------------------------------------------------------------------------
 

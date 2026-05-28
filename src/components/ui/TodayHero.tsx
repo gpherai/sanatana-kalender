@@ -386,8 +386,11 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
               <div className="rounded-xl border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] p-2.5 backdrop-blur-md sm:p-3">
                 <div className="mb-1 text-xs text-white/50">Rahu Kalam</div>
                 <div className="text-xs font-medium text-white sm:text-sm">
-                  <span className="block">{dailyInfo.rahuKalam.start}</span>
-                  <span className="block">– {dailyInfo.rahuKalam.end}</span>
+                  <span className="block sm:hidden">{dailyInfo.rahuKalam.start}</span>
+                  <span className="block sm:hidden">– {dailyInfo.rahuKalam.end}</span>
+                  <span className="hidden sm:inline">
+                    {dailyInfo.rahuKalam.start} – {dailyInfo.rahuKalam.end}
+                  </span>
                 </div>
               </div>
             )}

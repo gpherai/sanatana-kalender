@@ -14,6 +14,7 @@ import {
   groupConsecutiveDays,
   isPredecessorEndsAfterSunrise,
   isNishitakalDateShiftNeeded,
+  isSankashtiPradoshShiftNeeded,
   selectFirstPerYear,
   applyRatriVyapiniDateRule,
 } from "@/engine";
@@ -160,6 +161,30 @@ export async function generateYearlyLunarOccurrences(
 
   if (event.eventType === EventType.VRAT) {
     const prevDayMap = await fetchPreviousDayData(selectedDays.map((d) => d.date));
+    if (event.tithi === Tithi.CHATURTHI_KRISHNA) {
+      return selectedDays.map((day) => {
+        const occ = computeTithiOccurrence(day, day, prevDayMap);
+        // Pradosh rule for Sankashti Chaturthi: if Chaturthi started during the
+        // daytime of the previous day (between sunrise and sunset), it is present
+        // during Pradosh Kaal → observe on that previous day instead of the
+        // Udaya Tithi day.
+        if (occ.date.getTime() === day.date.getTime()) {
+          const key = day.date.toISOString().split("T")[0]!;
+          const prevInfo = prevDayMap.get(key);
+          if (prevInfo && isSankashtiPradoshShiftNeeded(prevInfo)) {
+            const prevDate = new Date(day.date);
+            prevDate.setUTCDate(prevDate.getUTCDate() - 1);
+            const startMin = parseTimeToMinutes(prevInfo.tithiEndTime ?? "");
+            const startTime =
+              startMin !== null ? formatMinutesToTime(startMin) : undefined;
+            const endMin = day.tithiEndTime ? parseTimeToMinutes(day.tithiEndTime) : null;
+            const endTime = endMin !== null ? formatMinutesToTime(endMin) : undefined;
+            return { date: prevDate, startTime, endDate: day.date, endTime };
+          }
+        }
+        return occ;
+      });
+    }
     return selectedDays.map((day) => computeTithiOccurrence(day, day, prevDayMap));
   }
 

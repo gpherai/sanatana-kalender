@@ -184,14 +184,29 @@ export async function correctToAstronomicalPhaseDay(
 
 export async function fetchPreviousDayData(
   dates: Date[]
-): Promise<Map<string, { tithiEndTime: string | null; sunrise: string | null }>> {
+): Promise<
+  Map<
+    string,
+    {
+      tithiEndTime: string | null;
+      sunrise: string | null;
+      sunset: string | null;
+      tithi: string | null;
+    }
+  >
+> {
   if (dates.length === 0) return new Map();
 
   const rows = await findDailyInfoPreviousDayTimingRows(dates);
 
   const map = new Map<
     string,
-    { tithiEndTime: string | null; sunrise: string | null; sunset: string | null }
+    {
+      tithiEndTime: string | null;
+      sunrise: string | null;
+      sunset: string | null;
+      tithi: string | null;
+    }
   >();
   for (const row of rows) {
     const nextDay = new Date(row.date);
@@ -200,6 +215,7 @@ export async function fetchPreviousDayData(
       tithiEndTime: row.tithiEndTime,
       sunrise: row.sunrise,
       sunset: row.sunset,
+      tithi: row.tithi,
     });
   }
 

@@ -16,6 +16,7 @@ import type {
   Tithi,
 } from "@prisma/client";
 import { prisma } from "@/lib/db";
+import { dbTimeToStr } from "@/lib/timing-utils";
 
 export type DailyInfoAdhikaFilter = "include" | "only" | "exclude";
 
@@ -35,22 +36,24 @@ function applyAdhikaFilter(
   }
 }
 
-export function findDailyInfoSunTimesByDates(dates: Date[]) {
-  return prisma.dailyInfo.findMany({
+export async function findDailyInfoSunTimesByDates(dates: Date[]) {
+  const rows = await prisma.dailyInfo.findMany({
     where: { date: { in: dates } },
-    select: {
-      date: true,
-      sunrise: true,
-      sunset: true,
-    },
+    select: { date: true, sunrise: true, sunset: true },
   });
+  return rows.map((r) => ({
+    date: r.date,
+    sunrise: dbTimeToStr(r.sunrise),
+    sunset: dbTimeToStr(r.sunset),
+  }));
 }
 
-export function findDailyInfoSunriseByDates(dates: Date[]) {
-  return prisma.dailyInfo.findMany({
+export async function findDailyInfoSunriseByDates(dates: Date[]) {
+  const rows = await prisma.dailyInfo.findMany({
     where: { date: { in: dates } },
     select: { date: true, sunrise: true },
   });
+  return rows.map((r) => ({ date: r.date, sunrise: dbTimeToStr(r.sunrise) }));
 }
 
 export function findDailyInfoTithiByDates(dates: Date[]) {
@@ -60,24 +63,31 @@ export function findDailyInfoTithiByDates(dates: Date[]) {
   });
 }
 
-export function findDailyInfoPreviousDayTimingRows(dates: Date[]) {
+export async function findDailyInfoPreviousDayTimingRows(dates: Date[]) {
   const previousDates = dates.map((date) => {
     const previousDate = new Date(date);
     previousDate.setUTCDate(previousDate.getUTCDate() - 1);
     return previousDate;
   });
 
-  return prisma.dailyInfo.findMany({
+  const rows = await prisma.dailyInfo.findMany({
     where: { date: { in: previousDates } },
-    select: { date: true, tithiEndTime: true, sunrise: true, sunset: true },
+    select: { date: true, tithiEndTime: true, sunrise: true, sunset: true, tithi: true },
   });
+  return rows.map((r) => ({
+    date: r.date,
+    tithiEndTime: dbTimeToStr(r.tithiEndTime),
+    sunrise: dbTimeToStr(r.sunrise),
+    sunset: dbTimeToStr(r.sunset),
+    tithi: r.tithi as string | null,
+  }));
 }
 
-export function findDailyInfoSankrantiOccurrences(
+export async function findDailyInfoSankrantiOccurrences(
   { startDate, endDate }: DateRange,
   sankranti: Sankranti
 ) {
-  return prisma.dailyInfo.findMany({
+  const rows = await prisma.dailyInfo.findMany({
     where: {
       date: { gte: startDate, lte: endDate },
       sankranti,
@@ -85,10 +95,14 @@ export function findDailyInfoSankrantiOccurrences(
     select: { date: true, sankrantiTime: true },
     orderBy: { date: "asc" },
   });
+  return rows.map((r) => ({ ...r, sankrantiTime: dbTimeToStr(r.sankrantiTime) }));
 }
 
-export function findDailyInfoAllSankrantiOccurrences({ startDate, endDate }: DateRange) {
-  return prisma.dailyInfo.findMany({
+export async function findDailyInfoAllSankrantiOccurrences({
+  startDate,
+  endDate,
+}: DateRange) {
+  const rows = await prisma.dailyInfo.findMany({
     where: {
       date: { gte: startDate, lte: endDate },
       sankranti: { not: null },
@@ -96,6 +110,7 @@ export function findDailyInfoAllSankrantiOccurrences({ startDate, endDate }: Dat
     select: { date: true, sankranti: true, sankrantiTime: true },
     orderBy: { date: "asc" },
   });
+  return rows.map((r) => ({ ...r, sankrantiTime: dbTimeToStr(r.sankrantiTime) }));
 }
 
 export function findDailyInfoMoonPhaseCandidates(
@@ -112,7 +127,7 @@ export function findDailyInfoMoonPhaseCandidates(
   });
 }
 
-export function findDailyInfoYearlyLunarCandidates(
+export async function findDailyInfoYearlyLunarCandidates(
   { startDate, endDate }: DateRange,
   tithi: Tithi,
   adhikaFilter: DailyInfoAdhikaFilter
@@ -123,7 +138,7 @@ export function findDailyInfoYearlyLunarCandidates(
   };
   applyAdhikaFilter(where, adhikaFilter);
 
-  return prisma.dailyInfo.findMany({
+  const rows = await prisma.dailyInfo.findMany({
     where,
     orderBy: { date: "asc" },
     select: {
@@ -133,9 +148,10 @@ export function findDailyInfoYearlyLunarCandidates(
       isAdhika: true,
     },
   });
+  return rows.map((r) => ({ ...r, tithiEndTime: dbTimeToStr(r.tithiEndTime) }));
 }
 
-export function findDailyInfoKshayaCandidates(
+export async function findDailyInfoKshayaCandidates(
   { startDate, endDate }: DateRange,
   predecessorTithi: Tithi,
   adhikaFilter: DailyInfoAdhikaFilter = "include"
@@ -146,7 +162,7 @@ export function findDailyInfoKshayaCandidates(
   };
   applyAdhikaFilter(where, adhikaFilter);
 
-  return prisma.dailyInfo.findMany({
+  const rows = await prisma.dailyInfo.findMany({
     where,
     select: {
       date: true,
@@ -157,9 +173,14 @@ export function findDailyInfoKshayaCandidates(
     },
     orderBy: { date: "asc" },
   });
+  return rows.map((r) => ({
+    ...r,
+    tithiEndTime: dbTimeToStr(r.tithiEndTime),
+    sunrise: dbTimeToStr(r.sunrise),
+  }));
 }
 
-export function findDailyInfoNakshatraCandidates(
+export async function findDailyInfoNakshatraCandidates(
   { startDate, endDate }: DateRange,
   nakshatra: Nakshatra,
   adhikaFilter: DailyInfoAdhikaFilter = "exclude"
@@ -170,14 +191,15 @@ export function findDailyInfoNakshatraCandidates(
   };
   applyAdhikaFilter(where, adhikaFilter);
 
-  return prisma.dailyInfo.findMany({
+  const rows = await prisma.dailyInfo.findMany({
     where,
     orderBy: { date: "asc" },
     select: { date: true, nakshatraEndTime: true, maas: true },
   });
+  return rows.map((r) => ({ ...r, nakshatraEndTime: dbTimeToStr(r.nakshatraEndTime) }));
 }
 
-export function findDailyInfoTithiNakshatraCandidates(
+export async function findDailyInfoTithiNakshatraCandidates(
   { startDate, endDate }: DateRange,
   tithi: Tithi,
   nakshatra: Nakshatra,
@@ -192,7 +214,7 @@ export function findDailyInfoTithiNakshatraCandidates(
   };
   applyAdhikaFilter(where, adhikaFilter);
 
-  return prisma.dailyInfo.findMany({
+  const rows = await prisma.dailyInfo.findMany({
     where,
     orderBy: { date: "asc" },
     select: {
@@ -204,14 +226,20 @@ export function findDailyInfoTithiNakshatraCandidates(
       isAdhika: true,
     },
   });
+  return rows.map((r) => ({
+    ...r,
+    sunrise: dbTimeToStr(r.sunrise),
+    tithiEndTime: dbTimeToStr(r.tithiEndTime),
+    nakshatraEndTime: dbTimeToStr(r.nakshatraEndTime),
+  }));
 }
 
-export function findDailyInfoTithiTimingCandidates(
+export async function findDailyInfoTithiTimingCandidates(
   { startDate, endDate }: DateRange,
   tithi: Tithi,
   options: { excludeAdhika?: boolean } = {}
 ) {
-  return prisma.dailyInfo.findMany({
+  const rows = await prisma.dailyInfo.findMany({
     where: {
       date: { gte: startDate, lte: endDate },
       tithi,
@@ -220,13 +248,14 @@ export function findDailyInfoTithiTimingCandidates(
     orderBy: { date: "asc" },
     select: { date: true, tithiEndTime: true },
   });
+  return rows.map((r) => ({ ...r, tithiEndTime: dbTimeToStr(r.tithiEndTime) }));
 }
 
-export function findDailyInfoPradoshCandidates(
+export async function findDailyInfoPradoshCandidates(
   { startDate, endDate }: DateRange,
   tithis: Tithi[]
 ) {
-  return prisma.dailyInfo.findMany({
+  const rows = await prisma.dailyInfo.findMany({
     where: {
       date: { gte: startDate, lte: endDate },
       tithi: { in: tithis },
@@ -234,6 +263,12 @@ export function findDailyInfoPradoshCandidates(
     orderBy: { date: "asc" },
     select: { date: true, tithiEndTime: true, sunrise: true, sunset: true },
   });
+  return rows.map((r) => ({
+    ...r,
+    tithiEndTime: dbTimeToStr(r.tithiEndTime),
+    sunrise: dbTimeToStr(r.sunrise),
+    sunset: dbTimeToStr(r.sunset),
+  }));
 }
 
 export function findDailyInfoHeatmapData(startDate: Date, endDate: Date) {

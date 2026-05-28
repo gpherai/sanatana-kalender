@@ -15,6 +15,7 @@ export {
   selectFirstPerYear,
   isPredecessorEndsAfterSunrise,
   isNishitakalDateShiftNeeded,
+  isSankashtiPradoshShiftNeeded,
   computeTithiOccurrence,
   applyRatriVyapiniDateRule,
 } from "./tithi-helpers";

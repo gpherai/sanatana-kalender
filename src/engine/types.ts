@@ -20,4 +20,6 @@ export interface PrevDayInfo {
   sunrise: string | null;
   /** Required for Nishitakal date-shift rule; optional for other callers */
   sunset?: string | null;
+  /** Sunrise tithi of the previous day — used by Pradosh shift detection */
+  tithi?: string | null;
 }
