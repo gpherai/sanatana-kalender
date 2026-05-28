@@ -1,0 +1,105 @@
+Navratri Day 1
+3rd
+April 2030
+Wednesday / बुधवार
+Ghatasthapana KalashGhatasthapana Kalash Grass
+1
+Pratipada
+Ghatasthapana, Shailputri Puja
+Panchang for Ghatasthapana Day
+Navratri color of the day - Royal Blue
+Navratri Day 2
+4th
+April 2030
+Thursday / गुरुवार
+Ghatasthapana KalashGhatasthapana Kalash Grass
+2
+Dwitiya
+Chandra Darshana, Sindhara Dooj
+Brahmacharini Puja
+Panchang for Chandra Darshana Day
+Navratri color of the day - Yellow
+Navratri Day 3
+5th
+April 2030
+Friday / शुक्रवार
+Ghatasthapana KalashGhatasthapana Kalash Grass
+3
+Tritiya
+Gauri Puja, Saubhagya Teej
+Chandraghanta Puja
+Panchang for Gauri Puja Day
+Navratri color of the day - Green
+Navratri Day 4
+6th
+April 2030
+Saturday / शनिवार
+Ghatasthapana KalashGhatasthapana Kalash Grass
+4
+Chaturthi
+Kushmanda Puja, Vasudeva Chaturthi
+Panchang for Kushmanda Puja Day
+Navratri color of the day - Grey
+Navratri Day 5
+7th
+April 2030
+Sunday / रविवार
+Ghatasthapana KalashGhatasthapana Kalash Grass
+5
+Chaturthi
+Lakshmi Panchami
+Panchang for Lakshmi Panchami Day
+Navratri color of the day - Orange
+Navratri Day 6
+8th
+April 2030
+Monday / सोमवार
+Ghatasthapana KalashGhatasthapana Kalash Grass
+6
+Panchami
+Naag Puja, Skandamata Puja
+Skanda Sashti
+Panchang for Naag Puja Day
+Navratri color of the day - White
+Navratri Day 7
+9th
+April 2030
+Tuesday / मंगलवार
+Ghatasthapana KalashGhatasthapana Kalash Grass
+7
+Shashthi
+Yamuna Chhath, Katyayani Puja
+Panchang for Yamuna Chhath Day
+Navratri color of the day - Red
+Navratri Day 8
+10th
+April 2030
+Wednesday / बुधवार
+Ghatasthapana KalashGhatasthapana Kalash Grass
+8
+Saptami
+Maha Saptami, Kalaratri Puja
+Panchang for Maha Saptami Day
+Navratri color of the day - Sky Blue
+Navratri Day 9
+11th
+April 2030
+Thursday / गुरुवार
+Ghatasthapana KalashGhatasthapana Kalash Grass
+9
+Ashtami
+Durga Ashtami, Mahagauri Puja
+Annapurna Ashtami, Sandhi Puja
+Sandhi Puja begins at 17:06
+Sandhi Puja ends at 17:54
+Panchang for Durga Ashtami Day
+Navratri color of the day - Pink
+Navratri Day 10
+12th
+April 2030
+Friday / शुक्रवार
+Ghatasthapana Kalash
+10
+Navami
+Rama Navami, Navratri Parana
+Panchang for Rama Navami Day
