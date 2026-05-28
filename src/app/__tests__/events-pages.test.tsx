@@ -57,8 +57,8 @@ describe("Events Pages", () => {
           {
             date: new Date("2026-01-01"),
             endDate: new Date("2026-01-02"),
-            startTime: "10:00",
-            endTime: "12:00",
+            startTime: new Date("1970-01-01T10:00:00.000Z"),
+            endTime: new Date("1970-01-01T12:00:00.000Z"),
             notes: "Some notes",
           },
         ],
@@ -104,8 +104,8 @@ describe("Events Pages", () => {
           {
             date: new Date("2026-01-01"),
             endDate: new Date("2026-01-02"),
-            startTime: "10:00",
-            endTime: "12:00",
+            startTime: new Date("1970-01-01T10:00:00.000Z"),
+            endTime: new Date("1970-01-01T12:00:00.000Z"),
             notes: "Some notes",
           },
         ],

@@ -13,8 +13,8 @@ const MOCK_OCCURRENCE = {
   eventId: VALID_ID,
   date: new Date("2025-01-01T00:00:00.000Z"),
   endDate: null,
-  startTime: "10:00",
-  endTime: "11:00",
+  startTime: new Date("1970-01-01T10:00:00.000Z"),
+  endTime: new Date("1970-01-01T11:00:00.000Z"),
   notes: "Original notes",
   createdAt: new Date(),
   updatedAt: new Date(),
@@ -177,8 +177,8 @@ describe("PUT /api/events/[id]/occurrences/[occurrenceId]", () => {
         where: { id: VALID_OCCURRENCE_ID },
         data: expect.objectContaining({
           notes: "Updated notes",
-          startTime: "12:00",
-          endTime: "13:00",
+          startTime: new Date("1970-01-01T12:00:00.000Z"),
+          endTime: new Date("1970-01-01T13:00:00.000Z"),
         }),
       })
     );

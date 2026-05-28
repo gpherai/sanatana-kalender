@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, act } from "@testing-library/react";
-import AlmanacPage from "../page";
+import { AlmanacClient as AlmanacPage } from "@/components/almanac/AlmanacClient";
 
 const mockUseFetch = vi.fn();
 vi.mock("@/hooks/useFetch", () => ({

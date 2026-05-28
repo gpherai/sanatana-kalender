@@ -75,15 +75,15 @@ describe("Recurrence Service Kshaya & PRADOSH Edge Cases", () => {
         return [
           {
             date: new Date("2025-01-06T00:00:00.000Z"), // Monday
-            sunset: "17:00",
-            tithiEndTime: "10:00",
-            sunrise: "08:00",
+            sunset: new Date("1970-01-01T17:00:00.000Z"),
+            tithiEndTime: new Date("1970-01-01T10:00:00.000Z"),
+            sunrise: new Date("1970-01-01T08:00:00.000Z"),
           },
           {
             date: new Date("2025-01-20T00:00:00.000Z"), // Monday
-            sunset: "17:00",
-            tithiEndTime: "10:00",
-            sunrise: "08:00",
+            sunset: new Date("1970-01-01T17:00:00.000Z"),
+            tithiEndTime: new Date("1970-01-01T10:00:00.000Z"),
+            sunrise: new Date("1970-01-01T08:00:00.000Z"),
           },
         ] as any;
       }
@@ -106,15 +106,15 @@ describe("Recurrence Service Kshaya & PRADOSH Edge Cases", () => {
         return [
           {
             date: new Date("2025-01-06T00:00:00.000Z"), // Monday
-            sunset: "17:00",
-            tithiEndTime: "17:30", // Dwadashi ends after sunset but before sunset+45
-            sunrise: "08:00",
+            sunset: new Date("1970-01-01T17:00:00.000Z"),
+            tithiEndTime: new Date("1970-01-01T17:30:00.000Z"), // Dwadashi ends after sunset but before sunset+45
+            sunrise: new Date("1970-01-01T08:00:00.000Z"),
           },
           {
             date: new Date("2025-01-13T00:00:00.000Z"), // Monday
-            sunset: "17:00",
-            tithiEndTime: "07:00", // Ends before sunrise (next day) -> skip
-            sunrise: "08:00",
+            sunset: new Date("1970-01-01T17:00:00.000Z"),
+            tithiEndTime: new Date("1970-01-01T07:00:00.000Z"), // Ends before sunrise (next day) -> skip
+            sunrise: new Date("1970-01-01T08:00:00.000Z"),
           },
         ] as any;
       }
@@ -138,9 +138,9 @@ describe("Recurrence Service Kshaya & PRADOSH Edge Cases", () => {
         return [
           {
             date: new Date("2025-01-06T00:00:00.000Z"), // Monday
-            sunset: "17:00",
-            tithiEndTime: "16:00",
-            sunrise: "08:00",
+            sunset: new Date("1970-01-01T17:00:00.000Z"),
+            tithiEndTime: new Date("1970-01-01T16:00:00.000Z"),
+            sunrise: new Date("1970-01-01T08:00:00.000Z"),
           },
         ] as any;
       }
@@ -148,15 +148,15 @@ describe("Recurrence Service Kshaya & PRADOSH Edge Cases", () => {
         return [
           {
             date: new Date("2025-01-06T00:00:00.000Z"), // Already covered
-            sunset: "17:00",
-            tithiEndTime: "19:00",
-            sunrise: "08:00",
+            sunset: new Date("1970-01-01T17:00:00.000Z"),
+            tithiEndTime: new Date("1970-01-01T19:00:00.000Z"),
+            sunrise: new Date("1970-01-01T08:00:00.000Z"),
           },
           {
             date: new Date("2025-01-13T00:00:00.000Z"), // New one
-            sunset: "17:00",
-            tithiEndTime: "18:00",
-            sunrise: "08:00",
+            sunset: new Date("1970-01-01T17:00:00.000Z"),
+            tithiEndTime: new Date("1970-01-01T18:00:00.000Z"),
+            sunrise: new Date("1970-01-01T08:00:00.000Z"),
           },
         ] as any;
       }
@@ -180,14 +180,14 @@ describe("Recurrence Service Kshaya & PRADOSH Edge Cases", () => {
           {
             date: new Date("2025-01-06T00:00:00.000Z"),
             sunset: null, // Missing sunset
-            tithiEndTime: "16:00",
-            sunrise: "08:00",
+            tithiEndTime: new Date("1970-01-01T16:00:00.000Z"),
+            sunrise: new Date("1970-01-01T08:00:00.000Z"),
           },
           {
             date: new Date("2025-01-13T00:00:00.000Z"),
-            sunset: "17:00",
-            tithiEndTime: "INVALID", // Invalid time
-            sunrise: "08:00",
+            sunset: new Date("1970-01-01T17:00:00.000Z"),
+            tithiEndTime: null, // null = no valid end time -> skip
+            sunrise: new Date("1970-01-01T08:00:00.000Z"),
           },
         ] as any;
       }
@@ -214,8 +214,8 @@ describe("Recurrence Service Kshaya & PRADOSH Edge Cases", () => {
         return [
           {
             date: new Date("2025-01-10T00:00:00.000Z"),
-            tithiEndTime: "10:00", // After sunrise (08:00) -> Ekadashi starts here
-            sunrise: "08:00",
+            tithiEndTime: new Date("1970-01-01T10:00:00.000Z"), // After sunrise (08:00) -> Ekadashi starts here
+            sunrise: new Date("1970-01-01T08:00:00.000Z"),
             maas: "PAUSHA",
           },
         ] as any;
@@ -240,8 +240,8 @@ describe("Recurrence Service Kshaya & PRADOSH Edge Cases", () => {
         return [
           {
             date: new Date("2025-01-09T00:00:00.000Z"),
-            tithiEndTime: "07:00",
-            sunrise: "08:00",
+            tithiEndTime: new Date("1970-01-01T07:00:00.000Z"),
+            sunrise: new Date("1970-01-01T08:00:00.000Z"),
           },
         ] as any;
       }
@@ -249,8 +249,8 @@ describe("Recurrence Service Kshaya & PRADOSH Edge Cases", () => {
         return [
           {
             date: new Date("2025-01-10T00:00:00.000Z"), // Close to 9th
-            tithiEndTime: "10:00",
-            sunrise: "08:00",
+            tithiEndTime: new Date("1970-01-01T10:00:00.000Z"),
+            sunrise: new Date("1970-01-01T08:00:00.000Z"),
           },
         ] as any;
       }

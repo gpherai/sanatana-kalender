@@ -74,21 +74,21 @@ describe("Recurrence Service 100% Coverage", () => {
         return [
           {
             date: new Date("2025-01-06T00:00:00.000Z"), // Monday
-            sunset: "17:00",
-            tithiEndTime: "18:00", // Valid: > sunset-90
-            sunrise: "08:00",
+            sunset: new Date("1970-01-01T17:00:00.000Z"),
+            tithiEndTime: new Date("1970-01-01T18:00:00.000Z"), // Valid: > sunset-90
+            sunrise: new Date("1970-01-01T08:00:00.000Z"),
           },
           {
             date: new Date("2025-01-13T00:00:00.000Z"), // Monday
-            sunset: "17:00",
-            tithiEndTime: "07:00", // Valid: < sunrise (extends past midnight)
-            sunrise: "08:00",
+            sunset: new Date("1970-01-01T17:00:00.000Z"),
+            tithiEndTime: new Date("1970-01-01T07:00:00.000Z"), // Valid: < sunrise (extends past midnight)
+            sunrise: new Date("1970-01-01T08:00:00.000Z"),
           },
           {
             date: new Date("2025-01-20T00:00:00.000Z"), // Monday
-            sunset: "17:00",
+            sunset: new Date("1970-01-01T17:00:00.000Z"),
             tithiEndTime: null, // Valid: extends past midnight
-            sunrise: "08:00",
+            sunrise: new Date("1970-01-01T08:00:00.000Z"),
           },
         ] as any;
       }
@@ -112,15 +112,15 @@ describe("Recurrence Service 100% Coverage", () => {
         return [
           {
             date: new Date("2025-01-06T00:00:00.000Z"), // Monday
-            sunset: "17:00",
-            tithiEndTime: "10:00",
-            sunrise: "08:00",
+            sunset: new Date("1970-01-01T17:00:00.000Z"),
+            tithiEndTime: new Date("1970-01-01T10:00:00.000Z"),
+            sunrise: new Date("1970-01-01T08:00:00.000Z"),
           },
           {
             date: new Date("2025-01-07T00:00:00.000Z"), // Tuesday
-            sunset: "17:00",
-            tithiEndTime: "10:00",
-            sunrise: "08:00",
+            sunset: new Date("1970-01-01T17:00:00.000Z"),
+            tithiEndTime: new Date("1970-01-01T10:00:00.000Z"),
+            sunrise: new Date("1970-01-01T08:00:00.000Z"),
           },
         ] as any;
       }
@@ -141,7 +141,10 @@ describe("Recurrence Service 100% Coverage", () => {
     };
 
     prismaMock.dailyInfo.findMany.mockResolvedValueOnce([
-      { date: new Date("2025-04-14T00:00:00.000Z"), sankrantiTime: "10:00" },
+      {
+        date: new Date("2025-04-14T00:00:00.000Z"),
+        sankrantiTime: new Date("1970-01-01T10:00:00.000Z"),
+      },
     ] as any);
 
     const res = await generateOccurrences(event, options);
@@ -161,8 +164,8 @@ describe("Recurrence Service 100% Coverage", () => {
         return [
           {
             date: new Date("2025-01-10T00:00:00.000Z"),
-            tithiEndTime: "10:00",
-            sunrise: "08:00",
+            tithiEndTime: new Date("1970-01-01T10:00:00.000Z"),
+            sunrise: new Date("1970-01-01T08:00:00.000Z"),
             maas: "PAUSHA",
             isAdhika: false,
           },
@@ -172,8 +175,8 @@ describe("Recurrence Service 100% Coverage", () => {
         return [
           {
             date: new Date("2025-01-09T00:00:00.000Z"),
-            tithiEndTime: "07:00", // Dashami ends before sunrise -> Ekadashi starts before sunrise
-            sunrise: "08:00",
+            tithiEndTime: new Date("1970-01-01T07:00:00.000Z"), // Dashami ends before sunrise -> Ekadashi starts before sunrise
+            sunrise: new Date("1970-01-01T08:00:00.000Z"),
           },
         ] as any;
       }
@@ -233,10 +236,13 @@ describe("Recurrence Service 100% Coverage", () => {
         return [
           {
             date: new Date("2025-01-10T00:00:00.000Z"),
-            sunrise: "08:00",
-            sunset: "17:00",
+            sunrise: new Date("1970-01-01T08:00:00.000Z"),
+            sunset: new Date("1970-01-01T17:00:00.000Z"),
           },
-          { date: new Date("2025-01-11T00:00:00.000Z"), sunrise: "08:10" },
+          {
+            date: new Date("2025-01-11T00:00:00.000Z"),
+            sunrise: new Date("1970-01-01T08:10:00.000Z"),
+          },
         ] as any;
       }
       return [];
@@ -254,7 +260,10 @@ describe("Recurrence Service 100% Coverage", () => {
     };
 
     prismaMock.dailyInfo.findMany.mockResolvedValueOnce([
-      { date: new Date("2025-01-14T00:00:00.000Z"), sankrantiTime: "10:00" },
+      {
+        date: new Date("2025-01-14T00:00:00.000Z"),
+        sankrantiTime: new Date("1970-01-01T10:00:00.000Z"),
+      },
     ] as any);
 
     const res = await generateOccurrences(event, options);
@@ -272,7 +281,7 @@ describe("Recurrence Service 100% Coverage", () => {
       {
         date: new Date("2025-01-14T00:00:00.000Z"),
         sankranti: "MAKARA_SANKRANTI",
-        sankrantiTime: "10:00",
+        sankrantiTime: new Date("1970-01-01T10:00:00.000Z"),
       },
     ] as any);
 

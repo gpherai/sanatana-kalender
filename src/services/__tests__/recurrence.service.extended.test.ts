@@ -67,10 +67,13 @@ describe("Recurrence Service Extended", () => {
         return [
           {
             date: new Date("2025-01-10T00:00:00.000Z"),
-            sunrise: "08:00",
-            sunset: "17:00",
+            sunrise: new Date("1970-01-01T08:00:00.000Z"),
+            sunset: new Date("1970-01-01T17:00:00.000Z"),
           },
-          { date: new Date("2025-01-11T00:00:00.000Z"), sunrise: "08:00" },
+          {
+            date: new Date("2025-01-11T00:00:00.000Z"),
+            sunrise: new Date("1970-01-01T08:00:00.000Z"),
+          },
         ] as any;
       return [];
     }) as any);
@@ -162,7 +165,10 @@ describe("Recurrence Service Extended", () => {
       maas: null,
     };
     prismaMock.dailyInfo.findMany.mockResolvedValueOnce([
-      { date: new Date(Date.UTC(2025, 0, 1)), tithiEndTime: "10:00" },
+      {
+        date: new Date(Date.UTC(2025, 0, 1)),
+        tithiEndTime: new Date("1970-01-01T10:00:00.000Z"),
+      },
     ] as any);
     const res6 = await generateOccurrences(eventMulti, options);
     expect(res6[0]!.endDate).toBeDefined();
@@ -178,21 +184,21 @@ describe("Recurrence Service Extended", () => {
         return [
           {
             date: new Date("2025-01-18T00:00:00.000Z"),
-            sunset: "17:00",
-            tithiEndTime: "15:00",
-            sunrise: "08:00",
+            sunset: new Date("1970-01-01T17:00:00.000Z"),
+            tithiEndTime: new Date("1970-01-01T15:00:00.000Z"),
+            sunrise: new Date("1970-01-01T08:00:00.000Z"),
           },
           {
             date: new Date("2025-01-11T00:00:00.000Z"),
-            sunset: "17:00",
-            tithiEndTime: "15:00",
-            sunrise: "08:00",
+            sunset: new Date("1970-01-01T17:00:00.000Z"),
+            tithiEndTime: new Date("1970-01-01T15:00:00.000Z"),
+            sunrise: new Date("1970-01-01T08:00:00.000Z"),
           },
           {
             date: new Date("2025-01-25T00:00:00.000Z"),
-            sunset: "17:00",
-            tithiEndTime: "18:30",
-            sunrise: "08:00",
+            sunset: new Date("1970-01-01T17:00:00.000Z"),
+            tithiEndTime: new Date("1970-01-01T18:30:00.000Z"),
+            sunrise: new Date("1970-01-01T08:00:00.000Z"),
           },
         ] as any;
       return [];
@@ -233,8 +239,8 @@ describe("Recurrence Service Extended", () => {
         return [
           {
             date: new Date("2025-03-26T00:00:00.000Z"),
-            tithiEndTime: "07:18",
-            sunrise: "06:33",
+            tithiEndTime: new Date("1970-01-01T07:18:00.000Z"),
+            sunrise: new Date("1970-01-01T06:33:00.000Z"),
             maas: "PAUSHA",
             isAdhika: false,
           },
@@ -243,8 +249,8 @@ describe("Recurrence Service Extended", () => {
         return [
           {
             date: new Date("2025-03-25T00:00:00.000Z"),
-            tithiEndTime: "20:00",
-            sunrise: "06:33",
+            tithiEndTime: new Date("1970-01-01T20:00:00.000Z"),
+            sunrise: new Date("1970-01-01T06:33:00.000Z"),
           },
         ] as any;
       return [];

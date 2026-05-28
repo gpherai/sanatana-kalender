@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import AlmanacPage from "../page";
+import { AlmanacClient as AlmanacPage } from "@/components/almanac/AlmanacClient";
 import { useFetch } from "@/hooks/useFetch";
 
 // Mock hooks

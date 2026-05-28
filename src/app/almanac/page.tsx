@@ -8,6 +8,8 @@ import {
 import { DEFAULT_LOCATION } from "@/lib/domain";
 import { DateTime } from "luxon";
 
+export const dynamic = "force-dynamic";
+
 export default async function AlmanacPage() {
   const timezone = DEFAULT_LOCATION.timezone;
   const now = DateTime.now().setZone(timezone);

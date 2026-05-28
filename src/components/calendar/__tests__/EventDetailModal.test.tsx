@@ -182,14 +182,7 @@ describe("EventDetailModal", () => {
   });
 
   it("shows toast error when delete fails", async () => {
-    // Component fetches event relations on mount — first call returns OK (GET)
-    // Second call (DELETE) returns failure
-    mockFetch.mockImplementation(async (_url, options) => {
-      if (options?.method === "DELETE") {
-        return { ok: false };
-      }
-      return { ok: true, json: () => Promise.resolve({}) };
-    });
+    mockDeleteEventAction.mockResolvedValue({ success: false, error: "Delete failed" });
 
     render(<EventDetailModal event={MOCK_EVENT} isOpen={true} onClose={vi.fn()} />);
 

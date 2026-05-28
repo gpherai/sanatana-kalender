@@ -29,8 +29,8 @@ describe("API Events", () => {
         id: "occ_1",
         date: occurrenceDate,
         endDate: null,
-        startTime: "09:00",
-        endTime: "10:00",
+        startTime: new Date("1970-01-01T09:00:00.000Z"),
+        endTime: new Date("1970-01-01T10:00:00.000Z"),
         notes: "note",
         eventId: "evt_1",
         event: {
