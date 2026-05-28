@@ -146,10 +146,10 @@ describe("Recurrence Service Extended", () => {
         ] as any;
       if (args.where.moonPhaseType === "NEW_MOON")
         return [
-          { date: d1, moonPhasePercent: 99.0 },
-          { date: d2, moonPhasePercent: 100.0 },
-          { date: d3, moonPhasePercent: 100.0 },
-          { date: d4, moonPhasePercent: 99.0 },
+          { date: d1, moonPhasePercent: 1.0 },
+          { date: d2, moonPhasePercent: 0.0 },
+          { date: d3, moonPhasePercent: 0.0 },
+          { date: d4, moonPhasePercent: 1.0 },
         ] as any;
       return [];
     }) as any);

@@ -347,11 +347,18 @@ export class PanchangaSwissService {
       : null;
 
     // Step 2: Determine maas name.
-    // Krishna paksha (16-29) uses next Amavasya; Shukla + Amavasya use previous.
+    // Krishna paksha (16-29) uses next Amavasya's Sun rashi.
+    // Shukla paksha (1-15) uses previous Amavasya's Sun rashi.
+    // Amavasya day (30) uses current day's Sun rashi directly — the Amavasya
+    // closes the current Purnimanta month, so its maas = same as surrounding
+    // Krishna paksha. Using prevAmavasya here gives the PREVIOUS month name.
     const useNextAmavasya = tithiIdx > 15 && tithiIdx < 30;
-    const maasRashiIdx = useNextAmavasya
-      ? (rashiAtNextAmavasya ?? sunSignIdx)
-      : (rashiAtPrevAmavasya ?? sunSignIdx);
+    const maasRashiIdx =
+      tithiIdx === 30
+        ? sunSignIdx
+        : useNextAmavasya
+          ? (rashiAtNextAmavasya ?? sunSignIdx)
+          : (rashiAtPrevAmavasya ?? sunSignIdx);
     const maasIdx = (maasRashiIdx + 1) % 12;
     const lunarMaasName = LUNAR_MASA_NAMES[maasIdx] ?? "Unknown";
 

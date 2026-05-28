@@ -171,7 +171,14 @@ export async function correctToAstronomicalPhaseDay(
 
     if (candidatePct < 0 && nextDayPct < 0) return candidate;
 
-    if (nextDayPct > candidatePct) {
+    // FULL_MOON: higher % = brighter = closer to peak → shift if next day brighter.
+    // NEW_MOON: lower % = darker = closer to peak (0 = true new moon) → shift if next day darker.
+    const shiftToNext =
+      targetPhase === "FULL_MOON"
+        ? nextDayPct > candidatePct
+        : candidatePct >= 0 && nextDayPct >= 0 && nextDayPct < candidatePct;
+
+    if (shiftToNext) {
       return { ...candidate, date: nextDay };
     }
     return candidate;
@@ -182,9 +189,7 @@ export async function correctToAstronomicalPhaseDay(
 // PREVIOUS DAY DATA HELPER
 // =============================================================================
 
-export async function fetchPreviousDayData(
-  dates: Date[]
-): Promise<
+export async function fetchPreviousDayData(dates: Date[]): Promise<
   Map<
     string,
     {

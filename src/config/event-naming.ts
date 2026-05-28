@@ -2547,7 +2547,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     categories: ["krishna"],
     eventType: "JAYANTI",
     ruleType: "TITHI",
-    ruleConfig: { tithi: "ASHTAMI_KRISHNA", maas: "SHRAVANA" },
+    ruleConfig: { tithi: "ASHTAMI_KRISHNA", maas: "BHADRAPADA" },
     timingType: "NISHITA_KAAL",
     description:
       "Verschijningsdag van Heer Krishna. Wordt gevierd met een vrat (vasten) tot middernacht (het geboorte-moment), gevolgd door aarti, bhajans en het breken van de vasten met prasad.",
