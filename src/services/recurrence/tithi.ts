@@ -194,7 +194,7 @@ export async function generateYearlyLunarOccurrences(
         if (occ.date.getTime() !== firstDay.date.getTime() && prevInfo) {
           const endMin = parseTimeToMinutes(prevInfo.tithiEndTime ?? "");
           const sunsetMin = parseTimeToMinutes(prevInfo.sunset ?? "");
-          if (endMin !== null && sunsetMin !== null && endMin > sunsetMin + 120) {
+          if (endMin !== null && sunsetMin !== null && endMin > sunsetMin + 125) {
             return { date: firstDay.date };
           }
         }

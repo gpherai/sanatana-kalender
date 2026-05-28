@@ -74,6 +74,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "pausha_putrada_ekadashi",
     name: "Putrada Ekadashi",
+    aliases: ["Pausha Putrada Ekadashi"],
     categories: ["vishnu"],
     eventType: "VRAT",
     ruleType: "TITHI",
@@ -102,6 +103,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "magha_sattila_ekadashi",
     name: "Sat-tila Ekadashi",
+    aliases: ["Shattila Ekadashi"],
     categories: ["vishnu"],
     eventType: "VRAT",
     ruleType: "TITHI",
@@ -156,6 +158,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "chaitra_papmochani_ekadashi",
     name: "Papmochani Ekadashi",
+    aliases: ["Papamochani Ekadashi"],
     categories: ["vishnu"],
     eventType: "VRAT",
     ruleType: "TITHI",
@@ -326,6 +329,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "shravana_putrada_ekadashi",
     name: "Putrada Ekadashi (Shravana)",
+    aliases: ["Shravana Putrada Ekadashi"],
     categories: ["vishnu"],
     eventType: "VRAT",
     ruleType: "TITHI",
@@ -405,6 +409,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "kartik_prabodhini_ekadashi",
     name: "Prabodhini Ekadashi",
+    aliases: ["Devutthana Ekadashi"],
     categories: ["vishnu"],
     eventType: "VRAT",
     ruleType: "TITHI",
@@ -837,6 +842,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleConfig: {
       tithi: "EKADASHI_KRISHNA",
       maas: "SHRAVANA",
+      isAdhikaOnly: true,
     },
     description: "Tweede Kamika Ekadashi waargenomen in de Shravana Krishna paksha.",
     tags: ["adhika", "ekadashi", "kamika", "shravana", "vasten"],
@@ -2502,6 +2508,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "chaitra_ram_navami",
     name: "Ram Navami",
+    aliases: ["Rama Navami"],
     categories: ["rama"],
     eventType: "JAYANTI",
     ruleType: "TITHI",
@@ -2600,6 +2607,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
   {
     key: "kartik_tulsi_vivah",
     name: "Tulsi Vivah",
+    aliases: ["Tulasi Vivah"],
     categories: ["vishnu"],
     eventType: "PUJA",
     ruleType: "TITHI",
