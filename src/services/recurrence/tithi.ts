@@ -80,6 +80,10 @@ export async function generateYearlyLunarOccurrences(
 
   type WindowEntry = (typeof selectedWindows)[0];
   const kshayaWindowExtras: WindowEntry[] = [];
+  // Predecessor-day overrides: map window index → predecessor date.
+  // Applied when preferPredecessorDay is true and the predecessor tithi ends
+  // after sunrise (meaning the target tithi starts partway through that day).
+  const predecessorDateOverrides = new Map<number, Date>();
 
   const predecessorTithi = TITHI_PREDECESSOR[event.tithi];
   if (predecessorTithi) {
@@ -90,6 +94,8 @@ export async function generateYearlyLunarOccurrences(
     );
 
     const kshayaNextDay = config.kshayaNextDay === true;
+    const preferPredecessorDay = config.preferPredecessorDay === true;
+    const DAY_MS = 24 * 60 * 60 * 1000;
 
     for (const day of kshayaCandidates) {
       if (maasValues && (!day.maas || !maasValues.includes(day.maas))) continue;
@@ -101,15 +107,21 @@ export async function generateYearlyLunarOccurrences(
       )
         continue;
 
-      const occDate = kshayaNextDay
-        ? new Date(day.date.getTime() + 24 * 60 * 60 * 1000)
-        : day.date;
+      const occDate = kshayaNextDay ? new Date(day.date.getTime() + DAY_MS) : day.date;
 
-      // Skip if a normal window already covers this lunar-month occurrence.
-      const alreadyCovered = selectedWindows.some(
+      // Check if a normal window already covers this lunar-month occurrence.
+      const coveredWindowIndex = selectedWindows.findIndex(
         (w) => Math.abs(w.firstDay.date.getTime() - occDate.getTime()) < CYCLE_GAP_MS
       );
-      if (alreadyCovered) continue;
+
+      if (coveredWindowIndex >= 0) {
+        // Normal window exists (not a kshaya case). If preferPredecessorDay is
+        // set, record the predecessor day to replace the udaya-tithi date.
+        if (preferPredecessorDay && !kshayaNextDay) {
+          predecessorDateOverrides.set(coveredWindowIndex, day.date);
+        }
+        continue;
+      }
 
       const extra = {
         date: occDate,
@@ -123,9 +135,18 @@ export async function generateYearlyLunarOccurrences(
     }
   }
 
+  // Apply predecessor-day overrides to normal windows.
+  const adjustedWindows: WindowEntry[] =
+    predecessorDateOverrides.size > 0
+      ? selectedWindows.map((w, i) => {
+          const override = predecessorDateOverrides.get(i);
+          return override ? { ...w, firstDay: { ...w.firstDay, date: override } } : w;
+        })
+      : selectedWindows;
+
   const durationDays = typeof config.durationDays === "number" ? config.durationDays : 1;
 
-  const rawSelectedWindows = [...selectedWindows, ...kshayaWindowExtras].sort(
+  const rawSelectedWindows = [...adjustedWindows, ...kshayaWindowExtras].sort(
     (a, b) => a.firstDay.date.getTime() - b.firstDay.date.getTime()
   );
 

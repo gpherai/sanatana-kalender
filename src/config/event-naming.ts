@@ -1304,6 +1304,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleConfig: {
       tithi: "PURNIMA",
       maas: "PHALGUNA",
+      preferPredecessorDay: true,
     },
     description:
       "De nacht van het heilige vreugdevuur voor Holi. De verbranding van Holika.",
@@ -1788,7 +1789,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     categories: ["matangi", "mahavidya"],
     eventType: "JAYANTI",
     ruleType: "TITHI",
-    ruleConfig: { tithi: "TRITIYA_SHUKLA", maas: "VAISHAKHA", kshayaNextDay: true },
+    ruleConfig: { tithi: "TRITIYA_SHUKLA", maas: "VAISHAKHA" },
     description:
       "Geboortedag van Godin Matangi, de negende van de Dasha Mahavidya, die op Vaishakha Shukla Tritiya verscheen. Zij is de Tantrische Saraswati — godin van het gesproken woord (Vak-Siddhi), muziek, wijsheid en de schone kunsten — en behoort tot de Shri Kula. Matangi wordt vereerd in vijf manifestaties: Raja Matangi, Sumukhi Matangi, Uchchishta Matangi, Vashyamatangi en Karnamatangi. Haar acht Shaktis zijn Rati, Preeti, Manobhava, Kriya, Kshudha, Ananga Kusum, Ananga Madan en Madan Lasa. De Purashcharyarnava stelt: 'Door haar dienst alleen verkrijgt men Vak-Siddhi — volkomenheid van spraak.' Haar sadhana schenkt meesterschap over de kunsten, helderheid van stem, wijsheid, en harmonie in het huwelijksleven. Zelfs een onwetend persoon wordt wijs door haar genade. Op deze dag verrichten toegewijden Kanya Puja en brengen offers in haar tempels. Mool Mantra: Oṃ Hrīṃ Aiṃ Bhagavatī Mataṅgeśvarī Śrīṃ Svāhā.",
     tags: [
@@ -1845,7 +1846,11 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     categories: ["chhinnamasta", "mahavidya"],
     eventType: "JAYANTI",
     ruleType: "TITHI",
-    ruleConfig: { tithi: "CHATURDASHI_SHUKLA", maas: "VAISHAKHA" },
+    ruleConfig: {
+      tithi: "CHATURDASHI_SHUKLA",
+      maas: "VAISHAKHA",
+      preferPredecessorDay: true,
+    },
     description:
       "Chhinnamasta Jayanti viert de manifestatie van Godin Chhinnamasta op Vaishakha Shukla Chaturdashi — de zesde van de Dasha Mahavidya, behorend tot de Kali Kula. Zij is de Shakti van Kabandha Shiva en staat ook bekend als Prachanda Chandika en Vajra Vairochani (vanwege haar verering door Hiranyakashyap en Vairochana). Kosmologisch gezien is zij actief wanneer vernietiging de overhand heeft over schepping — het tegengestelde van Bhuvaneshvari. Haar boodschap is naar binnen gerichte beoefening: door haar sadhana gaat men van Jiva Bhava naar Shiva Bhava — van gebonden individualiteit naar goddelijke staat. Haar twee metgezellinnen Dakini en Varnini vertegenwoordigen de Raja- en Tama-guna. Zij wordt vereerd door Shakta-, Boeddhistische en Jain-gemeenschappen; ook Parashurama en Guru Gorakhnath (Nath Panthi-traditie) waren haar beoefenaars. Sadhana is primair voor Tantrici, Yogi's en Aghori's, maar gewone devotees kunnen haar vereren voor bescherming tegen rampen, rechtszaken, overheidsgunsten en gezondheid. Mool Mantra: Śrīṃ Hrīṃ Klīṃ Aiṃ Vajra Vairocanīyai Hūṃ Hūṃ Phaṭ Svāhā.",
     tags: [
@@ -2598,7 +2603,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     aliases: ["Vijayadashami"],
     eventType: "FESTIVAL",
     ruleType: "TITHI",
-    ruleConfig: { tithi: "DASHAMI_SHUKLA", maas: "ASHWIN" },
+    ruleConfig: { tithi: "DASHAMI_SHUKLA", maas: "ASHWIN", preferPredecessorDay: true },
     description:
       "Overwinning van Heer Rama op Ravana en van Godin Durga op Mahishasura. Symboliseert de triomf van goed over kwaad. Ravana-effigie's worden verbrand.",
     tags: ["durga", "overwinning", "rama", "ravana"],
@@ -2636,7 +2641,11 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     categories: ["narasimha"],
     eventType: "JAYANTI",
     ruleType: "TITHI",
-    ruleConfig: { tithi: "CHATURDASHI_SHUKLA", maas: "VAISHAKHA" },
+    ruleConfig: {
+      tithi: "CHATURDASHI_SHUKLA",
+      maas: "VAISHAKHA",
+      preferPredecessorDay: true,
+    },
     description:
       "Narasimha Jayanti viert de verschijning van Heer Narasimha — de vierde avatar van Vishnu en een Aveshavatara — op Vaishakha Shukla Chaturdashi. De combinatie van Chaturdashi met Swati Nakshatra en zaterdag wordt beschouwd als bijzonder gunstig. Narasimha (ook: Narahari, Ugravira, Nrisimha) verscheen bij zonsondergang als half mens, half leeuw uit een pilaar om zijn toegewijde Prahlada te redden en de tiran Hiranyakashipu te doden — exact binnen de grenzen van diens boon: op de drempel (noch binnen noch buiten), bij schemering (noch dag noch nacht), op zijn schoot (niet op de grond), met klauwen (geen wapen). De vastregels zijn gelijkwaardig aan Ekadashi: één maaltijd de dag ervoor, geen granen tijdens het vasten. Toegewijden nemen Sankalp tijdens Madhyahna en verrichten de hoofdpuja tijdens Sanyakaal (voor zonsondergang). Aanbevolen is een nachtwake; Visarjan-puja de volgende ochtend gevolgd door Dana aan brahmanen en Parana na zonsopgang.",
     tags: [

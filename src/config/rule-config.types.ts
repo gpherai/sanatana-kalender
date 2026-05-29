@@ -26,6 +26,13 @@ export interface TithiRuleConfig {
   /** For kshaya tithi: place occurrence on the next calendar day instead of the predecessor's day */
   kshayaNextDay?: boolean;
   /**
+   * When the predecessor tithi ends after sunrise (target tithi starts partway through that day),
+   * use the predecessor's day as the occurrence date instead of the udaya-tithi day (D+1).
+   * Matches DP behavior for events observed on the day the tithi begins, regardless of udaya.
+   * Examples: Narasimha Jayanti (Nishita rule), Dussehra (Aparahna rule), Holika Dahan (Pradosh rule).
+   */
+  preferPredecessorDay?: boolean;
+  /**
    * Use Nishitakal-based date assignment instead of the udaya (sunrise) rule.
    * The festival is placed on the day whose Nishitakal the tithi was active in
    * for at least one muhurta. Example: Vaikuntha Chaturdashi.
