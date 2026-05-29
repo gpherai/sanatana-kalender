@@ -140,7 +140,13 @@ export async function generateYearlyLunarOccurrences(
     predecessorDateOverrides.size > 0
       ? selectedWindows.map((w, i) => {
           const override = predecessorDateOverrides.get(i);
-          return override ? { ...w, firstDay: { ...w.firstDay, date: override } } : w;
+          return override
+            ? {
+                ...w,
+                firstDay: { ...w.firstDay, date: override },
+                lastDay: { ...w.lastDay, date: override },
+              }
+            : w;
         })
       : selectedWindows;
 
