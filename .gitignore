@@ -107,6 +107,7 @@ yarn-error.log*
 
 # Temporary development files in root
 /*.log
+/*.original.md
 /database-export.json
 
 # -----------------------------------------------------------------------------
