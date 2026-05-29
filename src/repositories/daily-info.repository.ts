@@ -92,7 +92,13 @@ export async function findDailyInfoSankrantiOccurrences(
       date: { gte: startDate, lte: endDate },
       sankranti,
     },
-    select: { date: true, sankrantiTime: true, sunrise: true, sunset: true },
+    select: {
+      date: true,
+      sankranti: true,
+      sankrantiTime: true,
+      sunrise: true,
+      sunset: true,
+    },
     orderBy: { date: "asc" },
   });
   return rows.map((r) => ({

@@ -11,11 +11,22 @@ import { logWarn } from "@/lib/utils";
 import type { GeneratedOccurrence } from "./types";
 
 /**
- * Sankranti before sunrise or after sunset → Punya Kaal shifts to the next day.
- * DP rule: transit outside the solar day (sunrise..sunset) → observe D+1.
+ * Resolves the Sankranti observance date from a daily_info row.
+ *
+ * The detectSankranti scan window runs from sunrise(D) to sunrise(D)+24h, so
+ * a transit time before local sunrise means the transit is on Gregorian day D+1
+ * (early morning). Whether to observe on D or D+1 depends on whether that early-
+ * morning transit is before or after sunrise in India (per Drik Panchang):
+ *   - transit >= 02:30 local AND < local sunrise → transit is after India's sunrise
+ *     (IST ≈ local + 3.5-4.5h; India SR ≈ 02:00-02:30 local) → observe D+1
+ *   - transit < 02:30 local → before India sunrise → Hindu day = row date → observe D
+ *
+ * After-sunset transits belong to the same Hindu day (no D+1), EXCEPT for
+ * Makara Sankranti (Uttarayana), which is traditionally observed the next morning.
  */
 function resolveSankrantiDate(day: {
   date: Date;
+  sankranti: string | null;
   sankrantiTime: string | null;
   sunrise: string | null;
   sunset: string | null;
@@ -25,11 +36,26 @@ function resolveSankrantiDate(day: {
   const sr = parseTimeToMinutes(day.sunrise);
   const ss = parseTimeToMinutes(day.sunset);
   if (st === null || sr === null || ss === null) return day.date;
-  if (st < sr || st > ss) {
-    const next = new Date(day.date);
-    next.setUTCDate(next.getUTCDate() + 1);
-    return next;
+
+  const nextDay = () => {
+    const d = new Date(day.date);
+    d.setUTCDate(d.getUTCDate() + 1);
+    return d;
+  };
+
+  // Transit is in early morning of the NEXT Gregorian day (stored in this row's scan window).
+  // D+1 only when transit >= 02:30 local, which corresponds to post-India-sunrise per DP.
+  if (st < sr) {
+    const INDIA_SR_LOCAL_MIN = 150; // 02:30 = approx India sunrise in local Den Haag time
+    return st >= INDIA_SR_LOCAL_MIN ? nextDay() : day.date;
   }
+
+  // Transit after sunset: same Hindu day → observe D.
+  // Exception: Makara Sankranti (Uttarayana) is observed next morning when transit is evening/night.
+  if (st > ss && day.sankranti === "MAKARA_SANKRANTI") {
+    return nextDay();
+  }
+
   return day.date;
 }
 
