@@ -116,16 +116,18 @@ export function calculateNishitaKaal(
 /**
  * PRADOSH KAAL — Twilight observation window for Shiva
  *
- * Begins 1 hour 30 minutes before sunset and extends 45 minutes after sunset.
- * This is the traditional window for Pradosh Vrat puja.
+ * Begins at sunset and extends 144 minutes (6 ghati) after sunset.
+ * This is the DP/traditional window for Pradosh Vrat puja.
  *
  * @param sunset - Sunset time "HH:MM" on the occurrence day
  * @returns Time window, or null if sunset time is invalid
  */
 export function calculatePradoshKaal(sunset: string): TimeWindow | null {
-  const start = addMinutesToTime(sunset, -90);
-  const end = addMinutesToTime(sunset, 45);
-  if (!start || !end) return null;
+  const startMinutes = parseTimeToMinutes(sunset);
+  if (startMinutes === null) return null;
+  const start = formatMinutesToTime(startMinutes);
+  const end = addMinutesToTime(sunset, 144);
+  if (!end) return null;
   return { startTime: start, endTime: end };
 }
 

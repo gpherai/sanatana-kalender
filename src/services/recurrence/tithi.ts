@@ -155,6 +155,45 @@ export async function generateYearlyLunarOccurrences(
     }));
   }
 
+  const isRatriVyapini = config.dateRule === "RATRI_VYAPINI";
+  if (isRatriVyapini) {
+    const firstDayDates = finalWindows.map((w) => w.firstDay.date);
+    const prevDayDates = firstDayDates.map((d) => {
+      const prev = new Date(d);
+      prev.setUTCDate(prev.getUTCDate() - 1);
+      return prev;
+    });
+    const [prevDayMapRV, sunriseRows, prevTithiRows] = await Promise.all([
+      fetchPreviousDayData(firstDayDates),
+      findDailyInfoSunriseByDates(firstDayDates),
+      findDailyInfoTithiByDates(prevDayDates),
+    ]);
+    const firstDaySunriseMap = new Map(
+      sunriseRows.map((r) => [r.date.toISOString().split("T")[0]!, r.sunrise])
+    );
+    const prevTithiMap = new Map(
+      prevTithiRows.map((r) => [r.date.toISOString().split("T")[0]!, r.tithi as string])
+    );
+    const expectedPredecessor = TITHI_PREDECESSOR[event.tithi];
+    return finalWindows.map(({ firstDay, lastDay }) => {
+      const key = firstDay.date.toISOString().split("T")[0]!;
+      const prevDate = new Date(firstDay.date);
+      prevDate.setUTCDate(prevDate.getUTCDate() - 1);
+      const prevKey = prevDate.toISOString().split("T")[0]!;
+      const prevTithi = prevTithiMap.get(prevKey);
+      const hasKshayaPredecessor =
+        expectedPredecessor !== undefined &&
+        prevTithi !== undefined &&
+        prevTithi !== expectedPredecessor;
+      return applyRatriVyapiniDateRule(
+        firstDay,
+        lastDay,
+        hasKshayaPredecessor ? undefined : prevDayMapRV.get(key),
+        firstDaySunriseMap.get(key) ?? null
+      );
+    });
+  }
+
   const nishitakalDateRule = config.nishitakalDateRule === true;
   if (nishitakalDateRule) {
     const prevDayMap = await fetchPreviousDayData(
@@ -283,10 +322,26 @@ export async function generateMonthlyLunarOccurrences(
 
   const config = asRuleConfig<TithiRuleConfig>(event.ruleConfig);
   const isRatriVyapini = config.dateRule === "RATRI_VYAPINI";
+  const nishitakalDateRule = config.nishitakalDateRule === true;
 
   let occurrences: GeneratedOccurrence[];
 
-  if (isRatriVyapini) {
+  if (nishitakalDateRule) {
+    const firstDayDates = windows.map((w) => w.firstDay.date);
+    const currentDayRows = await findDailyInfoSunriseByDates(firstDayDates);
+    const currentSunriseMap = new Map(
+      currentDayRows.map((r) => [r.date.toISOString().split("T")[0]!, r.sunrise])
+    );
+    occurrences = windows.map(({ firstDay }) => {
+      const key = firstDay.date.toISOString().split("T")[0]!;
+      const prevInfo = prevDayMap.get(key);
+      const currentSunrise = currentSunriseMap.get(key) ?? null;
+      if (prevInfo && isNishitakalDateShiftNeeded(prevInfo, currentSunrise)) {
+        return { date: new Date(firstDay.date.getTime() - 24 * 60 * 60 * 1000) };
+      }
+      return { date: firstDay.date };
+    });
+  } else if (isRatriVyapini) {
     const firstDayDates = windows.map((w) => w.firstDay.date);
 
     const prevDayDates = windows.map((w) => {

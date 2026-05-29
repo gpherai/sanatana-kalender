@@ -36,7 +36,7 @@ export type EventNaming = {
     /**
      * How to derive the observation time window for each occurrence.
      * - NISHITA_KAAL: midpoint of the night (Janmashtami, Shivaratri, Kali Puja)
-     * - PRADOSH_KAAL: sunset - 1h30 to sunset + 45min (Pradosh Vrat)
+     * - PRADOSH_KAAL: sunset to sunset + 144min / 6 ghati (Pradosh Vrat)
      * - SUNRISE: sunrise to sunrise + 2h (Ratha Saptami, Chhath morning)
      * - SUNSET: sunset - 30min to sunset + 1h (evening rituals)
      * Times are calculated per occurrence from DailyInfo sunrise/sunset data.
@@ -881,7 +881,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     categories: ["shiva"],
     eventType: "VRAT",
     ruleType: "TITHI",
-    ruleConfig: { tithi: "CHATURDASHI_KRISHNA", monthly: true },
+    ruleConfig: { tithi: "CHATURDASHI_KRISHNA", monthly: true, nishitakalDateRule: true },
     timingType: "NISHITA_KAAL",
     description:
       "Masik Shivaratri valt elke maand op de Krishna Chaturdashi (14e tithi van de afnemende maan). Elk maandelijks vasten is gewijd aan Heer Shiva en Shakti. Devotees vasten, blijven wakker en verrichten Shiva Puja tijdens de Nishita Kaal — het heilige middernachtvenster. De Masik Shivaratri in Phalguna-maand is de verheven Maha Shivaratri; die in Shravana staat bekend als Sawan Shivaratri.",
@@ -1274,7 +1274,11 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     categories: ["shiva"],
     eventType: "FESTIVAL",
     ruleType: "TITHI",
-    ruleConfig: { tithi: "CHATURDASHI_KRISHNA", maas: "SHRAVANA" },
+    ruleConfig: {
+      tithi: "CHATURDASHI_KRISHNA",
+      maas: "SHRAVANA",
+      nishitakalDateRule: true,
+    },
     description:
       "Shivaratri in de heilige maand Shravana. Bijzonder auspicieus voor Shiva-bhakta's. Wordt gevierd met nachtwaken, abhishekam en bel-bladeren.",
     tags: ["sawan", "shiva", "shivaratri", "shravana", "vrat"],
@@ -1404,6 +1408,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleConfig: {
       tithi: "ASHTAMI_KRISHNA",
       maas: "MARGASHIRSHA",
+      dateRule: "RATRI_VYAPINI",
     },
     timingType: "PRADOSH_KAAL",
     description:
@@ -2488,7 +2493,11 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     categories: ["shiva"],
     eventType: "FESTIVAL",
     ruleType: "TITHI",
-    ruleConfig: { tithi: "CHATURDASHI_KRISHNA", maas: "PHALGUNA" },
+    ruleConfig: {
+      tithi: "CHATURDASHI_KRISHNA",
+      maas: "PHALGUNA",
+      nishitakalDateRule: true,
+    },
     timingType: "NISHITA_KAAL",
     description:
       "De grote nacht van Shiva. Bhakta's houden een vrat (vasten) en blijven de hele nacht wakker ter ere van Heer Shiva. Er worden speciale abhishekam rituelen uitgevoerd met melk, honing en bilvabladeren.",

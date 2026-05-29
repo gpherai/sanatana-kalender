@@ -85,7 +85,7 @@ describe("timing-utils", () => {
   describe("calculatePradoshKaal", () => {
     it("calculates window correctly", () => {
       const res = calculatePradoshKaal("18:00");
-      expect(res).toEqual({ startTime: "16:30", endTime: "18:45" });
+      expect(res).toEqual({ startTime: "18:00", endTime: "20:24" });
     });
 
     it("returns null for invalid inputs", () => {
@@ -160,7 +160,7 @@ describe("timing-utils", () => {
 
     it("calculates PRADOSH_KAAL", () => {
       const res = calculateTimingWindow(TimingType.PRADOSH_KAAL, validInputs);
-      expect(res).toEqual({ startTime: "16:30", endTime: "18:45" });
+      expect(res).toEqual({ startTime: "18:00", endTime: "20:24" });
     });
 
     it("returns null for PRADOSH_KAAL if input is missing", () => {
