@@ -70,49 +70,58 @@ export async function generatePradoshOccurrences(
   const config = asRuleConfig<PradoshRuleConfig>(event.ruleConfig);
   const paksha = config.paksha;
   const weekday = config.weekday;
+  const maasFilter = config.maas ? [config.maas] : undefined;
 
-  if (weekday === undefined) {
-    logWarn(`PRADOSH event "${event.name}" missing numeric weekday in ruleConfig`);
-    return [];
+  // If explicit tithi/prevTithi are set, use them directly (e.g. Parashurama Jayanti).
+  // Otherwise derive TRAYODASHI/DWADASHI from paksha (standard Pradosh Vrat).
+  let targetTithis: Tithi[];
+  let prevTithis: Tithi[];
+
+  if (config.tithi && config.prevTithi) {
+    targetTithis = [config.tithi];
+    prevTithis = [config.prevTithi];
+  } else {
+    if (weekday === undefined) {
+      logWarn(`PRADOSH event "${event.name}" missing numeric weekday in ruleConfig`);
+      return [];
+    }
+    const pakshaList: Array<"SHUKLA" | "KRISHNA"> =
+      paksha === "SHUKLA"
+        ? ["SHUKLA"]
+        : paksha === "KRISHNA"
+          ? ["KRISHNA"]
+          : ["SHUKLA", "KRISHNA"];
+    targetTithis = pakshaList.map((p) =>
+      p === "SHUKLA" ? "TRAYODASHI_SHUKLA" : "TRAYODASHI_KRISHNA"
+    );
+    prevTithis = pakshaList.map((p) =>
+      p === "SHUKLA" ? "DWADASHI_SHUKLA" : "DWADASHI_KRISHNA"
+    );
   }
 
-  const pakshaList: Array<"SHUKLA" | "KRISHNA"> =
-    paksha === "SHUKLA"
-      ? ["SHUKLA"]
-      : paksha === "KRISHNA"
-        ? ["KRISHNA"]
-        : ["SHUKLA", "KRISHNA"];
-
-  const trayodashiTithis: Tithi[] = pakshaList.map((p) =>
-    p === "SHUKLA" ? "TRAYODASHI_SHUKLA" : "TRAYODASHI_KRISHNA"
-  );
-  const dwadasiTithis: Tithi[] = pakshaList.map((p) =>
-    p === "SHUKLA" ? "DWADASHI_SHUKLA" : "DWADASHI_KRISHNA"
-  );
-
-  // Case 1: Trayodashi is the udaya tithi
-  const trayodashiDays = await findDailyInfoPradoshCandidates(
+  // Case 1: target tithi is the udaya tithi
+  const targetDays = await findDailyInfoPradoshCandidates(
     { startDate, endDate },
-    trayodashiTithis
+    targetTithis,
+    { maas: maasFilter }
   );
 
-  // Case 2: Dwadashi is the udaya tithi (catches kshaya Trayodashi and early-start cases)
-  const dwadasiDays = await findDailyInfoPradoshCandidates(
+  // Case 2: prev tithi is the udaya tithi (catches kshaya target and early-start cases)
+  const prevDays = await findDailyInfoPradoshCandidates(
     { startDate, endDate },
-    dwadasiTithis
+    prevTithis,
+    { maas: maasFilter }
   );
 
   const validDates = new Map<string, Date>();
 
-  const trayodashiDateSet = new Set(
-    trayodashiDays.map((d) => d.date.toISOString().split("T")[0]!)
+  const targetDateSet = new Set(
+    targetDays.map((d) => d.date.toISOString().split("T")[0]!)
   );
-  const dwadasiDateSet = new Set(
-    dwadasiDays.map((d) => d.date.toISOString().split("T")[0]!)
-  );
+  const prevDateSet = new Set(prevDays.map((d) => d.date.toISOString().split("T")[0]!));
 
-  // ── STEP 1: Case 2 (Dwadashi udaya, higher priority) ──────────────────────
-  for (const day of dwadasiDays) {
+  // ── STEP 1: Case 2 (prev tithi udaya, higher priority) ────────────────────
+  for (const day of prevDays) {
     if (!day.sunset || !day.tithiEndTime) continue;
 
     const tithiEndMin = parseTimeToMinutes(day.tithiEndTime);
@@ -124,21 +133,21 @@ export async function generatePradoshOccurrences(
     // Skip if tithiEndTime is a next-day time (tithiEndTime < sunrise)
     if (sunriseMin !== null && tithiEndMin < sunriseMin) continue;
 
-    // Vriddhi Dwadashi: when Dwadashi spans two sunrises, skip the first day —
-    // Trayodashi only starts on the second day, so the Pradosh window is there.
+    // Vriddhi prev-tithi: when it spans two sunrises, skip the first day —
+    // target tithi only starts on the second day, so the Pradosh window is there.
     const nextDay = new Date(day.date);
     nextDay.setUTCDate(nextDay.getUTCDate() + 1);
-    if (dwadasiDateSet.has(nextDay.toISOString().split("T")[0]!)) continue;
+    if (prevDateSet.has(nextDay.toISOString().split("T")[0]!)) continue;
 
-    // Extended window (150 min) to catch late-summer cases where Dwadashi ends
-    // well after sunset but Trayodashi still starts within Pradosh Kaal.
+    // Extended window (150 min) to catch late-summer cases where prev tithi ends
+    // well after sunset but target still starts within Pradosh Kaal.
     if (tithiEndMin < sunsetMin + 150) {
       validDates.set(day.date.toISOString().split("T")[0]!, day.date);
     }
   }
 
-  // ── STEP 2: Case 1 (Trayodashi udaya) ─────────────────────────────────────
-  for (const day of trayodashiDays) {
+  // ── STEP 2: Case 1 (target tithi udaya) ───────────────────────────────────
+  for (const day of targetDays) {
     if (!day.sunset) continue;
 
     const tithiEndMin = parseTimeToMinutes(day.tithiEndTime);
@@ -155,7 +164,7 @@ export async function generatePradoshOccurrences(
 
     const nextDay = new Date(day.date);
     nextDay.setUTCDate(nextDay.getUTCDate() + 1);
-    const isVriddhi = trayodashiDateSet.has(nextDay.toISOString().split("T")[0]!);
+    const isVriddhi = targetDateSet.has(nextDay.toISOString().split("T")[0]!);
 
     const pradoshStartMin = sunsetMin - 90;
     const isValid =
@@ -171,6 +180,6 @@ export async function generatePradoshOccurrences(
 
   return Array.from(validDates.values())
     .sort((a, b) => a.getTime() - b.getTime())
-    .filter((date) => date.getUTCDay() === weekday)
+    .filter((date) => weekday === undefined || date.getUTCDay() === weekday)
     .map((date) => ({ date }));
 }

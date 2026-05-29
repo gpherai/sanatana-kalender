@@ -276,12 +276,14 @@ export async function findDailyInfoTithiTimingCandidates(
 
 export async function findDailyInfoPradoshCandidates(
   { startDate, endDate }: DateRange,
-  tithis: Tithi[]
+  tithis: Tithi[],
+  options: { maas?: Maas[] } = {}
 ) {
   const rows = await prisma.dailyInfo.findMany({
     where: {
       date: { gte: startDate, lte: endDate },
       tithi: { in: tithis },
+      ...(options.maas && options.maas.length > 0 && { maas: { in: options.maas } }),
     },
     orderBy: { date: "asc" },
     select: { date: true, tithiEndTime: true, sunrise: true, sunset: true },

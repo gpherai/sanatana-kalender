@@ -71,18 +71,26 @@ export interface WeekdayTithiRuleConfig {
 }
 
 /**
- * PRADOSH: Trayodashi must be active during Pradosh Kaal (sunset window).
+ * PRADOSH: target tithi must be active during Pradosh Kaal (sunset window).
  *
  * Uses sunset-based matching instead of udaya tithi (sunrise):
- * - Case 1: Trayodashi is udaya tithi AND active at sunset (tithiEndTime ≥ sunset or null)
- * - Case 2: Dwadashi is udaya tithi AND ends before sunset (Trayodashi starts before sunset)
+ * - Case 1: target tithi is udaya tithi AND active at sunset (tithiEndTime ≥ sunset or null)
+ * - Case 2: prev tithi is udaya tithi AND ends before sunset+150 (target starts within Pradosh)
  *
- * This correctly handles kshaya Trayodashi (never appears as udaya tithi)
- * and avoids backshift errors from the regular WEEKDAY_TITHI approach.
+ * Default target = TRAYODASHI (Pradosh Vrat). Override with `tithi` + `prevTithi` for
+ * other festivals (e.g. Parashurama Jayanti uses TRITIYA_SHUKLA + DVITIYA_SHUKLA).
+ * `weekday` filters occurrences (Soma/Mangala Pradosh); omit for non-weekday events.
+ * `maas` limits to a specific lunar month (yearly events).
  */
 export interface PradoshRuleConfig {
   paksha?: "SHUKLA" | "KRISHNA";
-  weekday: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+  weekday?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+  /** Target tithi that must cover Pradosh Kaal. Defaults to TRAYODASHI when omitted. */
+  tithi?: Tithi;
+  /** Tithi preceding the target. Defaults to DWADASHI when omitted. */
+  prevTithi?: Tithi;
+  /** Limit to a specific lunar month (for yearly events). */
+  maas?: Maas;
 }
 
 /** CUSTOM: open-ended for complex rules not covered by other types */

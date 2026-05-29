@@ -51,8 +51,11 @@ async function generateEventsFromNaming() {
       "YEARLY_LUNAR";
     if (naming.ruleType === "SOLAR") {
       recurrenceType = "YEARLY_SOLAR";
-    } else if (naming.ruleType === "WEEKDAY_TITHI" || naming.ruleType === "PRADOSH") {
+    } else if (naming.ruleType === "WEEKDAY_TITHI") {
       recurrenceType = "MONTHLY_LUNAR";
+    } else if (naming.ruleType === "PRADOSH") {
+      // PRADOSH with a maas restriction = yearly event; without = monthly (Pradosh Vrat)
+      recurrenceType = "maas" in config && config.maas ? "YEARLY_LUNAR" : "MONTHLY_LUNAR";
     } else if (
       naming.ruleType === "TITHI" &&
       "monthly" in config &&

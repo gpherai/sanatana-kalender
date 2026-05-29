@@ -1181,9 +1181,10 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     name: "Parashurama Jayanti",
     categories: ["vishnu"],
     eventType: "JAYANTI",
-    ruleType: "TITHI",
+    ruleType: "PRADOSH",
     ruleConfig: {
       tithi: "TRITIYA_SHUKLA",
+      prevTithi: "DWITIYA_SHUKLA",
       maas: "VAISHAKHA",
     },
     description:
