@@ -119,6 +119,7 @@ export async function generatePradoshOccurrences(
     targetDays.map((d) => d.date.toISOString().split("T")[0]!)
   );
   const prevDateSet = new Set(prevDays.map((d) => d.date.toISOString().split("T")[0]!));
+  const isCustomTithi = !!(config.tithi && config.prevTithi);
 
   // ── STEP 1: Case 2 (prev tithi udaya, higher priority) ────────────────────
   for (const day of prevDays) {
@@ -130,19 +131,27 @@ export async function generatePradoshOccurrences(
 
     if (tithiEndMin === null || sunsetMin === null) continue;
 
-    // Skip if tithiEndTime is a next-day time (tithiEndTime < sunrise)
-    if (sunriseMin !== null && tithiEndMin < sunriseMin) continue;
-
     // Vriddhi prev-tithi: when it spans two sunrises, skip the first day —
     // target tithi only starts on the second day, so the Pradosh window is there.
     const nextDay = new Date(day.date);
     nextDay.setUTCDate(nextDay.getUTCDate() + 1);
     if (prevDateSet.has(nextDay.toISOString().split("T")[0]!)) continue;
 
-    // Extended window (150 min) to catch late-summer cases where prev tithi ends
-    // well after sunset but target still starts within Pradosh Kaal.
-    if (tithiEndMin < sunsetMin + 150) {
-      validDates.set(day.date.toISOString().split("T")[0]!, day.date);
+    if (isCustomTithi) {
+      // Custom tithi mode (e.g. Parashurama Jayanti): target must START at or before
+      // sunset to cover Pradosh Kaal. Only skip if tithiEndTime is clearly a next-day
+      // time (>60 min before sunrise) — handles kshaya edge cases where prev tithi
+      // ends right at sunrise.
+      if (sunriseMin !== null && tithiEndMin < sunriseMin - 60) continue;
+      if (tithiEndMin <= sunsetMin) {
+        validDates.set(day.date.toISOString().split("T")[0]!, day.date);
+      }
+    } else {
+      // Standard Pradosh Vrat: skip next-day times, use extended 150-min window.
+      if (sunriseMin !== null && tithiEndMin < sunriseMin) continue;
+      if (tithiEndMin < sunsetMin + 150) {
+        validDates.set(day.date.toISOString().split("T")[0]!, day.date);
+      }
     }
   }
 
