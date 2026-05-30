@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import Kundali from "../page";
+import { KundaliContent as Kundali } from "@/components/kundali/KundaliContent";
 import type { BirthChart, GrahaPosition } from "@/engine/panchanga/types";
 
 // Mock the PageLayout component
