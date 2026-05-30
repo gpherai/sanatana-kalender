@@ -10,10 +10,10 @@ import {
 } from "@/repositories/daily-info.repository";
 import {
   computeTithiOccurrence,
+  computeSankashtiOccurrence,
   groupConsecutiveDays,
   isPredecessorEndsAfterSunrise,
   isNishitakalDateShiftNeeded,
-  isSankashtiPradoshShiftNeeded,
   selectFirstWindowPerLunarCycle,
 } from "@/engine";
 import { parseTimeToMinutes, formatMinutesToTime } from "@/lib/timing-utils";
@@ -200,65 +200,9 @@ export async function generateYearlyLunarOccurrences(
       finalWindows.map((w) => w.firstDay.date)
     );
     if (event.tithi === Tithi.CHATURTHI_KRISHNA) {
-      return finalWindows.map(({ firstDay, lastDay }) => {
-        const occ = computeTithiOccurrence(firstDay, lastDay, prevDayMap);
-        const key = firstDay.date.toISOString().split("T")[0]!;
-        const prevInfo = prevDayMap.get(key);
-
-        // When computeTithiOccurrence shifted to D-1 (evening start), verify
-        // that Chaturthi actually started within Pradosh Kaal (sunset + 120 min).
-        // If it started after Pradosh, DP uses the udaya tithi day instead.
-        if (occ.date.getTime() !== firstDay.date.getTime() && prevInfo) {
-          const endMin = parseTimeToMinutes(prevInfo.tithiEndTime ?? "");
-          const sunsetMin = parseTimeToMinutes(prevInfo.sunset ?? "");
-          if (endMin !== null && sunsetMin !== null && endMin > sunsetMin + 125) {
-            return { date: firstDay.date };
-          }
-        }
-
-        // Pradosh rule for Sankashti Chaturthi: if Chaturthi started during the
-        // daytime of the previous day (between sunrise and sunset), it is present
-        // during Pradosh Kaal → observe on that previous day instead of the
-        // Udaya Tithi day.
-        if (occ.date.getTime() === firstDay.date.getTime()) {
-          if (prevInfo && isSankashtiPradoshShiftNeeded(prevInfo)) {
-            const prevDate = new Date(firstDay.date);
-            prevDate.setUTCDate(prevDate.getUTCDate() - 1);
-            const startMin = parseTimeToMinutes(prevInfo.tithiEndTime ?? "");
-            const startTime =
-              startMin !== null ? formatMinutesToTime(startMin) : undefined;
-            const endMin = firstDay.tithiEndTime
-              ? parseTimeToMinutes(firstDay.tithiEndTime)
-              : null;
-            const endTime = endMin !== null ? formatMinutesToTime(endMin) : undefined;
-            return { date: prevDate, startTime, endDate: firstDay.date, endTime };
-          }
-
-          // Midnight Chaturthi rule: when Chaturthi starts in the first hour
-          // after midnight (< 60 min), both the tithi start and the moonrise
-          // fall in the pre-dawn window that Hindu timekeeping assigns to the
-          // previous day (days run sunrise-to-sunrise). DP observes on D-1.
-          // The 60-minute threshold ensures this only fires for genuine
-          // midnight-start cases; Chaturthi starting at 01:30+ uses udaya tithi.
-          if (prevInfo) {
-            const chaturthi_startMin = parseTimeToMinutes(prevInfo.tithiEndTime ?? "");
-            const moonriseMin = parseTimeToMinutes(firstDay.moonrise ?? "");
-            const sunriseMin = parseTimeToMinutes(firstDay.sunrise ?? "");
-            if (
-              chaturthi_startMin !== null &&
-              chaturthi_startMin < 60 &&
-              moonriseMin !== null &&
-              sunriseMin !== null &&
-              moonriseMin < sunriseMin
-            ) {
-              const prevDate = new Date(firstDay.date);
-              prevDate.setUTCDate(prevDate.getUTCDate() - 1);
-              return { date: prevDate };
-            }
-          }
-        }
-        return occ;
-      });
+      return finalWindows.map(({ firstDay, lastDay }) =>
+        computeSankashtiOccurrence(firstDay, lastDay, prevDayMap)
+      );
     }
     return finalWindows.map(({ firstDay, lastDay }) =>
       computeTithiOccurrence(firstDay, lastDay, prevDayMap)

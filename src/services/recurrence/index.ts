@@ -19,19 +19,21 @@ import type { GeneratedOccurrence, RecurrenceOptions, RecurrenceStrategy } from 
 export type { GeneratedOccurrence, RecurrenceOptions };
 
 // =============================================================================
-// STRATEGY REGISTRIES
+// STRATEGY REGISTRY
 // =============================================================================
 
-const RULE_STRATEGIES: Record<string, RecurrenceStrategy> = {
+// Keys are either ruleType or recurrenceType values — no overlap exists between
+// the two sets, so a single table suffices. ruleType takes precedence: the
+// dispatch resolves `event.ruleType ?? event.recurrenceType` as the lookup key.
+const STRATEGIES: Record<string, RecurrenceStrategy> = {
+  // by ruleType
   SOLAR: generateSolarRuleOccurrences,
   TITHI: generateYearlyLunarOccurrences,
   NAKSHATRA: generateNakshatraRuleOccurrences,
   TITHI_NAKSHATRA: generateTithiNakshatraRuleOccurrences,
   WEEKDAY_TITHI: generateWeekdayTithiOccurrences,
   PRADOSH: generatePradoshOccurrences,
-};
-
-const RECURRENCE_STRATEGIES: Record<string, RecurrenceStrategy> = {
+  // by recurrenceType
   YEARLY_LUNAR: generateYearlyLunarOccurrences,
   YEARLY_SOLAR: generateYearlySolarOccurrences,
   MONTHLY_LUNAR: generateMonthlyLunarOccurrences,
@@ -61,33 +63,15 @@ export async function generateOccurrences(
 
   let occurrences: GeneratedOccurrence[] = [];
 
-  // WEEKDAY_TITHI and PRADOSH take full precedence — both handle their own
-  // frequency internally and must bypass the MONTHLY_LUNAR branch below.
-  if (event.ruleType === "WEEKDAY_TITHI") {
-    occurrences = await generateWeekdayTithiOccurrences(event, startDate, endDate);
-  } else if (event.ruleType === "PRADOSH") {
-    occurrences = await generatePradoshOccurrences(event, startDate, endDate);
-  } else if (
-    event.recurrenceType === "MONTHLY_LUNAR" ||
-    event.recurrenceType === "MONTHLY_SOLAR"
-  ) {
-    const strategy = RECURRENCE_STRATEGIES[event.recurrenceType]!;
-    occurrences = await strategy(event, startDate, endDate);
-  } else if (event.ruleType) {
-    const strategy = RULE_STRATEGIES[event.ruleType];
-    if (!strategy) {
-      logWarn(`Rule type ${event.ruleType} not yet implemented for event ${event.name}`);
-      return [];
-    }
-    occurrences = await strategy(event, startDate, endDate);
-  } else {
-    const strategy = RECURRENCE_STRATEGIES[event.recurrenceType];
-    if (!strategy) {
-      logWarn(`Unknown recurrence type: ${event.recurrenceType}`);
-      return [];
-    }
-    occurrences = await strategy(event, startDate, endDate);
+  const strategyKey = event.ruleType ?? event.recurrenceType;
+  const strategy = STRATEGIES[strategyKey];
+  if (!strategy) {
+    logWarn(
+      `No strategy for "${event.name}" (ruleType=${event.ruleType ?? "—"}, recurrenceType=${event.recurrenceType})`
+    );
+    return [];
   }
+  occurrences = await strategy(event, startDate, endDate);
 
   if (occurrences.length > maxOccurrences) {
     logWarn(

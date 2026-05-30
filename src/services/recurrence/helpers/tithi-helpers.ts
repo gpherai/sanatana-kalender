@@ -265,6 +265,79 @@ export function applyRatriVyapiniDateRule(
 }
 
 // ---------------------------------------------------------------------------
+// Sankashti Chaturthi occurrence computation
+// ---------------------------------------------------------------------------
+
+/**
+ * Computes the observation date for Sankashti Chaturthi (CHATURTHI_KRISHNA VRAT).
+ *
+ * Applies three Sankashti-specific overrides on top of the standard
+ * computeTithiOccurrence result:
+ *
+ * 1. D-1 Pradosh validity check: if computeTithiOccurrence shifted to the
+ *    evening before, but Chaturthi started after Pradosh Kaal (sunset + 125 min),
+ *    revert to the Udaya Tithi day.
+ * 2. Pradosh shift: if Chaturthi started during the daytime of D-1 (between
+ *    sunrise and sunset), it covered Pradosh Kaal → observe on D-1.
+ * 3. Midnight start: if Chaturthi started in the first hour after midnight
+ *    and the moonrise precedes sunrise, Hindu timekeeping places the event on D-1.
+ */
+export function computeSankashtiOccurrence(
+  firstDay: {
+    date: Date;
+    tithiEndTime: string | null;
+    moonrise?: string | null;
+    sunrise?: string | null;
+  },
+  lastDay: { date: Date; tithiEndTime: string | null },
+  prevDayMap: Map<string, PrevDayInfo>
+): GeneratedOccurrence {
+  const occ = computeTithiOccurrence(firstDay, lastDay, prevDayMap);
+  const key = firstDay.date.toISOString().split("T")[0]!;
+  const prevInfo = prevDayMap.get(key);
+
+  if (occ.date.getTime() !== firstDay.date.getTime() && prevInfo) {
+    const endMin = parseTimeToMinutes(prevInfo.tithiEndTime ?? "");
+    const sunsetMin = parseTimeToMinutes(prevInfo.sunset ?? "");
+    if (endMin !== null && sunsetMin !== null && endMin > sunsetMin + 125) {
+      return { date: firstDay.date };
+    }
+  }
+
+  if (occ.date.getTime() === firstDay.date.getTime()) {
+    if (prevInfo && isSankashtiPradoshShiftNeeded(prevInfo)) {
+      const prevDate = new Date(firstDay.date);
+      prevDate.setUTCDate(prevDate.getUTCDate() - 1);
+      const startMin = parseTimeToMinutes(prevInfo.tithiEndTime ?? "");
+      const startTime = startMin !== null ? formatMinutesToTime(startMin) : undefined;
+      const endMin = firstDay.tithiEndTime
+        ? parseTimeToMinutes(firstDay.tithiEndTime)
+        : null;
+      const endTime = endMin !== null ? formatMinutesToTime(endMin) : undefined;
+      return { date: prevDate, startTime, endDate: firstDay.date, endTime };
+    }
+
+    if (prevInfo) {
+      const chaturthi_startMin = parseTimeToMinutes(prevInfo.tithiEndTime ?? "");
+      const moonriseMin = parseTimeToMinutes(firstDay.moonrise ?? "");
+      const sunriseMin = parseTimeToMinutes(firstDay.sunrise ?? "");
+      if (
+        chaturthi_startMin !== null &&
+        chaturthi_startMin < 60 &&
+        moonriseMin !== null &&
+        sunriseMin !== null &&
+        moonriseMin < sunriseMin
+      ) {
+        const prevDate = new Date(firstDay.date);
+        prevDate.setUTCDate(prevDate.getUTCDate() - 1);
+        return { date: prevDate };
+      }
+    }
+  }
+  return occ;
+}
+
+// ---------------------------------------------------------------------------
 // Pradosh tithi shift (Sankashti Chaturthi rule)
 // ---------------------------------------------------------------------------
 

@@ -17,5 +17,6 @@ export {
   isNishitakalDateShiftNeeded,
   isSankashtiPradoshShiftNeeded,
   computeTithiOccurrence,
+  computeSankashtiOccurrence,
   applyRatriVyapiniDateRule,
 } from "@/services/recurrence/helpers/tithi-helpers";
