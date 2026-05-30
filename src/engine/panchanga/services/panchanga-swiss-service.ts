@@ -57,16 +57,8 @@ export class PanchangaSwissService {
     dateStr: string,
     location: LocationConfig
   ): Promise<DailyPanchangaFull> {
-    // ==========================================================================
-    // STEP 1: Calculate Sunrise & Sunset
-    // ==========================================================================
     const astro = await calculateSunriseSunset(dateStr, location);
 
-    // ==========================================================================
-    // STEP 1.5: Calculate Moonrise & Moonset
-    // ==========================================================================
-    // Pass upcomingFromNow=true for today so that if the moonset already passed,
-    // the next upcoming rise/set is returned instead of the stale earlier one.
     const todayStr = DateTime.now().setZone(location.tz).toISODate();
     const moonAstro = await calculateMoonriseMoonset(
       dateStr,
@@ -74,112 +66,70 @@ export class PanchangaSwissService {
       dateStr === todayStr
     );
 
-    // ==========================================================================
-    // STEP 2: Calculate Positions at Sunrise
-    // ==========================================================================
-    // Flags: Sidereal (Lahiri), Moshier ephemeris (no files needed), Speed
     const flags = swisseph.SEFLG_SIDEREAL | swisseph.SEFLG_SWIEPH | swisseph.SEFLG_SPEED;
-    const sunPos = await swe_calc_ut(astro.sunriseJD, swisseph.SE_SUN, flags);
-    const moonPos = await swe_calc_ut(astro.sunriseJD, swisseph.SE_MOON, flags);
-
-    // ==========================================================================
-    // STEP 3: Calculate Current Indices (at sunrise)
-    // ==========================================================================
-
-    /**
-     * Normalize angle to 0-360 range (wrap-safe)
-     * Per ChatGPT/Codex feedback: Critical for preventing off-by-one errors
-     */
-    const norm360 = (x: number): number => ((x % 360) + 360) % 360;
-
-    const getNakshatraProgress = (mLon: number): number => norm360(mLon) / (360 / 27);
-    const getYogaProgress = (sLon: number, mLon: number): number =>
-      norm360(sLon + mLon) / (360 / 27);
-    const getKaranaProgress = (tithiProg: number): number => tithiProg * 2;
-
-    // Calculate progress values at sunrise
-    const tithiProg = this.getTithiProgress(sunPos.longitude, moonPos.longitude);
-    const nakProg = getNakshatraProgress(moonPos.longitude);
-    const yogaProg = getYogaProgress(sunPos.longitude, moonPos.longitude);
-    const karanaProg = getKaranaProgress(tithiProg);
-
-    // Calculate indices (1-based)
-    const tithiIdx = Math.floor(tithiProg) + 1;
-    const nakIdx = Math.floor(nakProg) + 1;
-    const yogaIdx = Math.floor(yogaProg) + 1;
-    const karanaIdx = Math.floor(karanaProg) + 1;
-
-    // ==========================================================================
-    // STEP 4: Calculate End Times (Bracket + Binary Search)
-    // ==========================================================================
-
-    // Tithi End Time
-    const tithiEndJD = await findEventEnd(
+    const { sunPos, moonPos } = await this.computePositionsAtSunrise(
       astro.sunriseJD,
-      async (jd) => {
-        const s = await swe_calc_ut(jd, swisseph.SE_SUN, flags);
-        const m = await swe_calc_ut(jd, swisseph.SE_MOON, flags);
-        return this.getTithiProgress(s.longitude, m.longitude);
-      },
-      tithiIdx % 30, // Wrap at 30
-      30
+      flags
     );
 
-    // Nakshatra End Time
-    const nakEndJD = await findEventEnd(
+    const angas = this.computeAngaIndices(sunPos, moonPos);
+    const { tithiIdx, nakIdx, yogaIdx, karanaIdx } = angas;
+
+    const endJDs = await this.computeAngaEndTimes(astro.sunriseJD, flags, angas);
+    const { tithiEndJD, nakEndJD, yogaEndJD, karanaEndJD } = endJDs;
+
+    const varaIdx = astro.sunriseTime.weekday === 7 ? 0 : astro.sunriseTime.weekday;
+
+    const moonPhase = await this.computeMoonIllumination(
       astro.sunriseJD,
-      async (jd) => {
-        const m = await swe_calc_ut(jd, swisseph.SE_MOON, flags);
-        return getNakshatraProgress(m.longitude);
-      },
-      nakIdx % 27, // Wrap at 27
-      27
+      flags,
+      sunPos,
+      moonPos
     );
 
-    // Yoga End Time
-    const yogaEndJD = await findEventEnd(
-      astro.sunriseJD,
-      async (jd) => {
-        const s = await swe_calc_ut(jd, swisseph.SE_SUN, flags);
-        const m = await swe_calc_ut(jd, swisseph.SE_MOON, flags);
-        return getYogaProgress(s.longitude, m.longitude);
-      },
-      yogaIdx % 27, // Wrap at 27
-      27
+    const { rahuKalam, yamagandam } = this.computeInauspiciousTimes(
+      astro.sunriseTime,
+      astro.sunsetTime,
+      varaIdx
     );
 
-    // Karana End Time
-    const karanaEndJD = await findEventEnd(
+    const rashiData = await this.computeRashiTransitions(
       astro.sunriseJD,
-      async (jd) => {
-        const s = await swe_calc_ut(jd, swisseph.SE_SUN, flags);
-        const m = await swe_calc_ut(jd, swisseph.SE_MOON, flags);
-        const tp = this.getTithiProgress(s.longitude, m.longitude);
-        return getKaranaProgress(tp);
-      },
-      karanaIdx % 60, // Wrap at 60
-      60
+      flags,
+      sunPos,
+      moonPos,
+      location.tz
     );
 
-    // ==========================================================================
-    // STEP 5: Data Mapping & Formatting
-    // ==========================================================================
+    const pravishteData = await this.computePravishte(
+      astro.sunriseJD,
+      flags,
+      rashiData.sunSignIdx,
+      astro.sunriseTime,
+      location.tz
+    );
 
-    // Vara (weekday according to sunrise)
-    const sunriseDt = astro.sunriseTime;
-    const varaIdx = sunriseDt.weekday === 7 ? 0 : sunriseDt.weekday; // Luxon: 1=Mon, 7=Sun
+    const maasData = await this.computeMaasData(
+      astro.sunriseJD,
+      tithiIdx,
+      rashiData.sunSignIdx
+    );
 
-    // Moon Phase (high precision using swe_pheno_ut)
-    const pheno = await swe_pheno_ut(astro.sunriseJD, swisseph.SE_MOON, flags);
-    const illumination = pheno.phaseIllum * 100; // 0..1 → 0..100
+    const gregorianYear = DateTime.fromISO(dateStr, { zone: location.tz }).year;
+    const samvatData = this.computeSamvatData(
+      gregorianYear,
+      maasData.maasIdx,
+      maasData.isAdhika
+    );
 
-    // Waxing/Waning based on elongation
-    let elongation = moonPos.longitude - sunPos.longitude;
-    if (elongation < 0) elongation += 360;
-    const waxing = elongation < 180;
-    const phaseAngle = pheno.phaseAngle;
+    const sankrantiData = await this.detectSankranti(astro.sunriseJD, location.tz);
+    const moonPhaseEvent = await this.detectMoonPhaseEvent(dateStr, location);
 
-    // Resolve Sanskrit names
+    const nextSunriseJD = astro.sunriseJD + 1;
+    const { nextTithi, nextNakshatra, nextYoga, nextKarana } =
+      await this.computeNextElements(endJDs, nextSunriseJD, angas, flags, location.tz);
+
+    // Name resolution
     const tithiName = TITHI_NAMES[tithiIdx - 1] ?? "Unknown";
     const paksha = tithiIdx <= 15 ? ("Shukla" as const) : ("Krishna" as const);
     const nakName = NAKSHATRA_NAMES[nakIdx - 1] ?? "Unknown";
@@ -189,350 +139,12 @@ export class PanchangaSwissService {
       | 3
       | 4;
     const yogaName = YOGA_NAMES[yogaIdx - 1] ?? "Unknown";
-
     const kName = resolveKaranaName(karanaIdx);
-
-    // Time formatting helpers
-    const formatTime = (dt: DateTime | null): string | undefined =>
-      dt ? dt.toFormat("HH:mm:ss") : undefined;
-    const formatIso = (dt: DateTime | null): string | undefined =>
-      dt ? (dt.toUTC().toISO() ?? undefined) : undefined;
 
     const tEnd = tithiEndJD ? this.jdToLocal(tithiEndJD, location.tz) : null;
     const nEnd = nakEndJD ? this.jdToLocal(nakEndJD, location.tz) : null;
     const yEnd = yogaEndJD ? this.jdToLocal(yogaEndJD, location.tz) : null;
     const kEnd = karanaEndJD ? this.jdToLocal(karanaEndJD, location.tz) : null;
-
-    // ==========================================================================
-    // STEP 6: Calculate Inauspicious Times (Rahu Kalam & Yamagandam)
-    // ==========================================================================
-
-    const dayDurationMin = astro.sunsetTime.diff(astro.sunriseTime, "minutes").minutes;
-    const octet = dayDurationMin / 8;
-
-    // Rahu Kalam octets (Sunday=0, Monday=1, ..., Saturday=6)
-    const rahuOctets = [7, 1, 6, 4, 5, 3, 2]; // Sun=7th, Mon=1st, etc.
-    const yamaOctets = [4, 3, 2, 1, 0, 6, 5]; // Sun=4th, Mon=3rd, etc.
-
-    const rStartMin = rahuOctets[varaIdx]! * octet;
-    const rEndMin = rStartMin + octet;
-    const rahuStart = astro.sunriseTime.plus({ minutes: rStartMin });
-    const rahuEnd = astro.sunriseTime.plus({ minutes: rEndMin });
-
-    const yStartMin = yamaOctets[varaIdx]! * octet;
-    const yEndMin = yStartMin + octet;
-    const yamaStart = astro.sunriseTime.plus({ minutes: yStartMin });
-    const yamaEnd = astro.sunriseTime.plus({ minutes: yEndMin });
-
-    // ==========================================================================
-    // STEP 6.5: Calculate Drik Panchang Extended Fields
-    // ==========================================================================
-
-    // -------------------------------------------------------------------------
-    // RASHI (Sun/Moon Signs) - Sidereal Zodiac
-    // -------------------------------------------------------------------------
-    const sunSignIdx = Math.floor(sunPos.longitude / 30); // 0-11
-    const moonSignIdx = Math.floor(moonPos.longitude / 30); // 0-11
-
-    const sunSignName = RASHI_NAMES[sunSignIdx] ?? "Unknown";
-    const moonSignName = RASHI_NAMES[moonSignIdx] ?? "Unknown";
-
-    // Find when Sun/Moon transition to next sign (next 30° boundary)
-    // Use norm360 for wrap-safe boundary calculation (359° → 0°)
-    const nextSunSignBoundary = norm360((sunSignIdx + 1) * 30);
-    const nextMoonSignBoundary = norm360((moonSignIdx + 1) * 30);
-
-    // Sun sign transition time (Sankranti) — sun stays in one sign ~30 days, scan 35
-    const sunSignEndJD = await findEventEnd(
-      astro.sunriseJD,
-      async (jd) => {
-        const s = await swe_calc_ut(jd, swisseph.SE_SUN, flags);
-        return norm360(s.longitude);
-      },
-      nextSunSignBoundary,
-      360,
-      35
-    );
-
-    // Moon sign transition time — moon changes sign every ~2.5 days, scan 3
-    const moonSignEndJD = await findEventEnd(
-      astro.sunriseJD,
-      async (jd) => {
-        const m = await swe_calc_ut(jd, swisseph.SE_MOON, flags);
-        return norm360(m.longitude);
-      },
-      nextMoonSignBoundary,
-      360,
-      3
-    );
-
-    const sunSignEnd = sunSignEndJD ? this.jdToLocal(sunSignEndJD, location.tz) : null;
-    const moonSignEnd = moonSignEndJD ? this.jdToLocal(moonSignEndJD, location.tz) : null;
-
-    // -------------------------------------------------------------------------
-    // PRAVISHTE/GATE - Days since last Sankranti
-    // -------------------------------------------------------------------------
-    // Search backwards from sunrise to find when Sun crossed into current sign
-    let lastSankrantiJD = astro.sunriseJD;
-
-    // Search up to 35 days back (max time in one sign)
-    for (let i = 0; i < 35; i++) {
-      const testJD = astro.sunriseJD - i;
-      const testSunPos = await swe_calc_ut(testJD, swisseph.SE_SUN, flags);
-      const testSignIdx = Math.floor(norm360(testSunPos.longitude) / 30);
-
-      if (testSignIdx !== sunSignIdx) {
-        // Found the boundary - refine with binary search
-        let low = testJD;
-        let high = testJD + 1;
-
-        while (high - low > 0.0001) {
-          // ~8.64 seconds precision
-          const mid = (low + high) / 2;
-          const midSunPos = await swe_calc_ut(mid, swisseph.SE_SUN, flags);
-          const midLon = norm360(midSunPos.longitude);
-
-          if (Math.floor(midLon / 30) === sunSignIdx) {
-            high = mid; // Sankranti is before mid
-          } else {
-            low = mid; // Sankranti is after mid
-          }
-        }
-
-        lastSankrantiJD = high;
-        break;
-      }
-    }
-
-    const lastSankrantiDate = this.jdToLocal(lastSankrantiJD, location.tz);
-    // Pravishte counts inclusively (Sankranti day = day 1, not day 0)
-    // Traditional Vedic counting: if Sankranti was today, we are in day 1
-    const daysSinceSankranti =
-      Math.floor(astro.sunriseTime.diff(lastSankrantiDate, "days").days) + 1;
-
-    const sunriseDate = DateTime.fromISO(dateStr, { zone: location.tz });
-    const gregorianYear = sunriseDate.year;
-
-    // -------------------------------------------------------------------------
-    // MAAS (Lunar Month) - Purnimanta System
-    // -------------------------------------------------------------------------
-    // In Purnimanta months start at Purnima (full moon). Month naming rule:
-    //
-    //   • Shukla paksha (tithiIdx 1-15) and Amavasya day (tithiIdx 30):
-    //     use the PREVIOUS Amavasya's Sun rashi  (same as Amanta formula).
-    //   • Krishna paksha, excluding Amavasya (tithiIdx 16-29):
-    //     use the NEXT Amavasya's Sun rashi.
-    //     This shifts the dark-half month name forward one cycle, so e.g.
-    //     Jan 14 (Pratipada Krishna after Pausha Purnima Jan 13) uses the
-    //     Jan 29 Amavasya (Sun in Makara) → maasIdx=10 = MAGHA ✓.
-    //
-    // Adhika month: same Sun rashi at both Amavasya boundaries = no
-    // Sankranti in this lunar month.
-    //
-    // Example — 2026 Adhika Jyeshtha:
-    //   May 16 Amavasya (Sun in Vrishabha idx=1) and Jun 14 Amavasya (Sun
-    //   still in Vrishabha idx=1, Mithuna Sankranti arrives Jun 15) →
-    //   same rashi → isAdhika=true for all days May 17–Jun 13.
-    //   Nija Jyeshtha opens at Jun 14 Amavasya: maasIdx=(1+1)%12=2=Jyeshtha ✓.
-
-    // Step 1: Find Amavasya boundaries of the current lunar month.
-    const prevAmavasya = await this.findNearestAmavasya(astro.sunriseJD, "backward");
-    const nextAmavasya = await this.findNearestAmavasya(astro.sunriseJD, "forward");
-
-    const rashiAtPrevAmavasya = prevAmavasya
-      ? await this.getSunRashi(prevAmavasya)
-      : null;
-    const rashiAtNextAmavasya = nextAmavasya
-      ? await this.getSunRashi(nextAmavasya)
-      : null;
-
-    // Step 2: Determine maas name.
-    // Krishna paksha (16-29) uses next Amavasya's Sun rashi.
-    // Shukla paksha (1-15) uses previous Amavasya's Sun rashi.
-    // Amavasya day (30) uses current day's Sun rashi directly — the Amavasya
-    // closes the current Purnimanta month, so its maas = same as surrounding
-    // Krishna paksha. Using prevAmavasya here gives the PREVIOUS month name.
-    const useNextAmavasya = tithiIdx > 15 && tithiIdx < 30;
-    const maasRashiIdx =
-      tithiIdx === 30
-        ? sunSignIdx
-        : useNextAmavasya
-          ? (rashiAtNextAmavasya ?? sunSignIdx)
-          : (rashiAtPrevAmavasya ?? sunSignIdx);
-    const maasIdx = (maasRashiIdx + 1) % 12;
-    const lunarMaasName = LUNAR_MASA_NAMES[maasIdx] ?? "Unknown";
-
-    // Calculate lunar day using Purnimanta system (tithi-based).
-    // Formula: Shukla tithi + 15, or Krishna tithi - 15.
-    const lunarDay = tithiIdx <= 15 ? tithiIdx + 15 : tithiIdx - 15;
-
-    // Step 3: Detect Adhika (intercalary) month.
-    // Same Sun rashi at both Amavasya boundaries = no Sankranti in this month.
-    const prevRashi = rashiAtPrevAmavasya;
-    const nextRashi = rashiAtNextAmavasya;
-    const isAdhika = prevRashi !== null && nextRashi !== null && prevRashi === nextRashi;
-
-    // -------------------------------------------------------------------------
-    // SAMVAT YEARS & SAMVATSARA NAMES (60-year cycle)
-    // -------------------------------------------------------------------------
-    // Vikrama Samvat begins at Nija Chaitra Shukla Pratipada (Hindu New Year).
-    // Phalguna (maasIdx 11) is the last lunar month; Adhika Chaitra does NOT
-    // trigger the year change — only Nija Chaitra does.
-    // This replaces the old month < 4 approximation which was wrong for late March.
-    const isNewYearOpen = maasIdx !== 11 && !(maasIdx === 0 && isAdhika);
-    const vikramaYear = gregorianYear + 57 - (isNewYearOpen ? 0 : 1);
-    const shakaYear = gregorianYear - 78 - (isNewYearOpen ? 0 : 1);
-
-    // Map to 60-year Samvatsara cycle using traditional offsets
-    // Reference: Drik Panchang verification (2082 Vikrama = Kalayukta, 1947 Shaka = Vishvavasu)
-    const VIKRAMA_SAMVATSARA_OFFSET = 9; // (year + 9) % 60 gives correct cycle position
-    const SHAKA_SAMVATSARA_OFFSET = 11; // (year + 11) % 60 gives correct cycle position
-
-    const vikramaSamvatsaraIdx = (vikramaYear + VIKRAMA_SAMVATSARA_OFFSET) % 60;
-    const shakaSamvatsaraIdx = (shakaYear + SHAKA_SAMVATSARA_OFFSET) % 60;
-
-    const vikramaSamvatsaraName = SAMVATSARA_NAMES[vikramaSamvatsaraIdx] ?? "Unknown";
-    const shakaSamvatsaraName = SAMVATSARA_NAMES[shakaSamvatsaraIdx] ?? "Unknown";
-
-    // Step 4: Detect Sankranti (solar transition) - reuse already-computed astro data
-    const sankrantiData = await this.detectSankranti(astro.sunriseJD, location.tz);
-
-    // Step 5: Detect exact moon phase event for this calendar day
-    const moonPhaseEvent = await this.detectMoonPhaseEvent(dateStr, location);
-
-    // -------------------------------------------------------------------------
-    // MULTIPLE TRANSITIONS - Check if elements end before next sunrise
-    // -------------------------------------------------------------------------
-    const nextSunriseJD = astro.sunriseJD + 1; // Approximate next sunrise
-
-    let nextTithi = undefined;
-    let nextNakshatra = undefined;
-    let nextYoga = undefined;
-    let nextKarana = undefined;
-
-    // If tithi ends before next sunrise, calculate next tithi
-    if (tithiEndJD && tithiEndJD < nextSunriseJD) {
-      const nextTithiIdx = (tithiIdx % 30) + 1;
-      const nextTithiName = TITHI_NAMES[nextTithiIdx - 1] ?? "Unknown";
-      const nextPaksha = nextTithiIdx <= 15 ? ("Shukla" as const) : ("Krishna" as const);
-
-      // Find next tithi end time
-      const nextTithiEndJD = await findEventEnd(
-        tithiEndJD,
-        async (jd) => {
-          const s = await swe_calc_ut(jd, swisseph.SE_SUN, flags);
-          const m = await swe_calc_ut(jd, swisseph.SE_MOON, flags);
-          return this.getTithiProgress(s.longitude, m.longitude);
-        },
-        nextTithiIdx % 30,
-        30
-      );
-
-      const nextTEnd = nextTithiEndJD
-        ? this.jdToLocal(nextTithiEndJD, location.tz)
-        : null;
-
-      nextTithi = {
-        number: nextTithiIdx,
-        name: nextTithiName,
-        paksha: nextPaksha,
-        endLocal: formatTime(nextTEnd),
-        endUtcIso: formatIso(nextTEnd),
-      };
-    }
-
-    // If nakshatra ends before next sunrise, calculate next nakshatra
-    if (nakEndJD && nakEndJD < nextSunriseJD) {
-      const nextNakIdx = (nakIdx % 27) + 1;
-      const nextNakName = NAKSHATRA_NAMES[nextNakIdx - 1] ?? "Unknown";
-
-      // Find next nakshatra end time
-      const nextNakEndJD = await findEventEnd(
-        nakEndJD,
-        async (jd) => {
-          const m = await swe_calc_ut(jd, swisseph.SE_MOON, flags);
-          return getNakshatraProgress(m.longitude);
-        },
-        nextNakIdx % 27,
-        27
-      );
-
-      const nextNEnd = nextNakEndJD ? this.jdToLocal(nextNakEndJD, location.tz) : null;
-
-      // Calculate pada for next nakshatra
-      const nextMoonPos = await swe_calc_ut(nakEndJD + 0.01, swisseph.SE_MOON, flags);
-      const nextPada = (Math.floor((nextMoonPos.longitude % (360 / 27)) / (360 / 108)) +
-        1) as 1 | 2 | 3 | 4;
-
-      nextNakshatra = {
-        number: nextNakIdx,
-        name: nextNakName,
-        pada: nextPada,
-        endLocal: formatTime(nextNEnd),
-        endUtcIso: formatIso(nextNEnd),
-      };
-    }
-
-    // If yoga ends before next sunrise, calculate next yoga
-    if (yogaEndJD && yogaEndJD < nextSunriseJD) {
-      const nextYogaIdx = (yogaIdx % 27) + 1;
-      const nextYogaName = YOGA_NAMES[nextYogaIdx - 1] ?? "Unknown";
-
-      const nextYogaEndJD = await findEventEnd(
-        yogaEndJD,
-        async (jd) => {
-          const s = await swe_calc_ut(jd, swisseph.SE_SUN, flags);
-          const m = await swe_calc_ut(jd, swisseph.SE_MOON, flags);
-          return getYogaProgress(s.longitude, m.longitude);
-        },
-        nextYogaIdx % 27,
-        27
-      );
-
-      const nextYEnd = nextYogaEndJD ? this.jdToLocal(nextYogaEndJD, location.tz) : null;
-
-      nextYoga = {
-        number: nextYogaIdx,
-        name: nextYogaName,
-        endLocal: formatTime(nextYEnd),
-        endUtcIso: formatIso(nextYEnd),
-      };
-    }
-
-    // If karana ends before next sunrise, calculate next karana
-    if (karanaEndJD && karanaEndJD < nextSunriseJD) {
-      const nextKaranaIdx = (karanaIdx % 60) + 1;
-
-      const nextKaranaEndJD = await findEventEnd(
-        karanaEndJD,
-        async (jd) => {
-          const s = await swe_calc_ut(jd, swisseph.SE_SUN, flags);
-          const m = await swe_calc_ut(jd, swisseph.SE_MOON, flags);
-          const tp = this.getTithiProgress(s.longitude, m.longitude);
-          return getKaranaProgress(tp);
-        },
-        nextKaranaIdx % 60,
-        60
-      );
-
-      const nextKEnd = nextKaranaEndJD
-        ? this.jdToLocal(nextKaranaEndJD, location.tz)
-        : null;
-
-      nextKarana = {
-        number: nextKaranaIdx,
-        name: resolveKaranaName(nextKaranaIdx),
-        type: (nextKaranaIdx >= 2 && nextKaranaIdx <= 57 ? "Movable" : "Fixed") as
-          | "Movable"
-          | "Fixed",
-        endLocal: formatTime(nextKEnd),
-        endUtcIso: formatIso(nextKEnd),
-      };
-    }
-
-    // ==========================================================================
-    // STEP 7: Return Complete Panchanga Data
-    // ==========================================================================
 
     return {
       date: dateStr,
@@ -562,55 +174,48 @@ export class PanchangaSwissService {
         number: tithiIdx,
         name: tithiName,
         paksha: paksha,
-        endLocal: formatTime(tEnd),
-        endUtcIso: formatIso(tEnd),
+        endLocal: this.formatTime(tEnd),
+        endUtcIso: this.formatIso(tEnd),
       },
 
       nakshatra: {
         number: nakIdx,
         name: nakName,
         pada: pada,
-        endLocal: formatTime(nEnd),
-        endUtcIso: formatIso(nEnd),
+        endLocal: this.formatTime(nEnd),
+        endUtcIso: this.formatIso(nEnd),
       },
 
       yoga: {
         number: yogaIdx,
         name: yogaName,
-        endLocal: formatTime(yEnd),
-        endUtcIso: formatIso(yEnd),
+        endLocal: this.formatTime(yEnd),
+        endUtcIso: this.formatIso(yEnd),
       },
 
       karana: {
         number: karanaIdx,
         name: kName,
         type: karanaIdx >= 2 && karanaIdx <= 57 ? "Movable" : "Fixed",
-        endLocal: formatTime(kEnd),
-        endUtcIso: formatIso(kEnd),
+        endLocal: this.formatTime(kEnd),
+        endUtcIso: this.formatIso(kEnd),
       },
 
       moon: {
-        illuminationPct: illumination,
-        phaseAngleDeg: phaseAngle,
-        waxing: waxing,
+        illuminationPct: moonPhase.illumination,
+        phaseAngleDeg: moonPhase.phaseAngle,
+        waxing: moonPhase.waxing,
       },
 
-      rahuKalam: {
-        startLocal: rahuStart.toFormat("HH:mm"),
-        endLocal: rahuEnd.toFormat("HH:mm"),
-      },
-      yamagandam: {
-        startLocal: yamaStart.toFormat("HH:mm"),
-        endLocal: yamaEnd.toFormat("HH:mm"),
-      },
+      rahuKalam,
+      yamagandam,
 
-      // Drik Panchang Extended Fields
       maas: {
-        name: lunarMaasName,
+        name: maasData.lunarMaasName,
         type: "Purnimanta",
-        lunarDay: lunarDay,
+        lunarDay: maasData.lunarDay,
         paksha: paksha,
-        isAdhika: isAdhika,
+        isAdhika: maasData.isAdhika,
       },
 
       sankranti: sankrantiData
@@ -623,44 +228,44 @@ export class PanchangaSwissService {
       moonPhaseEvent: moonPhaseEvent ?? null,
 
       vikramaSamvat: {
-        year: vikramaYear,
-        name: vikramaSamvatsaraName,
+        year: samvatData.vikramaYear,
+        name: samvatData.vikramaSamvatsaraName,
       },
 
       samvatsara: {
-        name: vikramaSamvatsaraName,
-        number: vikramaSamvatsaraIdx + 1, // 1-60
+        name: samvatData.vikramaSamvatsaraName,
+        number: samvatData.vikramaSamvatsaraIdx + 1, // 1-60
       },
 
       shakaSamvat: {
-        year: shakaYear,
-        name: shakaSamvatsaraName,
+        year: samvatData.shakaYear,
+        name: samvatData.shakaSamvatsaraName,
       },
 
       sunSign: {
-        number: sunSignIdx + 1, // 1-12
-        name: sunSignName,
-        uptoLocal: formatTime(sunSignEnd),
-        uptoUtcIso: formatIso(sunSignEnd),
+        number: rashiData.sunSignIdx + 1, // 1-12
+        name: rashiData.sunSignName,
+        uptoLocal: this.formatTime(rashiData.sunSignEnd),
+        uptoUtcIso: this.formatIso(rashiData.sunSignEnd),
       },
 
       moonSign: {
-        number: moonSignIdx + 1, // 1-12
-        name: moonSignName,
-        uptoLocal: formatTime(moonSignEnd),
-        uptoUtcIso: formatIso(moonSignEnd),
+        number: rashiData.moonSignIdx + 1, // 1-12
+        name: rashiData.moonSignName,
+        uptoLocal: this.formatTime(rashiData.moonSignEnd),
+        uptoUtcIso: this.formatIso(rashiData.moonSignEnd),
       },
 
       pravishte: {
-        daysSinceSankranti: daysSinceSankranti,
-        currentRashi: sunSignName,
-        lastSankrantiDate: lastSankrantiDate.toFormat("yyyy-MM-dd"),
+        daysSinceSankranti: pravishteData.daysSinceSankranti,
+        currentRashi: rashiData.sunSignName,
+        lastSankrantiDate: pravishteData.lastSankrantiDate.toFormat("yyyy-MM-dd"),
       },
 
-      nextTithi: nextTithi,
-      nextNakshatra: nextNakshatra,
-      nextYoga: nextYoga,
-      nextKarana: nextKarana,
+      nextTithi,
+      nextNakshatra,
+      nextYoga,
+      nextKarana,
 
       meta: {
         engine: "swisseph-core",
@@ -669,6 +274,454 @@ export class PanchangaSwissService {
       },
     };
   }
+
+  // ==========================================================================
+  // UTILITY HELPERS
+  // ==========================================================================
+
+  private norm360(x: number): number {
+    return ((x % 360) + 360) % 360;
+  }
+
+  private formatTime(dt: DateTime | null): string | undefined {
+    return dt ? dt.toFormat("HH:mm:ss") : undefined;
+  }
+
+  private formatIso(dt: DateTime | null): string | undefined {
+    return dt ? (dt.toUTC().toISO() ?? undefined) : undefined;
+  }
+
+  // ==========================================================================
+  // POSITION & INDEX CALCULATIONS
+  // ==========================================================================
+
+  private async computePositionsAtSunrise(sunriseJD: number, flags: number) {
+    const sunPos = await swe_calc_ut(sunriseJD, swisseph.SE_SUN, flags);
+    const moonPos = await swe_calc_ut(sunriseJD, swisseph.SE_MOON, flags);
+    return { sunPos, moonPos };
+  }
+
+  private computeAngaIndices(
+    sunPos: { longitude: number },
+    moonPos: { longitude: number }
+  ) {
+    const tithiProg = this.getTithiProgress(sunPos.longitude, moonPos.longitude);
+    const nakProg = this.norm360(moonPos.longitude) / (360 / 27);
+    const yogaProg = this.norm360(sunPos.longitude + moonPos.longitude) / (360 / 27);
+    const karanaProg = tithiProg * 2;
+    return {
+      tithiProg,
+      nakProg,
+      yogaProg,
+      karanaProg,
+      tithiIdx: Math.floor(tithiProg) + 1,
+      nakIdx: Math.floor(nakProg) + 1,
+      yogaIdx: Math.floor(yogaProg) + 1,
+      karanaIdx: Math.floor(karanaProg) + 1,
+    };
+  }
+
+  // ==========================================================================
+  // END TIME CALCULATIONS
+  // ==========================================================================
+
+  private async computeAngaEndTimes(
+    sunriseJD: number,
+    flags: number,
+    indices: { tithiIdx: number; nakIdx: number; yogaIdx: number; karanaIdx: number }
+  ) {
+    const { tithiIdx, nakIdx, yogaIdx, karanaIdx } = indices;
+
+    const tithiEndJD = await findEventEnd(
+      sunriseJD,
+      async (jd) => {
+        const s = await swe_calc_ut(jd, swisseph.SE_SUN, flags);
+        const m = await swe_calc_ut(jd, swisseph.SE_MOON, flags);
+        return this.getTithiProgress(s.longitude, m.longitude);
+      },
+      tithiIdx % 30,
+      30
+    );
+
+    const nakEndJD = await findEventEnd(
+      sunriseJD,
+      async (jd) => {
+        const m = await swe_calc_ut(jd, swisseph.SE_MOON, flags);
+        return this.norm360(m.longitude) / (360 / 27);
+      },
+      nakIdx % 27,
+      27
+    );
+
+    const yogaEndJD = await findEventEnd(
+      sunriseJD,
+      async (jd) => {
+        const s = await swe_calc_ut(jd, swisseph.SE_SUN, flags);
+        const m = await swe_calc_ut(jd, swisseph.SE_MOON, flags);
+        return this.norm360(s.longitude + m.longitude) / (360 / 27);
+      },
+      yogaIdx % 27,
+      27
+    );
+
+    const karanaEndJD = await findEventEnd(
+      sunriseJD,
+      async (jd) => {
+        const s = await swe_calc_ut(jd, swisseph.SE_SUN, flags);
+        const m = await swe_calc_ut(jd, swisseph.SE_MOON, flags);
+        return this.getTithiProgress(s.longitude, m.longitude) * 2;
+      },
+      karanaIdx % 60,
+      60
+    );
+
+    return { tithiEndJD, nakEndJD, yogaEndJD, karanaEndJD };
+  }
+
+  // ==========================================================================
+  // MOON ILLUMINATION
+  // ==========================================================================
+
+  private async computeMoonIllumination(
+    sunriseJD: number,
+    flags: number,
+    sunPos: { longitude: number },
+    moonPos: { longitude: number }
+  ) {
+    const pheno = await swe_pheno_ut(sunriseJD, swisseph.SE_MOON, flags);
+    const illumination = pheno.phaseIllum * 100;
+    let elongation = moonPos.longitude - sunPos.longitude;
+    if (elongation < 0) elongation += 360;
+    const waxing = elongation < 180;
+    return { illumination, waxing, phaseAngle: pheno.phaseAngle };
+  }
+
+  // ==========================================================================
+  // INAUSPICIOUS TIMES
+  // ==========================================================================
+
+  private computeInauspiciousTimes(
+    sunriseTime: DateTime,
+    sunsetTime: DateTime,
+    varaIdx: number
+  ) {
+    const dayDurationMin = sunsetTime.diff(sunriseTime, "minutes").minutes;
+    const octet = dayDurationMin / 8;
+
+    // Rahu Kalam octets (Sunday=0, Monday=1, ..., Saturday=6)
+    const rahuOctets = [7, 1, 6, 4, 5, 3, 2];
+    const yamaOctets = [4, 3, 2, 1, 0, 6, 5];
+
+    const rStartMin = rahuOctets[varaIdx]! * octet;
+    const yStartMin = yamaOctets[varaIdx]! * octet;
+
+    const rahuStart = sunriseTime.plus({ minutes: rStartMin });
+    const rahuEnd = sunriseTime.plus({ minutes: rStartMin + octet });
+    const yamaStart = sunriseTime.plus({ minutes: yStartMin });
+    const yamaEnd = sunriseTime.plus({ minutes: yStartMin + octet });
+
+    return {
+      rahuKalam: {
+        startLocal: rahuStart.toFormat("HH:mm"),
+        endLocal: rahuEnd.toFormat("HH:mm"),
+      },
+      yamagandam: {
+        startLocal: yamaStart.toFormat("HH:mm"),
+        endLocal: yamaEnd.toFormat("HH:mm"),
+      },
+    };
+  }
+
+  // ==========================================================================
+  // RASHI TRANSITIONS
+  // ==========================================================================
+
+  private async computeRashiTransitions(
+    sunriseJD: number,
+    flags: number,
+    sunPos: { longitude: number },
+    moonPos: { longitude: number },
+    tz: string
+  ) {
+    const sunSignIdx = Math.floor(sunPos.longitude / 30);
+    const moonSignIdx = Math.floor(moonPos.longitude / 30);
+
+    // Use norm360 for wrap-safe boundary calculation (359° → 0°)
+    const nextSunSignBoundary = this.norm360((sunSignIdx + 1) * 30);
+    const nextMoonSignBoundary = this.norm360((moonSignIdx + 1) * 30);
+
+    // Sun stays in one sign ~30 days, scan 35
+    const sunSignEndJD = await findEventEnd(
+      sunriseJD,
+      async (jd) => {
+        const s = await swe_calc_ut(jd, swisseph.SE_SUN, flags);
+        return this.norm360(s.longitude);
+      },
+      nextSunSignBoundary,
+      360,
+      35
+    );
+
+    // Moon changes sign every ~2.5 days, scan 3
+    const moonSignEndJD = await findEventEnd(
+      sunriseJD,
+      async (jd) => {
+        const m = await swe_calc_ut(jd, swisseph.SE_MOON, flags);
+        return this.norm360(m.longitude);
+      },
+      nextMoonSignBoundary,
+      360,
+      3
+    );
+
+    const sunSignEnd = sunSignEndJD ? this.jdToLocal(sunSignEndJD, tz) : null;
+    const moonSignEnd = moonSignEndJD ? this.jdToLocal(moonSignEndJD, tz) : null;
+
+    return {
+      sunSignIdx,
+      moonSignIdx,
+      sunSignName: RASHI_NAMES[sunSignIdx] ?? "Unknown",
+      moonSignName: RASHI_NAMES[moonSignIdx] ?? "Unknown",
+      sunSignEnd,
+      moonSignEnd,
+    };
+  }
+
+  // ==========================================================================
+  // PRAVISHTE (days since Sankranti)
+  // ==========================================================================
+
+  private async computePravishte(
+    sunriseJD: number,
+    flags: number,
+    sunSignIdx: number,
+    sunriseTime: DateTime,
+    tz: string
+  ) {
+    let lastSankrantiJD = sunriseJD;
+
+    // Search up to 35 days back (max time in one sign)
+    for (let i = 0; i < 35; i++) {
+      const testJD = sunriseJD - i;
+      const testSunPos = await swe_calc_ut(testJD, swisseph.SE_SUN, flags);
+      const testSignIdx = Math.floor(this.norm360(testSunPos.longitude) / 30);
+
+      if (testSignIdx !== sunSignIdx) {
+        // Found the boundary — refine with binary search (~8.64 seconds precision)
+        let low = testJD;
+        let high = testJD + 1;
+
+        while (high - low > 0.0001) {
+          const mid = (low + high) / 2;
+          const midSunPos = await swe_calc_ut(mid, swisseph.SE_SUN, flags);
+          const midLon = this.norm360(midSunPos.longitude);
+
+          if (Math.floor(midLon / 30) === sunSignIdx) {
+            high = mid;
+          } else {
+            low = mid;
+          }
+        }
+
+        lastSankrantiJD = high;
+        break;
+      }
+    }
+
+    const lastSankrantiDate = this.jdToLocal(lastSankrantiJD, tz);
+    // Pravishte counts inclusively (Sankranti day = day 1, not day 0)
+    const daysSinceSankranti =
+      Math.floor(sunriseTime.diff(lastSankrantiDate, "days").days) + 1;
+
+    return { daysSinceSankranti, lastSankrantiDate };
+  }
+
+  // ==========================================================================
+  // MAAS (Lunar Month)
+  // ==========================================================================
+
+  private async computeMaasData(sunriseJD: number, tithiIdx: number, sunSignIdx: number) {
+    // Purnimanta system — see inline comment in original computeDaily for full rule.
+    const prevAmavasya = await this.findNearestAmavasya(sunriseJD, "backward");
+    const nextAmavasya = await this.findNearestAmavasya(sunriseJD, "forward");
+
+    const rashiAtPrevAmavasya = prevAmavasya
+      ? await this.getSunRashi(prevAmavasya)
+      : null;
+    const rashiAtNextAmavasya = nextAmavasya
+      ? await this.getSunRashi(nextAmavasya)
+      : null;
+
+    // Krishna paksha (16-29) uses next Amavasya's Sun rashi.
+    // Shukla paksha (1-15) and Amavasya (30) use previous / current.
+    const useNextAmavasya = tithiIdx > 15 && tithiIdx < 30;
+    const maasRashiIdx =
+      tithiIdx === 30
+        ? sunSignIdx
+        : useNextAmavasya
+          ? (rashiAtNextAmavasya ?? sunSignIdx)
+          : (rashiAtPrevAmavasya ?? sunSignIdx);
+
+    const maasIdx = (maasRashiIdx + 1) % 12;
+    const lunarMaasName = LUNAR_MASA_NAMES[maasIdx] ?? "Unknown";
+    const lunarDay = tithiIdx <= 15 ? tithiIdx + 15 : tithiIdx - 15;
+    const isAdhika =
+      rashiAtPrevAmavasya !== null &&
+      rashiAtNextAmavasya !== null &&
+      rashiAtPrevAmavasya === rashiAtNextAmavasya;
+
+    return { maasIdx, lunarMaasName, lunarDay, isAdhika };
+  }
+
+  // ==========================================================================
+  // SAMVAT YEARS & SAMVATSARA
+  // ==========================================================================
+
+  private computeSamvatData(gregorianYear: number, maasIdx: number, isAdhika: boolean) {
+    // Vikrama Samvat begins at Nija Chaitra Shukla Pratipada.
+    // Adhika Chaitra does NOT trigger the year change — only Nija Chaitra does.
+    const isNewYearOpen = maasIdx !== 11 && !(maasIdx === 0 && isAdhika);
+    const vikramaYear = gregorianYear + 57 - (isNewYearOpen ? 0 : 1);
+    const shakaYear = gregorianYear - 78 - (isNewYearOpen ? 0 : 1);
+
+    // Reference: Drik Panchang verification (2082 Vikrama = Kalayukta, 1947 Shaka = Vishvavasu)
+    const VIKRAMA_SAMVATSARA_OFFSET = 9;
+    const SHAKA_SAMVATSARA_OFFSET = 11;
+
+    const vikramaSamvatsaraIdx = (vikramaYear + VIKRAMA_SAMVATSARA_OFFSET) % 60;
+    const shakaSamvatsaraIdx = (shakaYear + SHAKA_SAMVATSARA_OFFSET) % 60;
+
+    return {
+      vikramaYear,
+      shakaYear,
+      vikramaSamvatsaraIdx,
+      shakaSamvatsaraIdx,
+      vikramaSamvatsaraName: SAMVATSARA_NAMES[vikramaSamvatsaraIdx] ?? "Unknown",
+      shakaSamvatsaraName: SAMVATSARA_NAMES[shakaSamvatsaraIdx] ?? "Unknown",
+    };
+  }
+
+  // ==========================================================================
+  // NEXT ELEMENT TRANSITIONS
+  // ==========================================================================
+
+  private async computeNextElements(
+    endJDs: {
+      tithiEndJD: number | null;
+      nakEndJD: number | null;
+      yogaEndJD: number | null;
+      karanaEndJD: number | null;
+    },
+    nextSunriseJD: number,
+    indices: { tithiIdx: number; nakIdx: number; yogaIdx: number; karanaIdx: number },
+    flags: number,
+    tz: string
+  ) {
+    const { tithiEndJD, nakEndJD, yogaEndJD, karanaEndJD } = endJDs;
+    const { tithiIdx, nakIdx, yogaIdx, karanaIdx } = indices;
+
+    let nextTithi = undefined;
+    let nextNakshatra = undefined;
+    let nextYoga = undefined;
+    let nextKarana = undefined;
+
+    if (tithiEndJD && tithiEndJD < nextSunriseJD) {
+      const nextTithiIdx = (tithiIdx % 30) + 1;
+      const nextTithiEndJD = await findEventEnd(
+        tithiEndJD,
+        async (jd) => {
+          const s = await swe_calc_ut(jd, swisseph.SE_SUN, flags);
+          const m = await swe_calc_ut(jd, swisseph.SE_MOON, flags);
+          return this.getTithiProgress(s.longitude, m.longitude);
+        },
+        nextTithiIdx % 30,
+        30
+      );
+      const nextTEnd = nextTithiEndJD ? this.jdToLocal(nextTithiEndJD, tz) : null;
+      nextTithi = {
+        number: nextTithiIdx,
+        name: TITHI_NAMES[nextTithiIdx - 1] ?? "Unknown",
+        paksha: nextTithiIdx <= 15 ? ("Shukla" as const) : ("Krishna" as const),
+        endLocal: this.formatTime(nextTEnd),
+        endUtcIso: this.formatIso(nextTEnd),
+      };
+    }
+
+    if (nakEndJD && nakEndJD < nextSunriseJD) {
+      const nextNakIdx = (nakIdx % 27) + 1;
+      const nextNakEndJD = await findEventEnd(
+        nakEndJD,
+        async (jd) => {
+          const m = await swe_calc_ut(jd, swisseph.SE_MOON, flags);
+          return this.norm360(m.longitude) / (360 / 27);
+        },
+        nextNakIdx % 27,
+        27
+      );
+      const nextNEnd = nextNakEndJD ? this.jdToLocal(nextNakEndJD, tz) : null;
+      const nextMoonPos = await swe_calc_ut(nakEndJD + 0.01, swisseph.SE_MOON, flags);
+      const nextPada = (Math.floor((nextMoonPos.longitude % (360 / 27)) / (360 / 108)) +
+        1) as 1 | 2 | 3 | 4;
+      nextNakshatra = {
+        number: nextNakIdx,
+        name: NAKSHATRA_NAMES[nextNakIdx - 1] ?? "Unknown",
+        pada: nextPada,
+        endLocal: this.formatTime(nextNEnd),
+        endUtcIso: this.formatIso(nextNEnd),
+      };
+    }
+
+    if (yogaEndJD && yogaEndJD < nextSunriseJD) {
+      const nextYogaIdx = (yogaIdx % 27) + 1;
+      const nextYogaEndJD = await findEventEnd(
+        yogaEndJD,
+        async (jd) => {
+          const s = await swe_calc_ut(jd, swisseph.SE_SUN, flags);
+          const m = await swe_calc_ut(jd, swisseph.SE_MOON, flags);
+          return this.norm360(s.longitude + m.longitude) / (360 / 27);
+        },
+        nextYogaIdx % 27,
+        27
+      );
+      const nextYEnd = nextYogaEndJD ? this.jdToLocal(nextYogaEndJD, tz) : null;
+      nextYoga = {
+        number: nextYogaIdx,
+        name: YOGA_NAMES[nextYogaIdx - 1] ?? "Unknown",
+        endLocal: this.formatTime(nextYEnd),
+        endUtcIso: this.formatIso(nextYEnd),
+      };
+    }
+
+    if (karanaEndJD && karanaEndJD < nextSunriseJD) {
+      const nextKaranaIdx = (karanaIdx % 60) + 1;
+      const nextKaranaEndJD = await findEventEnd(
+        karanaEndJD,
+        async (jd) => {
+          const s = await swe_calc_ut(jd, swisseph.SE_SUN, flags);
+          const m = await swe_calc_ut(jd, swisseph.SE_MOON, flags);
+          return this.getTithiProgress(s.longitude, m.longitude) * 2;
+        },
+        nextKaranaIdx % 60,
+        60
+      );
+      const nextKEnd = nextKaranaEndJD ? this.jdToLocal(nextKaranaEndJD, tz) : null;
+      nextKarana = {
+        number: nextKaranaIdx,
+        name: resolveKaranaName(nextKaranaIdx),
+        type: (nextKaranaIdx >= 2 && nextKaranaIdx <= 57 ? "Movable" : "Fixed") as
+          | "Movable"
+          | "Fixed",
+        endLocal: this.formatTime(nextKEnd),
+        endUtcIso: this.formatIso(nextKEnd),
+      };
+    }
+
+    return { nextTithi, nextNakshatra, nextYoga, nextKarana };
+  }
+
+  // ==========================================================================
+  // EXISTING PRIVATE METHODS (unchanged)
+  // ==========================================================================
 
   private jdToLocal(jd: number, tz: string): DateTime {
     const dateUTC = swisseph.swe_revjul(jd, swisseph.SE_GREG_CAL as 0 | 1);
