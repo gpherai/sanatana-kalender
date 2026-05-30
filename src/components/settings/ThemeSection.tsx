@@ -200,7 +200,8 @@ export function ThemeSection({
             <div className="mb-4 flex items-center gap-2">
               <div className="bg-theme-border h-px flex-1" />
               <h3 className="text-theme-fg-muted flex items-center gap-1.5 text-sm font-semibold tracking-wider uppercase">
-                <span className="text-base">✨</span> Vernieuwde thema&apos;s
+                <span className="text-base">✨</span>
+                <span>Vernieuwde thema&apos;s</span>
               </h3>
               <div className="bg-theme-border h-px flex-1" />
             </div>
