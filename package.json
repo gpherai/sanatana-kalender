@@ -32,7 +32,6 @@
     "check:events": "tsx --tsconfig tsconfig.scripts.json src/scripts/check-event-references.ts",
     "backup": "bash scripts/backup.sh",
     "backup:db": "docker compose --profile backup run --rm backup",
-    "backup:windows": "powershell -ExecutionPolicy Bypass -File scripts/backup.ps1",
     "deploy:prod": "bash scripts/deploy-prod.sh",
     "deploy:prod:pull": "bash scripts/deploy-prod.sh --pull",
     "db:pull-prod": "bash scripts/db-pull-prod.sh",
