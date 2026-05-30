@@ -4,8 +4,12 @@ import { Tithi } from "@prisma/client";
 import {
   findDailyInfoSunTimesByDates,
   findDailyInfoPreviousDayTimingRows,
+  findDailyInfoSunriseByDates,
+  findDailyInfoTithiByDates,
   type DailyInfoAdhikaFilter,
 } from "@/repositories/daily-info.repository";
+import { applyRatriVyapiniDateRule } from "@/engine";
+import type { PrevDayInfo } from "@/engine";
 import { logWarn } from "@/lib/utils";
 import { formatDateNL } from "@/lib/date-utils";
 import { calculateTimingWindow } from "@/lib/timing-utils";
@@ -118,6 +122,56 @@ export async function applyDynamicTiming(
     }
 
     return { ...occ, startTime: window.startTime, endTime: window.endTime };
+  });
+}
+
+// =============================================================================
+// RATRI VYAPINI WINDOWS
+// =============================================================================
+
+export async function applyRatriVyapiniToWindows<
+  T extends { date: Date; tithiEndTime: string | null },
+>(
+  windows: Array<{ firstDay: T; lastDay: T }>,
+  prevDayMap: Map<string, PrevDayInfo>,
+  tithi: Tithi
+): Promise<GeneratedOccurrence[]> {
+  const firstDayDates = windows.map((w) => w.firstDay.date);
+  const prevDayDates = firstDayDates.map((d) => {
+    const prev = new Date(d);
+    prev.setUTCDate(prev.getUTCDate() - 1);
+    return prev;
+  });
+
+  const [sunriseRows, prevTithiRows] = await Promise.all([
+    findDailyInfoSunriseByDates(firstDayDates),
+    findDailyInfoTithiByDates(prevDayDates),
+  ]);
+
+  const firstDaySunriseMap = new Map(
+    sunriseRows.map((r) => [r.date.toISOString().split("T")[0]!, r.sunrise])
+  );
+  const prevTithiMap = new Map(
+    prevTithiRows.map((r) => [r.date.toISOString().split("T")[0]!, r.tithi as string])
+  );
+  const expectedPredecessor = TITHI_PREDECESSOR[tithi];
+
+  return windows.map(({ firstDay, lastDay }) => {
+    const key = firstDay.date.toISOString().split("T")[0]!;
+    const prevDate = new Date(firstDay.date);
+    prevDate.setUTCDate(prevDate.getUTCDate() - 1);
+    const prevKey = prevDate.toISOString().split("T")[0]!;
+    const prevTithi = prevTithiMap.get(prevKey);
+    const hasKshayaPredecessor =
+      expectedPredecessor !== undefined &&
+      prevTithi !== undefined &&
+      prevTithi !== expectedPredecessor;
+    return applyRatriVyapiniDateRule(
+      firstDay,
+      lastDay,
+      hasKshayaPredecessor ? undefined : prevDayMap.get(key),
+      firstDaySunriseMap.get(key) ?? null
+    );
   });
 }
 

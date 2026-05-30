@@ -7,7 +7,6 @@ import {
   findDailyInfoKshayaCandidates,
   findDailyInfoSunriseByDates,
   findDailyInfoTithiTimingCandidates,
-  findDailyInfoTithiByDates,
 } from "@/repositories/daily-info.repository";
 import {
   computeTithiOccurrence,
@@ -16,11 +15,15 @@ import {
   isNishitakalDateShiftNeeded,
   isSankashtiPradoshShiftNeeded,
   selectFirstWindowPerLunarCycle,
-  applyRatriVyapiniDateRule,
 } from "@/engine";
 import { parseTimeToMinutes, formatMinutesToTime } from "@/lib/timing-utils";
 import { logWarn } from "@/lib/utils";
-import { TITHI_PREDECESSOR, getAdhikaFilter, fetchPreviousDayData } from "./helpers";
+import {
+  TITHI_PREDECESSOR,
+  getAdhikaFilter,
+  fetchPreviousDayData,
+  applyRatriVyapiniToWindows,
+} from "./helpers";
 import type { GeneratedOccurrence } from "./types";
 
 // =============================================================================
@@ -163,41 +166,10 @@ export async function generateYearlyLunarOccurrences(
 
   const isRatriVyapini = config.dateRule === "RATRI_VYAPINI";
   if (isRatriVyapini) {
-    const firstDayDates = finalWindows.map((w) => w.firstDay.date);
-    const prevDayDates = firstDayDates.map((d) => {
-      const prev = new Date(d);
-      prev.setUTCDate(prev.getUTCDate() - 1);
-      return prev;
-    });
-    const [prevDayMapRV, sunriseRows, prevTithiRows] = await Promise.all([
-      fetchPreviousDayData(firstDayDates),
-      findDailyInfoSunriseByDates(firstDayDates),
-      findDailyInfoTithiByDates(prevDayDates),
-    ]);
-    const firstDaySunriseMap = new Map(
-      sunriseRows.map((r) => [r.date.toISOString().split("T")[0]!, r.sunrise])
+    const prevDayMapRV = await fetchPreviousDayData(
+      finalWindows.map((w) => w.firstDay.date)
     );
-    const prevTithiMap = new Map(
-      prevTithiRows.map((r) => [r.date.toISOString().split("T")[0]!, r.tithi as string])
-    );
-    const expectedPredecessor = TITHI_PREDECESSOR[event.tithi];
-    return finalWindows.map(({ firstDay, lastDay }) => {
-      const key = firstDay.date.toISOString().split("T")[0]!;
-      const prevDate = new Date(firstDay.date);
-      prevDate.setUTCDate(prevDate.getUTCDate() - 1);
-      const prevKey = prevDate.toISOString().split("T")[0]!;
-      const prevTithi = prevTithiMap.get(prevKey);
-      const hasKshayaPredecessor =
-        expectedPredecessor !== undefined &&
-        prevTithi !== undefined &&
-        prevTithi !== expectedPredecessor;
-      return applyRatriVyapiniDateRule(
-        firstDay,
-        lastDay,
-        hasKshayaPredecessor ? undefined : prevDayMapRV.get(key),
-        firstDaySunriseMap.get(key) ?? null
-      );
-    });
+    return applyRatriVyapiniToWindows(finalWindows, prevDayMapRV, event.tithi);
   }
 
   const nishitakalDateRule = config.nishitakalDateRule === true;
@@ -346,47 +318,11 @@ export async function generateMonthlyLunarOccurrences(
       return { date: firstDay.date };
     });
   } else if (isRatriVyapini) {
-    const firstDayDates = windows.map((w) => w.firstDay.date);
-
-    const prevDayDates = windows.map((w) => {
-      const d = new Date(w.firstDay.date);
-      d.setUTCDate(d.getUTCDate() - 1);
-      return d;
-    });
-
-    const [sunriseRows, prevTithiRows] = await Promise.all([
-      findDailyInfoSunriseByDates(firstDayDates),
-      findDailyInfoTithiByDates(prevDayDates),
-    ]);
-
-    const firstDaySunriseMap = new Map(
-      sunriseRows.map((r) => [r.date.toISOString().split("T")[0]!, r.sunrise])
+    occurrences = await applyRatriVyapiniToWindows(
+      windows,
+      prevDayMap,
+      event.tithi as Tithi
     );
-    const prevTithiMap = new Map(
-      prevTithiRows.map((r) => [r.date.toISOString().split("T")[0]!, r.tithi as string])
-    );
-
-    const expectedPredecessor = TITHI_PREDECESSOR[event.tithi as Tithi];
-
-    occurrences = windows.map(({ firstDay, lastDay }) => {
-      const key = firstDay.date.toISOString().split("T")[0]!;
-      const prevDate = new Date(firstDay.date);
-      prevDate.setUTCDate(prevDate.getUTCDate() - 1);
-      const prevKey = prevDate.toISOString().split("T")[0]!;
-      const prevTithi = prevTithiMap.get(prevKey);
-
-      const hasKshayaPredecessor =
-        expectedPredecessor !== undefined &&
-        prevTithi !== undefined &&
-        prevTithi !== expectedPredecessor;
-
-      return applyRatriVyapiniDateRule(
-        firstDay,
-        lastDay,
-        hasKshayaPredecessor ? undefined : prevDayMap.get(key),
-        firstDaySunriseMap.get(key) ?? null
-      );
-    });
   } else {
     occurrences = windows.map(({ firstDay, lastDay }) =>
       computeTithiOccurrence(firstDay, lastDay, prevDayMap)
