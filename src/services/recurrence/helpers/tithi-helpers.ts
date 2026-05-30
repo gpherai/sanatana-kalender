@@ -12,7 +12,7 @@ import {
   formatMinutesToTime,
   calculateNishitaKaal,
 } from "@/lib/timing-utils";
-import type { GeneratedOccurrence, PrevDayInfo } from "./types";
+import type { GeneratedOccurrence, PrevDayInfo } from "@/engine/types";
 
 // ---------------------------------------------------------------------------
 // Date helpers

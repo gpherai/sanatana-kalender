@@ -7,7 +7,7 @@ import {
   isNishitakalDateShiftNeeded,
   computeTithiOccurrence,
   applyRatriVyapiniDateRule,
-} from "../tithi-helpers";
+} from "@/services/recurrence/helpers/tithi-helpers";
 import type { PrevDayInfo } from "../types";
 
 describe("tithi-helpers", () => {

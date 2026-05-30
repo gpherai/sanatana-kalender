@@ -18,4 +18,4 @@ export {
   isSankashtiPradoshShiftNeeded,
   computeTithiOccurrence,
   applyRatriVyapiniDateRule,
-} from "./tithi-helpers";
+} from "@/services/recurrence/helpers/tithi-helpers";
