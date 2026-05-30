@@ -435,22 +435,25 @@ describe("PanchangaSwissService", () => {
       getTithiProgressSpy.mockRestore();
     });
 
-    it("returns amavasya JD if found in correct direction", async () => {
+    it("returns conjunction JD if found in correct direction", async () => {
       const service = new PanchangaSwissService();
       vi.spyOn(service as any, "getTithiProgress").mockReturnValue(29.5); // Near Amavasya
-      findEventEnd.mockResolvedValueOnce(105); // Found at 105
+      findEventEnd.mockResolvedValueOnce(104); // Phase 1: Amavasya start at 104
+      findEventEnd.mockResolvedValueOnce(105); // Phase 2: actual conjunction at 105
 
       const result = await (service as any).findNearestAmavasya(100, "forward");
       expect(result).toBe(105);
     });
 
-    it("returns null if amavasya is in wrong direction", async () => {
+    it("returns null if conjunction is in wrong direction", async () => {
       const service = new PanchangaSwissService();
       vi.spyOn(service as any, "getTithiProgress").mockReturnValue(29.5);
-      findEventEnd.mockResolvedValueOnce(95); // Found at 95 (backward)
+      // All findEventEnd calls return values behind fromJD (100)
+      findEventEnd.mockResolvedValue(95);
 
       const result = await (service as any).findNearestAmavasya(100, "forward");
       expect(result).toBeNull();
+      findEventEnd.mockReset();
     });
   });
 });

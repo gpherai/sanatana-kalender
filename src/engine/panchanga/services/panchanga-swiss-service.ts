@@ -734,29 +734,40 @@ export class PanchangaSwissService {
       const tithiAtDay =
         Math.floor(this.getTithiProgress(sunAtDay.longitude, moonAtDay.longitude)) + 1;
 
-      // If we're near Amavasya (tithi 28-30 or 1-2), find exact transition
+      // If we're near Amavasya (tithi 28-30 or 1-2), find exact conjunction
       if (tithiAtDay >= 28 || tithiAtDay <= 2) {
-        // Find exact moment when elongation reaches 0° (Amavasya)
-        // This is when tithi 29 ends = Amavasya begins (tithi 30)
-        const amavasya = await findEventEnd(
-          searchDayJD - 1, // Start 1 day before to ensure we bracket it
-          async (jd) => {
-            const s = await swe_calc_ut(jd, swisseph.SE_SUN, flags);
-            const m = await swe_calc_ut(jd, swisseph.SE_MOON, flags);
-            return this.getTithiProgress(s.longitude, m.longitude);
-          },
-          29, // Target: end of tithi 29 (= Amavasya begins)
-          30 // Wrap at 30
+        const getElongationProgress = async (jd: number) => {
+          const s = await swe_calc_ut(jd, swisseph.SE_SUN, flags);
+          const m = await swe_calc_ut(jd, swisseph.SE_MOON, flags);
+          return this.getTithiProgress(s.longitude, m.longitude);
+        };
+
+        // Phase 1: find Amavasya start (348° elongation = tithi 29 ends)
+        const amavasyaStart = await findEventEnd(
+          searchDayJD - 1,
+          getElongationProgress,
+          29, // End of tithi 29 = Amavasya begins
+          30
         );
+        if (!amavasyaStart) continue;
 
-        // Verify the found Amavasya is in the correct direction
-        if (amavasya) {
-          const isCorrectDirection =
-            direction === "forward" ? amavasya > fromJD : amavasya < fromJD;
+        // Phase 2: find actual new moon conjunction (0°/360° elongation = Amavasya ends).
+        // DP evaluates the Sun's rashi at the conjunction, not the Amavasya start.
+        // The ~22h gap between 348° and 0° can shift the Sun across a rashi boundary.
+        const conjunction = await findEventEnd(
+          amavasyaStart,
+          getElongationProgress,
+          30, // End of Amavasya = actual new moon syzygy
+          30,
+          1.5
+        );
+        if (!conjunction) continue;
 
-          if (isCorrectDirection) {
-            return amavasya;
-          }
+        const isCorrectDirection =
+          direction === "forward" ? conjunction > fromJD : conjunction < fromJD;
+
+        if (isCorrectDirection) {
+          return conjunction;
         }
       }
     }
