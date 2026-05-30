@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { DateTime } from "luxon";
-import { findPreferences } from "@/repositories/preference.repository";
+import { getPreferences } from "@/services/preference.service";
 import { panchangaService } from "@/services/panchanga.service";
 import { transformToApiResponse } from "@/lib/api-transformers";
 import { DEFAULT_LOCATION } from "@/lib/domain";
@@ -13,7 +13,7 @@ export default async function SettingsPage() {
   const now = DateTime.now().setZone(DEFAULT_LOCATION.timezone);
 
   const [preferences, rawPanchanga] = await Promise.allSettled([
-    findPreferences(),
+    getPreferences(),
     panchangaService.calculateDaily(
       now.toJSDate(),
       DEFAULT_LOCATION,

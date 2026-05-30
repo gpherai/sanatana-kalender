@@ -16,14 +16,19 @@ import {
   deleteOccurrenceById,
   findEventById,
   findEventByIdBasic,
+  findEventByIdForDisplay,
+  findEventForUpdate,
+  findEventOccurrences,
   findEventsWithRecurrence,
   findOccurrenceById,
   findOccurrenceConflict,
+  findOccurrencesForIcalExport,
   persistGeneratedOccurrencesForEvent,
   persistGeneratedOccurrencesForEvents,
   updateEventWithPrimaryOccurrence,
   updateOccurrenceById,
 } from "@/repositories/event.repository";
+import type { EventQueryParams } from "@/lib/validations";
 import { generateOccurrences, generateOccurrencesForEvents } from "@/services/recurrence";
 
 // ============================================================================
@@ -375,4 +380,24 @@ export async function generateEventOccurrences(input: GenerateEventOccurrencesIn
     deleted: deletedCount,
     ...(failedCount > 0 && { failed: failedCount }),
   };
+}
+
+// ============================================================================
+// READ — thin wrappers for app-layer consumers
+// ============================================================================
+
+export function getEventOccurrences(params: EventQueryParams) {
+  return findEventOccurrences(params);
+}
+
+export function getEventForUpdate(id: string) {
+  return findEventForUpdate(id);
+}
+
+export function getEventByIdForDisplay(id: string) {
+  return findEventByIdForDisplay(id);
+}
+
+export function getOccurrencesForIcalExport(opts?: { take?: number; skip?: number }) {
+  return findOccurrencesForIcalExport(opts);
 }

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import ical from "ical-generator";
 import { DateTime } from "luxon";
-import { findOccurrencesForIcalExport } from "@/repositories/event.repository";
+import { getOccurrencesForIcalExport } from "@/services/event.service";
 import { DEFAULT_LOCATION } from "@/lib/domain";
 import { logError } from "@/lib/utils";
 import { dbTimeToStr } from "@/lib/timing-utils";
@@ -16,7 +16,7 @@ export async function GET() {
 
     calendar.timezone({ name: timezone });
 
-    const occurrences = await findOccurrencesForIcalExport();
+    const occurrences = await getOccurrencesForIcalExport();
 
     for (const occ of occurrences) {
       const { event, date, endDate: occEndDate, notes } = occ;

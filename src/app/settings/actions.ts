@@ -5,7 +5,7 @@ import { CalendarView, EventType } from "@prisma/client";
 import { updatePreferencesSchema } from "@/lib/validations";
 import { DEFAULT_PREFERENCES_ID } from "@/lib/domain";
 import { DEFAULT_THEME_NAME } from "@/config/themes";
-import { upsertPreferences } from "@/repositories/preference.repository";
+import { savePreferences } from "@/services/preference.service";
 import { logError } from "@/lib/utils";
 
 type ActionResult = { success: true } | { success: false; error: string };
@@ -21,7 +21,7 @@ export async function savePreferencesAction(payload: unknown): Promise<ActionRes
   const defaultView = data.defaultView as CalendarView | undefined;
 
   try {
-    await upsertPreferences(
+    await savePreferences(
       {
         id: DEFAULT_PREFERENCES_ID,
         currentTheme: data.currentTheme ?? DEFAULT_THEME_NAME,

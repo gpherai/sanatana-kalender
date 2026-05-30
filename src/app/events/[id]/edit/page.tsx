@@ -6,7 +6,7 @@ import { EventForm } from "@/components/events/EventForm";
 import { PageLayout } from "@/components/layout";
 import { formatDateForInput } from "@/lib/date-utils";
 import type { EventFormData } from "@/lib/validations";
-import { findEventForUpdate } from "@/repositories/event.repository";
+import { getEventForUpdate } from "@/services/event.service";
 import { dbTimeToStr } from "@/lib/timing-utils";
 
 interface PageProps {
@@ -15,14 +15,14 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
-  const event = await findEventForUpdate(id);
+  const event = await getEventForUpdate(id);
   return { title: event ? `${event.name} bewerken` : "Event bewerken" };
 }
 
 export default async function EditEventPage({ params }: PageProps) {
   const { id } = await params;
 
-  const event = await findEventForUpdate(id);
+  const event = await getEventForUpdate(id);
 
   if (!event) {
     notFound();

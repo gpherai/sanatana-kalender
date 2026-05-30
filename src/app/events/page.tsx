@@ -1,13 +1,13 @@
 import { Suspense } from "react";
 import { PageLayout } from "@/components/layout";
-import { findEventOccurrences } from "@/repositories/event.repository";
+import { getEventOccurrences } from "@/services/event.service";
 import { transformOccurrenceToCalendarEvent } from "@/lib/api-transformers";
 import { EventsContent } from "@/components/events/EventsContent";
 
 export const dynamic = "force-dynamic";
 
 export default async function EventsPage() {
-  const occurrences = await findEventOccurrences({});
+  const occurrences = await getEventOccurrences({});
   const initialEvents = occurrences.map(transformOccurrenceToCalendarEvent);
 
   return (

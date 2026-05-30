@@ -10,13 +10,13 @@ import {
 } from "@/lib/api-response";
 import { logError } from "@/lib/utils";
 import { formatDateLocal } from "@/lib/date-utils";
-import { findEventForUpdate } from "@/repositories/event.repository";
 import { dbTimeToStr } from "@/lib/timing-utils";
 import {
   CategoryNotFoundError,
   deleteEvent,
   EventNotFoundError,
   getEventDetails,
+  getEventForUpdate,
   updateEvent,
 } from "@/services/event.service";
 
@@ -74,7 +74,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     }
 
     const data = result.data;
-    const existingEvent = await findEventForUpdate(id);
+    const existingEvent = await getEventForUpdate(id);
 
     if (!existingEvent) {
       return notFoundError("Event");

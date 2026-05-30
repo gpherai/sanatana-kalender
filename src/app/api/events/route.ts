@@ -8,8 +8,11 @@ import {
   validationError,
 } from "@/lib/api-response";
 import { logError } from "@/lib/utils";
-import { findEventOccurrences } from "@/repositories/event.repository";
-import { CategoryNotFoundError, createEvent } from "@/services/event.service";
+import {
+  CategoryNotFoundError,
+  createEvent,
+  getEventOccurrences,
+} from "@/services/event.service";
 import { transformOccurrenceToCalendarEvent } from "@/lib/api-transformers";
 
 // ============================================================================
@@ -47,7 +50,7 @@ export async function GET(request: NextRequest) {
       return validationError(paramsResult.error);
     }
 
-    const occurrences = await findEventOccurrences(paramsResult.data);
+    const occurrences = await getEventOccurrences(paramsResult.data);
 
     const calendarEvents = occurrences.map(transformOccurrenceToCalendarEvent);
 

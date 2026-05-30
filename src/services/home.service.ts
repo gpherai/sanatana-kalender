@@ -21,6 +21,13 @@ export function dbDateToLocationDay(
   return DateTime.fromISO(dateOnly, { zone: timezone }).startOf("day");
 }
 
+export function getUpcomingOccurrences(
+  daysAfterToday: number,
+  now: DateTime
+): Promise<UpcomingOccurrence[]> {
+  return findUpcomingOccurrences(daysAfterToday, now);
+}
+
 export function occurrenceOverlapsDay(
   occurrence: UpcomingOccurrence,
   day: DateTime,

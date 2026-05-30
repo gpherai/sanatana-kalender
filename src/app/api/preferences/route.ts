@@ -5,7 +5,7 @@ import { DEFAULT_PREFERENCES_ID } from "@/lib/domain";
 import { DEFAULT_THEME_NAME } from "@/config/themes";
 import { logError } from "@/lib/utils";
 import { EventType, CalendarView } from "@prisma/client";
-import { findPreferences, upsertPreferences } from "@/repositories/preference.repository";
+import { getPreferences, savePreferences } from "@/services/preference.service";
 
 /**
  * Default preferences object (not persisted until first PUT)
@@ -29,7 +29,7 @@ const DEFAULT_PREFERENCES = {
  */
 export async function GET() {
   try {
-    const preferences = await findPreferences();
+    const preferences = await getPreferences();
 
     if (!preferences) {
       return NextResponse.json(DEFAULT_PREFERENCES);
@@ -62,7 +62,7 @@ export async function PUT(request: NextRequest) {
     const visibleEventTypes = data.visibleEventTypes as EventType[] | undefined;
     const defaultView = data.defaultView as CalendarView | undefined;
 
-    const preferences = await upsertPreferences(
+    const preferences = await savePreferences(
       {
         id: DEFAULT_PREFERENCES_ID,
         currentTheme: data.currentTheme ?? DEFAULT_PREFERENCES.currentTheme,

@@ -4,11 +4,13 @@ import { DharmaCalendar } from "@/components/calendar/DharmaCalendar";
 import { PageLayout } from "@/components/layout";
 import { DEFAULT_LOCATION } from "@/lib/domain";
 import { logError } from "@/lib/utils";
-import { findAllCategories } from "@/repositories/category.repository";
-import { findUpcomingOccurrences } from "@/repositories/event.repository";
 import { panchangaService } from "@/services/panchanga.service";
 import { getWeatherDashboard } from "@/services/weather.service";
-import { UPCOMING_DAYS_AFTER_TODAY } from "@/services/home.service";
+import {
+  UPCOMING_DAYS_AFTER_TODAY,
+  getUpcomingOccurrences,
+} from "@/services/home.service";
+import { getAllCategories } from "@/services/category.service";
 import { TodayHeroSection } from "@/components/home/TodayHeroSection";
 import { UpcomingEventsSection } from "@/components/home/UpcomingEventsSection";
 import { CategoriesSection } from "@/components/home/CategoriesSection";
@@ -24,8 +26,8 @@ export default function Home() {
   const now = DateTime.now().setZone(DEFAULT_LOCATION.timezone);
   const today = now.startOf("day");
 
-  const eventsPromise = findUpcomingOccurrences(UPCOMING_DAYS_AFTER_TODAY, now);
-  const categoriesPromise = findAllCategories();
+  const eventsPromise = getUpcomingOccurrences(UPCOMING_DAYS_AFTER_TODAY, now);
+  const categoriesPromise = getAllCategories();
   const weatherPromise = Promise.race([
     getWeatherDashboard().catch((error) => {
       logError("[Home] Failed to fetch weather dashboard", error);

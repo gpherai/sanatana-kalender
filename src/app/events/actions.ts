@@ -9,11 +9,11 @@ import {
   deleteEvent,
   deleteEventOccurrence,
   EventNotFoundError,
+  getEventForUpdate,
   OccurrenceNotFoundError,
   OccurrenceOwnershipError,
   updateEvent,
 } from "@/services/event.service";
-import { findEventForUpdate } from "@/repositories/event.repository";
 import { logError } from "@/lib/utils";
 
 export type ActionResult<T = void> =
@@ -83,7 +83,7 @@ export async function updateEventAction(
   }
 
   try {
-    const existing = await findEventForUpdate(id);
+    const existing = await getEventForUpdate(id);
     if (!existing) {
       return { success: false, error: "Event niet gevonden" };
     }

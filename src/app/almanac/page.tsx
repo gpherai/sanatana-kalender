@@ -1,6 +1,6 @@
 import { AlmanacClient } from "@/components/almanac/AlmanacClient";
 import { panchangaService } from "@/services/panchanga.service";
-import { findEventOccurrences } from "@/repositories/event.repository";
+import { getEventOccurrences } from "@/services/event.service";
 import {
   transformToApiResponse,
   transformOccurrenceToCalendarEvent,
@@ -26,7 +26,7 @@ export default async function AlmanacPage() {
       DEFAULT_LOCATION,
       timezone
     ),
-    findEventOccurrences({ start: startStr, end: endStr }),
+    getEventOccurrences({ start: startStr, end: endStr }),
   ]);
 
   const initialMonthData = panchangas.map(transformToApiResponse);
