@@ -228,7 +228,8 @@ export function ThemeSection({
             <div className="mb-4 flex items-center gap-2">
               <div className="h-px flex-1 bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
               <h3 className="flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-sm font-semibold tracking-wider text-transparent uppercase">
-                <span className="text-base">✨</span> Speciale thema&apos;s
+                <span className="text-base">✨</span>
+                {" Speciale thema's"}
               </h3>
               <div className="h-px flex-1 bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
             </div>
