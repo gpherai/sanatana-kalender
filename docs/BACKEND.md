@@ -55,7 +55,7 @@
 
 ## 2. API Endpoints
 
-Alle routes gebruiken response helpers uit `src/lib/api-response.ts` (`serverError`, `validationError`, `notFoundError`) en Zod schemas uit `src/lib/validations.ts`.
+Alle routes gebruiken response helpers uit `src/lib/api-response.ts` (`serverError`, `validationError`, `notFoundError`) en Zod schemas uit `src/lib/validations/`.
 
 | Endpoint | Methoden | Verantwoordelijkheid |
 |----------|----------|----------------------|
@@ -91,7 +91,8 @@ Alle routes gebruiken response helpers uit `src/lib/api-response.ts` (`serverErr
 | Service | Bestand | Verantwoordelijkheden |
 |---------|---------|----------------------|
 | `panchangaService` | `panchanga.service.ts` | LRU-cached wrapper voor Swiss Ephemeris berekeningen |
-| `recurrenceService` | `recurrence.service.ts` | Event recurrence generation, strategy registry per RuleType |
+| `recurrenceService` | `recurrence/` | Event recurrence generation, strategy registry per RuleType; gesplitst in domein-modules (tithi, nakshatra, solar, special) |
+| `preferenceService` | `preference.service.ts` | Single-user voorkeuren ophalen en upserten |
 | `eventService` | `event.service.ts` | Event mutations, occurrence ownership, category validatie en conflictregels |
 | `sadhanaService` | `sadhana.service.ts` | Streaks, goals progress, aggregatie van sessiedata naar statistieken |
 | `sadhanaFormatters` | `lib/sadhana-formatters.ts` | DTO-formatting: `formatSession`, `formatGoal`, `formatPractice`, `computePracticeStats` |
@@ -117,7 +118,7 @@ Alle routes gebruiken response helpers uit `src/lib/api-response.ts` (`serverErr
 
 ## 5. Validation System
 
-Alle Zod schemas zijn gecentraliseerd in `src/lib/validations.ts`. Nooit inline `z.object({...})` in routes.
+Alle Zod schemas zijn gecentraliseerd in `src/lib/validations/` (gesplitst per domein: `event.ts`, `sadhana.ts`, `preferences.ts`, `shared.ts`). Barrel via `index.ts`. Nooit inline `z.object({...})` in routes.
 
 ### 5.1 Schema Overzicht
 
@@ -133,6 +134,7 @@ Alle Zod schemas zijn gecentraliseerd in `src/lib/validations.ts`. Nooit inline 
 | `createSadhanaPracticeSchema` / `patchSadhanaPracticeSchema` | Sadhana praktijken |
 | `createSadhanaGoalSchema` / `patchSadhanaGoalSchema` | Sadhana doelen |
 | `createSadhanaRoutineSchema` / `patchSadhanaRoutineSchema` | Sadhana routines |
+| `sadhanaCalendarQuerySchema` | GET /api/sadhana/stats/calendar query parameters |
 
 ### 5.2 Enum Schemas
 

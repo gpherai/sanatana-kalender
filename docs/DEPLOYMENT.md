@@ -1,7 +1,7 @@
 # 🚀 Dharma Calendar - Deployment Guide
 
-> **Versie:** 1.5<br>
-> **Laatst bijgewerkt:** 24 april 2026
+> **Versie:** 1.6<br>
+> **Laatst bijgewerkt:** 30 mei 2026
 
 Dit document beschrijft hoe je Dharma Calendar deployt op een VPS met Docker.
 
@@ -413,7 +413,11 @@ cd /opt/dharma-calendar
 git pull origin main
 
 # 2. Backup + rebuild + restart (migraties draaien automatisch)
-./scripts/deploy-prod.sh
+npm run deploy:prod
+# of equivalent: ./scripts/deploy-prod.sh
+
+# Met --pull (image refresh):
+# npm run deploy:prod:pull
 
 # Bij een volledige no-cache rebuild:
 # ./scripts/deploy-prod.sh --no-cache
@@ -573,9 +577,11 @@ docker system df
 │   └── dharma_calendar_*.sql.gz
 ├── scripts/
 │   ├── docker-entrypoint.sh
-│   ├── backup-db.sh
-│   ├── deploy-prod.sh
-│   └── health-check.sh
+│   ├── backup-db.sh        # DB backup (gebruikt door backup Docker service)
+│   ├── backup.sh           # Project broncode backup (tar.gz, excl. node_modules/.next)
+│   ├── db-pull-prod.sh     # Trek productiedump van VPS via SSH
+│   ├── db-import-dump.sh   # Importeer dump lokaal
+│   └── deploy-prod.sh      # Backup + rebuild + restart (ook via npm run deploy:prod)
 └── ... (source code)
 ```
 

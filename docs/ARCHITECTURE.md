@@ -1,6 +1,6 @@
 # Dharma Calendar — Architecture Overview
 
-> **Versie:** 6.0 | **Bijgewerkt:** 26 april 2026
+> **Versie:** 6.1 | **Bijgewerkt:** 30 mei 2026
 >
 > Dit document is het startpunt. Gedetailleerde documentatie per domein:
 > - [BACKEND.md](BACKEND.md) — API routes, services, repositories, validatie
@@ -59,13 +59,14 @@ Dharma Calendar is een persoonlijke web applicatie voor het bijhouden van Sanata
 │  ┌─────────────────────────────────────────────────────────┐    │
 │  │                    API Routes                            │    │
 │  │   /api/events  /api/categories  /api/daily-info          │    │
-│  │   /api/sadhana/*  /api/kundali  /api/ical/export  ...   │    │
+│  │   /api/sadhana/*  /api/kundali  /api/ical/export        │    │
+│  │   /api/health  /api/preferences  /api/themes  /api/weer │    │
 │  └──────────────────────────┬───────────────────────────────┘    │
 │                             │                                    │
 │  ┌──────────────────────────▼──────────────────────────────┐    │
 │  │                   Service Layer                          │    │
 │  │ panchanga + recurrence + event + sadhana + weather        │    │
-│  │ home + sadhana-dashboard + sadhana-formatters             │    │
+│  │ home + sadhana-dashboard + preference                     │    │
 │  └──────────────────────────┬───────────────────────────────┘    │
 │                             │                                    │
 │  ┌──────────────────────────▼──────────────────────────────┐    │
@@ -92,21 +93,21 @@ Dharma Calendar is een persoonlijke web applicatie voor het bijhouden van Sanata
 | **Runtime** | Node.js | 24+ LTS | Server runtime |
 | **Frontend** | Next.js (App Router) | 16.2.x | Server-side rendering, routing |
 | **UI Framework** | React | 19.2.x | Component-based UI |
-| **Styling** | Tailwind CSS | 4.2.x | Utility-first CSS |
+| **Styling** | Tailwind CSS | 4.3.x | Utility-first CSS |
 | **Kalender** | react-big-calendar | 1.19.x | Kalender weergave |
 | **Kaart** | react-leaflet + leaflet | 5.x + 1.9.x | Weerkaart |
 | **Database** | PostgreSQL | 17+ | Data opslag |
 | **ORM** | Prisma (+ adapter-pg) | 7.7.x | Database toegang |
-| **Validatie** | Zod | 4.3.x | Schema validatie |
+| **Validatie** | Zod | 4.4.x | Schema validatie |
 | **Datum/Tijd** | date-fns, luxon | 4.1.x, 3.7.x | Datum manipulatie |
 | **Astronomie** | Swiss Ephemeris (swisseph) | 0.5.x | Vedische astronomie (Tithi, Nakshatra, Yoga, Karana, Kundali) |
 | **iCal export** | ical-generator | 10.1.x | .ics export |
 | **MDX** | next-mdx-remote, gray-matter | 6.x, 4.x | Encyclopedie artikelen |
-| **Taal** | TypeScript | 5.x | Type safety (ES2022 target) |
+| **Taal** | TypeScript | 6.x | Type safety (ES2022 target) |
 | **Accessibility** | focus-trap-react | 12.0.x | Modal focus management |
-| **Icons** | lucide-react | 0.577.x | UI iconen |
-| **Utilities** | tailwind-merge, clsx | 3.5.x, 2.1.x | Class utilities |
-| **Code Quality** | Husky, lint-staged | 9.x, 16.x | Pre-commit hooks |
+| **Icons** | lucide-react | 1.16.x | UI iconen |
+| **Utilities** | tailwind-merge, clsx | 3.6.x, 2.1.x | Class utilities |
+| **Code Quality** | Husky, lint-staged | 9.x, 17.x | Pre-commit hooks |
 
 ### 2.3 Project Structuur
 
@@ -116,6 +117,7 @@ Tests staan **co-located** als `__tests__/` subfolder naast de source.
 dharma-calendar/
 ├── _dev/                      # Lokale ad-hoc scripts (gitignored)
 ├── docs/                      # Documentatie
+│   └── reference/             # Referentiedata (events2026dp.md, eventscheck, research)
 ├── prisma/
 │   ├── schema.prisma          # Database schema
 │   └── migrations/
@@ -126,7 +128,16 @@ dharma-calendar/
     │   ├── page.tsx           # Homepage
     │   ├── globals.css        # Tailwind import hub
     │   ├── api/               # API routes
-    │   │   └── sadhana/       # Sadhana CRUD API
+    │   │   ├── categories/
+    │   │   ├── daily-info/
+    │   │   ├── events/
+    │   │   ├── health/        # Health check endpoint
+    │   │   ├── ical/          # .ics export
+    │   │   ├── kundali/
+    │   │   ├── preferences/   # User preferences CRUD
+    │   │   ├── sadhana/       # Sadhana CRUD API
+    │   │   ├── themes/        # Theme listing
+    │   │   └── weer/          # Weerdata + kaarttegels (map/)
     │   ├── almanac/
     │   ├── encyclopedie/
     │   ├── events/
@@ -137,25 +148,26 @@ dharma-calendar/
     ├── components/            # React componenten per feature
     │   ├── almanac/
     │   ├── calendar/
+    │   ├── encyclopedia/
     │   ├── events/
     │   ├── filters/
+    │   ├── home/              # CategoriesSection, TodayHeroSection, UpcomingEventsSection
     │   ├── kundali/           # Jyotisha charts, graha tables, dasha (geen DB)
     │   ├── layout/            # PageLayout + barrel
     │   ├── sadhana/           # SadhanaTracker + tabs/ + widgets/charts
     │   ├── settings/
     │   ├── theme/             # ThemeProvider, ColorModeToggle
     │   ├── weather/
-    │   └── ui/                # Header, Toast, Section, MoonPhase, TodayHero
+    │   └── ui/                # Header, Toast, Section, MoonPhase
     ├── config/
     │   ├── categories.ts
-    │   ├── event-naming.ts    # Eventcatalogus (164 entries)
+    │   ├── event-naming.ts    # Eventcatalogus (158 entries)
     │   ├── rule-config.types.ts
     │   └── themes.ts          # Theme catalog + metadata
     ├── content/
     │   └── encyclopedia/      # MDX artikelen
     ├── engine/                # Pure computation engines (geen DB, geen HTTP)
     │   ├── index.ts           # Barrel export voor recurrence helpers
-    │   ├── tithi-helpers.ts
     │   ├── types.ts
     │   └── panchanga/         # Swiss Ephemeris wrapper (server-only)
     │       ├── index.ts       # Runtime guard: gooit als client importeert
@@ -163,15 +175,26 @@ dharma-calendar/
     │       ├── types.ts
     │       ├── services/
     │       │   ├── panchanga-swiss-service.ts
-    │       │   └── birth-chart-service.ts
+    │       │   ├── birth-chart-service.ts
+    │       │   └── modules/               # 9 domain modules (split uit swiss-service)
+    │       │       ├── anga-computer.ts
+    │       │       ├── inauspicious-times.ts
+    │       │       ├── maas-detector.ts
+    │       │       ├── moon-illumination.ts
+    │       │       ├── moon-phase-detector.ts
+    │       │       ├── panchanga-utils.ts
+    │       │       ├── rashi-computer.ts
+    │       │       ├── samvat-computer.ts
+    │       │       └── sankranti-detector.ts
     │       └── utils/astro.ts
     ├── hooks/
-    │   ├── useSadhanaData.ts  # Laadt sadhana-data; accepteert SSR-hydration
-    │   ├── useWeather.ts
-    │   ├── useFilters.ts
-    │   ├── useFetch.ts
+    │   ├── useAutoSave.ts
     │   ├── useDebounce.ts
-    │   └── useOverlayHistory.ts
+    │   ├── useFetch.ts
+    │   ├── useFilters.ts
+    │   ├── useOverlayHistory.ts
+    │   ├── useSadhanaData.ts  # Laadt sadhana-data; accepteert SSR-hydration
+    │   └── useWeather.ts
     ├── lib/                   # Utilities + domein-constanten
     │   ├── api-response.ts    # Gestandaardiseerde API responses
     │   ├── api-transformers.ts  # Wire-format transformers (gedeeld door routes én SSR services)
@@ -183,7 +206,9 @@ dharma-calendar/
     │   ├── encyclopedia.ts    # server-only (gebruikt Node.js fs)
     │   ├── env.ts             # Zod environment validatie
     │   ├── events.ts
+    │   ├── mdx-headings.ts    # MDX heading extractie
     │   ├── moon-phases.ts
+    │   ├── panchanga-client.ts  # Client-side panchanga helpers
     │   ├── panchanga-helpers.ts
     │   ├── patterns.ts
     │   ├── sadhana-api.ts     # Client-side fetch helpers voor sadhana API
@@ -191,7 +216,7 @@ dharma-calendar/
     │   ├── sadhana-utils.ts   # SADHANA_START_DATE, goal logica, display utils
     │   ├── timing-utils.ts
     │   ├── utils.ts
-    │   ├── validations.ts     # Alle Zod schemas
+    │   ├── validations/       # Zod schemas per domein (event, sadhana, preferences, shared)
     │   └── weather.ts
     ├── repositories/          # Enige plek met directe Prisma queries
     │   ├── event.repository.ts
@@ -204,7 +229,17 @@ dharma-calendar/
     │   ├── event.service.ts
     │   ├── home.service.ts            # SSR aggregatie voor home page
     │   ├── panchanga.service.ts       # LRU-cached wrapper voor engine/panchanga
-    │   ├── recurrence.service.ts
+    │   ├── preference.service.ts
+    │   ├── recurrence/                # Recurrence engine (gesplitst in domein-modules)
+    │   │   ├── index.ts
+    │   │   ├── types.ts
+    │   │   ├── helpers.ts
+    │   │   ├── tithi.ts
+    │   │   ├── nakshatra.ts
+    │   │   ├── solar.ts
+    │   │   ├── special.ts
+    │   │   └── helpers/               # Gedeelde recurrence helpers
+    │   │       └── tithi-helpers.ts
     │   ├── sadhana-dashboard.service.ts  # SSR aggregatie voor sadhana pagina
     │   ├── sadhana.service.ts
     │   └── weather.service.ts
@@ -212,7 +247,10 @@ dharma-calendar/
     │   ├── base.css
     │   ├── utilities.css
     │   └── themes/
+    │       ├── standard.css
+    │       └── special/       # Bijzondere thema's (bhairava-nocturne, narasimha-jwala, shri-ganesha)
     └── types/
+        ├── index.ts      # Barrel
         ├── api.ts        # DailyInfoData + DailyInfoResponse
         ├── calendar.ts
         ├── sadhana.ts    # Sadhana domein types (DayInfo, Goal, Practice, ...)
