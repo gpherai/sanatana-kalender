@@ -3,7 +3,6 @@ import type { Event } from "@prisma/client";
 import { Tithi } from "@prisma/client";
 import {
   findDailyInfoSunTimesByDates,
-  findDailyInfoMoonPhaseCandidates,
   findDailyInfoPreviousDayTimingRows,
   type DailyInfoAdhikaFilter,
 } from "@/repositories/daily-info.repository";
@@ -48,16 +47,6 @@ export const TITHI_PREDECESSOR: Partial<Record<Tithi, Tithi>> = {
   CHATURDASHI_KRISHNA: "TRAYODASHI_KRISHNA",
   AMAVASYA: "CHATURDASHI_KRISHNA",
 };
-
-// =============================================================================
-// PHASE CORRECTION MAP
-// =============================================================================
-
-// Both PURNIMA and AMAVASYA use strict tithi-at-sunrise (udaya tithi) rule,
-// matching DrikPanchang convention. Astronomical peak can fall on D+1 but
-// the observance day is always the sunrise-rule tithi day — do NOT shift.
-export const PHASE_CORRECTION_TITHI: Partial<Record<Tithi, "FULL_MOON" | "NEW_MOON">> =
-  {};
 
 // =============================================================================
 // ADHIKA FILTER
@@ -129,60 +118,6 @@ export async function applyDynamicTiming(
     }
 
     return { ...occ, startTime: window.startTime, endTime: window.endTime };
-  });
-}
-
-// =============================================================================
-// ASTRONOMICAL PHASE CORRECTION
-// =============================================================================
-
-type CandidateDay = {
-  date: Date;
-  tithiEndTime: string | null;
-  maas: string | null;
-  isAdhika: boolean;
-  sunrise?: string | null;
-  moonrise?: string | null;
-};
-
-export async function correctToAstronomicalPhaseDay(
-  candidates: CandidateDay[],
-  targetPhase: "FULL_MOON" | "NEW_MOON"
-): Promise<CandidateDay[]> {
-  if (candidates.length === 0) return candidates;
-
-  const neighborDates = candidates.map(
-    (c) => new Date(c.date.getTime() + 24 * 60 * 60 * 1000)
-  );
-  const allDates = [...candidates.map((c) => c.date), ...neighborDates];
-
-  const phaseRows = await findDailyInfoMoonPhaseCandidates(allDates, targetPhase);
-
-  const phaseMap = new Map<string, number>(
-    phaseRows.map((r) => [r.date.toISOString(), r.moonPhasePercent ?? 0])
-  );
-
-  return candidates.map((candidate) => {
-    const candidateIso = candidate.date.toISOString();
-    const nextDay = new Date(candidate.date.getTime() + 24 * 60 * 60 * 1000);
-    const nextDayIso = nextDay.toISOString();
-
-    const candidatePct = phaseMap.get(candidateIso) ?? -1;
-    const nextDayPct = phaseMap.get(nextDayIso) ?? -1;
-
-    if (candidatePct < 0 && nextDayPct < 0) return candidate;
-
-    // FULL_MOON: higher % = brighter = closer to peak → shift if next day brighter.
-    // NEW_MOON: lower % = darker = closer to peak (0 = true new moon) → shift if next day darker.
-    const shiftToNext =
-      targetPhase === "FULL_MOON"
-        ? nextDayPct > candidatePct
-        : candidatePct >= 0 && nextDayPct >= 0 && nextDayPct < candidatePct;
-
-    if (shiftToNext) {
-      return { ...candidate, date: nextDay };
-    }
-    return candidate;
   });
 }
 

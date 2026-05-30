@@ -23,9 +23,7 @@ import type { GeneratedOccurrence } from "./types";
 export async function generateWeekdayTithiOccurrences(
   event: Event,
   startDate: Date,
-  endDate: Date,
-  _location: { name: string; lat: number; lon: number },
-  _timezone: string
+  endDate: Date
 ): Promise<GeneratedOccurrence[]> {
   if (!event.tithi) {
     logWarn(`WEEKDAY_TITHI event "${event.name}" has no tithi specified`);
@@ -63,9 +61,7 @@ export async function generateWeekdayTithiOccurrences(
 export async function generatePradoshOccurrences(
   event: Event,
   startDate: Date,
-  endDate: Date,
-  _location: { name: string; lat: number; lon: number },
-  _timezone: string
+  endDate: Date
 ): Promise<GeneratedOccurrence[]> {
   const config = asRuleConfig<PradoshRuleConfig>(event.ruleConfig);
   const paksha = config.paksha;

@@ -22,9 +22,7 @@ import type { GeneratedOccurrence } from "./types";
 export async function generateNakshatraRuleOccurrences(
   event: Event,
   startDate: Date,
-  endDate: Date,
-  _location: { name: string; lat: number; lon: number },
-  _timezone: string
+  endDate: Date
 ): Promise<GeneratedOccurrence[]> {
   const config = asRuleConfig<NakshatraRuleConfig>(event.ruleConfig);
   const nakshatraValue = config.nakshatra ?? event.nakshatra;
@@ -87,9 +85,7 @@ export async function generateNakshatraRuleOccurrences(
 export async function generateTithiNakshatraRuleOccurrences(
   event: Event,
   startDate: Date,
-  endDate: Date,
-  _location: { name: string; lat: number; lon: number },
-  _timezone: string
+  endDate: Date
 ): Promise<GeneratedOccurrence[]> {
   const config = asRuleConfig<TithiNakshatraRuleConfig>(event.ruleConfig);
   const tithiValue = config.tithi ?? event.tithi;

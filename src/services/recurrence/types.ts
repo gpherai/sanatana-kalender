@@ -15,7 +15,5 @@ export interface RecurrenceOptions {
 export type RecurrenceStrategy = (
   event: Event,
   startDate: Date,
-  endDate: Date,
-  location: { name: string; lat: number; lon: number },
-  timezone: string
+  endDate: Date
 ) => Promise<GeneratedOccurrence[]>;

@@ -20,13 +20,7 @@ import {
 } from "@/engine";
 import { parseTimeToMinutes, formatMinutesToTime } from "@/lib/timing-utils";
 import { logWarn } from "@/lib/utils";
-import {
-  TITHI_PREDECESSOR,
-  PHASE_CORRECTION_TITHI,
-  getAdhikaFilter,
-  correctToAstronomicalPhaseDay,
-  fetchPreviousDayData,
-} from "./helpers";
+import { TITHI_PREDECESSOR, getAdhikaFilter, fetchPreviousDayData } from "./helpers";
 import type { GeneratedOccurrence } from "./types";
 
 // =============================================================================
@@ -36,9 +30,7 @@ import type { GeneratedOccurrence } from "./types";
 export async function generateYearlyLunarOccurrences(
   event: Event,
   startDate: Date,
-  endDate: Date,
-  _location: { name: string; lat: number; lon: number },
-  _timezone: string
+  endDate: Date
 ): Promise<GeneratedOccurrence[]> {
   if (!event.tithi) {
     logWarn(`Yearly lunar event "${event.name}" has no tithi specified`);
@@ -156,20 +148,7 @@ export async function generateYearlyLunarOccurrences(
     (a, b) => a.firstDay.date.getTime() - b.firstDay.date.getTime()
   );
 
-  const targetPhase = PHASE_CORRECTION_TITHI[event.tithi];
-  let finalWindows: WindowEntry[];
-  if (targetPhase) {
-    const correctedDays = await correctToAstronomicalPhaseDay(
-      rawSelectedWindows.map((w) => w.firstDay),
-      targetPhase
-    );
-    finalWindows = correctedDays.map((day, i) => ({
-      firstDay: day as WindowEntry["firstDay"],
-      lastDay: rawSelectedWindows[i]!.lastDay,
-    }));
-  } else {
-    finalWindows = rawSelectedWindows;
-  }
+  const finalWindows = rawSelectedWindows;
 
   if (durationDays > 1) {
     return finalWindows.map(({ firstDay }) => ({
@@ -329,9 +308,7 @@ export async function generateYearlyLunarOccurrences(
 export async function generateMonthlyLunarOccurrences(
   event: Event,
   startDate: Date,
-  endDate: Date,
-  _location: { name: string; lat: number; lon: number },
-  _timezone: string
+  endDate: Date
 ): Promise<GeneratedOccurrence[]> {
   if (!event.tithi) {
     logWarn(`Monthly lunar event "${event.name}" has no tithi specified`);

@@ -100,9 +100,6 @@ export interface PradoshRuleConfig {
   maas?: Maas;
 }
 
-/** CUSTOM: open-ended for complex rules not covered by other types */
-export type CustomRuleConfig = Record<string, unknown>;
-
 // ---------------------------------------------------------------------------
 // Discriminated map (ruleType → config type)
 // ---------------------------------------------------------------------------
@@ -114,7 +111,6 @@ export interface RuleConfigMap {
   TITHI_NAKSHATRA: TithiNakshatraRuleConfig;
   WEEKDAY_TITHI: WeekdayTithiRuleConfig;
   PRADOSH: PradoshRuleConfig;
-  CUSTOM: CustomRuleConfig;
 }
 
 // ---------------------------------------------------------------------------

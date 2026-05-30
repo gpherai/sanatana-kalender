@@ -237,7 +237,6 @@ enum RuleType {
   TITHI_NAKSHATRA
   WEEKDAY_TITHI
   PRADOSH
-  CUSTOM
 }
 
 enum CalendarView {
