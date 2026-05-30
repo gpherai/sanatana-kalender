@@ -195,15 +195,19 @@ export async function generateYearlyLunarOccurrences(
     });
   }
 
+  if (config.dateRule === "SANKASHTI") {
+    const prevDayMap = await fetchPreviousDayData(
+      finalWindows.map((w) => w.firstDay.date)
+    );
+    return finalWindows.map(({ firstDay, lastDay }) =>
+      computeSankashtiOccurrence(firstDay, lastDay, prevDayMap)
+    );
+  }
+
   if (event.eventType === EventType.VRAT) {
     const prevDayMap = await fetchPreviousDayData(
       finalWindows.map((w) => w.firstDay.date)
     );
-    if (event.tithi === Tithi.CHATURTHI_KRISHNA) {
-      return finalWindows.map(({ firstDay, lastDay }) =>
-        computeSankashtiOccurrence(firstDay, lastDay, prevDayMap)
-      );
-    }
     return finalWindows.map(({ firstDay, lastDay }) =>
       computeTithiOccurrence(firstDay, lastDay, prevDayMap)
     );

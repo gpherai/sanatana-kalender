@@ -44,7 +44,7 @@ export interface TithiRuleConfig {
    * If the tithi starts before Pradosh ends → that day (even if it precedes the
    * Udaya Tithi). If after Pradosh → the Udaya Tithi day. Example: Kalashtami.
    */
-  dateRule?: "RATRI_VYAPINI";
+  dateRule?: "RATRI_VYAPINI" | "SANKASHTI";
 }
 
 /** SOLAR: match a specific Sankranti (sun entering a new sign) */

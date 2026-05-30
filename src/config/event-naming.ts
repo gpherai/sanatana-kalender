@@ -2209,7 +2209,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ],
     eventType: "VRAT",
     ruleType: "TITHI",
-    ruleConfig: { tithi: "CHATURTHI_KRISHNA", maas: "MAGHA" },
+    ruleConfig: { tithi: "CHATURTHI_KRISHNA", maas: "MAGHA", dateRule: "SANKASHTI" },
     description:
       "Sakat Chauth valt op Krishna Paksha Chaturthi in de maand Magha en is gewijd aan zowel Godin Sakat als Heer Ganesha in de Lambodara-gedaante. De godin Sakat — ook Sankat Chauth Mata genaamd — heeft haar beroemde tempel in het dorp Sakat in Rajasthan (ca. 60 km van Alwar). Vrouwen vasten speciaal voor het welzijn van hun zonen. Heer Ganesha wordt vereerd voor geluk en welvaart; zijn Lambodara-gedaante symboliseert het gehele universum dat in zijn buik is opgenomen. Devotees vasten van zonsopgang tot maanopkomst en breken het vasten pas na Chandra Darshana. Het vasten wordt beëindigd met het aanbieden van til-kuta (gemalen sesam) en sesamzaad. In Maharashtra staat dit feest bekend als Lambodara Sankashti Chaturthi.",
     tags: [
@@ -2233,7 +2233,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     categories: ["ganesha"],
     eventType: "VRAT",
     ruleType: "TITHI",
-    ruleConfig: { tithi: "CHATURTHI_KRISHNA", maas: "PHALGUNA" },
+    ruleConfig: { tithi: "CHATURTHI_KRISHNA", maas: "PHALGUNA", dateRule: "SANKASHTI" },
     description:
       "Dwijapriya betekent 'geliefd door de tweemaal-geborenen' — de Brahmins, geleerden en allen die de kennis-weg bewandelen. In deze manifestatie wordt Ganesha vereerd als beschermer van kennis, studie en Vedische tradities. Phalguna is de laatste maand van het Hindu jaar, waardoor deze Sankashti ook een afsluiting en zuivering symboliseert voor het nieuwe jaar. Devotees vasten van zonsopgang tot maanopkomst en reciteren de Ganesha Atharvashirsha.",
     tags: ["arghya", "darshan", "dwijapriya", "ganesha", "sankashti", "vasten"],
@@ -2244,7 +2244,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     categories: ["ganesha"],
     eventType: "VRAT",
     ruleType: "TITHI",
-    ruleConfig: { tithi: "CHATURTHI_KRISHNA", maas: "CHAITRA" },
+    ruleConfig: { tithi: "CHATURTHI_KRISHNA", maas: "CHAITRA", dateRule: "SANKASHTI" },
     description:
       "Bhalachandra betekent 'hij met de halve maan op het voorhoofd'. In deze manifestatie draagt Ganesha de wassende sikkel van Chandra als ornament, waarmee hij verbonden is met de maancyclus en de stroom van de tijd. Chaitra is de eerste maand van het Hindu jaar, en Bhalachandra Sankashti valt kort na Ugadi/Gudi Padwa. Devotees vasten van zonsopgang tot maanopkomst en vereren de maan bij opkomst met een wateroffering.",
     tags: [
@@ -2263,7 +2263,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     categories: ["ganesha"],
     eventType: "VRAT",
     ruleType: "TITHI",
-    ruleConfig: { tithi: "CHATURTHI_KRISHNA", maas: "VAISHAKHA" },
+    ruleConfig: { tithi: "CHATURTHI_KRISHNA", maas: "VAISHAKHA", dateRule: "SANKASHTI" },
     description:
       "Vikata betekent 'de formidabele' of 'de buitengewone'. In deze krachtige manifestatie staat Ganesha bekend als verwijderaar van zelfs de hardnekkigste obstakels en overwindt hij Kama, de god van verlangen. Vaishakha is een bijzonder heilige maand. Devotees vasten van zonsopgang tot maanopkomst en reciteren de Sankat Nashan Ganesha Stotram.",
     tags: ["arghya", "darshan", "ganesha", "sankashti", "vasten", "vikata"],
@@ -2274,7 +2274,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     categories: ["ganesha"],
     eventType: "VRAT",
     ruleType: "TITHI",
-    ruleConfig: { tithi: "CHATURTHI_KRISHNA", maas: "JYESHTHA" },
+    ruleConfig: { tithi: "CHATURTHI_KRISHNA", maas: "JYESHTHA", dateRule: "SANKASHTI" },
     description:
       "Op deze Sankashti wordt Ganesha vereerd in zijn Ekadanta-manifestatie — de tweede van zijn acht Ashtavinayaka-incarnaties zoals beschreven in de Mudgala Purana. 'Ekadanta' heeft een diepe filosofische betekenis: 'Eka' staat voor Maya (illusie), 'Danta' voor het Brahman (de ultieme werkelijkheid) — Ekadanta is hij die Maya draagt maar volledig geworteld is in de Absolute Waarheid. In deze vorm verscheen hij om de goden te bevrijden van de demon Madasura, die na een boon van de godin de drie werelden had onderworpen. Ekadanta verscheen rijdend op zijn muis, gewapend met strik, bijl, lotus en het abhaya-gebaar, en versloeg Madasura — die zich uiteindelijk overgaf en zich terugtrok naar de Patala Loka. Een andere overlevering schrijft de enkel-slagtand toe aan de slag met Parashurama, of aan het afbreken ervan als pen voor de Mahabharata. Devotees vasten van zonsopgang tot maanopkomst en reciteren de Sankat Nashan Ganesha Stotram.",
     tags: [
@@ -2297,7 +2297,12 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     categories: ["ganesha"],
     eventType: "VRAT",
     ruleType: "TITHI",
-    ruleConfig: { tithi: "CHATURTHI_KRISHNA", maas: "JYESHTHA", isAdhikaOnly: true },
+    ruleConfig: {
+      tithi: "CHATURTHI_KRISHNA",
+      maas: "JYESHTHA",
+      isAdhikaOnly: true,
+      dateRule: "SANKASHTI",
+    },
     description:
       "Vibhuvana Sankashti Chaturthi is de Krishna Paksha Chaturthi in de Adhika (schrikkel-) maand — de zeldzaamste van alle Sankashti-observanties, die gemiddeld slechts eens per twee en een half jaar voorkomt. Op deze dag wordt Vibhuvana Ganapati vereerd: Vibhuvana betekent 'aanwezig in alle drie de werelden' of 'hij die alle drie de Loka's verlicht' — Ganapati als de alomtegenwoordige kosmische kracht die Bhuloka (aarde), Bhuvarloka (tussenwereld) en Svarloka (hemel) doordringt. Bijzonder aanbod: kokosnotenladdu's (nariyal ke laddoo) worden op deze dag speciaal geofferd. Omdat Adhika Maas als de heiligste maand geldt, dragen gebeden, penance, aanbidding en het vasten duizendvoudig meer vrucht dan op een gewone Sankashti. Dit vrat vervult alle wensen en verwijdert alle belemmeringen. Ritueeel: vasten van zonsopgang tot maanopkomst, Ganesha-puja met kokosnotenladdu's, durva-gras en rode bloemen, maanaanbidding na maansopkomst (Arghya), en verbreking van het vasten na het zien van de maan.",
     tags: [
@@ -2318,7 +2323,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     categories: ["ganesha"],
     eventType: "VRAT",
     ruleType: "TITHI",
-    ruleConfig: { tithi: "CHATURTHI_KRISHNA", maas: "ASHADHA" },
+    ruleConfig: { tithi: "CHATURTHI_KRISHNA", maas: "ASHADHA", dateRule: "SANKASHTI" },
     description:
       "Krishnapingala betekent 'donker-roodbruin' — een manifestatie van Ganesha met een donkere teint en karakteristieke roodbruine ogen. Door verering van deze gedaante op Sankashti Chaturthi in Ashadha kunnen devotees succes bereiken op alle levensterreinen. Ashadha markeert het begin van Chaturmas, de heilige regenmoesson-periode. Op de dag van Chandrodayavyapini Chaturthi wordt de Shodashopachara-puja van Shri Ganesha verricht. Devotees vasten van zonsopgang tot maanopkomst en bieden durva-gras en rode bloemen aan, waarna arghya aan Chandra wordt gegeven bij maanopkomst.",
     tags: [
@@ -2340,7 +2345,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     categories: ["ganesha"],
     eventType: "VRAT",
     ruleType: "TITHI",
-    ruleConfig: { tithi: "CHATURTHI_KRISHNA", maas: "SHRAVANA" },
+    ruleConfig: { tithi: "CHATURTHI_KRISHNA", maas: "SHRAVANA", dateRule: "SANKASHTI" },
     description:
       "Gajanana betekent 'hij met het olifantsgezicht' — de meest fundamentele en bekende beschrijving van Ganesha. Shravana is een van de heiligste maanden van het jaar, gewijd aan zowel Shiva als Vishnu, en Gajanana Sankashti valt midden in deze intensief spirituele periode. Devotees vasten van zonsopgang tot maanopkomst en vereren het olifantsgezicht als symbool van wijsheid en kracht.",
     tags: ["arghya", "darshan", "gajanana", "ganesha", "sankashti", "shravana", "vasten"],
@@ -2351,7 +2356,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     categories: ["ganesha"],
     eventType: "VRAT",
     ruleType: "TITHI",
-    ruleConfig: { tithi: "CHATURTHI_KRISHNA", maas: "BHADRAPADA" },
+    ruleConfig: { tithi: "CHATURTHI_KRISHNA", maas: "BHADRAPADA", dateRule: "SANKASHTI" },
     description:
       "Heramba betekent 'beschermer van de zwakken'. In deze bijzondere manifestatie heeft Ganesha vijf hoofden en tien armen en rijdt hij op een leeuw in plaats van zijn gebruikelijke muis. Heramba Ganapati is de beschermer in tijden van gevaar en wordt bijzonder vereerd in Nepal en de Himalaya-regio. Bhadrapada is ook de maand van het grote Ganesh Chaturthi-festival, waardoor de hele maand in het teken staat van Ganesha.",
     tags: [
@@ -2371,7 +2376,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     categories: ["ganesha"],
     eventType: "VRAT",
     ruleType: "TITHI",
-    ruleConfig: { tithi: "CHATURTHI_KRISHNA", maas: "ASHWIN" },
+    ruleConfig: { tithi: "CHATURTHI_KRISHNA", maas: "ASHWIN", dateRule: "SANKASHTI" },
     description:
       "Vighnaraja betekent 'Koning der obstakels'. Als heer over alle hindernissen kan Ganesha ze zowel scheppen als verwijderen. In deze manifestatie wordt hij vereerd om zijn kracht als obstakelbeheerser te richten op het wegnemen van blokkades in het leven van de toegewijde. Ashwina volgt op de grote Navaratri-periode. Devotees vasten van zonsopgang tot maanopkomst.",
     tags: ["arghya", "darshan", "ganesha", "sankashti", "vasten", "vighnaraja"],
@@ -2382,7 +2387,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     categories: ["ganesha"],
     eventType: "VRAT",
     ruleType: "TITHI",
-    ruleConfig: { tithi: "CHATURTHI_KRISHNA", maas: "KARTIK" },
+    ruleConfig: { tithi: "CHATURTHI_KRISHNA", maas: "KARTIK", dateRule: "SANKASHTI" },
     description:
       "Vakratunda betekent 'hij met de gekromde slurf'. Dit is de eerste en meest primaire van de 32 klassieke vormen van Ganesha. Vakratunda rijdt op een leeuw en staat bekend als verwijderaar van hoogmoed en vals bewustzijn. Kartika is een bijzonder heilige maand die volgt op de Sharad Navaratri. Devotees vasten van zonsopgang tot maanopkomst.",
     tags: [
@@ -2401,7 +2406,11 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     categories: ["ganesha"],
     eventType: "VRAT",
     ruleType: "TITHI",
-    ruleConfig: { tithi: "CHATURTHI_KRISHNA", maas: "MARGASHIRSHA" },
+    ruleConfig: {
+      tithi: "CHATURTHI_KRISHNA",
+      maas: "MARGASHIRSHA",
+      dateRule: "SANKASHTI",
+    },
     description:
       "Ganadhipa betekent 'Heer van de Gana's' — de hemelse wezens die Shiva dienen. Als aanvoerder van het goddelijke gevolg van Shiva heeft Ganesha gezag over alle ganas. In de Bhagavad Gita noemt Krishna de maand Margashirsha als zijn favoriete maand, waardoor ook deze Sankashti een bijzondere heiligheid draagt. Devotees vasten van zonsopgang tot maanopkomst.",
     tags: [
@@ -2420,7 +2429,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     categories: ["ganesha"],
     eventType: "VRAT",
     ruleType: "TITHI",
-    ruleConfig: { tithi: "CHATURTHI_KRISHNA", maas: "PAUSHA" },
+    ruleConfig: { tithi: "CHATURTHI_KRISHNA", maas: "PAUSHA", dateRule: "SANKASHTI" },
     description:
       "Akhuratha betekent 'hij wiens rijdier de muis is' (Akhura = muis, ratha = voertuig). De muis Mushika vertegenwoordigt ego en verlangen die Ganesha beheerst en berijdt — symbool voor de overwinning van wijsheid op de verspreide geest. Pausha is een koude wintermaand, en deze Sankashti is de laatste van het Vikrama Samvat-jaar, wat haar een krachtig moment van bezinning en zuivering maakt.",
     tags: [
@@ -2441,7 +2450,7 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     aliases: ["Sakat Chauth"],
     eventType: "VRAT",
     ruleType: "TITHI",
-    ruleConfig: { tithi: "CHATURTHI_KRISHNA", maas: "MAGHA" },
+    ruleConfig: { tithi: "CHATURTHI_KRISHNA", maas: "MAGHA", dateRule: "SANKASHTI" },
     description:
       "Lambodara betekent 'hij met de grote buik' — de kosmische buik die het gehele universum omvat. Deze vorm vertegenwoordigt Ganesha als bewaarder van alle kennis en wijsheid van de schepping. Magha is een heilige wintermaand gewijd aan vooroudervering en spirituele zuivering. Lambodara Sankashti staat ook bekend als Sakat Chauth, waarbij moeders vasten voor het welzijn en de lange levensduur van hun kinderen. Devotees vasten van zonsopgang tot maanopkomst.",
     tags: [

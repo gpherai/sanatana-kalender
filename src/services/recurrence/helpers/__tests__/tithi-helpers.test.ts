@@ -8,7 +8,7 @@ import {
   computeTithiOccurrence,
   applyRatriVyapiniDateRule,
 } from "@/services/recurrence/helpers/tithi-helpers";
-import type { PrevDayInfo } from "../types";
+import type { PrevDayInfo } from "@/engine/types";
 
 describe("tithi-helpers", () => {
   describe("isConsecutiveDay", () => {

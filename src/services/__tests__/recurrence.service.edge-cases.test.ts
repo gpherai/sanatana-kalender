@@ -276,7 +276,7 @@ describe("Sankashti moonrise-before-sunrise shift", () => {
     tithi: "CHATURTHI_KRISHNA",
     maas: "VAISHAKHA",
     ruleType: "TITHI",
-    ruleConfig: { maas: "VAISHAKHA", tithi: "CHATURTHI_KRISHNA" },
+    ruleConfig: { maas: "VAISHAKHA", tithi: "CHATURTHI_KRISHNA", dateRule: "SANKASHTI" },
   };
 
   beforeEach(() => {
@@ -366,7 +366,7 @@ describe("Sankashti moonrise-before-sunrise shift", () => {
     const jyeshthaEvent: Event = {
       ...sankashtiEvent,
       maas: "JYESHTHA",
-      ruleConfig: { maas: "JYESHTHA", tithi: "CHATURTHI_KRISHNA" },
+      ruleConfig: { maas: "JYESHTHA", tithi: "CHATURTHI_KRISHNA", dateRule: "SANKASHTI" },
     };
     prismaMock.dailyInfo.findMany.mockImplementation((async (args: any) => {
       if (args.where?.tithi === "CHATURTHI_KRISHNA") {
@@ -440,7 +440,7 @@ describe("Sankashti moonrise-before-sunrise shift", () => {
     const maghaEvent: Event = {
       ...sankashtiEvent,
       maas: "MAGHA",
-      ruleConfig: { maas: "MAGHA", tithi: "CHATURTHI_KRISHNA" },
+      ruleConfig: { maas: "MAGHA", tithi: "CHATURTHI_KRISHNA", dateRule: "SANKASHTI" },
     };
     const result = await generateOccurrences(maghaEvent, options);
 
