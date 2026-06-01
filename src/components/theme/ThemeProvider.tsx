@@ -226,7 +226,7 @@ export function ThemeProvider({
         description: "",
         colors: { primary: "", secondary: "", accent: "" },
         isDefault: true,
-        category: "classic" as const,
+        category: "revamped" as const,
       };
     return {
       themeName,

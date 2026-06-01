@@ -246,6 +246,10 @@
   --theme-almanac-event-major-bg-hover: oklch(0.88 0.1 75);
   --theme-almanac-event-major-star: oklch(0.6 0.18 70);
 
+  /* Almanac pill/badge backgrounds (filter buttons in AlmanacFilters) */
+  --theme-almanac-special-pill-bg: oklch(0.9 0.06 295);
+  --theme-almanac-event-pill-bg: oklch(0.92 0.07 75);
+
   /* Almanac-specific colors (Sun Times Category - Orange/Yellow) */
   --theme-almanac-sun-rise-icon: oklch(0.65 0.2 50);
   --theme-almanac-sun-set-icon: oklch(0.58 0.22 25);
@@ -459,6 +463,10 @@
   --theme-almanac-event-major-bg: oklch(0.4 0.14 75 / 0.2);
   --theme-almanac-event-major-bg-hover: oklch(0.4 0.14 75 / 0.3);
   --theme-almanac-event-major-star: oklch(0.6 0.18 70);
+
+  /* Almanac pill/badge backgrounds (dark mode) */
+  --theme-almanac-special-pill-bg: oklch(0.35 0.12 295 / 0.25);
+  --theme-almanac-event-pill-bg: oklch(0.38 0.1 75 / 0.25);
 
   /* Almanac-specific colors (Sun Times Category - dark mode) */
   --theme-almanac-sun-rise-icon: oklch(0.65 0.2 50);

@@ -12,6 +12,11 @@
   --theme-accent: oklch(0.74 0.18 45);
   --theme-primary-fg: white;
 
+  --theme-fg: oklch(0.18 0.1 278);
+  --theme-fg-secondary: oklch(0.34 0.1 278);
+  --theme-fg-muted: oklch(0.48 0.08 278);
+  --theme-fg-subtle: oklch(0.62 0.06 278);
+
   --bhairava-indigo: oklch(0.62 0.22 275);
   --bhairava-ember: oklch(0.74 0.18 45);
   --bhairava-ash: oklch(0.82 0.01 280 / 0.12);
@@ -73,7 +78,7 @@
   );
   --theme-heading-text-fill-color: transparent;
   --theme-heading-text-shadow: 0 0 28px oklch(0.62 0.22 275 / 0.25);
-  --theme-primary-text-animation: nocturne-shimmer 4s ease-in-out infinite;
+  --theme-primary-text-animation: theme-shimmer 4s ease-in-out infinite;
   --theme-card-background: var(--theme-surface-background);
   --theme-card-border-rule: var(--theme-surface-border-rule);
   --theme-card-shadow: var(--theme-surface-shadow);
@@ -156,7 +161,7 @@
   --theme-body-decoration-size: 76px;
   --theme-body-decoration-color: oklch(0.62 0.22 275 / 0.07);
   --theme-brand-mark-animation: bhairava-pulse 3s ease-in-out infinite;
-  --theme-brand-label-animation: nocturne-shimmer 4s ease-in-out infinite;
+  --theme-brand-label-animation: theme-shimmer 4s ease-in-out infinite;
 
   --theme-hero-bg:
     radial-gradient(
@@ -221,6 +226,13 @@
   --theme-almanac-sun-rise-icon: oklch(0.62 0.18 45);
   --theme-almanac-sun-set-icon: oklch(0.5 0.16 25);
 
+  --theme-almanac-moon-timeline-bg: linear-gradient(
+    to right,
+    oklch(0.9 0.08 275),
+    oklch(0.88 0.1 285),
+    oklch(0.9 0.07 295)
+  );
+
   --theme-almanac-warning-border: oklch(0.48 0.22 18);
   --theme-almanac-warning-bg: oklch(0.94 0.04 18);
   --theme-almanac-warning-heading: oklch(0.44 0.2 18);
@@ -250,6 +262,11 @@
 
 .dark[data-theme="bhairava-nocturne"],
 [data-theme="bhairava-nocturne"].dark {
+  --theme-fg: oklch(0.93 0.06 280);
+  --theme-fg-secondary: oklch(0.76 0.08 278);
+  --theme-fg-muted: oklch(0.6 0.06 278);
+  --theme-fg-subtle: oklch(0.46 0.06 278);
+
   --theme-bg: oklch(0.09 0.025 278);
   --theme-bg-subtle: oklch(0.07 0.02 272);
   --theme-surface: oklch(0.16 0.034 278 / 0.65);
@@ -474,12 +491,10 @@
   }
 }
 
-@keyframes nocturne-shimmer {
-  0%,
-  100% {
-    filter: brightness(1) saturate(1);
-  }
-  50% {
-    filter: brightness(1.1) saturate(1.12);
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="bhairava-nocturne"] {
+    --theme-brand-mark-animation: none;
+    --theme-brand-label-animation: none;
+    --theme-primary-text-animation: none;
   }
 }

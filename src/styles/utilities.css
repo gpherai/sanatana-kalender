@@ -1084,6 +1084,16 @@
 /* =============================================================================
    GLOBAL ANIMATIONS
    ============================================================================= */
+@keyframes theme-shimmer {
+  0%,
+  100% {
+    filter: brightness(1) saturate(1);
+  }
+  50% {
+    filter: brightness(1.1) saturate(1.12);
+  }
+}
+
 @keyframes slide-in-from-right {
   from {
     transform: translateX(100%);
@@ -1187,8 +1197,9 @@ textarea:focus {
 }
 .btn-theme-primary:hover {
   opacity: 0.9;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px 0 color-mix(in oklch, var(--theme-primary) 35%, transparent);
+  box-shadow:
+    0 8px 24px 0 color-mix(in oklch, var(--theme-primary) 40%, transparent),
+    0 2px 8px 0 color-mix(in oklch, var(--theme-primary) 20%, transparent);
 }
 
 .btn-theme-secondary {

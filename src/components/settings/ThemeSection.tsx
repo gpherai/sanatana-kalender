@@ -150,7 +150,7 @@ export function ThemeSection({
                 type="button"
                 onClick={() => onColorModeChange(option.value)}
                 className={cn(
-                  "flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all",
+                  "flex min-h-[44px] items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all",
                   isSelected
                     ? "bg-theme-primary text-white shadow-md"
                     : "bg-theme-surface-raised text-theme-fg-secondary hover:bg-theme-hover"
@@ -171,30 +171,6 @@ export function ThemeSection({
 
       {/* Theme Grid */}
       <div className="space-y-8">
-        {themes.some((t) => t.category === "classic") && (
-          <div>
-            <div className="mb-4 flex items-center gap-2">
-              <div className="bg-theme-border h-px flex-1" />
-              <h3 className="text-theme-fg-muted text-sm font-semibold tracking-wider uppercase">
-                Klassieke thema&apos;s
-              </h3>
-              <div className="bg-theme-border h-px flex-1" />
-            </div>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {themes
-                .filter((t) => t.category === "classic")
-                .map((theme) => (
-                  <ThemeCard
-                    key={theme.name}
-                    theme={theme}
-                    isSelected={themeName === theme.name}
-                    onSelect={() => onThemeChange(theme.name)}
-                  />
-                ))}
-            </div>
-          </div>
-        )}
-
         {themes.some((t) => t.category === "revamped") && (
           <div>
             <div className="mb-4 flex items-center gap-2">

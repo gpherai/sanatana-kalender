@@ -11,6 +11,11 @@
   --theme-accent: oklch(0.74 0.24 38);
   --theme-primary-fg: oklch(0.12 0.04 42);
 
+  --theme-fg: oklch(0.2 0.08 42);
+  --theme-fg-secondary: oklch(0.36 0.1 48);
+  --theme-fg-muted: oklch(0.5 0.08 52);
+  --theme-fg-subtle: oklch(0.64 0.06 58);
+
   --narasimha-fire: oklch(0.68 0.22 52);
   --narasimha-flame: oklch(0.74 0.24 38);
 
@@ -75,7 +80,7 @@
   );
   --theme-heading-text-fill-color: transparent;
   --theme-heading-text-shadow: 0 0 28px oklch(0.68 0.22 52 / 0.28);
-  --theme-primary-text-animation: gold-fire 3.5s ease-in-out infinite;
+  --theme-primary-text-animation: theme-shimmer 3.5s ease-in-out infinite;
   --theme-card-background: var(--theme-surface-background);
   --theme-card-border-rule: var(--theme-surface-border-rule);
   --theme-card-shadow: var(--theme-surface-shadow);
@@ -163,7 +168,7 @@
   --theme-body-decoration-size: 70px;
   --theme-body-decoration-color: oklch(0.68 0.22 52 / 0.07);
   --theme-brand-mark-animation: jwala-flicker 2.5s ease-in-out infinite;
-  --theme-brand-label-animation: gold-fire 3.5s ease-in-out infinite;
+  --theme-brand-label-animation: theme-shimmer 3.5s ease-in-out infinite;
 
   --theme-hero-bg:
     radial-gradient(
@@ -222,6 +227,11 @@
 
 .dark[data-theme="narasimha-jwala"],
 [data-theme="narasimha-jwala"].dark {
+  --theme-fg: oklch(0.93 0.06 58);
+  --theme-fg-secondary: oklch(0.76 0.08 52);
+  --theme-fg-muted: oklch(0.6 0.06 50);
+  --theme-fg-subtle: oklch(0.46 0.06 48);
+
   --theme-bg: oklch(0.11 0.03 42);
   --theme-bg-subtle: oklch(0.09 0.04 48);
   --theme-surface: oklch(0.18 0.04 45 / 0.65);
@@ -417,16 +427,6 @@
   70% {
     transform: scale(0.98);
     filter: drop-shadow(0 0 10px oklch(0.68 0.22 52 / 0.75));
-  }
-}
-
-@keyframes gold-fire {
-  0%,
-  100% {
-    filter: brightness(1) saturate(1);
-  }
-  50% {
-    filter: brightness(1.12) saturate(1.15);
   }
 }
 

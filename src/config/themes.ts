@@ -46,7 +46,7 @@ export type ResolvedColorMode = "light" | "dark";
  * Theme category for organization.
  * Used to group themes in the settings UI.
  */
-export type ThemeCategory = "classic" | "revamped" | "special";
+export type ThemeCategory = "revamped" | "special";
 
 /**
  * Complete theme definition.
