@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { FALLBACK_CATEGORY_COLOR, resolveCategoryColor } from "@/lib/category-styles";
 import { useTheme } from "@/components/theme/ThemeProvider";
 import { MoonPhase } from "@/components/ui/MoonPhase";
+import { PlanetIcon } from "@/components/ui/PlanetIcon";
 import { isToday, formatDateLocal, formatLongDate } from "@/lib/date-utils";
 import type { SpecialDay } from "@/lib/panchanga-helpers";
 import type { DailyInfoResponse } from "@/types";
@@ -39,53 +40,46 @@ const SANSKRIT_DAYS = [
   {
     name: "Somavara",
     deity: "Chandra",
-    planet: "Moon",
-    icon: "🌙",
+    planet: "Moon" as const,
     color: "text-[var(--theme-almanac-planet-moon)]",
   },
   {
     name: "Mangalavara",
     deity: "Mangal",
-    planet: "Mars",
-    icon: "🔴",
+    planet: "Mars" as const,
     color: "text-[var(--theme-almanac-planet-mars)]",
   },
   {
     name: "Budhavara",
     deity: "Budha",
-    planet: "Mercury",
-    icon: "🟢",
+    planet: "Mercury" as const,
     color: "text-[var(--theme-almanac-planet-mercury)]",
   },
   {
     name: "Guruvara",
     deity: "Brihaspati",
-    planet: "Jupiter",
-    icon: "🟡",
+    planet: "Jupiter" as const,
     color: "text-[var(--theme-almanac-planet-jupiter)]",
   },
   {
     name: "Shukravara",
     deity: "Shukra",
-    planet: "Venus",
-    icon: "⚪",
+    planet: "Venus" as const,
     color: "text-[var(--theme-almanac-planet-venus)]",
   },
   {
     name: "Shanivara",
     deity: "Shani",
-    planet: "Saturn",
-    icon: "🪐",
+    planet: "Saturn" as const,
     color: "text-[var(--theme-almanac-planet-saturn)]",
   },
   {
     name: "Ravivara",
     deity: "Surya",
-    planet: "Sun",
-    icon: "☀️",
+    planet: "Sun" as const,
     color: "text-[var(--theme-almanac-planet-sun)]",
   },
-] as const;
+];
 
 export function DayDetailsPanel({
   selectedDate,
@@ -171,7 +165,10 @@ export function DayDetailsPanel({
             <div className="flex items-center gap-2 text-sm text-white/70">
               {selectedSanskritDay && (
                 <>
-                  <span aria-hidden="true">{selectedSanskritDay.icon}</span>
+                  <PlanetIcon
+                    planet={selectedSanskritDay.planet}
+                    className={`h-4 w-4 shrink-0 ${selectedSanskritDay.color}`}
+                  />
                   <span>{selectedSanskritDay.name}</span>
                 </>
               )}
