@@ -6,41 +6,6 @@
    overrides.
    ============================================================================= */
 
-/* Theme: Spiritual Minimal (Classic) */
-[data-theme="spiritual-minimal"] {
-  --theme-primary: oklch(0.65 0.15 45);
-  --theme-secondary: oklch(0.55 0.1 200);
-  --theme-accent: oklch(0.7 0.12 85);
-}
-
-/* Theme: Traditional Rich (Classic) */
-[data-theme="traditional-rich"] {
-  --theme-primary: oklch(0.55 0.18 30);
-  --theme-secondary: oklch(0.45 0.12 45);
-  --theme-accent: oklch(0.75 0.15 85);
-}
-
-/* Theme: Cosmic Purple (Classic) */
-[data-theme="cosmic-purple"] {
-  --theme-primary: oklch(0.45 0.2 280);
-  --theme-secondary: oklch(0.35 0.15 300);
-  --theme-accent: oklch(0.7 0.18 320);
-}
-
-/* Theme: Forest Green (Classic) */
-[data-theme="forest-green"] {
-  --theme-primary: oklch(0.5 0.15 145);
-  --theme-secondary: oklch(0.4 0.1 160);
-  --theme-accent: oklch(0.65 0.12 130);
-}
-
-/* Theme: Sunrise Orange (Classic) */
-[data-theme="sunrise-orange"] {
-  --theme-primary: oklch(0.7 0.18 50);
-  --theme-secondary: oklch(0.6 0.15 40);
-  --theme-accent: oklch(0.8 0.12 70);
-}
-
 /* Theme: Spiritual Minimal (Revamped) */
 [data-theme="spiritual-minimal-revamped"] {
   --theme-primary: oklch(0.65 0.15 45);

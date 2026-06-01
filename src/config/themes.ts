@@ -107,70 +107,6 @@ export const DEFAULT_COLOR_MODE: ColorMode = "system";
 
 export const THEME_CATALOG: readonly ThemeDefinition[] = [
   // ─────────────────────────────────────────────────────────────────────────
-  // STANDARD THEMES
-  // ─────────────────────────────────────────────────────────────────────────
-  {
-    name: "spiritual-minimal",
-    displayName: "Spiritual Minimal",
-    description: "Clean and peaceful design with soft colors",
-    isDefault: true,
-    category: "classic" as const,
-    colors: {
-      primary: "oklch(0.65 0.15 45)",
-      secondary: "oklch(0.55 0.10 200)",
-      accent: "oklch(0.70 0.12 85)",
-    },
-  },
-  {
-    name: "traditional-rich",
-    displayName: "Traditional Rich",
-    description: "Warm temple colors with golden accents",
-    isDefault: false,
-    category: "classic" as const,
-    colors: {
-      primary: "oklch(0.55 0.18 30)",
-      secondary: "oklch(0.45 0.12 45)",
-      accent: "oklch(0.75 0.15 85)",
-    },
-  },
-  {
-    name: "cosmic-purple",
-    displayName: "Cosmic Purple",
-    description: "Deep cosmic tones for meditation",
-    isDefault: false,
-    category: "classic" as const,
-    colors: {
-      primary: "oklch(0.45 0.20 280)",
-      secondary: "oklch(0.35 0.15 300)",
-      accent: "oklch(0.70 0.18 320)",
-    },
-  },
-  {
-    name: "forest-green",
-    displayName: "Forest Green",
-    description: "Natural and earthy vibes",
-    isDefault: false,
-    category: "classic" as const,
-    colors: {
-      primary: "oklch(0.50 0.15 145)",
-      secondary: "oklch(0.40 0.10 160)",
-      accent: "oklch(0.65 0.12 130)",
-    },
-  },
-  {
-    name: "sunrise-orange",
-    displayName: "Sunrise Orange",
-    description: "Energetic morning vibes",
-    isDefault: false,
-    category: "classic" as const,
-    colors: {
-      primary: "oklch(0.70 0.18 50)",
-      secondary: "oklch(0.60 0.15 40)",
-      accent: "oklch(0.80 0.12 70)",
-    },
-  },
-
-  // ─────────────────────────────────────────────────────────────────────────
   // ✨ REVAMPED THEMES (Enhanced with subtle gradient backgrounds)
   // ─────────────────────────────────────────────────────────────────────────
   {
@@ -255,7 +191,7 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
     name: "shri-ganesha",
     displayName: "✨ Shri Ganesha",
     description: "Divine blessings of the Remover of Obstacles",
-    isDefault: false,
+    isDefault: true,
     category: "special" as const,
     isSpecial: true,
     colors: {
