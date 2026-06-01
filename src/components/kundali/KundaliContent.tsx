@@ -35,8 +35,11 @@ export function KundaliContent() {
     <PageLayout width="medium" spacing>
       {/* Header */}
       <div className="flex items-center gap-3">
-        <Star className="text-theme-primary h-6 w-6" />
+        <Star className="text-theme-primary h-6 w-6 shrink-0" />
         <div>
+          <p className="text-theme-primary mb-1 font-serif text-sm font-medium tracking-wide opacity-80">
+            कुण्डली · Kuṇḍalī
+          </p>
           <h1 className="text-theme-fg text-2xl font-bold">Kundali</h1>
           <p className="text-theme-fg-muted text-sm">
             Geboortehoroscoop — Jyotisha (Lahiri ayanamsa · Whole Sign huizen · Mean Node)

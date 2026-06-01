@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useFetch } from "@/hooks/useFetch";
 import { EventDetailModal } from "@/components/calendar/EventDetailModal";
 import { PageLayout } from "@/components/layout";
+import { PageHeader } from "@/components/ui/PageHeader";
 import {
   AlmanacHeader,
   AlmanacFilters,
@@ -355,7 +356,13 @@ export function AlmanacClient({
   }, []);
 
   return (
-    <PageLayout>
+    <PageLayout spacing>
+      <PageHeader
+        devanagari="पञ्चाङ्ग"
+        translit="Pañcāṅga"
+        title="Almanak"
+        description="De vijf elementen van de dag: tithi, vara, nakshatra, yoga en karana"
+      />
       <AlmanacHeader location={location} />
 
       <AlmanacFilters

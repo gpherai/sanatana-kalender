@@ -137,6 +137,9 @@ export function EventsContent({ initialEvents }: EventsContentProps) {
       {/* Page Header */}
       <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
+          <p className="text-theme-primary mb-1 font-serif text-sm font-medium tracking-wide opacity-80">
+            उत्सव · Utsava
+          </p>
           <h1 className="text-theme-fg text-3xl font-bold">Events</h1>
           <p className="text-theme-fg-muted mt-1 text-sm">
             {events.length} event{events.length !== 1 && "s"} gevonden

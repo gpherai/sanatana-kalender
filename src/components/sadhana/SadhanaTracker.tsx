@@ -173,6 +173,9 @@ export function SadhanaTracker({ initialData }: { initialData?: SadhanaInitialDa
       {/* Header + tab nav */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
+          <p className="text-theme-primary mb-1 font-serif text-sm font-medium tracking-wide opacity-80">
+            साधना · Sādhanā
+          </p>
           <h1 className="text-theme-fg text-2xl font-bold">Sadhana</h1>
           <p className="text-theme-fg-muted text-sm">
             Mantra japa &amp; beoefening tracker
