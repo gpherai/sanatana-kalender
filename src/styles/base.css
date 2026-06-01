@@ -705,7 +705,6 @@ body.app-body::after {
 
 h1:not(.theme-heading-reset),
 h2:not(.theme-heading-reset) {
-  font-family: var(--font-serif, serif);
   background: var(--theme-heading-background);
   background-clip: text;
   -webkit-background-clip: text;
