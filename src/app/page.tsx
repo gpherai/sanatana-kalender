@@ -19,6 +19,7 @@ import {
   UpcomingEventsSkeleton,
   CategoriesSkeleton,
 } from "@/components/home/HomeSkeletons";
+import { ThemedFooter } from "@/components/ui/ThemedFooter";
 
 export const dynamic = "force-dynamic";
 
@@ -65,11 +66,7 @@ export default function Home() {
         <CategoriesSection categoriesPromise={categoriesPromise} />
       </Suspense>
 
-      <footer className="border-theme-border border-t py-6 text-center">
-        <p className="text-theme-fg-muted text-sm">
-          <span aria-hidden="true">🕉️</span> Dharma Calendar &mdash; ॐ श्री गणेशाय नमः
-        </p>
-      </footer>
+      <ThemedFooter />
     </PageLayout>
   );
 }
