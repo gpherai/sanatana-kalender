@@ -39,7 +39,7 @@ export async function UpcomingEventsSection({ eventsPromise, todayYear }: Props)
           </Link>
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           {upcomingEvents.map((occ) => {
             const category = occ.event.categories[0]?.category ?? null;
             const eventDate = new Date(occ.date);

@@ -53,25 +53,21 @@ export default function Home() {
         />
       </Suspense>
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-4">
-        <div className="bg-theme-surface-raised rounded-2xl p-4 shadow-lg md:p-6 xl:col-span-3">
-          <DharmaCalendar />
-        </div>
+      <Suspense fallback={<UpcomingEventsSkeleton />}>
+        <UpcomingEventsSection eventsPromise={eventsPromise} todayYear={today.year} />
+      </Suspense>
 
-        <div className="space-y-6 xl:col-span-1">
-          <Suspense fallback={<UpcomingEventsSkeleton />}>
-            <UpcomingEventsSection eventsPromise={eventsPromise} todayYear={today.year} />
-          </Suspense>
-          <Suspense fallback={<CategoriesSkeleton />}>
-            <CategoriesSection categoriesPromise={categoriesPromise} />
-          </Suspense>
-        </div>
+      <div className="bg-theme-surface-raised rounded-2xl p-4 shadow-lg md:p-6">
+        <DharmaCalendar />
       </div>
+
+      <Suspense fallback={<CategoriesSkeleton />}>
+        <CategoriesSection categoriesPromise={categoriesPromise} />
+      </Suspense>
 
       <footer className="border-theme-border border-t py-6 text-center">
         <p className="text-theme-fg-muted text-sm">
-          <span aria-hidden="true">🕉️</span> Dharma Calendar • Built with Next.js, Prisma,
-          PostgreSQL
+          <span aria-hidden="true">🕉️</span> Dharma Calendar &mdash; ॐ श्री गणेशाय नमः
         </p>
       </footer>
     </PageLayout>
