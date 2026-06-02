@@ -3,6 +3,7 @@ import { NextRequest } from "next/server";
 import { prismaMock } from "@/__tests__/helpers/prisma-mock";
 import { GET, PUT } from "../preferences/route";
 import { Prisma } from "@prisma/client";
+import { DEFAULT_THEME_NAME } from "@/config/themes";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -19,7 +20,7 @@ describe("API Preferences", () => {
 
     expect(response.status).toBe(200);
     expect(json.id).toBe("default");
-    expect(json.currentTheme).toBe("spiritual-minimal");
+    expect(json.currentTheme).toBe(DEFAULT_THEME_NAME);
     expect(json.timezone).toBeUndefined();
   });
 
@@ -109,7 +110,7 @@ describe("API Preferences", () => {
   it("updates preferences with empty payload (partial update)", async () => {
     prismaMock.userPreference.upsert.mockResolvedValue({
       id: "default",
-      currentTheme: "spiritual-minimal",
+      currentTheme: DEFAULT_THEME_NAME,
       createdAt: new Date(),
       updatedAt: new Date(),
     } as any);
@@ -125,7 +126,7 @@ describe("API Preferences", () => {
     expect(prismaMock.userPreference.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
         create: expect.objectContaining({
-          currentTheme: "spiritual-minimal", // Default
+          currentTheme: DEFAULT_THEME_NAME, // Default
         }),
         update: expect.objectContaining({
           // No fields should be present in the update object if payload is empty

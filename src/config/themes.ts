@@ -341,12 +341,10 @@ export function getSpecialThemes(): readonly ThemeDefinition[] {
 }
 
 /**
- * Get all standard (classic + revamped) themes.
+ * Get all standard (revamped) themes — i.e. every non-special theme.
  */
 export function getStandardThemes(): readonly ThemeDefinition[] {
-  return THEME_CATALOG.filter(
-    (t) => t.category === "classic" || t.category === "revamped"
-  );
+  return THEME_CATALOG.filter((t) => t.category === "revamped");
 }
 
 /**

@@ -41,8 +41,8 @@ describe("Theme catalog", () => {
     const standard = getStandardThemes();
     expect(standard.every((theme) => theme.category !== "special")).toBe(true);
 
-    const classic = getThemesByCategory("classic");
-    expect(classic.every((theme) => theme.category === "classic")).toBe(true);
+    const revamped = getThemesByCategory("revamped");
+    expect(revamped.every((theme) => theme.category === "revamped")).toBe(true);
   });
 
   it("maps to theme options consistently", () => {

@@ -6,11 +6,11 @@ import type { ThemeOption } from "@/config/themes";
 
 const THEMES: ThemeOption[] = [
   {
-    name: "classic-one",
-    displayName: "Classic One",
-    description: "Classic theme",
+    name: "revamped-default",
+    displayName: "Revamped Default",
+    description: "Revamped theme",
     colors: { primary: "#111", secondary: "#222", accent: "#333" },
-    category: "classic",
+    category: "revamped",
     isDefault: true,
   },
   {
@@ -39,7 +39,7 @@ describe("ThemeSection", () => {
 
     render(
       <ThemeSection
-        themeName="classic-one"
+        themeName="revamped-default"
         colorMode="system"
         themes={THEMES}
         resolvedColorMode="dark"
@@ -62,11 +62,11 @@ describe("ThemeSection", () => {
     });
 
     // Find and click theme button
-    const themeButton = await screen.findByRole("button", { name: /Classic One/ });
+    const themeButton = await screen.findByRole("button", { name: /Revamped Default/ });
     await userEvent.click(themeButton);
 
     await waitFor(() => {
-      expect(onThemeChange).toHaveBeenCalledWith("classic-one");
+      expect(onThemeChange).toHaveBeenCalledWith("revamped-default");
     });
   }, 10000); // Increase timeout to 10s
 });

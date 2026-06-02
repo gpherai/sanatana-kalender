@@ -2,6 +2,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, act, renderHook } from "@testing-library/react";
 import { ThemeProvider, useTheme } from "../ThemeProvider";
+import { DEFAULT_THEME_NAME } from "@/config/themes";
 import { useEffect } from "react";
 
 describe("ThemeProvider 100% Coverage", () => {
@@ -59,7 +60,7 @@ describe("ThemeProvider 100% Coverage", () => {
       capturedContext.setTheme("INVALID_THEME");
     });
 
-    expect(capturedContext.themeName).toBe("spiritual-minimal");
+    expect(capturedContext.themeName).toBe(DEFAULT_THEME_NAME);
   });
 
   it("sets color mode explicitly (line 205)", () => {

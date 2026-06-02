@@ -1,8 +1,6 @@
 import { DateTime } from "luxon";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
- 
-
 const {
   calculateSunriseSunset,
   calculateMoonriseMoonset,

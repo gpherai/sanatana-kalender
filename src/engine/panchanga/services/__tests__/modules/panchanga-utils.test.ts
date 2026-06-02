@@ -69,7 +69,8 @@ describe("jdToLocal", () => {
   it("applies timezone", () => {
     const utcResult = jdToLocal(2460000, "UTC");
     const istResult = jdToLocal(2460000, "Asia/Kolkata");
-    // IST is UTC+5:30 so hour should differ
+    // IST is UTC+5:30 so the offset should differ from UTC's 0
+    expect(utcResult.offset).toBe(0);
     expect(istResult.offset).toBe(330); // +5:30 in minutes
   });
 });

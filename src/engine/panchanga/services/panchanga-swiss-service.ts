@@ -95,9 +95,10 @@ export class PanchangaSwissService {
       rashiData.sunSignIdx
     );
 
-    const gregorianYear = DateTime.fromISO(dateStr, { zone: location.tz }).year;
+    const gregorianDt = DateTime.fromISO(dateStr, { zone: location.tz });
     const samvatData = computeSamvatData(
-      gregorianYear,
+      gregorianDt.year,
+      gregorianDt.month,
       maasData.maasIdx,
       maasData.isAdhika
     );

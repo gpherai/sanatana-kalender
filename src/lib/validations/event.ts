@@ -139,7 +139,7 @@ const createEventBaseSchema = z
     name: z.string().min(1).max(100),
     description: z.string().max(500).nullable().optional(),
     eventType: eventTypeEnum,
-    categoryId: z.string().cuid().nullable().optional(),
+    categoryId: z.cuid().nullable().optional(),
     recurrenceType: recurrenceEnum.default("NONE"),
     tithi: tithiEnum.nullable().optional(),
     nakshatra: nakshatraEnum.nullable().optional(),
@@ -183,7 +183,7 @@ export const updateOccurrenceSchema = z
 
 export const generateOccurrencesSchema = z
   .object({
-    eventId: z.string().cuid().optional(),
+    eventId: z.cuid().optional(),
     startDate: dateStringSchema,
     endDate: dateStringSchema,
     maxOccurrences: z.number().int().positive().max(5000).optional(),

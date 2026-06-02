@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 const { sweCalcUt, findEventEnd } = vi.hoisted(() => ({
   sweCalcUt: vi.fn(),
-  findEventEnd: vi.fn(async (startJD: number) => startJD + 0.1),
+  findEventEnd: vi.fn(async (startJD: number): Promise<number | null> => startJD + 0.1),
 }));
 
 vi.mock("../../../utils/astro", () => ({

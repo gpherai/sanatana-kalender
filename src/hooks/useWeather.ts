@@ -49,7 +49,7 @@ export function useWeather(initialData?: WeatherApiResponse | null) {
       // initialData was fetched server-side; stamp "last updated" only after
       // mount. Computing new Date() during the render pass differs between SSR
       // and hydration and breaks hydration.
-       
+
       setLastUpdated(new Date());
       return;
     }

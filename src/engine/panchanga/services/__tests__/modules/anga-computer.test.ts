@@ -3,7 +3,10 @@ import { describe, it, expect, vi } from "vitest";
 const { sweCalcUt, findEventEnd } = vi.hoisted(() => ({
   sweCalcUt: vi.fn(),
   findEventEnd: vi.fn(
-    async (startJD: number, getVal: ((jd: number) => Promise<number>) | null) => {
+    async (
+      startJD: number,
+      getVal: ((jd: number) => Promise<number>) | null
+    ): Promise<number | null> => {
       if (getVal) await getVal(startJD);
       return startJD + 0.1;
     }

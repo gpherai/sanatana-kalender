@@ -13,7 +13,7 @@ function ThemeConsumer() {
       <button type="button" onClick={toggleColorMode}>
         toggle
       </button>
-      <button type="button" onClick={() => setTheme("traditional-rich")}>
+      <button type="button" onClick={() => setTheme("traditional-rich-revamped")}>
         set-theme
       </button>
     </div>
@@ -50,7 +50,7 @@ describe("ThemeProvider", () => {
   it("applies stored theme and color mode from localStorage", async () => {
     localStorage.setItem(
       THEME_STORAGE_KEY,
-      serializeThemeState({ themeName: "traditional-rich", colorMode: "dark" })
+      serializeThemeState({ themeName: "traditional-rich-revamped", colorMode: "dark" })
     );
 
     render(
@@ -60,11 +60,16 @@ describe("ThemeProvider", () => {
     );
 
     await waitFor(() => {
-      expect(document.documentElement).toHaveAttribute("data-theme", "traditional-rich");
+      expect(document.documentElement).toHaveAttribute(
+        "data-theme",
+        "traditional-rich-revamped"
+      );
     });
 
     expect(document.documentElement.classList.contains("dark")).toBe(true);
-    expect(screen.getByTestId("theme-name")).toHaveTextContent("traditional-rich");
+    expect(screen.getByTestId("theme-name")).toHaveTextContent(
+      "traditional-rich-revamped"
+    );
   });
 
   it("toggles color mode and updates DOM class", async () => {
@@ -85,7 +90,7 @@ describe("ThemeProvider", () => {
 
   it("updates theme via setTheme", async () => {
     render(
-      <ThemeProvider defaultTheme="spiritual-minimal">
+      <ThemeProvider defaultTheme="spiritual-minimal-revamped">
         <ThemeConsumer />
       </ThemeProvider>
     );
@@ -93,7 +98,10 @@ describe("ThemeProvider", () => {
     await userEvent.click(screen.getByRole("button", { name: "set-theme" }));
 
     await waitFor(() => {
-      expect(document.documentElement).toHaveAttribute("data-theme", "traditional-rich");
+      expect(document.documentElement).toHaveAttribute(
+        "data-theme",
+        "traditional-rich-revamped"
+      );
     });
   });
 });
