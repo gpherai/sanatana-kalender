@@ -130,6 +130,15 @@
   --theme-heading-text-shadow: none;
   --theme-primary-text-animation: none;
 
+  /* Hero (TodayHero) — themes override; fallback darkens the brand palette */
+  --theme-hero-bg: linear-gradient(
+    135deg,
+    color-mix(in oklch, var(--theme-primary) 95%, black),
+    color-mix(in oklch, var(--theme-secondary) 92%, black),
+    color-mix(in oklch, var(--theme-accent) 90%, black)
+  );
+  --theme-hero-blob-color: oklch(1 0 0 / 0.05);
+
   /* Reusable component primitives. Themes may override these hooks, while
      components keep using stable role classes instead of theme-specific CSS. */
   --theme-card-radius: 1rem;
@@ -560,6 +569,19 @@ body.app-body::after {
 
 .app-page-shell {
   background: var(--theme-page-shell-background);
+}
+
+/* TodayHero is always a dark spotlight, regardless of light/dark mode or a
+   theme's surface-tuned icon colors. Scope bright celestial icon values here so
+   the Sun/Moon/Sunrise/Sunset icons stay legible on the dark gradient. These
+   override the inherited --theme-icon-* because .today-hero sits closer to the
+   icons than the themed [data-theme] root. */
+.today-hero {
+  --theme-icon-sun: oklch(0.85 0.17 75);
+  --theme-icon-sunrise: oklch(0.78 0.18 48);
+  --theme-icon-sunset: oklch(0.72 0.2 30);
+  --theme-icon-moon: oklch(0.84 0.09 250);
+  --theme-icon-event-special: oklch(0.86 0.15 90);
 }
 
 .bg-theme-surface {

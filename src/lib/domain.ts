@@ -88,13 +88,13 @@ export const PAKSHAS = [
 // VARA DAYS (Vedic weekdays, indexed 0=Sunday like Date.getDay())
 // --------------------------------------------
 export const VARA_DAYS = [
-  { name: "Ravivara", deity: "Surya", icon: "☀️" }, // Sunday
-  { name: "Somavara", deity: "Chandra", icon: "🌙" }, // Monday
-  { name: "Mangalavara", deity: "Mangal", icon: "🔴" }, // Tuesday
-  { name: "Budhavara", deity: "Budha", icon: "🟢" }, // Wednesday
-  { name: "Guruvara", deity: "Brihaspati", icon: "🟡" }, // Thursday
-  { name: "Shukravara", deity: "Shukra", icon: "⚪" }, // Friday
-  { name: "Shanivara", deity: "Shani", icon: "🪐" }, // Saturday
+  { name: "Ravivara", deity: "Surya", planet: "Sun" }, // Sunday
+  { name: "Somavara", deity: "Chandra", planet: "Moon" }, // Monday
+  { name: "Mangalavara", deity: "Mangal", planet: "Mars" }, // Tuesday
+  { name: "Budhavara", deity: "Budha", planet: "Mercury" }, // Wednesday
+  { name: "Guruvara", deity: "Brihaspati", planet: "Jupiter" }, // Thursday
+  { name: "Shukravara", deity: "Shukra", planet: "Venus" }, // Friday
+  { name: "Shanivara", deity: "Shani", planet: "Saturn" }, // Saturday
 ] as const;
 
 // --------------------------------------------

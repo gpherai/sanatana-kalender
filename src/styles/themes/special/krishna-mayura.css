@@ -1,0 +1,595 @@
+/* =============================================================================
+   SPECIAL THEME: Krishna Mayura
+
+   Token-driven special theme. Do not target body/header/headings directly here;
+   set app-level theme hooks and semantic tokens instead.
+   ============================================================================= */
+
+[data-theme="krishna-mayura"] {
+  --theme-primary: oklch(0.55 0.22 255);
+  --theme-secondary: oklch(0.75 0.14 90);
+  --theme-accent: oklch(0.55 0.15 190);
+  --theme-primary-fg: white;
+
+  --krishna-sindoor: oklch(0.55 0.25 255);
+  --krishna-gold: oklch(0.78 0.14 90);
+  --krishna-durva: oklch(0.55 0.18 190);
+  --krishna-mooladhara: oklch(0.45 0.22 255);
+
+  --theme-bg: oklch(0.96 0.035 90);
+  --theme-bg-subtle: oklch(0.94 0.045 90);
+  --theme-surface: oklch(1 0 0 / 0.78);
+  --theme-surface-raised: oklch(1 0 0 / 0.86);
+  --theme-surface-overlay: oklch(0.99 0.03 90 / 0.92);
+  --theme-fg: oklch(0.22 0.08 255);
+  --theme-fg-secondary: oklch(0.38 0.08 255);
+  --theme-fg-muted: oklch(0.5 0.06 90);
+  --theme-fg-subtle: oklch(0.64 0.05 90);
+  --theme-border: oklch(0.78 0.12 90 / 0.3);
+  --theme-border-subtle: oklch(0.84 0.08 90 / 0.2);
+  --theme-border-strong: oklch(0.58 0.18 255 / 0.42);
+  --theme-divider: oklch(0.82 0.08 90 / 0.24);
+  --theme-hover: oklch(0.92 0.055 90 / 0.72);
+  --theme-active: oklch(0.88 0.07 90 / 0.78);
+  --theme-disabled: oklch(0.88 0.035 90 / 0.7);
+  --theme-ring: var(--krishna-gold);
+  --theme-glass-bg: oklch(0.96 0.055 90 / 0.2);
+  --theme-glass-border: oklch(0.78 0.14 90 / 0.3);
+  --theme-stat-value: var(--theme-fg);
+  --theme-heatmap-empty: oklch(0.82 0.07 90 / 0.18);
+  --theme-heatmap-1: oklch(0.78 0.12 90 / 0.32);
+  --theme-heatmap-2: oklch(0.67 0.16 90 / 0.52);
+  --theme-heatmap-3: oklch(0.58 0.2 255 / 0.74);
+  --theme-heatmap-4: var(--theme-accent);
+  --theme-app-background-attachment: fixed;
+  --theme-surface-backdrop-filter: blur(12px);
+  --theme-surface-raised-backdrop-filter: blur(16px);
+  --theme-surface-background: linear-gradient(
+    145deg,
+    oklch(1 0 0 / 0.78) 0%,
+    oklch(0.98 0.035 90 / 0.72) 100%
+  );
+  --theme-surface-border-rule: 1px solid oklch(0.78 0.14 90 / 0.32);
+  --theme-surface-shadow:
+    0 4px 22px oklch(0.55 0.22 255 / 0.1), 0 0 0 1px oklch(0.78 0.14 90 / 0.06),
+    inset 0 1px 0 oklch(1 0 0 / 0.55);
+  --theme-surface-raised-background: linear-gradient(
+    145deg,
+    oklch(1 0 0 / 0.88) 0%,
+    oklch(0.98 0.035 90 / 0.82) 100%
+  );
+  --theme-surface-raised-border-rule: 1px solid oklch(0.78 0.14 90 / 0.36);
+  --theme-surface-raised-shadow:
+    0 8px 32px oklch(0.55 0.22 255 / 0.14), 0 0 0 1px oklch(0.78 0.14 90 / 0.1),
+    inset 0 1px 0 oklch(1 0 0 / 0.62);
+  --theme-primary-action-background: linear-gradient(
+    145deg,
+    var(--krishna-sindoor) 0%,
+    oklch(0.62 0.2 255) 58%,
+    var(--krishna-gold) 100%
+  );
+  --theme-primary-action-border-rule: 1px solid oklch(0.78 0.14 90 / 0.45);
+  --theme-primary-action-shadow:
+    0 4px 18px oklch(0.55 0.22 255 / 0.28), 0 0 11px oklch(0.78 0.14 90 / 0.08);
+  --theme-control-background: linear-gradient(
+    180deg,
+    oklch(1 0 0 / 0.94) 0%,
+    oklch(0.98 0.025 90 / 0.9) 100%
+  );
+  --theme-control-border-rule: 1px solid oklch(0.78 0.14 90 / 0.35);
+  --theme-control-focus-border: var(--krishna-gold);
+  --theme-control-focus-shadow:
+    0 0 0 3px oklch(0.78 0.14 90 / 0.24), 0 0 14px oklch(0.55 0.22 255 / 0.12);
+  --theme-heading-background: linear-gradient(
+    135deg,
+    oklch(0.42 0.2 255) 0%,
+    oklch(0.58 0.22 255) 30%,
+    oklch(0.78 0.14 90) 68%,
+    oklch(0.46 0.14 190) 100%
+  );
+  --theme-heading-text-fill-color: transparent;
+  --theme-heading-text-shadow: 0 0 24px oklch(0.78 0.14 90 / 0.22);
+  --theme-primary-text-animation: krishna-shimmer 4s ease-in-out infinite;
+  --theme-card-background: var(--theme-surface-background);
+  --theme-card-border-rule: var(--theme-surface-border-rule);
+  --theme-card-shadow: var(--theme-surface-shadow);
+  --theme-card-raised-background: var(--theme-surface-raised-background);
+  --theme-card-raised-border-rule: var(--theme-surface-raised-border-rule);
+  --theme-card-raised-shadow: var(--theme-surface-raised-shadow);
+  --theme-interactive-hover-background: linear-gradient(
+    135deg,
+    oklch(0.94 0.06 90 / 0.88),
+    oklch(0.9 0.07 255 / 0.72)
+  );
+  --theme-interactive-hover-border-color: oklch(0.58 0.18 255 / 0.5);
+  --theme-interactive-hover-shadow:
+    0 10px 24px oklch(0.55 0.22 255 / 0.14), 0 0 16px oklch(0.78 0.14 90 / 0.12);
+  --theme-interactive-selected-background: linear-gradient(
+    135deg,
+    oklch(0.9 0.08 255 / 0.82),
+    oklch(0.94 0.07 90 / 0.72)
+  );
+  --theme-interactive-selected-border-rule: 1px solid oklch(0.58 0.2 255 / 0.55);
+  --theme-interactive-selected-shadow:
+    0 0 0 2px oklch(0.78 0.14 90 / 0.22), 0 8px 28px oklch(0.55 0.22 255 / 0.12);
+  --theme-chip-background: oklch(0.93 0.055 90 / 0.82);
+  --theme-chip-color: var(--theme-fg-secondary);
+  --theme-chip-border-rule: 1px solid oklch(0.78 0.14 90 / 0.22);
+  --theme-chip-primary-background: oklch(0.9 0.085 255 / 0.8);
+  --theme-chip-primary-color: oklch(0.38 0.17 255);
+  --theme-chip-primary-border-rule: 1px solid oklch(0.58 0.2 255 / 0.22);
+  --theme-overlay-background: oklch(0.99 0.03 90 / 0.94);
+  --theme-overlay-border-rule: 1px solid oklch(0.78 0.14 90 / 0.38);
+  --theme-overlay-shadow:
+    0 24px 54px oklch(0.22 0.08 255 / 0.18), 0 0 24px oklch(0.78 0.14 90 / 0.14);
+  --theme-focus-ring-shadow:
+    0 0 0 3px oklch(0.78 0.14 90 / 0.28), 0 0 12px oklch(0.55 0.22 255 / 0.16);
+
+  --theme-app-background:
+    radial-gradient(
+      ellipse 150% 60% at 50% -10%,
+      oklch(0.92 0.1 90 / 0.8) 0%,
+      oklch(0.95 0.06 90 / 0.4) 40%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 80% 70% at -10% 110%,
+      oklch(0.85 0.12 255 / 0.4) 0%,
+      oklch(0.9 0.08 255 / 0.2) 40%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 60% 50% at 110% 100%,
+      oklch(0.88 0.1 190 / 0.25) 0%,
+      transparent 50%
+    ),
+    linear-gradient(
+      180deg,
+      oklch(0.97 0.02 90) 0%,
+      oklch(0.95 0.03 90) 50%,
+      oklch(0.93 0.04 90) 100%
+    );
+  --theme-page-shell-background: transparent;
+
+  --theme-header-background: linear-gradient(
+    180deg,
+    oklch(0.98 0.03 90 / 0.95) 0%,
+    oklch(0.96 0.04 90 / 0.9) 100%
+  );
+  --theme-header-border: oklch(0.78 0.14 90 / 0.5);
+  --theme-header-border-width: 2px;
+  --theme-header-shadow: 0 4px 25px oklch(0.78 0.14 90 / 0.25);
+  --theme-header-accent-display: block;
+  --theme-header-accent-width: 200px;
+  --theme-header-accent-height: 3px;
+  --theme-header-accent-radius: 999px;
+  --theme-header-accent-background: linear-gradient(
+    90deg,
+    transparent,
+    oklch(0.78 0.14 90),
+    transparent
+  );
+
+  --theme-body-decoration-display: block;
+  --theme-body-decoration-content: "कृष्ण";
+  --theme-body-decoration-size: 84px;
+  --theme-body-decoration-color: oklch(0.78 0.14 90 / 0.08);
+  --theme-brand-mark-animation: krishna-pulse 3s ease-in-out infinite;
+  --theme-brand-label-animation: krishna-shimmer 4s ease-in-out infinite;
+
+  --theme-hero-bg:
+    radial-gradient(
+      ellipse 62% 45% at 78% 12%,
+      oklch(0.78 0.14 90 / 0.58) 0%,
+      transparent 58%
+    ),
+    radial-gradient(
+      ellipse 48% 58% at 8% 88%,
+      oklch(0.4 0.16 190 / 0.42) 0%,
+      transparent 54%
+    ),
+    radial-gradient(
+      ellipse 50% 42% at 44% 55%,
+      oklch(0.7 0.16 90 / 0.28) 0%,
+      transparent 52%
+    ),
+    linear-gradient(
+      145deg,
+      oklch(0.28 0.12 255) 0%,
+      oklch(0.42 0.2 255) 34%,
+      oklch(0.55 0.18 255) 68%,
+      oklch(0.42 0.14 190) 100%
+    );
+  --theme-hero-blob-color: oklch(0.78 0.14 90 / 0.08);
+
+  --theme-moon-surface-light: oklch(0.99 0.018 90);
+  --theme-moon-surface-mid: oklch(0.95 0.028 90);
+  --theme-moon-surface-dark: oklch(0.88 0.045 90);
+  --theme-moon-shadow-light: oklch(0.18 0.06 255);
+  --theme-moon-shadow-deep: oklch(0.1 0.035 255);
+  --theme-moon-glow: oklch(0.92 0.08 90 / 0.72);
+  --theme-moon-rim: oklch(1 0 0 / 0.18);
+
+  --theme-almanac-moon-bg: oklch(0.91 0.075 90);
+  --theme-almanac-moon-fg: oklch(0.38 0.14 255);
+  --theme-almanac-moon-focus: oklch(0.58 0.18 90);
+  --theme-almanac-moon-cell-bg: oklch(0.93 0.055 90);
+  --theme-almanac-moon-cell-bg-hover: oklch(0.9 0.075 90);
+  --theme-almanac-moon-card-from: oklch(0.94 0.055 90);
+  --theme-almanac-moon-card-to: oklch(0.9 0.075 90);
+  --theme-almanac-moon-icon: oklch(0.58 0.18 90);
+  --theme-almanac-moon-rise-icon: oklch(0.62 0.17 90);
+  --theme-almanac-moon-set-icon: oklch(0.5 0.16 255);
+  --theme-almanac-moon-badge-bg: oklch(0.91 0.075 90);
+  --theme-almanac-moon-badge-fg: oklch(0.38 0.14 255);
+  --theme-almanac-moon-timeline-bg: linear-gradient(
+    to right,
+    oklch(0.95 0.06 90),
+    oklch(0.93 0.07 90),
+    oklch(0.92 0.06 255)
+  );
+
+  --theme-almanac-special-bg: oklch(0.86 0.12 255);
+  --theme-almanac-special-fg: oklch(0.28 0.13 255);
+  --theme-almanac-special-focus: oklch(0.55 0.22 255);
+  --theme-almanac-special-cell-bg: oklch(0.94 0.055 255);
+  --theme-almanac-special-cell-bg-hover: oklch(0.91 0.075 255);
+  --theme-almanac-special-card-bg: oklch(0.93 0.055 255);
+  --theme-almanac-special-heading: oklch(0.42 0.19 255);
+  --theme-almanac-special-badge-bg: oklch(0.9 0.085 255);
+  --theme-almanac-special-badge-fg: oklch(0.3 0.14 255);
+  --theme-almanac-special-pill-bg: oklch(0.9 0.08 255);
+
+  --theme-almanac-event-bg: oklch(0.9 0.11 90);
+  --theme-almanac-event-fg: oklch(0.36 0.13 90);
+  --theme-almanac-event-focus: oklch(0.68 0.16 90);
+  --theme-almanac-event-cell-bg: oklch(0.95 0.06 90);
+  --theme-almanac-event-cell-bg-hover: oklch(0.92 0.08 90);
+  --theme-almanac-event-icon: oklch(0.62 0.17 90);
+  --theme-almanac-event-major-bg: oklch(0.95 0.06 90);
+  --theme-almanac-event-major-bg-hover: oklch(0.92 0.08 90);
+  --theme-almanac-event-major-star: oklch(0.62 0.17 90);
+  --theme-almanac-event-pill-bg: oklch(0.92 0.08 90);
+  --theme-almanac-event-time-start-bg: oklch(0.91 0.075 90);
+  --theme-almanac-event-time-start-fg: oklch(0.38 0.14 255);
+  --theme-almanac-event-time-end-bg: oklch(0.92 0.08 90);
+  --theme-almanac-event-time-end-fg: oklch(0.36 0.13 90);
+
+  --theme-almanac-sun-card-from: oklch(0.94 0.095 58);
+  --theme-almanac-sun-card-to: oklch(0.93 0.075 88);
+  --theme-almanac-sun-icon: oklch(0.64 0.18 55);
+  --theme-almanac-sun-rise-icon: oklch(0.68 0.18 50);
+  --theme-almanac-sun-set-icon: oklch(0.56 0.2 28);
+
+  --theme-almanac-warning-border: oklch(0.55 0.22 25);
+  --theme-almanac-warning-bg: oklch(0.94 0.065 28);
+  --theme-almanac-warning-heading: oklch(0.46 0.2 25);
+  --theme-almanac-warning-text: oklch(0.34 0.16 22);
+  --theme-almanac-day-header-bg: linear-gradient(
+    135deg,
+    oklch(0.42 0.2 255),
+    oklch(0.68 0.16 90),
+    oklch(0.44 0.14 190)
+  );
+
+  --theme-panchanga-yoga-bg: oklch(0.9 0.075 190);
+  --theme-panchanga-yoga-label: oklch(0.36 0.13 190);
+  --theme-panchanga-karana-bg: oklch(0.92 0.07 90);
+  --theme-panchanga-karana-label: oklch(0.42 0.14 90);
+
+  --theme-icon-sun: oklch(0.8 0.17 64);
+  --theme-icon-sunrise: oklch(0.72 0.19 46);
+  --theme-icon-sunset: oklch(0.58 0.22 25);
+  --theme-icon-moon: oklch(0.58 0.16 90);
+  --theme-icon-event-special: var(--krishna-sindoor);
+  --theme-icon-mode-sun: oklch(0.82 0.17 64);
+  --theme-icon-mode-moon: oklch(0.55 0.12 90);
+
+  --theme-calendar-header-text: oklch(0.42 0.13 255);
+  --theme-calendar-date-text: oklch(0.35 0.08 255);
+  --theme-calendar-today-bg: color-mix(in oklch, var(--theme-primary) 16%, transparent);
+  --theme-calendar-today-text: white;
+  --theme-calendar-off-range-text: oklch(0.68 0.04 90);
+  --theme-calendar-off-range-bg: oklch(0.97 0.02 90 / 0.58);
+  --theme-calendar-weekend-bg: oklch(0.94 0.04 90 / 0.74);
+  --theme-calendar-popup-bg: oklch(0.99 0.02 90);
+  --theme-calendar-agenda-text: var(--theme-fg-secondary);
+  --theme-calendar-border: oklch(0.82 0.08 90 / 0.5);
+  --theme-calendar-border-subtle: oklch(0.88 0.05 90 / 0.42);
+  --theme-calendar-full-moon-bg-start: oklch(0.96 0.055 90);
+  --theme-calendar-full-moon-bg-end: oklch(0.93 0.075 90);
+  --theme-calendar-full-moon-glow: oklch(0.78 0.14 90 / 0.36);
+  --theme-calendar-new-moon-bg-start: oklch(0.92 0.04 90);
+  --theme-calendar-new-moon-bg-end: oklch(0.89 0.055 255);
+}
+
+.dark[data-theme="krishna-mayura"],
+[data-theme="krishna-mayura"].dark {
+  --theme-primary: oklch(0.64 0.22 255);
+  --theme-secondary: oklch(0.78 0.14 90);
+  --theme-accent: oklch(0.63 0.16 190);
+  --theme-fg: oklch(0.95 0.035 90);
+  --theme-fg-secondary: oklch(0.82 0.055 90);
+  --theme-fg-muted: oklch(0.68 0.045 90);
+  --theme-fg-subtle: oklch(0.54 0.04 90);
+  --theme-bg: oklch(0.12 0.03 255);
+  --theme-bg-subtle: oklch(0.1 0.02 255);
+  --theme-surface: oklch(0.18 0.03 255 / 0.65);
+  --theme-surface-raised: oklch(0.18 0.03 255 / 0.7);
+  --theme-surface-overlay: oklch(0.15 0.04 255 / 0.95);
+  --theme-hover: oklch(0.24 0.05 255 / 0.62);
+  --theme-active: oklch(0.3 0.07 255 / 0.68);
+  --theme-disabled: oklch(0.22 0.03 255 / 0.62);
+  --theme-border: oklch(0.5 0.12 90 / 0.25);
+  --theme-border-subtle: oklch(0.5 0.12 90 / 0.16);
+  --theme-border-strong: oklch(0.5 0.12 90 / 0.4);
+  --theme-divider: oklch(0.5 0.12 90 / 0.18);
+  --theme-glass-bg: oklch(0.78 0.14 90 / 0.12);
+  --theme-glass-border: oklch(0.78 0.14 90 / 0.24);
+  --theme-heatmap-empty: oklch(0.5 0.08 90 / 0.16);
+  --theme-heatmap-1: oklch(0.48 0.13 90 / 0.3);
+  --theme-heatmap-2: oklch(0.56 0.15 90 / 0.48);
+  --theme-heatmap-3: oklch(0.58 0.2 255 / 0.68);
+  --theme-heatmap-4: var(--theme-accent);
+
+  --theme-app-background:
+    radial-gradient(
+      ellipse 120% 50% at 50% -5%,
+      oklch(0.3 0.15 255 / 0.7) 0%,
+      oklch(0.2 0.1 255 / 0.4) 40%,
+      transparent 65%
+    ),
+    radial-gradient(
+      ellipse 70% 60% at -5% 105%,
+      oklch(0.35 0.12 90 / 0.5) 0%,
+      oklch(0.25 0.08 90 / 0.3) 40%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 50% 45% at 105% 95%,
+      oklch(0.25 0.1 190 / 0.35) 0%,
+      transparent 50%
+    ),
+    radial-gradient(circle at 50% 50%, oklch(0.18 0.04 90 / 0.2) 0%, transparent 50%),
+    linear-gradient(
+      180deg,
+      oklch(0.12 0.03 255) 0%,
+      oklch(0.1 0.02 255) 50%,
+      oklch(0.08 0.02 255) 100%
+    );
+  --theme-header-background: linear-gradient(
+    180deg,
+    oklch(0.15 0.04 255 / 0.95) 0%,
+    oklch(0.12 0.03 255 / 0.92) 100%
+  );
+  --theme-header-border: oklch(0.5 0.12 90 / 0.4);
+  --theme-header-shadow: 0 4px 30px oklch(0.5 0.12 90 / 0.2);
+  --theme-body-decoration-color: oklch(0.78 0.14 90 / 0.1);
+  --theme-surface-backdrop-filter: blur(10px);
+  --theme-surface-raised-backdrop-filter: blur(14px);
+  --theme-surface-background: linear-gradient(
+    145deg,
+    oklch(0.18 0.03 255 / 0.68) 0%,
+    oklch(0.12 0.03 255 / 0.56) 100%
+  );
+  --theme-surface-border-rule: 1px solid oklch(0.5 0.12 90 / 0.26);
+  --theme-surface-shadow:
+    0 4px 28px oklch(0 0 0 / 0.5), 0 0 20px oklch(0.64 0.22 255 / 0.1),
+    inset 0 1px 0 oklch(1 0 0 / 0.05);
+  --theme-surface-raised-background: linear-gradient(
+    145deg,
+    oklch(0.2 0.04 255 / 0.74) 0%,
+    oklch(0.14 0.035 255 / 0.66) 100%
+  );
+  --theme-surface-raised-border-rule: 1px solid oklch(0.78 0.14 90 / 0.3);
+  --theme-surface-raised-shadow:
+    0 8px 36px oklch(0 0 0 / 0.58), 0 0 26px oklch(0.64 0.22 255 / 0.14),
+    0 0 0 1px oklch(0.78 0.14 90 / 0.08);
+  --theme-primary-action-background: linear-gradient(
+    145deg,
+    oklch(0.64 0.22 255) 0%,
+    oklch(0.5 0.2 255) 52%,
+    oklch(0.78 0.14 90) 100%
+  );
+  --theme-primary-action-border-rule: 1px solid oklch(0.78 0.14 90 / 0.42);
+  --theme-primary-action-shadow:
+    0 4px 20px oklch(0.64 0.22 255 / 0.32), 0 0 12px oklch(0.78 0.14 90 / 0.09);
+  --theme-control-background: linear-gradient(
+    180deg,
+    oklch(0.18 0.035 255 / 0.92) 0%,
+    oklch(0.13 0.03 255 / 0.9) 100%
+  );
+  --theme-control-border-rule: 1px solid oklch(0.78 0.14 90 / 0.28);
+  --theme-control-focus-border: oklch(0.78 0.14 90);
+  --theme-control-focus-shadow:
+    0 0 0 3px oklch(0.78 0.14 90 / 0.22), 0 0 16px oklch(0.64 0.22 255 / 0.18);
+  --theme-heading-background: linear-gradient(
+    135deg,
+    oklch(0.82 0.12 90) 0%,
+    oklch(0.74 0.17 90) 34%,
+    oklch(0.64 0.22 255) 68%,
+    oklch(0.68 0.14 190) 100%
+  );
+  --theme-heading-text-fill-color: transparent;
+  --theme-heading-text-shadow: 0 0 26px oklch(0.78 0.14 90 / 0.24);
+  --theme-card-background: var(--theme-surface-background);
+  --theme-card-border-rule: var(--theme-surface-border-rule);
+  --theme-card-shadow: var(--theme-surface-shadow);
+  --theme-card-raised-background: var(--theme-surface-raised-background);
+  --theme-card-raised-border-rule: var(--theme-surface-raised-border-rule);
+  --theme-card-raised-shadow: var(--theme-surface-raised-shadow);
+  --theme-interactive-hover-background: linear-gradient(
+    135deg,
+    oklch(0.25 0.08 255 / 0.78),
+    oklch(0.22 0.08 90 / 0.62)
+  );
+  --theme-interactive-hover-border-color: oklch(0.78 0.14 90 / 0.42);
+  --theme-interactive-hover-shadow:
+    0 10px 28px oklch(0 0 0 / 0.42), 0 0 18px oklch(0.64 0.22 255 / 0.16);
+  --theme-interactive-selected-background: linear-gradient(
+    135deg,
+    oklch(0.32 0.12 255 / 0.62),
+    oklch(0.28 0.1 90 / 0.52)
+  );
+  --theme-interactive-selected-border-rule: 1px solid oklch(0.78 0.14 90 / 0.46);
+  --theme-interactive-selected-shadow:
+    0 0 0 2px oklch(0.78 0.14 90 / 0.2), 0 8px 30px oklch(0 0 0 / 0.36);
+  --theme-chip-background: oklch(0.28 0.08 255 / 0.52);
+  --theme-chip-color: var(--theme-fg-secondary);
+  --theme-chip-border-rule: 1px solid oklch(0.78 0.14 90 / 0.18);
+  --theme-chip-primary-background: oklch(0.36 0.14 255 / 0.36);
+  --theme-chip-primary-color: oklch(0.84 0.14 255);
+  --theme-chip-primary-border-rule: 1px solid oklch(0.78 0.14 90 / 0.22);
+  --theme-overlay-background: oklch(0.15 0.04 255 / 0.95);
+  --theme-overlay-border-rule: 1px solid oklch(0.78 0.14 90 / 0.3);
+  --theme-overlay-shadow:
+    0 28px 60px oklch(0 0 0 / 0.58), 0 0 28px oklch(0.64 0.22 255 / 0.16);
+  --theme-focus-ring-shadow:
+    0 0 0 3px oklch(0.78 0.14 90 / 0.22), 0 0 14px oklch(0.64 0.22 255 / 0.18);
+
+  --theme-hero-bg:
+    radial-gradient(
+      ellipse 58% 42% at 78% 12%,
+      oklch(0.72 0.16 90 / 0.42) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 52% 58% at 8% 88%,
+      oklch(0.24 0.13 190 / 0.55) 0%,
+      transparent 54%
+    ),
+    radial-gradient(
+      ellipse 46% 48% at 48% 55%,
+      oklch(0.48 0.2 255 / 0.4) 0%,
+      transparent 52%
+    ),
+    linear-gradient(
+      150deg,
+      oklch(0.08 0.025 255) 0%,
+      oklch(0.18 0.1 255) 30%,
+      oklch(0.32 0.17 255) 58%,
+      oklch(0.27 0.12 90) 100%
+    );
+  --theme-hero-blob-color: oklch(0.78 0.14 90 / 0.1);
+
+  --theme-moon-surface-light: oklch(0.99 0.015 90);
+  --theme-moon-surface-mid: oklch(0.94 0.025 90);
+  --theme-moon-surface-dark: oklch(0.87 0.038 90);
+  --theme-moon-shadow-light: oklch(0.12 0.035 255);
+  --theme-moon-shadow-deep: oklch(0.06 0.02 255);
+  --theme-moon-glow: oklch(0.84 0.08 90 / 0.58);
+  --theme-moon-rim: oklch(1 0 0 / 0.14);
+
+  --theme-almanac-moon-bg: oklch(0.36 0.12 90 / 0.28);
+  --theme-almanac-moon-fg: oklch(0.82 0.12 90);
+  --theme-almanac-moon-cell-bg: oklch(0.34 0.11 90 / 0.22);
+  --theme-almanac-moon-cell-bg-hover: oklch(0.4 0.13 90 / 0.32);
+  --theme-almanac-moon-card-from: oklch(0.32 0.11 90 / 0.68);
+  --theme-almanac-moon-card-to: oklch(0.28 0.1 255 / 0.68);
+  --theme-almanac-moon-icon: oklch(0.74 0.16 90);
+  --theme-almanac-moon-rise-icon: oklch(0.76 0.15 90);
+  --theme-almanac-moon-set-icon: oklch(0.66 0.16 255);
+  --theme-almanac-moon-badge-bg: oklch(0.36 0.12 90 / 0.28);
+  --theme-almanac-moon-badge-fg: oklch(0.82 0.12 90);
+  --theme-almanac-moon-timeline-bg: linear-gradient(
+    to right,
+    oklch(0.24 0.1 90 / 0.5),
+    oklch(0.2 0.12 255 / 0.5),
+    oklch(0.18 0.09 255 / 0.5)
+  );
+
+  --theme-almanac-special-fg: oklch(0.88 0.14 255);
+  --theme-almanac-special-cell-bg: oklch(0.36 0.14 255 / 0.24);
+  --theme-almanac-special-cell-bg-hover: oklch(0.42 0.16 255 / 0.34);
+  --theme-almanac-special-card-bg: oklch(0.28 0.11 255 / 0.72);
+  --theme-almanac-special-heading: oklch(0.82 0.15 90);
+  --theme-almanac-special-badge-bg: oklch(0.38 0.14 255 / 0.3);
+  --theme-almanac-special-badge-fg: oklch(0.86 0.14 255);
+  --theme-almanac-special-pill-bg: oklch(0.36 0.14 255 / 0.28);
+
+  --theme-almanac-event-fg: oklch(0.86 0.13 90);
+  --theme-almanac-event-cell-bg: oklch(0.36 0.12 90 / 0.22);
+  --theme-almanac-event-cell-bg-hover: oklch(0.42 0.14 90 / 0.32);
+  --theme-almanac-event-icon: oklch(0.76 0.15 90);
+  --theme-almanac-event-major-bg: oklch(0.36 0.12 90 / 0.22);
+  --theme-almanac-event-major-bg-hover: oklch(0.42 0.14 90 / 0.32);
+  --theme-almanac-event-major-star: oklch(0.76 0.15 90);
+  --theme-almanac-event-pill-bg: oklch(0.36 0.12 90 / 0.28);
+  --theme-almanac-event-time-start-bg: oklch(0.36 0.12 90 / 0.28);
+  --theme-almanac-event-time-start-fg: oklch(0.82 0.12 90);
+  --theme-almanac-event-time-end-bg: oklch(0.36 0.12 90 / 0.28);
+  --theme-almanac-event-time-end-fg: oklch(0.86 0.13 90);
+
+  --theme-almanac-sun-card-from: oklch(0.34 0.14 50 / 0.7);
+  --theme-almanac-sun-card-to: oklch(0.24 0.1 82 / 0.7);
+  --theme-almanac-sun-icon: oklch(0.76 0.16 64);
+  --theme-almanac-sun-rise-icon: oklch(0.74 0.18 48);
+  --theme-almanac-sun-set-icon: oklch(0.66 0.2 28);
+  --theme-almanac-warning-bg: oklch(0.3 0.16 24 / 0.42);
+  --theme-almanac-warning-border: oklch(0.6 0.22 25);
+  --theme-almanac-warning-heading: oklch(0.78 0.16 36);
+  --theme-almanac-warning-text: oklch(0.84 0.12 42);
+  --theme-almanac-day-header-bg: linear-gradient(
+    135deg,
+    oklch(0.26 0.16 255),
+    oklch(0.42 0.16 90),
+    oklch(0.22 0.12 190)
+  );
+
+  --theme-panchanga-yoga-bg: oklch(0.24 0.1 190 / 0.5);
+  --theme-panchanga-yoga-label: oklch(0.74 0.13 190);
+  --theme-panchanga-karana-bg: oklch(0.28 0.1 90 / 0.5);
+  --theme-panchanga-karana-label: oklch(0.78 0.12 90);
+  --theme-icon-sun: oklch(0.78 0.16 64);
+  --theme-icon-sunrise: oklch(0.72 0.18 48);
+  --theme-icon-sunset: oklch(0.66 0.2 25);
+  --theme-icon-moon: oklch(0.76 0.14 90);
+  --theme-icon-event-special: oklch(0.78 0.17 255);
+  --theme-icon-mode-sun: oklch(0.82 0.17 64);
+  --theme-icon-mode-moon: oklch(0.78 0.12 90);
+
+  --theme-calendar-header-text: oklch(0.78 0.12 90);
+  --theme-calendar-date-text: oklch(0.86 0.06 90);
+  --theme-calendar-off-range-text: oklch(0.52 0.04 90);
+  --theme-calendar-off-range-bg: oklch(0.12 0.03 255 / 0.6);
+  --theme-calendar-weekend-bg: oklch(0.22 0.07 255 / 0.45);
+  --theme-calendar-popup-bg: oklch(0.16 0.035 255);
+  --theme-calendar-agenda-text: oklch(0.86 0.06 90);
+  --theme-calendar-border: oklch(0.5 0.12 90 / 0.32);
+  --theme-calendar-border-subtle: oklch(0.5 0.12 90 / 0.2);
+  --theme-calendar-full-moon-bg-start: oklch(0.32 0.11 90);
+  --theme-calendar-full-moon-bg-end: oklch(0.25 0.1 90);
+  --theme-calendar-full-moon-glow: oklch(0.78 0.14 90 / 0.28);
+  --theme-calendar-new-moon-bg-start: oklch(0.17 0.06 255);
+  --theme-calendar-new-moon-bg-end: oklch(0.12 0.04 255);
+}
+
+@keyframes krishna-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 8px oklch(0.78 0.14 90 / 0.6));
+  }
+  50% {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 15px oklch(0.78 0.14 90 / 0.9));
+  }
+}
+
+@keyframes krishna-shimmer {
+  0%,
+  100% {
+    text-shadow: 0 0 0 transparent;
+  }
+  50% {
+    text-shadow: 0 0 16px oklch(0.78 0.14 90 / 0.42);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="krishna-mayura"] {
+    --theme-brand-mark-animation: none;
+    --theme-brand-label-animation: none;
+    --theme-primary-text-animation: none;
+  }
+}

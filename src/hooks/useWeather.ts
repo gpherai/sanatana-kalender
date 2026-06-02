@@ -7,9 +7,7 @@ export function useWeather(initialData?: WeatherApiResponse | null) {
   const [weather, setWeather] = useState<WeatherApiResponse | null>(initialData ?? null);
   const [loading, setLoading] = useState(!initialData);
   const [error, setError] = useState<string | null>(null);
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(() =>
-    initialData ? new Date() : null
-  );
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const skipInitialFetch = useRef(Boolean(initialData));
 
@@ -47,7 +45,14 @@ export function useWeather(initialData?: WeatherApiResponse | null) {
   }, []);
 
   useEffect(() => {
-    if (skipInitialFetch.current) return;
+    if (skipInitialFetch.current) {
+      // initialData was fetched server-side; stamp "last updated" only after
+      // mount. Computing new Date() during the render pass differs between SSR
+      // and hydration and breaks hydration.
+       
+      setLastUpdated(new Date());
+      return;
+    }
     const controller = new AbortController();
 
     void fetchWeather(false, controller.signal);

@@ -223,6 +223,77 @@
     oklch(0.93 0.07 46),
     oklch(0.94 0.05 36)
   );
+
+  /* Coverage: complete the token contract (fire 52 / red 32 / flame 38) */
+  --theme-active: oklch(0.92 0.07 50);
+  --theme-disabled: oklch(0.92 0.03 55 / 0.7);
+  --theme-divider: oklch(0.85 0.05 50 / 0.5);
+  --theme-surface-backdrop-filter: blur(12px);
+  --theme-surface-raised-backdrop-filter: blur(16px);
+  --theme-icon-sun: oklch(0.78 0.18 62);
+  --theme-icon-sunrise: oklch(0.72 0.2 48);
+  --theme-icon-sunset: oklch(0.6 0.22 28);
+  --theme-icon-moon: oklch(0.6 0.14 60);
+  --theme-icon-event-special: var(--narasimha-flame);
+  --theme-icon-mode-sun: oklch(0.82 0.17 64);
+  --theme-icon-mode-moon: oklch(0.58 0.14 52);
+  --theme-moon-surface-light: oklch(0.99 0.018 70);
+  --theme-moon-surface-mid: oklch(0.95 0.025 62);
+  --theme-moon-surface-dark: oklch(0.88 0.04 55);
+  --theme-moon-shadow-light: oklch(0.18 0.06 45);
+  --theme-moon-shadow-deep: oklch(0.1 0.04 40);
+  --theme-moon-glow: oklch(0.92 0.08 70 / 0.7);
+  --theme-moon-rim: oklch(1 0 0 / 0.16);
+  --theme-heatmap-empty: oklch(0.85 0.05 55 / 0.18);
+  --theme-heatmap-1: oklch(0.82 0.1 55 / 0.34);
+  --theme-heatmap-2: oklch(0.74 0.16 50 / 0.55);
+  --theme-heatmap-3: oklch(0.68 0.2 45 / 0.78);
+  --theme-panchanga-yoga-bg: oklch(0.92 0.07 45);
+  --theme-panchanga-yoga-label: oklch(0.42 0.16 38);
+  --theme-panchanga-karana-bg: oklch(0.93 0.06 62);
+  --theme-panchanga-karana-label: oklch(0.44 0.14 52);
+  --theme-calendar-header-text: oklch(0.46 0.16 45);
+  --theme-calendar-date-text: oklch(0.38 0.12 45);
+  --theme-calendar-agenda-text: var(--theme-fg-secondary);
+  --theme-calendar-off-range-text: oklch(0.66 0.06 55);
+  --theme-calendar-off-range-bg: oklch(0.97 0.02 60 / 0.6);
+  --theme-calendar-weekend-bg: oklch(0.95 0.05 55 / 0.7);
+  --theme-calendar-popup-bg: oklch(0.99 0.02 62);
+  --theme-calendar-today-bg: color-mix(in oklch, var(--theme-primary) 14%, transparent);
+  --theme-calendar-today-text: oklch(0.12 0.04 42);
+  --theme-calendar-border: oklch(0.82 0.07 52 / 0.5);
+  --theme-calendar-border-subtle: oklch(0.88 0.05 55 / 0.42);
+  --theme-calendar-full-moon-bg-start: oklch(0.96 0.06 66);
+  --theme-calendar-full-moon-bg-end: oklch(0.93 0.08 52);
+  --theme-calendar-full-moon-glow: oklch(0.78 0.18 58 / 0.35);
+  --theme-calendar-new-moon-bg-start: oklch(0.93 0.04 45);
+  --theme-calendar-new-moon-bg-end: oklch(0.9 0.06 38);
+  --theme-almanac-day-header-bg: linear-gradient(
+    135deg,
+    oklch(0.42 0.22 32),
+    oklch(0.62 0.22 50),
+    oklch(0.72 0.18 62)
+  );
+  --theme-almanac-moon-focus: oklch(0.58 0.2 48);
+  --theme-almanac-moon-rise-icon: oklch(0.56 0.2 52);
+  --theme-almanac-moon-set-icon: oklch(0.5 0.2 38);
+  --theme-almanac-special-focus: oklch(0.6 0.22 38);
+  --theme-almanac-special-pill-bg: oklch(0.9 0.08 42);
+  --theme-almanac-event-focus: oklch(0.62 0.2 52);
+  --theme-almanac-event-pill-bg: oklch(0.92 0.07 52);
+  --theme-almanac-event-time-start-bg: oklch(0.92 0.07 55);
+  --theme-almanac-event-time-start-fg: oklch(0.38 0.16 48);
+  --theme-almanac-event-time-end-bg: oklch(0.92 0.07 38);
+  --theme-almanac-event-time-end-fg: oklch(0.4 0.18 36);
+  --theme-almanac-sun-card-from: oklch(0.94 0.09 58);
+  --theme-almanac-sun-card-to: oklch(0.93 0.07 80);
+  --theme-almanac-sun-icon: oklch(0.62 0.2 52);
+  --theme-almanac-sun-rise-icon: oklch(0.66 0.2 48);
+  --theme-almanac-sun-set-icon: oklch(0.56 0.22 28);
+  --theme-almanac-warning-border: oklch(0.55 0.22 25);
+  --theme-almanac-warning-bg: oklch(0.94 0.06 30);
+  --theme-almanac-warning-heading: oklch(0.46 0.2 25);
+  --theme-almanac-warning-text: oklch(0.34 0.16 24);
 }
 
 .dark[data-theme="narasimha-jwala"],
@@ -412,6 +483,77 @@
     oklch(0.18 0.12 45 / 0.5),
     oklch(0.16 0.1 36 / 0.5)
   );
+
+  /* Coverage: complete the token contract in dark (brighter fire for contrast) */
+  --theme-primary: oklch(0.72 0.22 54);
+  --theme-secondary: oklch(0.6 0.22 36);
+  --theme-accent: oklch(0.76 0.24 40);
+  --theme-active: oklch(0.28 0.1 48 / 0.66);
+  --theme-disabled: oklch(0.24 0.06 45 / 0.62);
+  --theme-divider: oklch(0.68 0.22 52 / 0.18);
+  --theme-heading-text-fill-color: transparent;
+  --theme-heading-text-shadow: 0 0 28px oklch(0.68 0.22 52 / 0.3);
+  --theme-hero-blob-color: oklch(0.74 0.16 52 / 0.1);
+  --theme-icon-sun: oklch(0.8 0.18 62);
+  --theme-icon-sunrise: oklch(0.74 0.2 48);
+  --theme-icon-sunset: oklch(0.66 0.22 28);
+  --theme-icon-moon: oklch(0.68 0.16 58);
+  --theme-icon-event-special: oklch(0.78 0.2 44);
+  --theme-icon-mode-sun: oklch(0.85 0.18 64);
+  --theme-icon-mode-moon: oklch(0.7 0.16 52);
+  --theme-moon-surface-light: oklch(0.99 0.015 70);
+  --theme-moon-surface-mid: oklch(0.95 0.022 62);
+  --theme-moon-surface-dark: oklch(0.9 0.03 55);
+  --theme-moon-shadow-light: oklch(0.12 0.05 45);
+  --theme-moon-shadow-deep: oklch(0.07 0.03 40);
+  --theme-moon-glow: oklch(0.86 0.08 66 / 0.6);
+  --theme-moon-rim: oklch(1 0 0 / 0.14);
+  --theme-heatmap-empty: oklch(0.3 0.08 48 / 0.18);
+  --theme-heatmap-1: oklch(0.4 0.14 50 / 0.5);
+  --theme-heatmap-2: oklch(0.52 0.18 48);
+  --theme-heatmap-3: oklch(0.62 0.22 46);
+  --theme-heatmap-4: var(--theme-accent);
+  --theme-panchanga-yoga-bg: oklch(0.28 0.1 45 / 0.5);
+  --theme-panchanga-yoga-label: oklch(0.78 0.14 50);
+  --theme-panchanga-karana-bg: oklch(0.28 0.08 62 / 0.5);
+  --theme-panchanga-karana-label: oklch(0.78 0.12 58);
+  --theme-calendar-header-text: oklch(0.74 0.16 52);
+  --theme-calendar-date-text: oklch(0.82 0.1 55);
+  --theme-calendar-agenda-text: oklch(0.82 0.1 55);
+  --theme-calendar-off-range-text: oklch(0.52 0.06 50);
+  --theme-calendar-off-range-bg: oklch(0.12 0.04 45 / 0.6);
+  --theme-calendar-weekend-bg: oklch(0.2 0.08 45 / 0.5);
+  --theme-calendar-popup-bg: oklch(0.15 0.04 42);
+  --theme-calendar-border: oklch(0.4 0.1 48 / 0.4);
+  --theme-calendar-border-subtle: oklch(0.32 0.08 45 / 0.4);
+  --theme-calendar-full-moon-bg-start: oklch(0.3 0.1 60);
+  --theme-calendar-full-moon-bg-end: oklch(0.25 0.12 48);
+  --theme-calendar-full-moon-glow: oklch(0.68 0.2 55 / 0.3);
+  --theme-calendar-new-moon-bg-start: oklch(0.16 0.06 45);
+  --theme-calendar-new-moon-bg-end: oklch(0.11 0.04 40);
+  --theme-almanac-day-header-bg: linear-gradient(
+    135deg,
+    oklch(0.3 0.18 32),
+    oklch(0.48 0.22 48),
+    oklch(0.42 0.16 62)
+  );
+  --theme-almanac-moon-rise-icon: oklch(0.7 0.18 52);
+  --theme-almanac-moon-set-icon: oklch(0.64 0.18 40);
+  --theme-almanac-special-pill-bg: oklch(0.4 0.14 38 / 0.28);
+  --theme-almanac-event-pill-bg: oklch(0.38 0.12 52 / 0.28);
+  --theme-almanac-event-time-start-bg: oklch(0.38 0.12 52 / 0.28);
+  --theme-almanac-event-time-start-fg: oklch(0.82 0.14 52);
+  --theme-almanac-event-time-end-bg: oklch(0.38 0.12 38 / 0.28);
+  --theme-almanac-event-time-end-fg: oklch(0.84 0.16 40);
+  --theme-almanac-sun-card-from: oklch(0.34 0.14 52 / 0.7);
+  --theme-almanac-sun-card-to: oklch(0.3 0.12 80 / 0.6);
+  --theme-almanac-sun-icon: oklch(0.74 0.18 54);
+  --theme-almanac-sun-rise-icon: oklch(0.72 0.2 48);
+  --theme-almanac-sun-set-icon: oklch(0.66 0.22 28);
+  --theme-almanac-warning-border: oklch(0.6 0.22 25);
+  --theme-almanac-warning-bg: oklch(0.3 0.16 24 / 0.42);
+  --theme-almanac-warning-heading: oklch(0.78 0.16 36);
+  --theme-almanac-warning-text: oklch(0.84 0.12 42);
 }
 
 @keyframes jwala-flicker {

@@ -196,9 +196,7 @@ export function EventCard({
               </span>
             ))}
             {tags.length > 4 && (
-              <span className="text-theme-fg-subtle text-xs">
-                +{tags.length - 4} meer
-              </span>
+              <span className="text-theme-fg-muted text-xs">+{tags.length - 4} meer</span>
             )}
           </div>
         )}

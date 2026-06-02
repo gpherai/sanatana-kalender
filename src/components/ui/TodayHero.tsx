@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Sun, Sunrise, Sunset, Moon, MoonStar, Calendar, Sparkles } from "lucide-react";
 import { MoonPhase } from "./MoonPhase";
+import { PlanetIcon } from "./PlanetIcon";
 import { formatTimeAgo, formatIsoTimeAgo, formatDate } from "@/lib/date-utils";
 import type { DailyInfoResponse } from "@/types";
 import type { CalendarEventResourceResponse } from "@/types/calendar";
@@ -55,13 +56,12 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
   // Use server-calculated special day (already in API response)
   const specialDay = dailyInfo?.specialDay;
 
-  // Themes can override via --theme-hero-bg; fallback darkens the primary palette
-  const heroBackground =
-    "var(--theme-hero-bg, linear-gradient(135deg, color-mix(in oklch, var(--theme-primary) 95%, black), color-mix(in oklch, var(--theme-secondary) 92%, black), color-mix(in oklch, var(--theme-accent) 90%, black)))";
+  // Hero background comes from the theme; base.css provides the fallback.
+  const heroBackground = "var(--theme-hero-bg)";
 
   return (
     <div
-      className="relative overflow-hidden rounded-3xl shadow-2xl"
+      className="today-hero relative overflow-hidden rounded-3xl shadow-2xl"
       style={{ background: heroBackground }}
     >
       {/* Decorative background elements */}
@@ -72,7 +72,7 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
           className="absolute top-1/2 left-1/2 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full"
           style={{
             background:
-              "radial-gradient(circle, var(--theme-hero-blob-color, oklch(1 0 0 / 0.05)) 0%, transparent 70%)",
+              "radial-gradient(circle, var(--theme-hero-blob-color) 0%, transparent 70%)",
           }}
         />
       </div>
@@ -87,7 +87,7 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
               <span>{today.toLocaleDateString("nl-NL", { weekday: "long" })}</span>
               <span className="text-white/25">•</span>
               <span className="flex items-center gap-1">
-                <span aria-hidden="true">{varaDay.icon}</span>
+                <PlanetIcon planet={varaDay.planet} className="h-3.5 w-3.5" />
                 {dailyInfo?.vara?.name ?? varaDay.name}
               </span>
             </div>
