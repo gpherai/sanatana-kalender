@@ -63,7 +63,15 @@ export async function generateOccurrences(
 
   let occurrences: GeneratedOccurrence[] = [];
 
-  const strategyKey = event.ruleType ?? event.recurrenceType;
+  // ruleType "TITHI" is generic (date calculation only) and is used by both yearly
+  // and monthly events. When recurrenceType is MONTHLY_*, the monthly generator must
+  // win. Other ruleTypes (WEEKDAY_TITHI, PRADOSH, SOLAR, …) have dedicated generators
+  // and always take precedence.
+  const strategyKey =
+    event.ruleType === "TITHI" &&
+    (event.recurrenceType === "MONTHLY_LUNAR" || event.recurrenceType === "MONTHLY_SOLAR")
+      ? event.recurrenceType
+      : (event.ruleType ?? event.recurrenceType);
   const strategy = STRATEGIES[strategyKey];
   if (!strategy) {
     logWarn(

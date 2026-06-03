@@ -260,4 +260,27 @@ describe("Recurrence Service Extended", () => {
     ] as any);
     expect(await generateOccurrences(eventMSolar, options)).toHaveLength(1);
   });
+
+  it("routes MONTHLY_LUNAR events with ruleType=TITHI to monthly generator, not yearly", async () => {
+    // Regression: commit 5267438 broke masik_shivaratri and kalashtami_monthly by
+    // using `ruleType ?? recurrenceType` as dispatch key. ruleType="TITHI" won over
+    // recurrenceType="MONTHLY_LUNAR", sending monthly events to the yearly generator.
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    await generateOccurrences(
+      {
+        ...BASE_EVENT,
+        ruleType: "TITHI",
+        recurrenceType: "MONTHLY_LUNAR",
+        tithi: null,
+      },
+      options
+    );
+
+    const messages = warnSpy.mock.calls.map((c) => c[0] as string);
+    expect(messages.some((m) => m.includes("Monthly lunar event"))).toBe(true);
+    expect(messages.some((m) => m.includes("Yearly lunar event"))).toBe(false);
+
+    warnSpy.mockRestore();
+  });
 });
