@@ -12,6 +12,10 @@ import {
   formatMinutesToTime,
   calculateNishitaKaal,
 } from "@/lib/timing-utils";
+import {
+  SANKASHTI_PRADOSH_AFTER_SUNSET_MIN,
+  SANKASHTI_MIDNIGHT_START_MIN,
+} from "@/lib/panchanga-timing-constants";
 import type { GeneratedOccurrence, PrevDayInfo } from "@/engine/types";
 
 // ---------------------------------------------------------------------------
@@ -121,11 +125,12 @@ export function selectFirstWindowPerLunarCycle<
 }
 
 /**
- * Returns true when the given day's predecessor tithi ended AFTER sunrise,
- * meaning the target tithi started during the evening of that same day
- * (i.e., it is a "kshaya" — the target tithi is skipped at sunrise).
+ * Returns true when the predecessor tithi ended in the EVENING (at/after sunset),
+ * meaning the target tithi started that night and is skipped at the next sunrise
+ * (a "kshaya" — the target tithi has no udaya day). Falls back to the sunrise
+ * threshold only when sunset data is unavailable.
  */
-export function isPredecessorEndsAfterSunrise(prev: PrevDayInfo): boolean {
+export function isPredecessorEndsInEvening(prev: PrevDayInfo): boolean {
   const endMin = parseTimeToMinutes(prev.tithiEndTime ?? "");
   const sunriseMin = parseTimeToMinutes(prev.sunrise ?? "");
   if (endMin === null || sunriseMin === null) return false;
@@ -299,7 +304,11 @@ export function computeSankashtiOccurrence(
   if (occ.date.getTime() !== firstDay.date.getTime() && prevInfo) {
     const endMin = parseTimeToMinutes(prevInfo.tithiEndTime ?? "");
     const sunsetMin = parseTimeToMinutes(prevInfo.sunset ?? "");
-    if (endMin !== null && sunsetMin !== null && endMin > sunsetMin + 125) {
+    if (
+      endMin !== null &&
+      sunsetMin !== null &&
+      endMin > sunsetMin + SANKASHTI_PRADOSH_AFTER_SUNSET_MIN
+    ) {
       return { date: firstDay.date };
     }
   }
@@ -323,7 +332,7 @@ export function computeSankashtiOccurrence(
       const sunriseMin = parseTimeToMinutes(firstDay.sunrise ?? "");
       if (
         chaturthi_startMin !== null &&
-        chaturthi_startMin < 60 &&
+        chaturthi_startMin < SANKASHTI_MIDNIGHT_START_MIN &&
         moonriseMin !== null &&
         sunriseMin !== null &&
         moonriseMin < sunriseMin
@@ -393,7 +402,7 @@ export function computeTithiOccurrence(
     ? normalizeTime(lastDay.tithiEndTime)
     : undefined;
 
-  if (prevInfo && isPredecessorEndsAfterSunrise(prevInfo)) {
+  if (prevInfo && isPredecessorEndsInEvening(prevInfo)) {
     const prevDate = new Date(firstDay.date);
     prevDate.setUTCDate(prevDate.getUTCDate() - 1);
     occDate = prevDate;

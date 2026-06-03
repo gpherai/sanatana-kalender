@@ -2,10 +2,32 @@
  * Date Utilities
  *
  * Centralized date/time operations for the Dharma Calendar.
- * All functions use UTC by default to avoid timezone issues.
+ *
+ * TWO conventions live here, on purpose:
+ *  - UTC functions — `parseCalendarDate`, `safeParseDate`, `addDayForDisplay`,
+ *    `subtractDayFromDisplay`, `startOfDayUTC`, `endOfDayUTC`, `formatDateISO` —
+ *    operate on UTC-midnight `@db.Date` values and are timezone-independent.
+ *  - LOCAL-calendar functions — `formatDateLocal`, `formatDateForInput`,
+ *    `isSameDay`, `isToday`, `isTomorrow`, `getMonthDays`, `getMonthStartPadding`,
+ *    `isWeekend` — use the runtime's LOCAL date components. They are only correct
+ *    when the runtime timezone equals the app's fixed-location timezone.
+ *
+ * CONTRACT: the runtime is pinned to `Europe/Amsterdam`
+ * (`DEFAULT_LOCATION.timezone`) via the `TZ` env in `docker-compose.yml` +
+ * `docker-compose.prod.yml`. Running/deploying outside that timezone shifts the
+ * LOCAL-calendar functions by one day on UTC-midnight inputs; in that case make
+ * those functions explicitly TZ-aware (Luxon + `DEFAULT_LOCATION.timezone`).
  *
  * @module date-utils
  */
+
+import { DEFAULT_LOCATION } from "@/lib/domain";
+
+/**
+ * App-wide display timezone. All `toLocaleDateString` formatters below pin to
+ * this so the rendered day is identical regardless of the runtime's ambient TZ.
+ */
+const APP_TIME_ZONE = DEFAULT_LOCATION.timezone;
 
 // =============================================================================
 // DISPLAY CONSTANTS
@@ -75,6 +97,7 @@ export function formatDate(
   }
 
   return d.toLocaleDateString("nl-NL", {
+    timeZone: APP_TIME_ZONE,
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -95,7 +118,7 @@ export function formatShortDate(date: Date | string): string {
   return d.toLocaleDateString("nl-NL", {
     day: "numeric",
     month: "short",
-    timeZone: "Europe/Amsterdam",
+    timeZone: APP_TIME_ZONE,
   });
 }
 
@@ -153,8 +176,21 @@ export function formatDateLocal(date: Date | string | null | undefined): string 
  * @returns Date object at local midnight
  */
 export function parseLocalDate(dateString: string): Date {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+    throw new Error(`Invalid date format: "${dateString}". Expected YYYY-MM-DD.`);
+  }
   const [year, month, day] = dateString.split("-").map(Number);
-  return new Date(year!, month! - 1, day!);
+  const date = new Date(year!, month! - 1, day!);
+  // Reject calendar overflow (e.g. "2025-13-45" silently rolling into the next
+  // month/year via the Date constructor).
+  if (
+    date.getFullYear() !== year ||
+    date.getMonth() !== month! - 1 ||
+    date.getDate() !== day
+  ) {
+    throw new Error(`Invalid calendar date: "${dateString}".`);
+  }
+  return date;
 }
 
 /**
@@ -174,7 +210,16 @@ export function parseCalendarDate(dateString: string): Date {
   }
 
   const [year, month, day] = dateString.split("-").map(Number);
-  return new Date(Date.UTC(year!, month! - 1, day!));
+  const date = new Date(Date.UTC(year!, month! - 1, day!));
+  // Reject calendar overflow (e.g. "2025-13-45" silently rolling over).
+  if (
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() !== month! - 1 ||
+    date.getUTCDate() !== day
+  ) {
+    throw new Error(`Invalid calendar date: "${dateString}".`);
+  }
+  return date;
 }
 
 /**
@@ -378,7 +423,12 @@ export function formatDateISO(date: Date): string {
  * ```
  */
 export function formatDateNL(date: Date, options?: Intl.DateTimeFormatOptions): string {
-  return date.toLocaleDateString("nl-NL", { day: "numeric", month: "long", ...options });
+  return date.toLocaleDateString("nl-NL", {
+    timeZone: APP_TIME_ZONE,
+    day: "numeric",
+    month: "long",
+    ...options,
+  });
 }
 
 /**
@@ -395,6 +445,7 @@ export function formatLongDate(date: Date | string): string {
   const d = typeof date === "string" ? new Date(date) : date;
   if (!isValidDate(d)) return "Ongeldige datum";
   return d.toLocaleDateString("nl-NL", {
+    timeZone: APP_TIME_ZONE,
     weekday: "long",
     day: "numeric",
     month: "long",

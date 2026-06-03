@@ -12,7 +12,7 @@ import {
   computeTithiOccurrence,
   computeSankashtiOccurrence,
   groupConsecutiveDays,
-  isPredecessorEndsAfterSunrise,
+  isPredecessorEndsInEvening,
   isNishitakalDateShiftNeeded,
   selectFirstWindowPerLunarCycle,
 } from "@/engine";
@@ -95,7 +95,7 @@ export async function generateYearlyLunarOccurrences(
     for (const day of kshayaCandidates) {
       if (maasValues && (!day.maas || !maasValues.includes(day.maas))) continue;
       if (
-        !isPredecessorEndsAfterSunrise({
+        !isPredecessorEndsInEvening({
           tithiEndTime: day.tithiEndTime,
           sunrise: day.sunrise,
         })
@@ -248,6 +248,15 @@ export async function generateMonthlyLunarOccurrences(
   const isRatriVyapini = config.dateRule === "RATRI_VYAPINI";
   const nishitakalDateRule = config.nishitakalDateRule === true;
 
+  // preferPredecessorDay / kshayaNextDay are only implemented in the yearly-lunar
+  // path. Warn loudly instead of silently ignoring them for a monthly event.
+  if (config.preferPredecessorDay || config.kshayaNextDay) {
+    logWarn(
+      `Monthly event "${event.name}" sets preferPredecessorDay/kshayaNextDay, ` +
+        "which are only honored in the yearly-lunar path and are ignored here."
+    );
+  }
+
   let occurrences: GeneratedOccurrence[];
 
   if (nishitakalDateRule) {
@@ -287,7 +296,7 @@ export async function generateMonthlyLunarOccurrences(
     const WINDOW_MS = 20 * 24 * 60 * 60 * 1000;
     for (const candidate of kshayaCandidates) {
       if (
-        !isPredecessorEndsAfterSunrise({
+        !isPredecessorEndsInEvening({
           tithiEndTime: candidate.tithiEndTime,
           sunrise: candidate.sunrise,
         })

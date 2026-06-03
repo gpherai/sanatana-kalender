@@ -12,8 +12,13 @@ import {
 } from "@/repositories/daily-info.repository";
 import { computeTithiOccurrence } from "@/engine";
 import { parseTimeToMinutes } from "@/lib/timing-utils";
+import {
+  PRADOSH_SELECT_AFTER_SUNSET_MIN,
+  PRADOSH_START_BEFORE_SUNSET_MIN,
+  PRADOSH_CUSTOM_SUNRISE_SKIP_MIN,
+} from "@/lib/panchanga-timing-constants";
 import { logWarn } from "@/lib/utils";
-import { fetchPreviousDayData } from "./helpers";
+import { fetchPreviousDayData, getAdhikaFilter } from "./helpers";
 import type { GeneratedOccurrence } from "./types";
 
 // =============================================================================
@@ -38,10 +43,20 @@ export async function generateWeekdayTithiOccurrences(
     return [];
   }
 
+  // Honor the event's adhika flags instead of hard-coding exclude. The
+  // weekday-tithi repo path only supports exclude vs. include-both (not
+  // "only-adhika"); warn if that unsupported case is configured.
+  const adhikaFilter = getAdhikaFilter(event);
+  if (adhikaFilter === "only") {
+    logWarn(
+      `WEEKDAY_TITHI event "${event.name}" sets isAdhikaOnly, which the weekday-tithi ` +
+        "path cannot express; treating as include (both nija + adhika)."
+    );
+  }
   const dailyData = await findDailyInfoTithiTimingCandidates(
     { startDate, endDate },
     event.tithi,
-    { excludeAdhika: true }
+    { excludeAdhika: adhikaFilter === "exclude" }
   );
 
   // Fetch prevDay data for ALL tithi days before filtering by weekday.
@@ -138,14 +153,18 @@ export async function generatePradoshOccurrences(
       // sunset to cover Pradosh Kaal. Only skip if tithiEndTime is clearly a next-day
       // time (>60 min before sunrise) — handles kshaya edge cases where prev tithi
       // ends right at sunrise.
-      if (sunriseMin !== null && tithiEndMin < sunriseMin - 60) continue;
+      if (
+        sunriseMin !== null &&
+        tithiEndMin < sunriseMin - PRADOSH_CUSTOM_SUNRISE_SKIP_MIN
+      )
+        continue;
       if (tithiEndMin <= sunsetMin) {
         validDates.set(day.date.toISOString().split("T")[0]!, day.date);
       }
     } else {
       // Standard Pradosh Vrat: skip next-day times, use extended 150-min window.
       if (sunriseMin !== null && tithiEndMin < sunriseMin) continue;
-      if (tithiEndMin < sunsetMin + 150) {
+      if (tithiEndMin < sunsetMin + PRADOSH_SELECT_AFTER_SUNSET_MIN) {
         validDates.set(day.date.toISOString().split("T")[0]!, day.date);
       }
     }
@@ -171,7 +190,7 @@ export async function generatePradoshOccurrences(
     nextDay.setUTCDate(nextDay.getUTCDate() + 1);
     const isVriddhi = targetDateSet.has(nextDay.toISOString().split("T")[0]!);
 
-    const pradoshStartMin = sunsetMin - 90;
+    const pradoshStartMin = sunsetMin - PRADOSH_START_BEFORE_SUNSET_MIN;
     const isValid =
       day.tithiEndTime === null ||
       isVriddhi ||

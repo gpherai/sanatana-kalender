@@ -71,6 +71,10 @@ services:
       NODE_ENV: production
       # Disable telemetry
       NEXT_TELEMETRY_DISABLED: "1"
+      # Pin runtime timezone — date-utils LOCAL-calendar functions assume the
+      # app's fixed location (Den Haag). Explicit here so prod never silently
+      # depends on the host timezone. See src/lib/date-utils.ts contract.
+      TZ: Europe/Amsterdam
 
   # ---------------------------------------------------------------------------
   # Backup Service - Production Settings

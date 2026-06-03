@@ -621,7 +621,16 @@ export async function getGoalsWithProgress() {
           (sum, item) => sum + (item.durationMinutes ?? 0),
           0
         );
-        progressMinutes += itemMinutes > 0 ? itemMinutes : (s.durationMinutes ?? 0);
+        if (itemMinutes > 0) {
+          progressMinutes += itemMinutes;
+        } else if (items.length === s.items.length) {
+          // No per-item minutes recorded, but every item in this session belongs
+          // to the goal → the whole session duration is attributable to it.
+          progressMinutes += s.durationMinutes ?? 0;
+        }
+        // else: a mixed session (also has non-goal practices) without per-item
+        // minutes → no basis to attribute session time to this goal; skip
+        // instead of over-counting the whole session.
       }
 
       for (const item of items) {

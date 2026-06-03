@@ -13,7 +13,7 @@ export {
   isConsecutiveDay,
   groupConsecutiveDays,
   selectFirstWindowPerLunarCycle,
-  isPredecessorEndsAfterSunrise,
+  isPredecessorEndsInEvening,
   isNishitakalDateShiftNeeded,
   isSankashtiPradoshShiftNeeded,
   computeTithiOccurrence,

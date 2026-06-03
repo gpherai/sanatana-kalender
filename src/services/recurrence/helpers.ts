@@ -78,7 +78,7 @@ export async function applyDynamicTiming(
     datesToFetch.add(isoDate);
     if (timingType === "NISHITA_KAAL") {
       const nextDay = new Date(occ.date);
-      nextDay.setDate(nextDay.getDate() + 1);
+      nextDay.setUTCDate(nextDay.getUTCDate() + 1);
       datesToFetch.add(nextDay.toISOString().split("T")[0]!);
     }
   }
@@ -104,7 +104,7 @@ export async function applyDynamicTiming(
     let nextSunrise: string | null = null;
     if (timingType === "NISHITA_KAAL") {
       const nextDay = new Date(occ.date);
-      nextDay.setDate(nextDay.getDate() + 1);
+      nextDay.setUTCDate(nextDay.getUTCDate() + 1);
       nextSunrise = byDate.get(nextDay.toISOString().split("T")[0]!)?.sunrise ?? null;
     }
 

@@ -8,6 +8,7 @@
 import type { EventType, Tithi, Nakshatra, Maas } from "@prisma/client";
 import { EVENT_TYPES } from "@/lib/domain";
 import { TIME_REGEX } from "@/lib/patterns";
+import { parseLocalDate } from "@/lib/date-utils";
 
 // =============================================================================
 // RE-EXPORT PRISMA ENUMS
@@ -133,19 +134,8 @@ export interface CalendarEventResponse {
 // PARSER FUNCTIONS
 // =============================================================================
 
-/**
- * Parse a date string (YYYY-MM-DD) as LOCAL midnight, not UTC.
- * This ensures react-big-calendar displays all-day events correctly without timezone shifts.
- *
- * @param dateString - Date in YYYY-MM-DD format
- * @returns Date object at LOCAL midnight
- */
-function parseLocalDate(dateString: string): Date {
-  const [year, month, day] = dateString.split("-").map(Number);
-  // Creates date at LOCAL midnight (not UTC)
-  // This prevents timezone shifts in calendar display
-  return new Date(year!, month! - 1, day!);
-}
+// Date parsing (LOCAL midnight, with calendar-overflow validation) is shared
+// from @/lib/date-utils — imported above.
 
 /**
  * Transform API response to CalendarEvent with parsed dates.

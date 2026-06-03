@@ -233,7 +233,11 @@ describe("Date Utilities", () => {
         .mockReturnValue("1 januari");
       const date = new Date(Date.UTC(2024, 0, 1));
       const result = formatDateNL(date);
-      expect(spy).toHaveBeenCalledWith("nl-NL", { day: "numeric", month: "long" });
+      expect(spy).toHaveBeenCalledWith("nl-NL", {
+        timeZone: "Europe/Amsterdam",
+        day: "numeric",
+        month: "long",
+      });
       expect(result).toBe("1 januari");
       spy.mockRestore();
     });
@@ -392,6 +396,10 @@ describe("Date Utilities", () => {
     it("throws on invalid format", () => {
       expect(() => parseCalendarDate("01-01-2025")).toThrow();
     });
+    it("throws on calendar overflow instead of rolling over", () => {
+      expect(() => parseCalendarDate("2025-13-45")).toThrow();
+      expect(() => parseCalendarDate("2025-02-30")).toThrow();
+    });
   });
 
   describe("safeParseDate", () => {
@@ -403,6 +411,10 @@ describe("Date Utilities", () => {
     it("returns null for invalid format", () => {
       expect(safeParseDate("invalid")).toBeNull();
       expect(safeParseDate("01-01-2025")).toBeNull();
+    });
+    it("returns null for calendar overflow", () => {
+      expect(safeParseDate("2025-13-45")).toBeNull();
+      expect(safeParseDate("2025-02-30")).toBeNull();
     });
     it("returns null for null/undefined", () => {
       expect(safeParseDate(null)).toBeNull();

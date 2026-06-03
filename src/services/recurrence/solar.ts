@@ -7,6 +7,7 @@ import {
   findDailyInfoAllSankrantiOccurrences,
 } from "@/repositories/daily-info.repository";
 import { parseTimeToMinutes } from "@/lib/timing-utils";
+import { INDIA_SUNRISE_LOCAL_MIN } from "@/lib/panchanga-timing-constants";
 import { logWarn } from "@/lib/utils";
 import type { GeneratedOccurrence } from "./types";
 
@@ -46,8 +47,7 @@ function resolveSankrantiDate(day: {
   // Transit is in early morning of the NEXT Gregorian day (stored in this row's scan window).
   // D+1 only when transit >= 02:30 local, which corresponds to post-India-sunrise per DP.
   if (st < sr) {
-    const INDIA_SR_LOCAL_MIN = 150; // 02:30 = approx India sunrise in local Den Haag time
-    return st >= INDIA_SR_LOCAL_MIN ? nextDay() : day.date;
+    return st >= INDIA_SUNRISE_LOCAL_MIN ? nextDay() : day.date;
   }
 
   // Transit after sunset: same Hindu day → observe D.
@@ -133,10 +133,23 @@ export async function generateYearlySolarOccurrences(
 // =============================================================================
 
 export async function generateMonthlySolarOccurrences(
-  _event: Event,
+  event: Event,
   startDate: Date,
   endDate: Date
 ): Promise<GeneratedOccurrence[]> {
+  // MONTHLY_SOLAR is the "all monthly Sankranti transitions" tracker: ONE event
+  // emits every sign-transition in the range. It is intentionally event-agnostic
+  // and is never produced by the naming catalog (recurrenceType is set there to
+  // YEARLY_SOLAR/MONTHLY_LUNAR/etc., never MONTHLY_SOLAR) — only manual creation
+  // reaches this path. A specific `sankranti` on such an event is a misconfig
+  // (they most likely meant YEARLY_SOLAR for a single sign).
+  if (event.sankranti) {
+    logWarn(
+      `MONTHLY_SOLAR event "${event.name}" has a specific sankranti set; this path ` +
+        "emits ALL sankrantis and ignores it. Use YEARLY_SOLAR for a single sankranti."
+    );
+  }
+
   const dailyData = await findDailyInfoAllSankrantiOccurrences({ startDate, endDate });
 
   return dailyData.map((day) => ({

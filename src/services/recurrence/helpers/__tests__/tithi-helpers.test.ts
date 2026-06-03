@@ -3,7 +3,7 @@ import {
   isConsecutiveDay,
   groupConsecutiveDays,
   selectFirstWindowPerLunarCycle,
-  isPredecessorEndsAfterSunrise,
+  isPredecessorEndsInEvening,
   isNishitakalDateShiftNeeded,
   computeTithiOccurrence,
   applyRatriVyapiniDateRule,
@@ -110,7 +110,7 @@ describe("tithi-helpers", () => {
     });
   });
 
-  describe("isPredecessorEndsAfterSunrise", () => {
+  describe("isPredecessorEndsInEvening", () => {
     // With sunset available: only evening/night starts (>= sunset) shift the occurrence.
     // A daytime start (between sunrise and sunset) belongs to the next day via Udaya Tithi.
     it("returns false when tithiEndTime is during the day (after sunrise, before sunset)", () => {
@@ -119,7 +119,7 @@ describe("tithi-helpers", () => {
         sunrise: "06:00",
         sunset: "20:00",
       };
-      expect(isPredecessorEndsAfterSunrise(prev)).toBe(false);
+      expect(isPredecessorEndsInEvening(prev)).toBe(false);
     });
 
     it("returns true when tithiEndTime is in the evening (>= sunset)", () => {
@@ -128,7 +128,7 @@ describe("tithi-helpers", () => {
         sunrise: "06:00",
         sunset: "20:00",
       };
-      expect(isPredecessorEndsAfterSunrise(prev)).toBe(true);
+      expect(isPredecessorEndsInEvening(prev)).toBe(true);
     });
 
     it("returns true when tithiEndTime is exactly at sunset", () => {
@@ -137,7 +137,7 @@ describe("tithi-helpers", () => {
         sunrise: "06:00",
         sunset: "20:00",
       };
-      expect(isPredecessorEndsAfterSunrise(prev)).toBe(true);
+      expect(isPredecessorEndsInEvening(prev)).toBe(true);
     });
 
     it("returns false when tithiEndTime is before sunrise", () => {
@@ -146,27 +146,27 @@ describe("tithi-helpers", () => {
         sunrise: "06:00",
         sunset: "20:00",
       };
-      expect(isPredecessorEndsAfterSunrise(prev)).toBe(false);
+      expect(isPredecessorEndsInEvening(prev)).toBe(false);
     });
 
     // Without sunset: falls back to sunrise threshold (legacy behaviour)
     it("falls back to sunrise threshold when sunset is unavailable", () => {
       const afterSunrise: PrevDayInfo = { tithiEndTime: "10:00", sunrise: "06:00" };
-      expect(isPredecessorEndsAfterSunrise(afterSunrise)).toBe(true);
+      expect(isPredecessorEndsInEvening(afterSunrise)).toBe(true);
 
       const beforeSunrise: PrevDayInfo = { tithiEndTime: "05:00", sunrise: "06:00" };
-      expect(isPredecessorEndsAfterSunrise(beforeSunrise)).toBe(false);
+      expect(isPredecessorEndsInEvening(beforeSunrise)).toBe(false);
     });
 
     it("returns false if times are missing or invalid", () => {
+      expect(isPredecessorEndsInEvening({ tithiEndTime: null, sunrise: "06:00" })).toBe(
+        false
+      );
+      expect(isPredecessorEndsInEvening({ tithiEndTime: "10:00", sunrise: null })).toBe(
+        false
+      );
       expect(
-        isPredecessorEndsAfterSunrise({ tithiEndTime: null, sunrise: "06:00" })
-      ).toBe(false);
-      expect(
-        isPredecessorEndsAfterSunrise({ tithiEndTime: "10:00", sunrise: null })
-      ).toBe(false);
-      expect(
-        isPredecessorEndsAfterSunrise({ tithiEndTime: "invalid", sunrise: "06:00" })
+        isPredecessorEndsInEvening({ tithiEndTime: "invalid", sunrise: "06:00" })
       ).toBe(false);
     });
   });

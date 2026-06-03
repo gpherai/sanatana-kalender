@@ -3,11 +3,16 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const repo = vi.hoisted(() => ({
   findAllSessions: vi.fn(),
   findSessionsByDateRange: vi.fn(),
+  findGoalsWithPractices: vi.fn(),
 }));
 
 vi.mock("@/repositories/sadhana.repository", () => repo);
 
-import { getSadhanaCalendar, getSadhanaOverview } from "@/services/sadhana.service";
+import {
+  getSadhanaCalendar,
+  getSadhanaOverview,
+  getGoalsWithProgress,
+} from "@/services/sadhana.service";
 
 const createdAt = new Date("2026-04-01T00:00:00.000Z");
 
@@ -49,6 +54,20 @@ function session(
       createdAt,
       ...item,
     })),
+  };
+}
+
+function goal(id: string, type: "daily" | "weekly" | "lifetime", practiceIds: string[]) {
+  return {
+    id,
+    type,
+    name: id,
+    targetMalas: 100,
+    targetMinutes: null,
+    active: true,
+    createdAt,
+    updatedAt: createdAt,
+    practices: practiceIds.map((pid) => practice(pid, "mantra_japa")),
   };
 }
 
@@ -128,6 +147,67 @@ describe("sadhana service", () => {
     const overview = await getSadhanaOverview();
 
     expect(overview.practices.map((p) => p.practiceId)).toEqual(["past-practice"]);
+    vi.useRealTimers();
+  });
+
+  it("does not over-count session minutes for a multi-practice session (D4)", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-04-26T10:00:00.000Z"));
+    repo.findGoalsWithPractices.mockResolvedValue([goal("g1", "lifetime", ["A"])]);
+    repo.findAllSessions.mockResolvedValue([
+      session(
+        "mix",
+        "2026-04-25",
+        [
+          {
+            practiceId: "A",
+            practice: practice("A", "mantra_japa"),
+            quantity: 1,
+            unit: "malas",
+          },
+          {
+            practiceId: "B",
+            practice: practice("B", "mantra_japa"),
+            quantity: 1,
+            unit: "malas",
+          },
+        ],
+        30
+      ),
+    ]);
+
+    const goals = await getGoalsWithProgress();
+
+    // Item A has no per-item duration and the session also contains unrelated
+    // practice B → the 30-min session time is NOT attributable to goal g1.
+    expect(goals[0]!.progressMinutes).toBe(0);
+    vi.useRealTimers();
+  });
+
+  it("attributes whole-session minutes when every item belongs to the goal (D4)", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-04-26T10:00:00.000Z"));
+    repo.findGoalsWithPractices.mockResolvedValue([goal("g1", "lifetime", ["A"])]);
+    repo.findAllSessions.mockResolvedValue([
+      session(
+        "solo",
+        "2026-04-25",
+        [
+          {
+            practiceId: "A",
+            practice: practice("A", "mantra_japa"),
+            quantity: 1,
+            unit: "malas",
+          },
+        ],
+        20
+      ),
+    ]);
+
+    const goals = await getGoalsWithProgress();
+
+    // No per-item minutes, but the whole session is goal g1's practice → 20 min.
+    expect(goals[0]!.progressMinutes).toBe(20);
     vi.useRealTimers();
   });
 });

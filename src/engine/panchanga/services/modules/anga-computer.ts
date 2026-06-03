@@ -148,8 +148,9 @@ export async function computeNextElements(
     );
     const nextNEnd = nextNakEndJD ? jdToLocal(nextNakEndJD, tz) : null;
     const nextMoonPos = await swe_calc_ut(nakEndJD + 0.01, swisseph.SE_MOON, flags);
-    const nextPada = (Math.floor((nextMoonPos.longitude % (360 / 27)) / (360 / 108)) +
-      1) as 1 | 2 | 3 | 4;
+    const nextPada = (Math.floor(
+      (norm360(nextMoonPos.longitude) % (360 / 27)) / (360 / 108)
+    ) + 1) as 1 | 2 | 3 | 4;
     nextNakshatra = {
       number: nextNakIdx,
       name: NAKSHATRA_NAMES[nextNakIdx - 1] ?? "Unknown",

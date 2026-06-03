@@ -22,8 +22,8 @@ export async function computeRashiTransitions(
   moonPos: { longitude: number },
   tz: string
 ) {
-  const sunSignIdx = Math.floor(sunPos.longitude / 30);
-  const moonSignIdx = Math.floor(moonPos.longitude / 30);
+  const sunSignIdx = Math.floor(norm360(sunPos.longitude) / 30);
+  const moonSignIdx = Math.floor(norm360(moonPos.longitude) / 30);
 
   // Use norm360 for wrap-safe boundary calculation (359° → 0°)
   const nextSunSignBoundary = norm360((sunSignIdx + 1) * 30);

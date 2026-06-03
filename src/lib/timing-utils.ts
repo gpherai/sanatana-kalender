@@ -10,6 +10,7 @@
  */
 
 import type { TimingType } from "@prisma/client";
+import { PRADOSH_DISPLAY_AFTER_SUNSET_MIN } from "./panchanga-timing-constants";
 
 export interface TimeWindow {
   startTime: string;
@@ -126,7 +127,7 @@ export function calculatePradoshKaal(sunset: string): TimeWindow | null {
   const startMinutes = parseTimeToMinutes(sunset);
   if (startMinutes === null) return null;
   const start = formatMinutesToTime(startMinutes);
-  const end = addMinutesToTime(sunset, 144);
+  const end = addMinutesToTime(sunset, PRADOSH_DISPLAY_AFTER_SUNSET_MIN);
   if (!end) return null;
   return { startTime: start, endTime: end };
 }

@@ -16,7 +16,7 @@ import {
   VARA_NAMES,
   resolveKaranaName,
 } from "../constants";
-import { jdToLocal, formatTime, formatIso } from "./modules/panchanga-utils";
+import { norm360, jdToLocal, formatTime, formatIso } from "./modules/panchanga-utils";
 import {
   computePositionsAtSunrise,
   computeAngaIndices,
@@ -119,11 +119,8 @@ export class PanchangaSwissService {
     const tithiName = TITHI_NAMES[tithiIdx - 1] ?? "Unknown";
     const paksha = tithiIdx <= 15 ? ("Shukla" as const) : ("Krishna" as const);
     const nakName = NAKSHATRA_NAMES[nakIdx - 1] ?? "Unknown";
-    const pada = (Math.floor((moonPos.longitude % (360 / 27)) / (360 / 108)) + 1) as
-      | 1
-      | 2
-      | 3
-      | 4;
+    const pada = (Math.floor((norm360(moonPos.longitude) % (360 / 27)) / (360 / 108)) +
+      1) as 1 | 2 | 3 | 4;
     const yogaName = YOGA_NAMES[yogaIdx - 1] ?? "Unknown";
     const kName = resolveKaranaName(karanaIdx);
 
