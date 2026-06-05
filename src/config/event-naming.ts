@@ -842,7 +842,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleConfig: {
       tithi: "EKADASHI_KRISHNA",
       maas: "SHRAVANA",
-      isAdhikaOnly: true,
     },
     description: "Tweede Kamika Ekadashi waargenomen in de Shravana Krishna paksha.",
     tags: ["adhika", "ekadashi", "kamika", "shravana", "vasten"],

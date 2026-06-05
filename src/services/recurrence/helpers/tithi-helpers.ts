@@ -165,31 +165,37 @@ export function isNishitakalDateShiftNeeded(
   if (!prev.tithiEndTime || !prev.sunrise || !prev.sunset || !currentSunrise)
     return false;
 
-  // Tithi must have started AFTER sunrise on prevDay (evening/night start only)
   const tithiStartMin = parseTimeToMinutes(prev.tithiEndTime);
   const prevSunriseMin = parseTimeToMinutes(prev.sunrise);
-  if (tithiStartMin === null || prevSunriseMin === null) return false;
-  if (tithiStartMin < prevSunriseMin) return false;
-
-  // Nishitakal of the night prevDay → currentDay
-  const nishitakal = calculateNishitaKaal(prev.sunset, currentSunrise);
-  if (!nishitakal) return false;
-
-  // Raw Nishitakal-start in minutes from prevDay midnight.
-  // calculateNishitaKaal returns "HH:MM" (wrapped to 0–1439), but the real
-  // start can be > 1440 when it falls past midnight. We reconstruct the raw
-  // value from the sunset and the known night-duration formula so comparisons
-  // stay on a single continuous timeline.
   const sunsetMin = parseTimeToMinutes(prev.sunset);
   const nextSunriseMin = parseTimeToMinutes(currentSunrise);
-  if (sunsetMin === null || nextSunriseMin === null) return false;
+  if (
+    tithiStartMin === null ||
+    prevSunriseMin === null ||
+    sunsetMin === null ||
+    nextSunriseMin === null
+  )
+    return false;
 
+  // Express tithiStart on the prevDay continuous timeline.
+  // A stored time < prevSunrise is a past-midnight value (next calendar day) → add 1440.
+  // This fixes under-shift for cases like Aug 2026 Sawan Shivaratri where Chaturdashi
+  // starts at 01:24 (past midnight) and overlaps with Nishitakal (01:30–02:07).
+  const rawTithiStart =
+    tithiStartMin < prevSunriseMin ? tithiStartMin + 1440 : tithiStartMin;
+
+  // Nishitakal window on the prevDay continuous timeline.
   const nightDuration = nextSunriseMin + 1440 - sunsetMin;
   const muhurta = nightDuration / 15;
   const nishitakalStartRaw = sunsetMin + nightDuration / 2 - muhurta;
+  const nishitakalEndRaw = nishitakalStartRaw + 2 * muhurta;
 
-  // Shift only if tithi started at least one muhurta before Nishitakal
-  return tithiStartMin + muhurta <= nishitakalStartRaw;
+  // Shift if the tithi overlaps Nishitakal (starts before Nishitakal ends).
+  // Covers daytime starts (Chaturdashi runs through the night including Nishitakal),
+  // evening starts, and near-midnight starts entering Nishitakal partway through.
+  // NOTE: callers must guard against kshaya cases by verifying prevInfo.tithi is
+  // the expected predecessor tithi before calling this function.
+  return rawTithiStart < nishitakalEndRaw;
 }
 
 // ---------------------------------------------------------------------------
@@ -255,8 +261,12 @@ export function applyRatriVyapiniDateRule(
   const nightDuration = sunriseOnPrevTimeline - sunsetMin;
   const pradoshEnd = sunsetMin + nightDuration / 5;
 
-  if (tithiOnPrevTimeline <= pradoshEnd) {
-    // Tithi starts before Pradosh ends on prevDay → observe on prevDay.
+  // DP allows up to 1 ghati (nightDuration/30) after Pradosh end: a tithi
+  // that starts within one ghati of Pradosh end still covers enough of the
+  // night to be observed on prevDay.
+  const ghati = nightDuration / 30;
+  if (tithiOnPrevTimeline <= pradoshEnd + ghati) {
+    // Tithi starts within Pradosh window (or 1 ghati after) on prevDay → observe on prevDay.
     const prevDate = new Date(firstDay.date);
     prevDate.setUTCDate(prevDate.getUTCDate() - 1);
     const startTime = normalizeTime(prevInfo.tithiEndTime);

@@ -197,7 +197,8 @@ describe("tithi-helpers", () => {
       expect(isNishitakalDateShiftNeeded(prev, "06:00")).toBe(false);
     });
 
-    it("returns true when tithi starts at least one muhurta before Nishitakal", () => {
+    it("returns true when tithi starts before Nishitakal (well before)", () => {
+      // Tithi starts 22:00, Nishitakal starts ~23:12 → clear overlap → shift
       const prev: PrevDayInfo = {
         tithiEndTime: "22:00",
         sunrise: "06:00",
@@ -206,13 +207,57 @@ describe("tithi-helpers", () => {
       expect(isNishitakalDateShiftNeeded(prev, "06:00")).toBe(true);
     });
 
-    it("returns false when tithi starts less than one muhurta before Nishitakal", () => {
+    it("returns true when tithi starts just before Nishitakal (DP Aug 2026 rule)", () => {
+      // Tithi starts 23:00, Nishitakal ~23:12–00:48 → overlaps → shift.
+      // DP observes even 6-minute lead time (verified Aug 2026 Sawan Shivaratri).
       const prev: PrevDayInfo = {
         tithiEndTime: "23:00",
         sunrise: "06:00",
         sunset: "18:00",
       };
+      expect(isNishitakalDateShiftNeeded(prev, "06:00")).toBe(true);
+    });
+
+    it("returns false when tithi starts after Nishitakal ends (no overlap)", () => {
+      // Nishitakal ends ~00:48; tithi starting at 01:15 (past-midnight) has no overlap
+      const prev: PrevDayInfo = {
+        tithiEndTime: "01:15",
+        sunrise: "06:00",
+        sunset: "18:00",
+      };
       expect(isNishitakalDateShiftNeeded(prev, "06:00")).toBe(false);
+    });
+
+    it("returns true even for daytime start that runs through Nishitakal", () => {
+      // Kshaya-guard is the CALLER's responsibility (predecessor tithi check).
+      // The function itself: a daytime start (07:50) that runs through Nishitakal → true.
+      // Callers must check prevInfo.tithi === expectedPredecessor before calling.
+      const prev: PrevDayInfo = {
+        tithiEndTime: "07:50",
+        sunrise: "05:51",
+        sunset: "21:27",
+      };
+      expect(isNishitakalDateShiftNeeded(prev, "05:51")).toBe(true);
+    });
+
+    it("returns true for past-midnight start overlapping Nishitakal (Aug 2026 Sawan)", () => {
+      // Chaturdashi starts 01:24 Aug 11 (past-midnight on Aug 10 timeline).
+      // Nishitakal Aug 10→11: ~01:10–02:23. Tithi starts during Nishitakal → shift.
+      const prev: PrevDayInfo = {
+        tithiEndTime: "01:24",
+        sunrise: "06:19",
+        sunset: "21:15",
+      };
+      expect(isNishitakalDateShiftNeeded(prev, "06:19")).toBe(true);
+    });
+
+    it("returns true for Dec 2029 under-shift: starts 22:46, Nishitakal ~23:28–00:56", () => {
+      const prev: PrevDayInfo = {
+        tithiEndTime: "22:46",
+        sunrise: "08:33",
+        sunset: "16:31",
+      };
+      expect(isNishitakalDateShiftNeeded(prev, "08:34")).toBe(true);
     });
 
     it("handles invalid time strings gracefully", () => {

@@ -197,6 +197,7 @@ export async function findDailyInfoKshayaCandidates(
       date: true,
       tithiEndTime: true,
       sunrise: true,
+      sunset: true,
       maas: true,
       isAdhika: true,
     },
@@ -206,6 +207,7 @@ export async function findDailyInfoKshayaCandidates(
     ...r,
     tithiEndTime: dbTimeToStr(r.tithiEndTime),
     sunrise: dbTimeToStr(r.sunrise),
+    sunset: dbTimeToStr(r.sunset),
   }));
 }
 

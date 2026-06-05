@@ -71,15 +71,15 @@ export async function computeMaasData(
   const rashiAtPrevAmavasya = prevAmavasya ? await getSunRashi(prevAmavasya) : null;
   const rashiAtNextAmavasya = nextAmavasya ? await getSunRashi(nextAmavasya) : null;
 
-  // Krishna paksha (16-29) uses next Amavasya's Sun rashi.
-  // Shukla paksha (1-15) and Amavasya (30) use previous / current.
-  const useNextAmavasya = tithiIdx > 15 && tithiIdx < 30;
-  const maasRashiIdx =
-    tithiIdx === 30
-      ? sunSignIdx
-      : useNextAmavasya
-        ? (rashiAtNextAmavasya ?? sunSignIdx)
-        : (rashiAtPrevAmavasya ?? sunSignIdx);
+  // Krishna paksha (16-29) and Amavasya (30) use next Amavasya's Sun rashi.
+  // For Amavasya, findNearestAmavasya("forward") finds the current day's conjunction
+  // (via the next day's Pratipada check), so rashiAtNextAmavasya reflects the sun
+  // at the actual conjunction time — correct even when the sun crosses a rashi
+  // transition after sunrise but before the conjunction.
+  const useNextAmavasya = tithiIdx > 15; // includes Amavasya (30)
+  const maasRashiIdx = useNextAmavasya
+    ? (rashiAtNextAmavasya ?? sunSignIdx)
+    : (rashiAtPrevAmavasya ?? sunSignIdx);
 
   const maasIdx = (maasRashiIdx + 1) % 12;
   const lunarMaasName = LUNAR_MASA_NAMES[maasIdx] ?? "Unknown";

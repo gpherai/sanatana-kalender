@@ -120,4 +120,28 @@ describe("computeMaasData", () => {
     const result = await computeMaasData(100, 5, 3);
     expect(result.lunarDay).toBe(20); // 5 + 15
   });
+
+  it("Amavasya (tithiIdx=30) uses next Amavasya rashi, not sunSignIdx", async () => {
+    // Simulates Dec 15 2028: sun at sunrise = Scorpio (rashi 7, sunSignIdx=7 → Margashirsha)
+    // but conjunction happens later when sun has crossed into Sagittarius (rashi 8 → Pausha).
+    sweCalcUt
+      .mockResolvedValueOnce({ longitude: 0 })
+      .mockResolvedValueOnce({ longitude: 354 }) // tithiIdx=30 → near Amavasya
+      .mockResolvedValue({ longitude: 0 });
+
+    findEventEnd
+      .mockResolvedValueOnce(50) // backward: amavasyaStart
+      .mockResolvedValueOnce(55) // backward: conjunction (< fromJD=100)
+      .mockResolvedValueOnce(150) // forward: amavasyaStart
+      .mockResolvedValueOnce(105); // forward: conjunction (> fromJD=100)
+
+    getSunRashiMock
+      .mockResolvedValueOnce(7) // prev Amavasya rashi = Scorpio
+      .mockResolvedValueOnce(8); // next Amavasya rashi = Sagittarius → Pausha
+
+    const sunSignIdx = 7; // sun at sunrise still in Scorpio
+    const result = await computeMaasData(100, 30, sunSignIdx);
+    // maasIdx = (8+1)%12 = 9 = Pausha, NOT (7+1)%12=8 = Margashirsha
+    expect(result.maasIdx).toBe(9);
+  });
 });
