@@ -7,11 +7,7 @@
  * Used by: src/services/recurrence/
  */
 
-import {
-  parseTimeToMinutes,
-  formatMinutesToTime,
-  calculateNishitaKaal,
-} from "@/lib/timing-utils";
+import { parseTimeToMinutes, formatMinutesToTime } from "@/lib/timing-utils";
 import {
   SANKASHTI_PRADOSH_AFTER_SUNSET_MIN,
   SANKASHTI_MIDNIGHT_START_MIN,
