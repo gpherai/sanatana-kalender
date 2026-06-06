@@ -17,7 +17,7 @@ import {
   dateOnlyFromUtcDate,
   defaultLocationDate,
   utcDateFromDateOnly,
-} from "@/lib/default-location-date";
+} from "@/lib/date-utils";
 import { MALA_BEAD_COUNT } from "@/lib/domain";
 
 // =============================================================================

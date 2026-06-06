@@ -453,17 +453,17 @@ export const sweHousesEx = (
   geolon: number,
   hsys: string = "W"
 ): HousesResult => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const result = (swisseph as any).swe_houses_ex(
+  const result = swisseph.swe_houses_ex(
     jd,
     swisseph.SEFLG_SIDEREAL,
     geolat,
     geolon,
     hsys
   );
+  if ("error" in result) throw new Error(`swe_houses_ex: ${result.error}`);
   return {
     ascendant: ((result.ascendant % 360) + 360) % 360,
     mc: ((result.mc % 360) + 360) % 360,
-    houses: result.house as number[],
+    houses: result.house,
   };
 };

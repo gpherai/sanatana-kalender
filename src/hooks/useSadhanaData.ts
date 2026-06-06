@@ -17,7 +17,7 @@ import { apiFetch } from "@/lib/sadhana-api";
 import { fetchDayInfoMap } from "@/lib/panchanga-client";
 import { todayString, SADHANA_START_DATE } from "@/lib/sadhana-utils";
 import type { CalendarEventResponse } from "@/types/calendar";
-import { addDaysDateOnly } from "@/lib/default-location-date";
+import { addDaysDateOnly } from "@/lib/date-utils";
 
 // Module-level cache — survives re-renders and tab-switches within one browser session.
 // Keyed on the end date: if the day rolls over, the next load fetches the new day's data.

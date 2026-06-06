@@ -1,4 +1,4 @@
-import { defaultLocationDate } from "@/lib/default-location-date";
+import { defaultLocationDate } from "@/lib/date-utils";
 import type { DayInfo, Goal, PracticeType } from "@/types/sadhana";
 
 // =============================================================================

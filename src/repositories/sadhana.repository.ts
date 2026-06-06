@@ -9,7 +9,7 @@
 import "server-only";
 import { prisma } from "@/lib/db";
 import { Prisma } from "@/generated/prisma/client";
-import { utcDateFromDateOnly } from "@/lib/default-location-date";
+import { utcDateFromDateOnly } from "@/lib/date-utils";
 
 // =============================================================================
 // SESSIONS

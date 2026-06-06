@@ -15,7 +15,7 @@ import { todayString, SADHANA_START_DATE } from "@/lib/sadhana-utils";
 import type { DayInfo } from "@/types/sadhana";
 import { transformOccurrenceToCalendarEvent } from "@/lib/api-transformers";
 import { deriveDayInfoFromDailyInfo } from "@/lib/panchanga-helpers";
-import { utcDateFromDateOnly, dateOnlyFromUtcDate } from "@/lib/default-location-date";
+import { utcDateFromDateOnly, dateOnlyFromUtcDate } from "@/lib/date-utils";
 
 export async function getSadhanaDashboardInit() {
   const heatmapStart = SADHANA_START_DATE;

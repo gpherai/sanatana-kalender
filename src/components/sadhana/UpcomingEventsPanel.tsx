@@ -9,7 +9,7 @@ import { parseCalendarEvent } from "@/types/calendar";
 import { resolveCategoryColor } from "@/lib/category-styles";
 import { useTheme } from "@/components/theme/ThemeProvider";
 import { todayString } from "@/lib/sadhana-utils";
-import { addDaysDateOnly } from "@/lib/default-location-date";
+import { addDaysDateOnly } from "@/lib/date-utils";
 
 const DAYS_NL = ["zo", "ma", "di", "wo", "do", "vr", "za"];
 const MONTHS_SHORT = [
