@@ -118,6 +118,9 @@ __pycache__/
 *.pyo
 *.pyd
 
+# Research docs (lokaal, niet in repo)
+/docs/reference/research/
+
 # Scratch / wegwerpbestanden in root
 /test-*.ts
 /check-*.ts
