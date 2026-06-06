@@ -9,7 +9,7 @@
  * - Pradosh Kaal: the twilight window beginning ~1.5 hours before sunset
  */
 
-import type { TimingType } from "@prisma/client";
+import type { TimingType } from "@/generated/prisma/client";
 import { PRADOSH_DISPLAY_AFTER_SUNSET_MIN } from "./panchanga-timing-constants";
 
 export interface TimeWindow {

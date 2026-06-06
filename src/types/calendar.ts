@@ -5,7 +5,7 @@
  * Uses Prisma enums for type safety.
  */
 
-import type { EventType, Tithi, Nakshatra, Maas } from "@prisma/client";
+import type { EventType, Tithi, Nakshatra, Maas } from "@/generated/prisma/client";
 import { EVENT_TYPES } from "@/lib/domain";
 import { TIME_REGEX } from "@/lib/patterns";
 import { parseLocalDate } from "@/lib/date-utils";

@@ -10,7 +10,7 @@
 
 import "server-only";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/generated/prisma/client";
 import { env } from "@/lib/env";
 
 // =============================================================================

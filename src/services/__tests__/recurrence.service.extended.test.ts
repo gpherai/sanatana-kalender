@@ -5,8 +5,8 @@ import {
   generateOccurrencesForEvents,
   getRecommendedWindow,
 } from "../recurrence";
-import { EventType } from "@prisma/client";
-import type { Event } from "@prisma/client";
+import { EventType } from "@/generated/prisma/client";
+import type { Event } from "@/generated/prisma/client";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 

@@ -10,7 +10,7 @@
 import "server-only";
 
 import * as sadhanaRepo from "@/repositories/sadhana.repository";
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/generated/prisma/client";
 import { eachDateOnlyInRange, addDaysDateOnly } from "@/lib/default-location-date";
 import { MALA_BEAD_COUNT } from "@/lib/domain";
 import {

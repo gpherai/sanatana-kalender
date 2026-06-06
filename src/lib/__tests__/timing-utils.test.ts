@@ -10,7 +10,7 @@ import {
   calculateMadhyahna,
   calculateTimingWindow,
 } from "../timing-utils";
-import { TimingType } from "@prisma/client";
+import { TimingType } from "@/generated/prisma/client";
 
 describe("timing-utils", () => {
   describe("parseTimeToMinutes", () => {

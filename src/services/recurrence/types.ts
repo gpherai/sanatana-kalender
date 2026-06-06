@@ -1,5 +1,5 @@
 import "server-only";
-import type { Event } from "@prisma/client";
+import type { Event } from "@/generated/prisma/client";
 import type { GeneratedOccurrence } from "@/engine";
 
 export type { GeneratedOccurrence };

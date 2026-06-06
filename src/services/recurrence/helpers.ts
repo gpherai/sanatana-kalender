@@ -1,6 +1,6 @@
 import "server-only";
-import type { Event } from "@prisma/client";
-import { Tithi } from "@prisma/client";
+import type { Event } from "@/generated/prisma/client";
+import { Tithi } from "@/generated/prisma/client";
 import {
   findDailyInfoSunTimesByDates,
   findDailyInfoPreviousDayTimingRows,

@@ -17,7 +17,7 @@ import {
   Maas,
   Sankranti,
   RecurrenceType,
-} from "@prisma/client";
+} from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import { strToDbTime } from "@/lib/timing-utils";
 import { DateTime } from "luxon";

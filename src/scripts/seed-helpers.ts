@@ -1,6 +1,6 @@
 import { parseCalendarDate } from "@/lib/date-utils";
 import { getMoonPhaseType } from "@/lib/moon-phases";
-import type { Tithi, Nakshatra, Maas, Sankranti } from "@prisma/client";
+import type { Tithi, Nakshatra, Maas, Sankranti } from "@/generated/prisma/client";
 
 export { getMoonPhaseType };
 

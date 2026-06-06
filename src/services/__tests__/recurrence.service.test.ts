@@ -5,7 +5,7 @@ import {
   generateOccurrencesForEvents,
   getRecommendedWindow,
 } from "../recurrence";
-import type { Event, DailyInfo } from "@prisma/client";
+import type { Event, DailyInfo } from "@/generated/prisma/client";
 
 // Mock event for testing
 const MOCK_EVENT_YEARLY: Event = {

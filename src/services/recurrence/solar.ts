@@ -1,6 +1,6 @@
 import "server-only";
-import type { Event } from "@prisma/client";
-import { Sankranti } from "@prisma/client";
+import type { Event } from "@/generated/prisma/client";
+import { Sankranti } from "@/generated/prisma/client";
 import { asRuleConfig, type SolarRuleConfig } from "@/config/rule-config.types";
 import {
   findDailyInfoSankrantiOccurrences,

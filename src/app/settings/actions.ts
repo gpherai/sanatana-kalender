@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { CalendarView, EventType } from "@prisma/client";
+import { CalendarView, EventType } from "@/generated/prisma/client";
 import { updatePreferencesSchema } from "@/lib/validations";
 import { DEFAULT_PREFERENCES_ID } from "@/lib/domain";
 import { DEFAULT_THEME_NAME } from "@/config/themes";

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { prismaMock } from "../../__tests__/helpers/prisma-mock";
 import { generateOccurrences } from "../recurrence";
-import type { Event } from "@prisma/client";
+import type { Event } from "@/generated/prisma/client";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 

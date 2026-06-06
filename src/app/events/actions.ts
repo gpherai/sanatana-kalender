@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/generated/prisma/client";
 import { createEventSchema, updateEventSchema, cuidSchema } from "@/lib/validations";
 import {
   CategoryNotFoundError,

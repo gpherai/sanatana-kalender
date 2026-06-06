@@ -10,7 +10,7 @@ import "server-only";
 import { cache } from "react";
 import { prisma } from "@/lib/db";
 import { DEFAULT_PREFERENCES_ID } from "@/lib/domain";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/generated/prisma/client";
 
 /**
  * Find preferences for the default user.

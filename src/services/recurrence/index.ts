@@ -1,5 +1,5 @@
 import "server-only";
-import type { Event, RecurrenceType } from "@prisma/client";
+import type { Event, RecurrenceType } from "@/generated/prisma/client";
 import { dbTimeToStr } from "@/lib/timing-utils";
 import { logDebug, logWarn } from "@/lib/utils";
 import { applyDynamicTiming } from "./helpers";

@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { NextRequest } from "next/server";
 import { prismaMock } from "@/__tests__/helpers/prisma-mock";
 import { GET, PUT } from "../preferences/route";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/generated/prisma/client";
 import { DEFAULT_THEME_NAME } from "@/config/themes";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */

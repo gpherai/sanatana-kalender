@@ -3,7 +3,7 @@
 // Utilities for working with Panchanga data
 // ============================================
 
-import type { MoonPhaseType, Tithi } from "@prisma/client";
+import type { MoonPhaseType, Tithi } from "@/generated/prisma/client";
 import type { DayInfo } from "@/types/sadhana";
 
 /**

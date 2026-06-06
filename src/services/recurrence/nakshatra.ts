@@ -1,6 +1,6 @@
 import "server-only";
-import type { Event } from "@prisma/client";
-import { Tithi, Nakshatra, Maas } from "@prisma/client";
+import type { Event } from "@/generated/prisma/client";
+import { Tithi, Nakshatra, Maas } from "@/generated/prisma/client";
 import {
   asRuleConfig,
   type NakshatraRuleConfig,

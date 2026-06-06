@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/generated/prisma/client";
 import { mockDeep } from "vitest-mock-extended";
 import { vi } from "vitest";
 

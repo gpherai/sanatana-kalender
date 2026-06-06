@@ -61,7 +61,7 @@ vi.mock("@prisma/adapter-pg", () => {
   return { PrismaPg };
 });
 
-vi.mock("@prisma/client", () => {
+vi.mock("@/generated/prisma/client", () => {
   class PrismaClient {
     $queryRaw = prismaQueryRaw;
     $disconnect = prismaDisconnect;

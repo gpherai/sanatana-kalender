@@ -5,7 +5,7 @@ import type {
   SadhanaGoal,
   SadhanaRoutine,
   SadhanaRoutineItem,
-} from "@prisma/client";
+} from "@/generated/prisma/client";
 import type {
   Practice,
   SessionItemData,

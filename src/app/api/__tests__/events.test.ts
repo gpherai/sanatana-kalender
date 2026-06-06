@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 import { prismaMock } from "@/__tests__/helpers/prisma-mock";
 import { formatDateLocal } from "@/lib/date-utils";
 import { GET, POST } from "../events/route";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/generated/prisma/client";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 

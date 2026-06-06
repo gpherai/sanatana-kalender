@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { EventType } from "@prisma/client";
+import { EventType } from "@/generated/prisma/client";
 import {
   parseCalendarEvent,
   isValidEventType,

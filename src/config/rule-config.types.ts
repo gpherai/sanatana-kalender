@@ -6,7 +6,7 @@
  * these types to safely access config properties without casting.
  */
 
-import type { Maas, Nakshatra, Sankranti, Tithi } from "@prisma/client";
+import type { Maas, Nakshatra, Sankranti, Tithi } from "@/generated/prisma/client";
 
 // ---------------------------------------------------------------------------
 // Per-rule-type config shapes

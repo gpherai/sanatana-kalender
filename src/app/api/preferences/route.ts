@@ -4,7 +4,7 @@ import { parseJsonBody, serverError, validationError } from "@/lib/api-response"
 import { DEFAULT_PREFERENCES_ID } from "@/lib/domain";
 import { DEFAULT_THEME_NAME } from "@/config/themes";
 import { logError } from "@/lib/utils";
-import { EventType, CalendarView } from "@prisma/client";
+import { EventType, CalendarView } from "@/generated/prisma/client";
 import { getPreferences, savePreferences } from "@/services/preference.service";
 
 /**

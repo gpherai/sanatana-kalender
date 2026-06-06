@@ -3,7 +3,7 @@
 // Business logic for moon phase calculations
 // ============================================
 
-import type { MoonPhaseType } from "@prisma/client";
+import type { MoonPhaseType } from "@/generated/prisma/client";
 
 /**
  * Determine Moon Phase Type from illumination percentage.

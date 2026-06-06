@@ -7,7 +7,7 @@ import {
   Nakshatra,
   Maas,
   Sankranti,
-} from "@prisma/client";
+} from "@/generated/prisma/client";
 import { parseCalendarDate } from "@/lib/date-utils";
 import { findCategoryById } from "@/repositories/category.repository";
 import {

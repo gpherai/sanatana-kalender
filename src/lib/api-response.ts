@@ -7,7 +7,7 @@
 
 import "server-only";
 import { NextResponse } from "next/server";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/generated/prisma/client";
 import { ZodError } from "zod";
 
 // =============================================================================
