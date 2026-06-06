@@ -9,12 +9,11 @@
 import "server-only";
 import type {
   Maas,
-  MoonPhaseType,
   Nakshatra,
   Prisma,
   Sankranti,
   Tithi,
-} from "@prisma/client";
+} from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import { dbTimeToStr } from "@/lib/timing-utils";
 
@@ -133,20 +132,6 @@ export async function findDailyInfoAllSankrantiOccurrences({
     sunrise: dbTimeToStr(r.sunrise),
     sunset: dbTimeToStr(r.sunset),
   }));
-}
-
-export function findDailyInfoMoonPhaseCandidates(
-  dates: Date[],
-  targetPhase: MoonPhaseType
-) {
-  return prisma.dailyInfo.findMany({
-    where: {
-      date: { in: dates },
-      moonPhaseType: targetPhase,
-    },
-    orderBy: [{ moonPhasePercent: "desc" }, { date: "asc" }],
-    select: { date: true, moonPhasePercent: true },
-  });
 }
 
 export async function findDailyInfoYearlyLunarCandidates(

@@ -16,12 +16,6 @@
 /** Display window length after sunset (6 ghati = 144 min). Used by `calculatePradoshKaal`. */
 export const PRADOSH_DISPLAY_AFTER_SUNSET_MIN = 144;
 
-/**
- * Selection (standard Pradosh Vrat): target tithi must START before
- * sunset + this to cover Pradosh Kaal. Slightly wider than the display window.
- */
-export const PRADOSH_SELECT_AFTER_SUNSET_MIN = 150;
-
 /** Selection: Pradosh window opens this many minutes before sunset. */
 export const PRADOSH_START_BEFORE_SUNSET_MIN = 90;
 

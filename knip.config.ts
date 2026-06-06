@@ -10,12 +10,12 @@ const config: KnipConfig = {
     // Used via Prisma pg adapter, not direct imports
     "pg",
     "@types/pg",
+    // Runtime dependency for generated Prisma client (src/generated/prisma imports @prisma/client/runtime/client)
+    "@prisma/client",
     // Used by Next.js build pipeline (browserslist)
     "baseline-browser-mapping",
-    // Transitive peer dependency of @tailwindcss/postcss, not a direct install
-    "postcss",
   ],
-  ignoreBinaries: ["powershell"],
+  ignoreBinaries: [],
   ignoreExportsUsedInFile: true,
 };
 
