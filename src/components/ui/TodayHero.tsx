@@ -3,7 +3,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Sun, Sunrise, Sunset, Moon, MoonStar, Calendar, Sparkles } from "lucide-react";
+import {
+  Sun,
+  Sunrise,
+  Sunset,
+  Moon,
+  MoonStar,
+  Calendar,
+  Sparkles,
+  AlertTriangle,
+} from "lucide-react";
 import { MoonPhase } from "./MoonPhase";
 import { PlanetIcon } from "./PlanetIcon";
 import { formatTimeAgo, formatIsoTimeAgo, formatDate } from "@/lib/date-utils";
@@ -185,25 +194,26 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
                 </>
               )}
 
-              {/* NAKSHATRA (no pada in main line) */}
+              {/* NAKSHATRA + pada samen */}
               {dailyInfo?.nakshatra && (
                 <>
                   <span className="text-white/25">•</span>
-                  <span>{dailyInfo.nakshatra.name}</span>
+                  <span>
+                    {dailyInfo.nakshatra.name}
+                    <span className="ml-1 text-sm text-white/50">
+                      pada {dailyInfo.nakshatra.pada}
+                    </span>
+                  </span>
                 </>
               )}
             </div>
 
             {/* Secondary details line - smaller */}
-            <div className="flex flex-wrap items-center gap-2 text-sm text-white/50">
-              {dailyInfo?.tithi?.endTime && (
-                <span>Tithi eindigt {dailyInfo.tithi.endTime}</span>
-              )}
-              {dailyInfo?.nakshatra && dailyInfo?.tithi?.endTime && (
-                <span className="text-white/25">•</span>
-              )}
-              {dailyInfo?.nakshatra && <span>Pada {dailyInfo.nakshatra.pada}</span>}
-            </div>
+            {dailyInfo?.tithi?.endTime && (
+              <div className="text-sm text-white/50">
+                Tithi eindigt {dailyInfo.tithi.endTime}
+              </div>
+            )}
           </div>
         </div>
 
@@ -355,122 +365,125 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
 
         {/* Yoga / Karana */}
         {(dailyInfo?.yoga || dailyInfo?.karana) && (
-          <div className="mt-6 grid grid-cols-2 gap-1.5 sm:gap-3">
-            {dailyInfo?.yoga && (
-              <div className="rounded-xl border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] p-2.5 backdrop-blur-md sm:p-3">
-                <div className="mb-1 text-xs text-white/50">Yoga</div>
-                <div className="text-xs font-medium text-white sm:text-sm">
-                  {dailyInfo.yoga.name}
-                </div>
-                {dailyInfo.yoga.endTime && (
-                  <div className="mt-0.5 text-xs text-white/50">
-                    t/m {dailyInfo.yoga.endTime}
+          <div className="mt-6">
+            <div className="mb-2 text-xs font-medium tracking-wider text-white/40 uppercase">
+              Pañcāṅga
+            </div>
+            <div className="rounded-xl border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] p-3 backdrop-blur-md">
+              <div className="grid grid-cols-2 divide-x divide-white/10">
+                {dailyInfo?.yoga && (
+                  <div className="pr-4">
+                    <div className="mb-0.5 text-xs text-white/50">Yoga</div>
+                    <div className="text-sm font-medium text-white">
+                      {dailyInfo.yoga.name}
+                    </div>
+                    {dailyInfo.yoga.endTime && (
+                      <div className="mt-0.5 text-xs text-white/40">
+                        t/m {dailyInfo.yoga.endTime}
+                      </div>
+                    )}
+                  </div>
+                )}
+                {dailyInfo?.karana && (
+                  <div className={dailyInfo?.yoga ? "pl-4" : ""}>
+                    <div className="mb-0.5 text-xs text-white/50">Karana</div>
+                    <div className="text-sm font-medium text-white">
+                      {dailyInfo.karana.name}
+                    </div>
+                    {dailyInfo.karana.endTime && (
+                      <div className="mt-0.5 text-xs text-white/40">
+                        t/m {dailyInfo.karana.endTime}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
-            )}
-            {dailyInfo?.karana && (
-              <div className="rounded-xl border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] p-2.5 backdrop-blur-md sm:p-3">
-                <div className="mb-1 text-xs text-white/50">Karana</div>
-                <div className="text-xs font-medium text-white sm:text-sm">
-                  {dailyInfo.karana.name}
-                </div>
-                {dailyInfo.karana.endTime && (
-                  <div className="mt-0.5 text-xs text-white/50">
-                    t/m {dailyInfo.karana.endTime}
-                  </div>
-                )}
-              </div>
-            )}
+            </div>
           </div>
         )}
 
-        {/* Muhurta tijden: ongunstig + gunstig */}
-        {(dailyInfo?.rahuKalam ||
-          dailyInfo?.yamagandam ||
-          dailyInfo?.gulikaKalam ||
-          dailyInfo?.abhijitMuhurta ||
-          dailyInfo?.vijayMuhurta ||
-          dailyInfo?.brahmaMuhurta) && (
-          <div className="mt-2 grid grid-cols-2 gap-1.5 sm:grid-cols-3 sm:gap-3">
-            {dailyInfo?.rahuKalam && (
-              <div className="rounded-xl border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] p-2.5 backdrop-blur-md sm:p-3">
-                <div className="mb-1 text-xs text-white/50">Rahu Kalam</div>
-                <div className="text-xs font-medium text-white sm:text-sm">
-                  <span className="block sm:hidden">{dailyInfo.rahuKalam.start}</span>
-                  <span className="block sm:hidden">– {dailyInfo.rahuKalam.end}</span>
-                  <span className="hidden sm:inline">
-                    {dailyInfo.rahuKalam.start} – {dailyInfo.rahuKalam.end}
-                  </span>
-                </div>
+        {/* Muhurta tijden: chronologisch gesorteerd */}
+        {(() => {
+          const muhurtas = [
+            dailyInfo?.brahmaMuhurta && {
+              name: "Brahma",
+              auspicious: true,
+              ...dailyInfo.brahmaMuhurta,
+            },
+            dailyInfo?.rahuKalam && {
+              name: "Rahu Kalam",
+              auspicious: false,
+              ...dailyInfo.rahuKalam,
+            },
+            dailyInfo?.yamagandam && {
+              name: "Yamagandam",
+              auspicious: false,
+              ...dailyInfo.yamagandam,
+            },
+            dailyInfo?.gulikaKalam && {
+              name: "Gulika Kalam",
+              auspicious: false,
+              ...dailyInfo.gulikaKalam,
+            },
+            dailyInfo?.abhijitMuhurta && {
+              name: "Abhijit",
+              auspicious: true,
+              ...dailyInfo.abhijitMuhurta,
+            },
+            dailyInfo?.vijayMuhurta && {
+              name: "Vijay",
+              auspicious: true,
+              ...dailyInfo.vijayMuhurta,
+            },
+          ]
+            .filter(
+              (
+                m
+              ): m is { name: string; auspicious: boolean; start: string; end: string } =>
+                Boolean(m)
+            )
+            .sort((a, b) => a.start.localeCompare(b.start));
+
+          if (muhurtas.length === 0) return null;
+
+          return (
+            <div className="mt-6">
+              <div className="mb-2 text-xs font-medium tracking-wider text-white/40 uppercase">
+                Muhurta
               </div>
-            )}
-            {dailyInfo?.yamagandam && (
-              <div className="rounded-xl border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] p-2.5 backdrop-blur-md sm:p-3">
-                <div className="mb-1 text-xs text-white/50">Yamagandam</div>
-                <div className="text-xs font-medium text-white sm:text-sm">
-                  <span className="block sm:hidden">{dailyInfo.yamagandam.start}</span>
-                  <span className="block sm:hidden">– {dailyInfo.yamagandam.end}</span>
-                  <span className="hidden sm:inline">
-                    {dailyInfo.yamagandam.start} – {dailyInfo.yamagandam.end}
-                  </span>
-                </div>
+              <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 sm:gap-3">
+                {muhurtas.map((m) => (
+                  <div
+                    key={m.name}
+                    className={
+                      m.auspicious
+                        ? "rounded-xl border border-white/20 bg-white/10 p-2.5 backdrop-blur-md sm:p-3"
+                        : "rounded-xl border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] p-2.5 backdrop-blur-md sm:p-3"
+                    }
+                  >
+                    <div
+                      className={`mb-1 flex items-center gap-1 text-xs ${m.auspicious ? "text-white/70" : "text-white/50"}`}
+                    >
+                      {m.auspicious ? (
+                        <Sparkles className="h-3 w-3 shrink-0" />
+                      ) : (
+                        <AlertTriangle className="h-3 w-3 shrink-0" />
+                      )}
+                      {m.name}
+                    </div>
+                    <div className="text-xs font-medium text-white sm:text-sm">
+                      <span className="block sm:hidden">{m.start}</span>
+                      <span className="block sm:hidden">– {m.end}</span>
+                      <span className="hidden sm:inline">
+                        {m.start} – {m.end}
+                      </span>
+                    </div>
+                  </div>
+                ))}
               </div>
-            )}
-            {dailyInfo?.gulikaKalam && (
-              <div className="rounded-xl border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] p-2.5 backdrop-blur-md sm:p-3">
-                <div className="mb-1 text-xs text-white/50">Gulika Kalam</div>
-                <div className="text-xs font-medium text-white sm:text-sm">
-                  <span className="block sm:hidden">{dailyInfo.gulikaKalam.start}</span>
-                  <span className="block sm:hidden">– {dailyInfo.gulikaKalam.end}</span>
-                  <span className="hidden sm:inline">
-                    {dailyInfo.gulikaKalam.start} – {dailyInfo.gulikaKalam.end}
-                  </span>
-                </div>
-              </div>
-            )}
-            {dailyInfo?.abhijitMuhurta && (
-              <div className="rounded-xl border border-white/20 bg-white/10 p-2.5 backdrop-blur-md sm:p-3">
-                <div className="mb-1 text-xs text-white/70">Abhijit ✦</div>
-                <div className="text-xs font-medium text-white sm:text-sm">
-                  <span className="block sm:hidden">
-                    {dailyInfo.abhijitMuhurta.start}
-                  </span>
-                  <span className="block sm:hidden">
-                    – {dailyInfo.abhijitMuhurta.end}
-                  </span>
-                  <span className="hidden sm:inline">
-                    {dailyInfo.abhijitMuhurta.start} – {dailyInfo.abhijitMuhurta.end}
-                  </span>
-                </div>
-              </div>
-            )}
-            {dailyInfo?.vijayMuhurta && (
-              <div className="rounded-xl border border-white/20 bg-white/10 p-2.5 backdrop-blur-md sm:p-3">
-                <div className="mb-1 text-xs text-white/70">Vijay ✦</div>
-                <div className="text-xs font-medium text-white sm:text-sm">
-                  <span className="block sm:hidden">{dailyInfo.vijayMuhurta.start}</span>
-                  <span className="block sm:hidden">– {dailyInfo.vijayMuhurta.end}</span>
-                  <span className="hidden sm:inline">
-                    {dailyInfo.vijayMuhurta.start} – {dailyInfo.vijayMuhurta.end}
-                  </span>
-                </div>
-              </div>
-            )}
-            {dailyInfo?.brahmaMuhurta && (
-              <div className="rounded-xl border border-white/20 bg-white/10 p-2.5 backdrop-blur-md sm:p-3">
-                <div className="mb-1 text-xs text-white/70">Brahma ✦</div>
-                <div className="text-xs font-medium text-white sm:text-sm">
-                  <span className="block sm:hidden">{dailyInfo.brahmaMuhurta.start}</span>
-                  <span className="block sm:hidden">– {dailyInfo.brahmaMuhurta.end}</span>
-                  <span className="hidden sm:inline">
-                    {dailyInfo.brahmaMuhurta.start} – {dailyInfo.brahmaMuhurta.end}
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+            </div>
+          );
+        })()}
 
         {/* Special Lunar Day Banner */}
         {specialDay && (
