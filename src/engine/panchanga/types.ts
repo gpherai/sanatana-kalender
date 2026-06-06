@@ -166,6 +166,16 @@ export interface DailyPanchangaFull {
     startLocal: string; // HH:mm
     endLocal: string; // HH:mm
   };
+  gulikaKalam?: {
+    startLocal: string; // HH:mm
+    endLocal: string; // HH:mm
+  };
+
+  // Auspicious time
+  abhijitMuhurta?: {
+    startLocal: string; // HH:mm
+    endLocal: string; // HH:mm
+  };
 
   // =========================================================================
   // DRIK PANCHANG EXTENDED FIELDS

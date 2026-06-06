@@ -319,7 +319,10 @@ export function DayDetailsPanel({
           {selectedDayInfo &&
             (selectedDayInfo.yoga ||
               selectedDayInfo.karana ||
-              selectedDayInfo.rahuKalam) && (
+              selectedDayInfo.rahuKalam ||
+              selectedDayInfo.yamagandam ||
+              selectedDayInfo.gulikaKalam ||
+              selectedDayInfo.abhijitMuhurta) && (
               <div className="bg-theme-surface-raised rounded-xl p-4 shadow">
                 <h4 className="text-theme-fg mb-3 text-sm font-semibold">
                   Panchanga Details
@@ -365,8 +368,44 @@ export function DayDetailsPanel({
                         Rahu Kalam (Ongunstig)
                       </h5>
                       <p className="text-sm font-semibold text-[var(--theme-almanac-warning-text)]">
-                        {selectedDayInfo.rahuKalam.start} -{" "}
+                        {selectedDayInfo.rahuKalam.start} –{" "}
                         {selectedDayInfo.rahuKalam.end}
+                      </p>
+                    </div>
+                  )}
+
+                  {selectedDayInfo.yamagandam && (
+                    <div className="rounded-lg border-l-4 border-[var(--theme-almanac-warning-border)] bg-[var(--theme-almanac-warning-bg)] p-3">
+                      <h5 className="mb-1 text-xs font-medium text-[var(--theme-almanac-warning-heading)]">
+                        Yamagandam (Ongunstig)
+                      </h5>
+                      <p className="text-sm font-semibold text-[var(--theme-almanac-warning-text)]">
+                        {selectedDayInfo.yamagandam.start} –{" "}
+                        {selectedDayInfo.yamagandam.end}
+                      </p>
+                    </div>
+                  )}
+
+                  {selectedDayInfo.gulikaKalam && (
+                    <div className="rounded-lg border-l-4 border-[var(--theme-almanac-warning-border)] bg-[var(--theme-almanac-warning-bg)] p-3">
+                      <h5 className="mb-1 text-xs font-medium text-[var(--theme-almanac-warning-heading)]">
+                        Gulika Kalam (Ongunstig)
+                      </h5>
+                      <p className="text-sm font-semibold text-[var(--theme-almanac-warning-text)]">
+                        {selectedDayInfo.gulikaKalam.start} –{" "}
+                        {selectedDayInfo.gulikaKalam.end}
+                      </p>
+                    </div>
+                  )}
+
+                  {selectedDayInfo.abhijitMuhurta && (
+                    <div className="rounded-lg border-l-4 border-[var(--theme-almanac-success-border,var(--theme-success-border))] bg-[var(--theme-almanac-success-bg,var(--theme-success-bg))] p-3">
+                      <h5 className="mb-1 text-xs font-medium text-[var(--theme-almanac-success-heading,var(--theme-success-fg))]">
+                        Abhijit Muhurta (Gunstig)
+                      </h5>
+                      <p className="text-sm font-semibold text-[var(--theme-almanac-success-text,var(--theme-success))]">
+                        {selectedDayInfo.abhijitMuhurta.start} –{" "}
+                        {selectedDayInfo.abhijitMuhurta.end}
                       </p>
                     </div>
                   )}

@@ -353,9 +353,9 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
           </div>
         </div>
 
-        {/* Yoga / Karana / Rahu Kalam */}
-        {(dailyInfo?.yoga || dailyInfo?.karana || dailyInfo?.rahuKalam) && (
-          <div className="mt-6 grid grid-cols-3 gap-1.5 sm:gap-3">
+        {/* Yoga / Karana */}
+        {(dailyInfo?.yoga || dailyInfo?.karana) && (
+          <div className="mt-6 grid grid-cols-2 gap-1.5 sm:gap-3">
             {dailyInfo?.yoga && (
               <div className="rounded-xl border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] p-2.5 backdrop-blur-md sm:p-3">
                 <div className="mb-1 text-xs text-white/50">Yoga</div>
@@ -382,6 +382,15 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
                 )}
               </div>
             )}
+          </div>
+        )}
+
+        {/* Muhurta tijden: ongunstig + gunstig */}
+        {(dailyInfo?.rahuKalam ||
+          dailyInfo?.yamagandam ||
+          dailyInfo?.gulikaKalam ||
+          dailyInfo?.abhijitMuhurta) && (
+          <div className="mt-2 grid grid-cols-2 gap-1.5 sm:grid-cols-4 sm:gap-3">
             {dailyInfo?.rahuKalam && (
               <div className="rounded-xl border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] p-2.5 backdrop-blur-md sm:p-3">
                 <div className="mb-1 text-xs text-white/50">Rahu Kalam</div>
@@ -390,6 +399,46 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
                   <span className="block sm:hidden">– {dailyInfo.rahuKalam.end}</span>
                   <span className="hidden sm:inline">
                     {dailyInfo.rahuKalam.start} – {dailyInfo.rahuKalam.end}
+                  </span>
+                </div>
+              </div>
+            )}
+            {dailyInfo?.yamagandam && (
+              <div className="rounded-xl border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] p-2.5 backdrop-blur-md sm:p-3">
+                <div className="mb-1 text-xs text-white/50">Yamagandam</div>
+                <div className="text-xs font-medium text-white sm:text-sm">
+                  <span className="block sm:hidden">{dailyInfo.yamagandam.start}</span>
+                  <span className="block sm:hidden">– {dailyInfo.yamagandam.end}</span>
+                  <span className="hidden sm:inline">
+                    {dailyInfo.yamagandam.start} – {dailyInfo.yamagandam.end}
+                  </span>
+                </div>
+              </div>
+            )}
+            {dailyInfo?.gulikaKalam && (
+              <div className="rounded-xl border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] p-2.5 backdrop-blur-md sm:p-3">
+                <div className="mb-1 text-xs text-white/50">Gulika Kalam</div>
+                <div className="text-xs font-medium text-white sm:text-sm">
+                  <span className="block sm:hidden">{dailyInfo.gulikaKalam.start}</span>
+                  <span className="block sm:hidden">– {dailyInfo.gulikaKalam.end}</span>
+                  <span className="hidden sm:inline">
+                    {dailyInfo.gulikaKalam.start} – {dailyInfo.gulikaKalam.end}
+                  </span>
+                </div>
+              </div>
+            )}
+            {dailyInfo?.abhijitMuhurta && (
+              <div className="rounded-xl border border-white/20 bg-white/10 p-2.5 backdrop-blur-md sm:p-3">
+                <div className="mb-1 text-xs text-white/70">Abhijit ✦</div>
+                <div className="text-xs font-medium text-white sm:text-sm">
+                  <span className="block sm:hidden">
+                    {dailyInfo.abhijitMuhurta.start}
+                  </span>
+                  <span className="block sm:hidden">
+                    – {dailyInfo.abhijitMuhurta.end}
+                  </span>
+                  <span className="hidden sm:inline">
+                    {dailyInfo.abhijitMuhurta.start} – {dailyInfo.abhijitMuhurta.end}
                   </span>
                 </div>
               </div>

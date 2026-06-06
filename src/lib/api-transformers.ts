@@ -167,6 +167,20 @@ export function transformToApiResponse(panchanga: DailyPanchangaFull) {
         }
       : null,
 
+    gulikaKalam: panchanga.gulikaKalam
+      ? {
+          start: panchanga.gulikaKalam.startLocal,
+          end: panchanga.gulikaKalam.endLocal,
+        }
+      : null,
+
+    abhijitMuhurta: panchanga.abhijitMuhurta
+      ? {
+          start: panchanga.abhijitMuhurta.startLocal,
+          end: panchanga.abhijitMuhurta.endLocal,
+        }
+      : null,
+
     // Ayanamsa (precession correction)
     ayanamsa: {
       name: panchanga.ayanamsa.name,

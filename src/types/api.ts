@@ -145,6 +145,28 @@ export interface DailyInfoResponse extends Omit<DailyInfoData, "date" | "moonPha
   } | null;
 
   /**
+   * Gulika Kalam / Mandi (inauspicious time period ruled by Saturn's son)
+   * Octet-based, like Rahu Kalam and Yamagandam.
+   */
+  gulikaKalam?: {
+    /** Start time in HH:mm format */
+    start: string;
+    /** End time in HH:mm format */
+    end: string;
+  } | null;
+
+  /**
+   * Abhijit Muhurta (auspicious midday window)
+   * 8th of 15 day-muhurtas; generally auspicious for all undertakings.
+   */
+  abhijitMuhurta?: {
+    /** Start time in HH:mm format */
+    start: string;
+    /** End time in HH:mm format */
+    end: string;
+  } | null;
+
+  /**
    * Exact moon phase event occurring on this calendar day (if any).
    * Calculated using Swiss Ephemeris binary search; null when no phase occurs.
    */

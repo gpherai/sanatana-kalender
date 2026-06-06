@@ -67,11 +67,8 @@ export class PanchangaSwissService {
       sunPos,
       moonPos
     );
-    const { rahuKalam, yamagandam } = computeInauspiciousTimes(
-      astro.sunriseTime,
-      astro.sunsetTime,
-      varaIdx
-    );
+    const { rahuKalam, yamagandam, gulikaKalam, abhijitMuhurta } =
+      computeInauspiciousTimes(astro.sunriseTime, astro.sunsetTime, varaIdx);
 
     const rashiData = await computeRashiTransitions(
       astro.sunriseJD,
@@ -192,6 +189,8 @@ export class PanchangaSwissService {
 
       rahuKalam,
       yamagandam,
+      gulikaKalam,
+      abhijitMuhurta,
 
       maas: {
         name: maasData.lunarMaasName,
