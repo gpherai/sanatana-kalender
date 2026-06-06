@@ -240,9 +240,10 @@ describe("tithi-helpers", () => {
       expect(isNishitakalDateShiftNeeded(prev, "05:51")).toBe(true);
     });
 
-    it("returns true for past-midnight start overlapping Nishitakal (Aug 2026 Sawan)", () => {
+    it("returns true for past-midnight start just before Nishitakal (Aug 2026 Sawan)", () => {
       // Chaturdashi starts 01:24 Aug 11 (past-midnight on Aug 10 timeline).
-      // Nishitakal Aug 10→11: ~01:10–02:23. Tithi starts during Nishitakal → shift.
+      // Nishitakal Aug 10→11 (muhurta=nightDuration/30): ~01:28–02:04. Tithi starts
+      // at 01:24, just before Nishitakal opens → pervades window → shift.
       const prev: PrevDayInfo = {
         tithiEndTime: "01:24",
         sunrise: "06:19",

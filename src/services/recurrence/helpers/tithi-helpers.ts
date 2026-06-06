@@ -179,23 +179,21 @@ export function isNishitakalDateShiftNeeded(
 
   // Express tithiStart on the prevDay continuous timeline.
   // A stored time < prevSunrise is a past-midnight value (next calendar day) → add 1440.
-  // This fixes under-shift for cases like Aug 2026 Sawan Shivaratri where Chaturdashi
-  // starts at 01:24 (past midnight) and overlaps with Nishitakal (01:30–02:07).
   const rawTithiStart =
     tithiStartMin < prevSunriseMin ? tithiStartMin + 1440 : tithiStartMin;
 
   // Nishitakal window on the prevDay continuous timeline.
+  // 1 muhurta = nightDuration/30 (DrikPanchang formula: ±1 muhurta around midnight).
   const nightDuration = nextSunriseMin + 1440 - sunsetMin;
-  const muhurta = nightDuration / 15;
+  const muhurta = nightDuration / 30;
   const nishitakalStartRaw = sunsetMin + nightDuration / 2 - muhurta;
-  const nishitakalEndRaw = nishitakalStartRaw + 2 * muhurta;
 
-  // Shift if the tithi overlaps Nishitakal (starts before Nishitakal ends).
-  // Covers daytime starts (Chaturdashi runs through the night including Nishitakal),
-  // evening starts, and near-midnight starts entering Nishitakal partway through.
+  // Shift to D-1 only if the tithi was already active when Nishitakal began —
+  // i.e. it "pervades" the window from the start. A tithi starting inside or after
+  // Nishitakal (e.g. 01:53 when window opens at 01:20) stays on the udaya day.
   // NOTE: callers must guard against kshaya cases by verifying prevInfo.tithi is
   // the expected predecessor tithi before calling this function.
-  return rawTithiStart < nishitakalEndRaw;
+  return rawTithiStart < nishitakalStartRaw;
 }
 
 // ---------------------------------------------------------------------------
