@@ -1620,7 +1620,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "EKADASHI_SHUKLA",
-      maas: "JYESHTHA",
       isAdhikaOnly: true,
     },
     description:
@@ -1646,7 +1645,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "EKADASHI_KRISHNA",
-      maas: "JYESHTHA",
       isAdhikaOnly: true,
     },
     description:
@@ -2516,7 +2514,6 @@ export const EVENT_NAMING_CATALOG: EventNaming[] = [
     ruleType: "TITHI",
     ruleConfig: {
       tithi: "CHATURTHI_KRISHNA",
-      maas: "JYESHTHA",
       isAdhikaOnly: true,
       dateRule: "SANKASHTI",
     },
