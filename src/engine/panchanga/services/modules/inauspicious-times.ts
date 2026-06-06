@@ -29,8 +29,14 @@ export function computeInauspiciousTimes(
   const yamaEnd = sunriseTime.plus({ minutes: yStartMin + octet });
   const guliStart = sunriseTime.plus({ minutes: gStartMin });
   const guliEnd = sunriseTime.plus({ minutes: gStartMin + octet });
-  const abhijitStart = sunriseTime.plus({ minutes: abhijitStartMin });
-  const abhijitEnd = sunriseTime.plus({ minutes: abhijitEndMin });
+  // Wednesday (varaIdx=3): Abhijit overlaps Dur Muhurta → shastrically void
+  const abhijitMuhurta =
+    varaIdx !== 3
+      ? {
+          startLocal: sunriseTime.plus({ minutes: abhijitStartMin }).toFormat("HH:mm"),
+          endLocal: sunriseTime.plus({ minutes: abhijitEndMin }).toFormat("HH:mm"),
+        }
+      : undefined;
 
   return {
     rahuKalam: {
@@ -45,9 +51,6 @@ export function computeInauspiciousTimes(
       startLocal: guliStart.toFormat("HH:mm"),
       endLocal: guliEnd.toFormat("HH:mm"),
     },
-    abhijitMuhurta: {
-      startLocal: abhijitStart.toFormat("HH:mm"),
-      endLocal: abhijitEnd.toFormat("HH:mm"),
-    },
+    abhijitMuhurta,
   };
 }

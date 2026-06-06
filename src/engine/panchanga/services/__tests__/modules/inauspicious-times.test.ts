@@ -68,13 +68,18 @@ describe("Abhijit Muhurta", () => {
   // 06:00 + 336min = 06:00 + 5h36 = 11:36
   // 06:00 + 384min = 06:00 + 6h24 = 12:24
 
-  it("any weekday: Abhijit 11:36-12:24 (8th of 15 muhurtas)", () => {
+  it("non-Wednesday: Abhijit 11:36-12:24 (8th of 15 muhurtas)", () => {
     const { abhijitMuhurta } = computeInauspiciousTimes(sunrise, sunset, 1);
-    expect(abhijitMuhurta.startLocal).toBe("11:36");
-    expect(abhijitMuhurta.endLocal).toBe("12:24");
+    expect(abhijitMuhurta?.startLocal).toBe("11:36");
+    expect(abhijitMuhurta?.endLocal).toBe("12:24");
   });
 
-  it("same time regardless of weekday", () => {
+  it("Wednesday (varaIdx=3): Abhijit is void (undefined)", () => {
+    const { abhijitMuhurta } = computeInauspiciousTimes(sunrise, sunset, 3);
+    expect(abhijitMuhurta).toBeUndefined();
+  });
+
+  it("same time on non-Wednesday days", () => {
     const mon = computeInauspiciousTimes(sunrise, sunset, 1).abhijitMuhurta;
     const fri = computeInauspiciousTimes(sunrise, sunset, 5).abhijitMuhurta;
     expect(mon).toEqual(fri);
