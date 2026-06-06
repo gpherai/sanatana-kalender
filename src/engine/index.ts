@@ -19,4 +19,4 @@ export {
   computeTithiOccurrence,
   computeSankashtiOccurrence,
   applyRatriVyapiniDateRule,
-} from "@/services/recurrence/helpers/tithi-helpers";
+} from "./tithi-helpers";
