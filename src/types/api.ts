@@ -167,6 +167,17 @@ export interface DailyInfoResponse extends Omit<DailyInfoData, "date" | "moonPha
   } | null;
 
   /**
+   * Vijay Muhurta (auspicious afternoon window)
+   * 11th of 15 day-muhurtas; associated with victory and success.
+   */
+  vijayMuhurta?: {
+    /** Start time in HH:mm format */
+    start: string;
+    /** End time in HH:mm format */
+    end: string;
+  } | null;
+
+  /**
    * Exact moon phase event occurring on this calendar day (if any).
    * Calculated using Swiss Ephemeris binary search; null when no phase occurs.
    */

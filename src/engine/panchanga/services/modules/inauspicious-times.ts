@@ -22,6 +22,9 @@ export function computeInauspiciousTimes(
   // Abhijit = 8th of 15 day-muhurtas (index 7, midday window)
   const abhijitStartMin = 7 * muhurta;
   const abhijitEndMin = 8 * muhurta;
+  // Vijay = 11th of 15 day-muhurtas (index 10, afternoon window)
+  const vijayStartMin = 10 * muhurta;
+  const vijayEndMin = 11 * muhurta;
 
   const rahuStart = sunriseTime.plus({ minutes: rStartMin });
   const rahuEnd = sunriseTime.plus({ minutes: rStartMin + octet });
@@ -38,6 +41,11 @@ export function computeInauspiciousTimes(
         }
       : undefined;
 
+  const vijayMuhurta = {
+    startLocal: sunriseTime.plus({ minutes: vijayStartMin }).toFormat("HH:mm"),
+    endLocal: sunriseTime.plus({ minutes: vijayEndMin }).toFormat("HH:mm"),
+  };
+
   return {
     rahuKalam: {
       startLocal: rahuStart.toFormat("HH:mm"),
@@ -52,5 +60,6 @@ export function computeInauspiciousTimes(
       endLocal: guliEnd.toFormat("HH:mm"),
     },
     abhijitMuhurta,
+    vijayMuhurta,
   };
 }

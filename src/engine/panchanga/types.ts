@@ -171,8 +171,13 @@ export interface DailyPanchangaFull {
     endLocal: string; // HH:mm
   };
 
-  // Auspicious time
+  // Auspicious times
   abhijitMuhurta?: {
+    startLocal: string; // HH:mm
+    endLocal: string; // HH:mm
+  };
+
+  vijayMuhurta?: {
     startLocal: string; // HH:mm
     endLocal: string; // HH:mm
   };

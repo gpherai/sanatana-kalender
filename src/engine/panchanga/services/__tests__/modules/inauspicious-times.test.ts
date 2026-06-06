@@ -93,3 +93,35 @@ describe("Abhijit Muhurta", () => {
     expect(abhijitMuhurta.endLocal).toBe("10:16");
   });
 });
+
+describe("Vijay Muhurta", () => {
+  // 12h day: muhurta=48min, vijay=index 10 → start=10*48=480min, end=11*48=528min
+  // 06:00 + 480min = 06:00 + 8h = 14:00
+  // 06:00 + 528min = 06:00 + 8h48 = 14:48
+
+  it("non-Wednesday: Vijay 14:00-14:48 (11th of 15 muhurtas)", () => {
+    const { vijayMuhurta } = computeInauspiciousTimes(sunrise, sunset, 1);
+    expect(vijayMuhurta.startLocal).toBe("14:00");
+    expect(vijayMuhurta.endLocal).toBe("14:48");
+  });
+
+  it("Wednesday (varaIdx=3): Vijay still present (no weekday exception)", () => {
+    const { vijayMuhurta } = computeInauspiciousTimes(sunrise, sunset, 3);
+    expect(vijayMuhurta.startLocal).toBe("14:00");
+    expect(vijayMuhurta.endLocal).toBe("14:48");
+  });
+
+  it("same time on all weekdays", () => {
+    const mon = computeInauspiciousTimes(sunrise, sunset, 1).vijayMuhurta;
+    const sat = computeInauspiciousTimes(sunrise, sunset, 6).vijayMuhurta;
+    expect(mon).toEqual(sat);
+  });
+
+  it("scales with day length (8h day: muhurta=32min, vijay start=10*32=320min)", () => {
+    const shortSunset = DateTime.fromISO("2025-01-06T14:00:00", { zone: "UTC" });
+    // 8h = 480 min, muhurta=32min, vijay start=10*32=320min → 06:00+5h20=11:20
+    const { vijayMuhurta } = computeInauspiciousTimes(sunrise, shortSunset, 1);
+    expect(vijayMuhurta.startLocal).toBe("11:20");
+    expect(vijayMuhurta.endLocal).toBe("11:52");
+  });
+});
