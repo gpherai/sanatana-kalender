@@ -6,6 +6,7 @@ import {
   findDailyInfoYearlyLunarCandidates,
   findDailyInfoKshayaCandidates,
   findDailyInfoSunriseByDates,
+  findDailyInfoTithiByDates,
   findDailyInfoTithiTimingCandidates,
 } from "@/repositories/daily-info.repository";
 import {
@@ -92,6 +93,16 @@ export async function generateYearlyLunarOccurrences(
     const preferPredecessorDay = config.preferPredecessorDay === true;
     const DAY_MS = 24 * 60 * 60 * 1000;
 
+    // Pre-fetch D+2 tithi for Pattern 1 Dwadashi-kshaya check.
+    const d2Dates = kshayaCandidates.map((d) => new Date(d.date.getTime() + 2 * DAY_MS));
+    const d2TithiRows = await findDailyInfoTithiByDates(d2Dates);
+    const d2TithiMap = new Map(
+      d2TithiRows.map((r) => [
+        r.date.toISOString().split("T")[0]!,
+        r.tithi as string | null,
+      ])
+    );
+
     for (const day of kshayaCandidates) {
       if (maasValues && (!day.maas || !maasValues.includes(day.maas))) continue;
       if (
@@ -115,18 +126,31 @@ export async function generateYearlyLunarOccurrences(
         if (preferPredecessorDay && !kshayaNextDay) {
           predecessorDateOverrides.set(coveredWindowIndex, day.date);
         }
-        // Pattern 1: when the predecessor ends during the day (after sunrise,
-        // before sunset), DP shows D as smarta and D+1 as vaishnava/udaya.
-        // Add D as an extra smarta occurrence alongside the normal udaya window.
+        // Pattern 1: predecessor ends in afternoon → smarta D AND udaya D+1.
+        // Purnima: always fires when Chaturdashi ends in afternoon (no kshaya needed).
+        // Ekadashi: fires only when Dashami ends in afternoon AND D+2=TRAYODASHI (Dwadashi kshaya).
         const endMin = parseTimeToMinutes(day.tithiEndTime ?? "");
         const srMin = parseTimeToMinutes(day.sunrise ?? "");
         const ssMin = parseTimeToMinutes(day.sunset ?? "");
+        const d2Key = new Date(day.date.getTime() + 2 * DAY_MS)
+          .toISOString()
+          .split("T")[0]!;
+        const d2Tithi = d2TithiMap.get(d2Key);
+        const isDwadashiKshaya =
+          d2Tithi === Tithi.TRAYODASHI_SHUKLA || d2Tithi === Tithi.TRAYODASHI_KRISHNA;
+        const isPurnimaPredecessor =
+          predecessorTithi === Tithi.CHATURDASHI_SHUKLA ||
+          predecessorTithi === Tithi.CHATURDASHI_KRISHNA;
+        const isEkadashiPredecessor =
+          predecessorTithi === Tithi.DASHAMI_SHUKLA ||
+          predecessorTithi === Tithi.DASHAMI_KRISHNA;
         if (
           endMin !== null &&
           srMin !== null &&
           ssMin !== null &&
           endMin > srMin &&
-          endMin < ssMin
+          endMin < ssMin &&
+          (isPurnimaPredecessor || (isEkadashiPredecessor && isDwadashiKshaya))
         ) {
           kshayaWindowExtras.push({
             firstDay: {
@@ -265,8 +289,11 @@ export async function generateYearlyLunarOccurrences(
     const baseOccurrences = finalWindows.map(({ firstDay, lastDay }) =>
       computeTithiOccurrence(firstDay, lastDay, prevDayMap)
     );
-    // Sub-pattern 2a: when Ekadashi tithiEndTime < sunrise (ends before D+1 sunrise),
-    // also emit D+1 as Vaishnava occurrence (Trisparsha Mahadwadashi etc.).
+    // Sub-pattern 2a: Vaishnava D+1 when Ekadashi ends before D+1 sunrise.
+    // Only applies to Ekadashi; other vrat tithis must not emit this extra.
+    if (event.tithi !== Tithi.EKADASHI_SHUKLA && event.tithi !== Tithi.EKADASHI_KRISHNA) {
+      return baseOccurrences;
+    }
     const extra2a: GeneratedOccurrence[] = [];
     for (const { firstDay } of finalWindows) {
       const endMin = parseTimeToMinutes(firstDay.tithiEndTime ?? "");
