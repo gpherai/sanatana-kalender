@@ -67,9 +67,9 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 # Prisma client and schema (needed for runtime migrations)
-# Note: no custom output path in schema.prisma, client lives in node_modules/.prisma
+# Prisma 7 prisma-client generator outputs to src/generated/prisma/ (bundled by Next.js standalone).
+# node_modules/.prisma no longer exists; @prisma packages still needed for adapter/types.
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/dotenv ./node_modules/dotenv
 
