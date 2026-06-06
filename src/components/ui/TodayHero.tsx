@@ -390,8 +390,9 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
           dailyInfo?.yamagandam ||
           dailyInfo?.gulikaKalam ||
           dailyInfo?.abhijitMuhurta ||
-          dailyInfo?.vijayMuhurta) && (
-          <div className="mt-2 grid grid-cols-2 gap-1.5 sm:grid-cols-5 sm:gap-3">
+          dailyInfo?.vijayMuhurta ||
+          dailyInfo?.brahmaMuhurta) && (
+          <div className="mt-2 grid grid-cols-2 gap-1.5 sm:grid-cols-3 sm:gap-3">
             {dailyInfo?.rahuKalam && (
               <div className="rounded-xl border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] p-2.5 backdrop-blur-md sm:p-3">
                 <div className="mb-1 text-xs text-white/50">Rahu Kalam</div>
@@ -452,6 +453,18 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
                   <span className="block sm:hidden">– {dailyInfo.vijayMuhurta.end}</span>
                   <span className="hidden sm:inline">
                     {dailyInfo.vijayMuhurta.start} – {dailyInfo.vijayMuhurta.end}
+                  </span>
+                </div>
+              </div>
+            )}
+            {dailyInfo?.brahmaMuhurta && (
+              <div className="rounded-xl border border-white/20 bg-white/10 p-2.5 backdrop-blur-md sm:p-3">
+                <div className="mb-1 text-xs text-white/70">Brahma ✦</div>
+                <div className="text-xs font-medium text-white sm:text-sm">
+                  <span className="block sm:hidden">{dailyInfo.brahmaMuhurta.start}</span>
+                  <span className="block sm:hidden">– {dailyInfo.brahmaMuhurta.end}</span>
+                  <span className="hidden sm:inline">
+                    {dailyInfo.brahmaMuhurta.start} – {dailyInfo.brahmaMuhurta.end}
                   </span>
                 </div>
               </div>

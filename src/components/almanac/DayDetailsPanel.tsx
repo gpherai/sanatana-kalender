@@ -323,7 +323,8 @@ export function DayDetailsPanel({
               selectedDayInfo.yamagandam ||
               selectedDayInfo.gulikaKalam ||
               selectedDayInfo.abhijitMuhurta ||
-              selectedDayInfo.vijayMuhurta) && (
+              selectedDayInfo.vijayMuhurta ||
+              selectedDayInfo.brahmaMuhurta) && (
               <div className="bg-theme-surface-raised rounded-xl p-4 shadow">
                 <h4 className="text-theme-fg mb-3 text-sm font-semibold">
                   Panchanga Details
@@ -419,6 +420,18 @@ export function DayDetailsPanel({
                       <p className="text-sm font-semibold text-[var(--theme-almanac-success-text,var(--theme-success))]">
                         {selectedDayInfo.vijayMuhurta.start} –{" "}
                         {selectedDayInfo.vijayMuhurta.end}
+                      </p>
+                    </div>
+                  )}
+
+                  {selectedDayInfo.brahmaMuhurta && (
+                    <div className="rounded-lg border-l-4 border-[var(--theme-almanac-success-border,var(--theme-success-border))] bg-[var(--theme-almanac-success-bg,var(--theme-success-bg))] p-3">
+                      <h5 className="mb-1 text-xs font-medium text-[var(--theme-almanac-success-heading,var(--theme-success-fg))]">
+                        Brahma Muhurta (Gunstig)
+                      </h5>
+                      <p className="text-sm font-semibold text-[var(--theme-almanac-success-text,var(--theme-success))]">
+                        {selectedDayInfo.brahmaMuhurta.start} –{" "}
+                        {selectedDayInfo.brahmaMuhurta.end}
                       </p>
                     </div>
                   )}

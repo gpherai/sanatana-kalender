@@ -182,6 +182,11 @@ export interface DailyPanchangaFull {
     endLocal: string; // HH:mm
   };
 
+  brahmaMuhurta?: {
+    startLocal: string; // HH:mm (pre-dawn, may be before midnight)
+    endLocal: string; // HH:mm
+  };
+
   // =========================================================================
   // DRIK PANCHANG EXTENDED FIELDS
   // =========================================================================

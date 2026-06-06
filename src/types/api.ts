@@ -178,6 +178,17 @@ export interface DailyInfoResponse extends Omit<DailyInfoData, "date" | "moonPha
   } | null;
 
   /**
+   * Brahma Muhurta (sacred pre-dawn window)
+   * 14th of 15 night-muhurtas; ideal for meditation and sadhana.
+   */
+  brahmaMuhurta?: {
+    /** Start time in HH:mm format (pre-dawn, before sunrise) */
+    start: string;
+    /** End time in HH:mm format */
+    end: string;
+  } | null;
+
+  /**
    * Exact moon phase event occurring on this calendar day (if any).
    * Calculated using Swiss Ephemeris binary search; null when no phase occurs.
    */

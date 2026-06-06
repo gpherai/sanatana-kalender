@@ -10,7 +10,8 @@ const GULI_OCTETS = [6, 5, 4, 3, 2, 1, 0];
 export function computeInauspiciousTimes(
   sunriseTime: DateTime,
   sunsetTime: DateTime,
-  varaIdx: number
+  varaIdx: number,
+  nextSunriseTime: DateTime
 ) {
   const dayDurationMin = sunsetTime.diff(sunriseTime, "minutes").minutes;
   const octet = dayDurationMin / 8;
@@ -46,6 +47,14 @@ export function computeInauspiciousTimes(
     endLocal: sunriseTime.plus({ minutes: vijayEndMin }).toFormat("HH:mm"),
   };
 
+  // Brahma Muhurta = 14th of 15 night-muhurtas (second-to-last before next sunrise)
+  const nightDurationMin = nextSunriseTime.diff(sunsetTime, "minutes").minutes;
+  const nightMuhurta = nightDurationMin / 15;
+  const brahmaMuhurta = {
+    startLocal: nextSunriseTime.minus({ minutes: nightMuhurta * 2 }).toFormat("HH:mm"),
+    endLocal: nextSunriseTime.minus({ minutes: nightMuhurta }).toFormat("HH:mm"),
+  };
+
   return {
     rahuKalam: {
       startLocal: rahuStart.toFormat("HH:mm"),
@@ -61,5 +70,6 @@ export function computeInauspiciousTimes(
     },
     abhijitMuhurta,
     vijayMuhurta,
+    brahmaMuhurta,
   };
 }

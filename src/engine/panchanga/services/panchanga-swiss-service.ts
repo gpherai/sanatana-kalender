@@ -42,6 +42,10 @@ export class PanchangaSwissService {
     location: LocationConfig
   ): Promise<DailyPanchangaFull> {
     const astro = await calculateSunriseSunset(dateStr, location);
+    const nextDateStr = DateTime.fromISO(dateStr, { zone: location.tz })
+      .plus({ days: 1 })
+      .toISODate()!;
+    const nextAstro = await calculateSunriseSunset(nextDateStr, location);
 
     const todayStr = DateTime.now().setZone(location.tz).toISODate();
     const moonAstro = await calculateMoonriseMoonset(
@@ -67,8 +71,19 @@ export class PanchangaSwissService {
       sunPos,
       moonPos
     );
-    const { rahuKalam, yamagandam, gulikaKalam, abhijitMuhurta, vijayMuhurta } =
-      computeInauspiciousTimes(astro.sunriseTime, astro.sunsetTime, varaIdx);
+    const {
+      rahuKalam,
+      yamagandam,
+      gulikaKalam,
+      abhijitMuhurta,
+      vijayMuhurta,
+      brahmaMuhurta,
+    } = computeInauspiciousTimes(
+      astro.sunriseTime,
+      astro.sunsetTime,
+      varaIdx,
+      nextAstro.sunriseTime
+    );
 
     const rashiData = await computeRashiTransitions(
       astro.sunriseJD,
@@ -103,10 +118,9 @@ export class PanchangaSwissService {
     const sankrantiData = await detectSankranti(astro.sunriseJD, location.tz);
     const moonPhaseEvent = await detectMoonPhaseEvent(dateStr, location);
 
-    const nextSunriseJD = astro.sunriseJD + 1;
     const { nextTithi, nextNakshatra, nextYoga, nextKarana } = await computeNextElements(
       endJDs,
-      nextSunriseJD,
+      nextAstro.sunriseJD,
       angas,
       flags,
       location.tz
@@ -192,6 +206,7 @@ export class PanchangaSwissService {
       gulikaKalam,
       abhijitMuhurta,
       vijayMuhurta,
+      brahmaMuhurta,
 
       maas: {
         name: maasData.lunarMaasName,

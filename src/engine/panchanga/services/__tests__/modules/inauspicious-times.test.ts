@@ -3,18 +3,30 @@ import { DateTime } from "luxon";
 import { computeInauspiciousTimes } from "../../modules/inauspicious-times";
 
 // All tests use a 12-hour day (720 min): octet = 90 min, muhurta = 48 min
+// Night also 12 hours (720 min): night-muhurta = 48 min
 const sunrise = DateTime.fromISO("2025-01-06T06:00:00", { zone: "UTC" });
 const sunset = DateTime.fromISO("2025-01-06T18:00:00", { zone: "UTC" });
+const nextSunrise = DateTime.fromISO("2025-01-07T06:00:00", { zone: "UTC" });
 
 describe("Rahu Kalam + Yamagandam (existing)", () => {
   it("Monday (varaIdx=1): Rahu 07:30-09:00, Yama 10:30-12:00", () => {
-    const { rahuKalam, yamagandam } = computeInauspiciousTimes(sunrise, sunset, 1);
+    const { rahuKalam, yamagandam } = computeInauspiciousTimes(
+      sunrise,
+      sunset,
+      1,
+      nextSunrise
+    );
     expect(rahuKalam).toEqual({ startLocal: "07:30", endLocal: "09:00" });
     expect(yamagandam).toEqual({ startLocal: "10:30", endLocal: "12:00" });
   });
 
   it("Sunday (varaIdx=0): Rahu 16:30-18:00, Yama 12:00-13:30", () => {
-    const { rahuKalam, yamagandam } = computeInauspiciousTimes(sunrise, sunset, 0);
+    const { rahuKalam, yamagandam } = computeInauspiciousTimes(
+      sunrise,
+      sunset,
+      0,
+      nextSunrise
+    );
     expect(rahuKalam.startLocal).toBe("16:30");
     expect(rahuKalam.endLocal).toBe("18:00");
     expect(yamagandam.startLocal).toBe("12:00");
@@ -22,7 +34,12 @@ describe("Rahu Kalam + Yamagandam (existing)", () => {
   });
 
   it("Saturday (varaIdx=6): Rahu 09:00-10:30, Yama 13:30-15:00", () => {
-    const { rahuKalam, yamagandam } = computeInauspiciousTimes(sunrise, sunset, 6);
+    const { rahuKalam, yamagandam } = computeInauspiciousTimes(
+      sunrise,
+      sunset,
+      6,
+      nextSunrise
+    );
     expect(rahuKalam.startLocal).toBe("09:00");
     expect(rahuKalam.endLocal).toBe("10:30");
     expect(yamagandam.startLocal).toBe("13:30");
@@ -35,28 +52,28 @@ describe("Gulika Kalam", () => {
   // 12h day: octet=90min
 
   it("Saturday (varaIdx=6): Gulika 06:00-07:30 (octet 0)", () => {
-    const { gulikaKalam } = computeInauspiciousTimes(sunrise, sunset, 6);
+    const { gulikaKalam } = computeInauspiciousTimes(sunrise, sunset, 6, nextSunrise);
     // Sat: guliOctet=0 → 0*90=0 min → 06:00-07:30
     expect(gulikaKalam.startLocal).toBe("06:00");
     expect(gulikaKalam.endLocal).toBe("07:30");
   });
 
   it("Friday (varaIdx=5): Gulika 07:30-09:00 (octet 1)", () => {
-    const { gulikaKalam } = computeInauspiciousTimes(sunrise, sunset, 5);
+    const { gulikaKalam } = computeInauspiciousTimes(sunrise, sunset, 5, nextSunrise);
     // Fri: guliOctet=1 → 1*90=90 min → 07:30-09:00
     expect(gulikaKalam.startLocal).toBe("07:30");
     expect(gulikaKalam.endLocal).toBe("09:00");
   });
 
   it("Sunday (varaIdx=0): Gulika 15:00-16:30 (octet 6)", () => {
-    const { gulikaKalam } = computeInauspiciousTimes(sunrise, sunset, 0);
+    const { gulikaKalam } = computeInauspiciousTimes(sunrise, sunset, 0, nextSunrise);
     // Sun: guliOctet=6 → 6*90=540 min → 06:00+9h = 15:00-16:30
     expect(gulikaKalam.startLocal).toBe("15:00");
     expect(gulikaKalam.endLocal).toBe("16:30");
   });
 
   it("Wednesday (varaIdx=3): Gulika 12:00-13:30 (octet 3)", () => {
-    const { gulikaKalam } = computeInauspiciousTimes(sunrise, sunset, 3);
+    const { gulikaKalam } = computeInauspiciousTimes(sunrise, sunset, 3, nextSunrise);
     // Wed: guliOctet=3 → 3*90=270 min → 06:00+4.5h = 10:30-12:00
     expect(gulikaKalam.startLocal).toBe("10:30");
     expect(gulikaKalam.endLocal).toBe("12:00");
@@ -69,26 +86,31 @@ describe("Abhijit Muhurta", () => {
   // 06:00 + 384min = 06:00 + 6h24 = 12:24
 
   it("non-Wednesday: Abhijit 11:36-12:24 (8th of 15 muhurtas)", () => {
-    const { abhijitMuhurta } = computeInauspiciousTimes(sunrise, sunset, 1);
+    const { abhijitMuhurta } = computeInauspiciousTimes(sunrise, sunset, 1, nextSunrise);
     expect(abhijitMuhurta?.startLocal).toBe("11:36");
     expect(abhijitMuhurta?.endLocal).toBe("12:24");
   });
 
   it("Wednesday (varaIdx=3): Abhijit is void (undefined)", () => {
-    const { abhijitMuhurta } = computeInauspiciousTimes(sunrise, sunset, 3);
+    const { abhijitMuhurta } = computeInauspiciousTimes(sunrise, sunset, 3, nextSunrise);
     expect(abhijitMuhurta).toBeUndefined();
   });
 
   it("same time on non-Wednesday days", () => {
-    const mon = computeInauspiciousTimes(sunrise, sunset, 1).abhijitMuhurta;
-    const fri = computeInauspiciousTimes(sunrise, sunset, 5).abhijitMuhurta;
+    const mon = computeInauspiciousTimes(sunrise, sunset, 1, nextSunrise).abhijitMuhurta;
+    const fri = computeInauspiciousTimes(sunrise, sunset, 5, nextSunrise).abhijitMuhurta;
     expect(mon).toEqual(fri);
   });
 
   it("scales with day length (8h day: octet=60min, muhurta=32min)", () => {
     const shortSunset = DateTime.fromISO("2025-01-06T14:00:00", { zone: "UTC" });
     // 8h = 480 min, muhurta=32min, abhijit start=7*32=224min → 06:00+3h44=09:44
-    const { abhijitMuhurta } = computeInauspiciousTimes(sunrise, shortSunset, 1);
+    const { abhijitMuhurta } = computeInauspiciousTimes(
+      sunrise,
+      shortSunset,
+      1,
+      nextSunrise
+    );
     expect(abhijitMuhurta.startLocal).toBe("09:44");
     expect(abhijitMuhurta.endLocal).toBe("10:16");
   });
@@ -100,28 +122,65 @@ describe("Vijay Muhurta", () => {
   // 06:00 + 528min = 06:00 + 8h48 = 14:48
 
   it("non-Wednesday: Vijay 14:00-14:48 (11th of 15 muhurtas)", () => {
-    const { vijayMuhurta } = computeInauspiciousTimes(sunrise, sunset, 1);
+    const { vijayMuhurta } = computeInauspiciousTimes(sunrise, sunset, 1, nextSunrise);
     expect(vijayMuhurta.startLocal).toBe("14:00");
     expect(vijayMuhurta.endLocal).toBe("14:48");
   });
 
   it("Wednesday (varaIdx=3): Vijay still present (no weekday exception)", () => {
-    const { vijayMuhurta } = computeInauspiciousTimes(sunrise, sunset, 3);
+    const { vijayMuhurta } = computeInauspiciousTimes(sunrise, sunset, 3, nextSunrise);
     expect(vijayMuhurta.startLocal).toBe("14:00");
     expect(vijayMuhurta.endLocal).toBe("14:48");
   });
 
   it("same time on all weekdays", () => {
-    const mon = computeInauspiciousTimes(sunrise, sunset, 1).vijayMuhurta;
-    const sat = computeInauspiciousTimes(sunrise, sunset, 6).vijayMuhurta;
+    const mon = computeInauspiciousTimes(sunrise, sunset, 1, nextSunrise).vijayMuhurta;
+    const sat = computeInauspiciousTimes(sunrise, sunset, 6, nextSunrise).vijayMuhurta;
     expect(mon).toEqual(sat);
   });
 
   it("scales with day length (8h day: muhurta=32min, vijay start=10*32=320min)", () => {
     const shortSunset = DateTime.fromISO("2025-01-06T14:00:00", { zone: "UTC" });
     // 8h = 480 min, muhurta=32min, vijay start=10*32=320min → 06:00+5h20=11:20
-    const { vijayMuhurta } = computeInauspiciousTimes(sunrise, shortSunset, 1);
+    const { vijayMuhurta } = computeInauspiciousTimes(
+      sunrise,
+      shortSunset,
+      1,
+      nextSunrise
+    );
     expect(vijayMuhurta.startLocal).toBe("11:20");
     expect(vijayMuhurta.endLocal).toBe("11:52");
+  });
+});
+
+describe("Brahma Muhurta", () => {
+  // 12h night (18:00 → 06:00 nextday = 720 min): night-muhurta=48min
+  // start = nextSunrise - 2*48 = 06:00 - 96min = 04:24
+  // end   = nextSunrise - 1*48 = 06:00 - 48min = 05:12
+
+  it("12h night: Brahma 04:24-05:12 (14th of 15 night-muhurtas)", () => {
+    const { brahmaMuhurta } = computeInauspiciousTimes(sunrise, sunset, 1, nextSunrise);
+    expect(brahmaMuhurta.startLocal).toBe("04:24");
+    expect(brahmaMuhurta.endLocal).toBe("05:12");
+  });
+
+  it("present on all weekdays (no exception)", () => {
+    const wed = computeInauspiciousTimes(sunrise, sunset, 3, nextSunrise).brahmaMuhurta;
+    const sat = computeInauspiciousTimes(sunrise, sunset, 6, nextSunrise).brahmaMuhurta;
+    expect(wed).toEqual(sat);
+  });
+
+  it("scales with night length (8h night: muhurta=32min, start=nextSunrise-64min)", () => {
+    // shortNight: sunset=22:00, nextSunrise=06:00 → 8h = 480min night
+    const shortNightSunset = DateTime.fromISO("2025-01-06T22:00:00", { zone: "UTC" });
+    // nightMuhurta = 480/15 = 32min → start = 06:00 - 64min = 04:56, end = 06:00 - 32min = 05:28
+    const { brahmaMuhurta } = computeInauspiciousTimes(
+      sunrise,
+      shortNightSunset,
+      1,
+      nextSunrise
+    );
+    expect(brahmaMuhurta.startLocal).toBe("04:56");
+    expect(brahmaMuhurta.endLocal).toBe("05:28");
   });
 });
