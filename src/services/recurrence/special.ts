@@ -13,7 +13,7 @@ import {
 import { computeTithiOccurrence } from "@/engine";
 import { parseTimeToMinutes } from "@/lib/timing-utils";
 import {
-  PRADOSH_SELECT_AFTER_SUNSET_MIN,
+  PRADOSH_DISPLAY_AFTER_SUNSET_MIN,
   PRADOSH_START_BEFORE_SUNSET_MIN,
   PRADOSH_CUSTOM_SUNRISE_SKIP_MIN,
 } from "@/lib/panchanga-timing-constants";
@@ -129,6 +129,9 @@ export async function generatePradoshOccurrences(
   const targetDateSet = new Set(
     targetDays.map((d) => d.date.toISOString().split("T")[0]!)
   );
+  const targetDayMap = new Map(
+    targetDays.map((d) => [d.date.toISOString().split("T")[0]!, d])
+  );
   const prevDateSet = new Set(prevDays.map((d) => d.date.toISOString().split("T")[0]!));
   const isCustomTithi = !!(config.tithi && config.prevTithi);
 
@@ -162,9 +165,50 @@ export async function generatePradoshOccurrences(
         validDates.set(day.date.toISOString().split("T")[0]!, day.date);
       }
     } else {
-      // Standard Pradosh Vrat: skip next-day times, use extended 150-min window.
+      // Standard Pradosh Vrat — selection based on how late Trayodashi starts after D-1 sunset:
+      //
+      // A) Before D-1 sunset (tithiEnd < sunsetMin): D-1 always wins.
+      //
+      // B) 0–90 min after D-1 sunset: D-1 wins unless D has Trayodashi AT/AFTER its sunset.
+      //
+      // C) 90–144 min after D-1 sunset (late in D-1 Pradosh): D-1 wins only if D has no
+      //    Trayodashi even at pradoshStart (sunset_D − 90). When D extends into its
+      //    Pradosh window, Case 1 handles D.
+      //
+      // D) > 144 min after D-1 sunset (D-1 Pradosh window is entirely Dwadashi): always
+      //    use D. Fallback to D-1 only if D is not in targetDays (kshaya).
       if (sunriseMin !== null && tithiEndMin < sunriseMin) continue;
-      if (tithiEndMin < sunsetMin + PRADOSH_SELECT_AFTER_SUNSET_MIN) {
+      const diff = tithiEndMin - sunsetMin;
+      let addDMinus1 = diff < 0; // Sub-case A
+      if (!addDMinus1) {
+        const nextDayDate = new Date(day.date);
+        nextDayDate.setUTCDate(nextDayDate.getUTCDate() + 1);
+        const nextDayIso = nextDayDate.toISOString().split("T")[0]!;
+        const targetNextDay = targetDayMap.get(nextDayIso);
+        if (diff > PRADOSH_DISPLAY_AFTER_SUNSET_MIN) {
+          // Sub-case D: D-1 Pradosh has no Trayodashi → use D (kshaya fallback if no D)
+          addDMinus1 = !targetNextDay;
+        } else if (!targetNextDay) {
+          addDMinus1 = true; // kshaya: no D → D-1
+        } else {
+          const nextTithiEnd = parseTimeToMinutes(targetNextDay.tithiEndTime);
+          const nextSunrise = parseTimeToMinutes(targetNextDay.sunrise);
+          const nextSunset = parseTimeToMinutes(targetNextDay.sunset);
+          if (nextTithiEnd === null || nextSunset === null) {
+            addDMinus1 = true;
+          } else if (nextSunrise !== null && nextTithiEnd < nextSunrise) {
+            // Next-day overflow: Trayodashi spans full night → D is valid
+            addDMinus1 = false;
+          } else if (diff <= PRADOSH_START_BEFORE_SUNSET_MIN) {
+            // Sub-case B: D-1 early entry → D needs Trayodashi at/after its sunset
+            addDMinus1 = nextTithiEnd < nextSunset;
+          } else {
+            // Sub-case C: D-1 late entry → D needs Trayodashi at/after its pradoshStart
+            addDMinus1 = nextTithiEnd < nextSunset - PRADOSH_START_BEFORE_SUNSET_MIN;
+          }
+        }
+      }
+      if (addDMinus1) {
         validDates.set(day.date.toISOString().split("T")[0]!, day.date);
       }
     }
