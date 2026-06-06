@@ -126,9 +126,9 @@ export async function generateYearlyLunarOccurrences(
         if (preferPredecessorDay && !kshayaNextDay) {
           predecessorDateOverrides.set(coveredWindowIndex, day.date);
         }
-        // Pattern 1: predecessor ends in afternoon → smarta D AND udaya D+1.
-        // Purnima: always fires when Chaturdashi ends in afternoon (no kshaya needed).
-        // Ekadashi: fires only when Dashami ends in afternoon AND D+2=TRAYODASHI (Dwadashi kshaya).
+        // Pattern 1: Ekadashi kshaya — Dashami ends in afternoon AND D+2=TRAYODASHI.
+        // Purnima excluded: DP always shows one day per Purnima festival (udaya tithi).
+        // Amavasya excluded: udaya tithi only, no Smarta/Vaishnava split.
         const endMin = parseTimeToMinutes(day.tithiEndTime ?? "");
         const srMin = parseTimeToMinutes(day.sunrise ?? "");
         const ssMin = parseTimeToMinutes(day.sunset ?? "");
@@ -138,9 +138,6 @@ export async function generateYearlyLunarOccurrences(
         const d2Tithi = d2TithiMap.get(d2Key);
         const isDwadashiKshaya =
           d2Tithi === Tithi.TRAYODASHI_SHUKLA || d2Tithi === Tithi.TRAYODASHI_KRISHNA;
-        const isPurnimaPredecessor =
-          predecessorTithi === Tithi.CHATURDASHI_SHUKLA ||
-          predecessorTithi === Tithi.CHATURDASHI_KRISHNA;
         const isEkadashiPredecessor =
           predecessorTithi === Tithi.DASHAMI_SHUKLA ||
           predecessorTithi === Tithi.DASHAMI_KRISHNA;
@@ -150,7 +147,8 @@ export async function generateYearlyLunarOccurrences(
           ssMin !== null &&
           endMin > srMin &&
           endMin < ssMin &&
-          (isPurnimaPredecessor || (isEkadashiPredecessor && isDwadashiKshaya))
+          isEkadashiPredecessor &&
+          isDwadashiKshaya
         ) {
           kshayaWindowExtras.push({
             firstDay: {
