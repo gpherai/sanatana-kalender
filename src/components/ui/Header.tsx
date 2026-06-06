@@ -68,7 +68,7 @@ export function Header() {
                     href={href}
                     aria-current={isActive ? "page" : undefined}
                     className={cn(
-                      "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-all",
+                      "flex items-center gap-1.5 rounded-lg px-3 py-3 text-sm font-medium transition-all sm:py-1.5",
                       isActive
                         ? "bg-theme-primary-15 text-theme-primary shadow-sm"
                         : "text-theme-fg-secondary hover:bg-theme-hover hover:text-theme-fg"
@@ -88,7 +88,7 @@ export function Header() {
             {/* New Event Button - uses theme color */}
             <Link
               href="/events/new"
-              className="bg-theme-primary flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-white shadow-lg transition-all hover:opacity-90"
+              className="bg-theme-primary flex items-center gap-1.5 rounded-lg px-3 py-3 text-sm font-medium text-white shadow-lg transition-all hover:opacity-90 sm:py-1.5"
             >
               <Plus className="h-4 w-4" />
               <span className="hidden sm:inline">Nieuw</span>
