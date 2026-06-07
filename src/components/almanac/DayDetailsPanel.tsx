@@ -36,6 +36,40 @@ interface DayDetailsPanelProps {
   karanaStartTime?: string | null;
 }
 
+function MuhurtaCard({
+  label,
+  start,
+  end,
+  variant,
+}: {
+  label: string;
+  start: string;
+  end: string;
+  variant: "warning" | "success";
+}) {
+  const styles =
+    variant === "warning"
+      ? {
+          wrap: "rounded-lg border-l-4 border-[var(--theme-almanac-warning-border)] bg-[var(--theme-almanac-warning-bg)] p-3",
+          heading: "mb-1 text-xs font-medium text-[var(--theme-almanac-warning-heading)]",
+          text: "text-sm font-semibold text-[var(--theme-almanac-warning-text)]",
+        }
+      : {
+          wrap: "rounded-lg border-l-4 border-[var(--theme-almanac-success-border,var(--theme-success-border))] bg-[var(--theme-almanac-success-bg,var(--theme-success-bg))] p-3",
+          heading:
+            "mb-1 text-xs font-medium text-[var(--theme-almanac-success-heading,var(--theme-success-fg))]",
+          text: "text-sm font-semibold text-[var(--theme-almanac-success-text,var(--theme-success))]",
+        };
+  return (
+    <div className={styles.wrap}>
+      <h5 className={styles.heading}>{label}</h5>
+      <p className={styles.text}>
+        {start} – {end}
+      </p>
+    </div>
+  );
+}
+
 const SANSKRIT_DAYS = [
   {
     name: "Somavara",
@@ -155,14 +189,15 @@ export function DayDetailsPanel({
           {/* Selected Day Header */}
           <div
             data-testid="day-header"
-            className="rounded-2xl p-4 text-white shadow-lg lg:cursor-default"
+            className="rounded-2xl p-4 shadow-lg lg:cursor-default"
             style={{
               background: `var(--theme-almanac-day-header-bg)`,
+              color: "var(--theme-almanac-day-header-fg)",
             }}
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
-            <div className="flex items-center gap-2 text-sm text-white/70">
+            <div className="flex items-center gap-2 text-sm text-[var(--theme-almanac-day-header-fg-muted)]">
               {selectedSanskritDay && (
                 <>
                   <PlanetIcon
@@ -179,15 +214,17 @@ export function DayDetailsPanel({
               )}
             </div>
             <h3 className="mt-1 text-xl font-bold">{formatLongDate(selectedDate)}</h3>
-            <div className="mt-1 flex flex-wrap gap-2 text-sm text-white/80">
+            <div className="mt-1 flex flex-wrap gap-2 text-sm text-[var(--theme-almanac-day-header-fg-muted)]">
               {selectedHinduMonth && <span>{selectedHinduMonth} Maas</span>}
               {selectedDayInfo?.tithi && (
                 <>
-                  <span className="text-white/40">•</span>
+                  <span className="text-[var(--theme-almanac-day-header-fg-subtle)]">
+                    •
+                  </span>
                   <span>
                     {selectedDayInfo.tithi.paksha} {selectedDayInfo.tithi.name}
                     {selectedDayInfo.tithi.endTime && (
-                      <span className="ml-1 text-xs text-white/50">
+                      <span className="ml-1 text-xs text-[var(--theme-almanac-day-header-fg-subtle)]">
                         (eindigt {selectedDayInfo.tithi.endTime})
                       </span>
                     )}
@@ -196,11 +233,13 @@ export function DayDetailsPanel({
               )}
               {selectedDayInfo?.nakshatra && (
                 <>
-                  <span className="text-white/40">•</span>
+                  <span className="text-[var(--theme-almanac-day-header-fg-subtle)]">
+                    •
+                  </span>
                   <span>
                     {selectedDayInfo.nakshatra.name}
                     {selectedDayInfo.nakshatra.endTime && (
-                      <span className="ml-1 text-xs text-white/50">
+                      <span className="ml-1 text-xs text-[var(--theme-almanac-day-header-fg-subtle)]">
                         (eindigt {selectedDayInfo.nakshatra.endTime})
                       </span>
                     )}
@@ -365,75 +404,57 @@ export function DayDetailsPanel({
                   )}
 
                   {selectedDayInfo.rahuKalam && (
-                    <div className="rounded-lg border-l-4 border-[var(--theme-almanac-warning-border)] bg-[var(--theme-almanac-warning-bg)] p-3">
-                      <h5 className="mb-1 text-xs font-medium text-[var(--theme-almanac-warning-heading)]">
-                        Rahu Kalam (Ongunstig)
-                      </h5>
-                      <p className="text-sm font-semibold text-[var(--theme-almanac-warning-text)]">
-                        {selectedDayInfo.rahuKalam.start} –{" "}
-                        {selectedDayInfo.rahuKalam.end}
-                      </p>
-                    </div>
+                    <MuhurtaCard
+                      label="Rahu Kalam (Ongunstig)"
+                      start={selectedDayInfo.rahuKalam.start}
+                      end={selectedDayInfo.rahuKalam.end}
+                      variant="warning"
+                    />
                   )}
 
                   {selectedDayInfo.yamagandam && (
-                    <div className="rounded-lg border-l-4 border-[var(--theme-almanac-warning-border)] bg-[var(--theme-almanac-warning-bg)] p-3">
-                      <h5 className="mb-1 text-xs font-medium text-[var(--theme-almanac-warning-heading)]">
-                        Yamagandam (Ongunstig)
-                      </h5>
-                      <p className="text-sm font-semibold text-[var(--theme-almanac-warning-text)]">
-                        {selectedDayInfo.yamagandam.start} –{" "}
-                        {selectedDayInfo.yamagandam.end}
-                      </p>
-                    </div>
+                    <MuhurtaCard
+                      label="Yamagandam (Ongunstig)"
+                      start={selectedDayInfo.yamagandam.start}
+                      end={selectedDayInfo.yamagandam.end}
+                      variant="warning"
+                    />
                   )}
 
                   {selectedDayInfo.gulikaKalam && (
-                    <div className="rounded-lg border-l-4 border-[var(--theme-almanac-warning-border)] bg-[var(--theme-almanac-warning-bg)] p-3">
-                      <h5 className="mb-1 text-xs font-medium text-[var(--theme-almanac-warning-heading)]">
-                        Gulika Kalam (Ongunstig)
-                      </h5>
-                      <p className="text-sm font-semibold text-[var(--theme-almanac-warning-text)]">
-                        {selectedDayInfo.gulikaKalam.start} –{" "}
-                        {selectedDayInfo.gulikaKalam.end}
-                      </p>
-                    </div>
+                    <MuhurtaCard
+                      label="Gulika Kalam (Ongunstig)"
+                      start={selectedDayInfo.gulikaKalam.start}
+                      end={selectedDayInfo.gulikaKalam.end}
+                      variant="warning"
+                    />
                   )}
 
                   {selectedDayInfo.abhijitMuhurta && (
-                    <div className="rounded-lg border-l-4 border-[var(--theme-almanac-success-border,var(--theme-success-border))] bg-[var(--theme-almanac-success-bg,var(--theme-success-bg))] p-3">
-                      <h5 className="mb-1 text-xs font-medium text-[var(--theme-almanac-success-heading,var(--theme-success-fg))]">
-                        Abhijit Muhurta (Gunstig)
-                      </h5>
-                      <p className="text-sm font-semibold text-[var(--theme-almanac-success-text,var(--theme-success))]">
-                        {selectedDayInfo.abhijitMuhurta.start} –{" "}
-                        {selectedDayInfo.abhijitMuhurta.end}
-                      </p>
-                    </div>
+                    <MuhurtaCard
+                      label="Abhijit Muhurta (Gunstig)"
+                      start={selectedDayInfo.abhijitMuhurta.start}
+                      end={selectedDayInfo.abhijitMuhurta.end}
+                      variant="success"
+                    />
                   )}
 
                   {selectedDayInfo.vijayMuhurta && (
-                    <div className="rounded-lg border-l-4 border-[var(--theme-almanac-success-border,var(--theme-success-border))] bg-[var(--theme-almanac-success-bg,var(--theme-success-bg))] p-3">
-                      <h5 className="mb-1 text-xs font-medium text-[var(--theme-almanac-success-heading,var(--theme-success-fg))]">
-                        Vijay Muhurta (Gunstig)
-                      </h5>
-                      <p className="text-sm font-semibold text-[var(--theme-almanac-success-text,var(--theme-success))]">
-                        {selectedDayInfo.vijayMuhurta.start} –{" "}
-                        {selectedDayInfo.vijayMuhurta.end}
-                      </p>
-                    </div>
+                    <MuhurtaCard
+                      label="Vijay Muhurta (Gunstig)"
+                      start={selectedDayInfo.vijayMuhurta.start}
+                      end={selectedDayInfo.vijayMuhurta.end}
+                      variant="success"
+                    />
                   )}
 
                   {selectedDayInfo.brahmaMuhurta && (
-                    <div className="rounded-lg border-l-4 border-[var(--theme-almanac-success-border,var(--theme-success-border))] bg-[var(--theme-almanac-success-bg,var(--theme-success-bg))] p-3">
-                      <h5 className="mb-1 text-xs font-medium text-[var(--theme-almanac-success-heading,var(--theme-success-fg))]">
-                        Brahma Muhurta (Gunstig)
-                      </h5>
-                      <p className="text-sm font-semibold text-[var(--theme-almanac-success-text,var(--theme-success))]">
-                        {selectedDayInfo.brahmaMuhurta.start} –{" "}
-                        {selectedDayInfo.brahmaMuhurta.end}
-                      </p>
-                    </div>
+                    <MuhurtaCard
+                      label="Brahma Muhurta (Gunstig)"
+                      start={selectedDayInfo.brahmaMuhurta.start}
+                      end={selectedDayInfo.brahmaMuhurta.end}
+                      variant="success"
+                    />
                   )}
                 </div>
               </div>
