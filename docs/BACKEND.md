@@ -63,6 +63,7 @@ Alle routes gebruiken response helpers uit `src/lib/api-response.ts` (`serverErr
 | `/api/events` | GET | Occurrences gefilterd op datum, categorie, type, tithi |
 | `/api/events/[id]` | GET / PUT / DELETE | Individueel event |
 | `/api/events/generate-occurrences` | POST | Genereer/vervang EventOccurrence records |
+| `/api/events/[id]/occurrences/[occurrenceId]` | PUT / DELETE | Individuele occurrence bijwerken of verwijderen |
 | `/api/categories` | GET | Alle categorieën |
 | `/api/daily-info` | GET | Dagelijkse panchanga data (tithi, nakshatra, etc.) |
 | `/api/preferences` | GET / PUT | Single-user voorkeuren (upsert) |
@@ -90,6 +91,7 @@ Alle routes gebruiken response helpers uit `src/lib/api-response.ts` (`serverErr
 
 | Service | Bestand | Verantwoordelijkheden |
 |---------|---------|----------------------|
+| `categoryService` | `category.service.ts` | Dunne wrapper voor categorie-queries (server-only) |
 | `panchangaService` | `panchanga.service.ts` | LRU-cached wrapper voor Swiss Ephemeris berekeningen |
 | `recurrenceService` | `recurrence/` | Event recurrence generation, strategy registry per RuleType; gesplitst in domein-modules (tithi, nakshatra, solar, special) |
 | `preferenceService` | `preference.service.ts` | Single-user voorkeuren ophalen en upserten |
@@ -129,7 +131,7 @@ Alle Zod schemas zijn gecentraliseerd in `src/lib/validations/` (gesplitst per d
 | `eventQuerySchema` | GET /api/events query parameters |
 | `generateOccurrencesSchema` | POST /api/events/generate-occurrences |
 | `updatePreferencesSchema` | PUT /api/preferences |
-| `updateOccurrenceSchema` | PATCH occurrence |
+| `updateOccurrenceSchema` | PUT /api/events/[id]/occurrences/[occurrenceId] |
 | `createSadhanaSessionSchema` / `patchSadhanaSessionSchema` | Sadhana sessies |
 | `createSadhanaPracticeSchema` / `patchSadhanaPracticeSchema` | Sadhana praktijken |
 | `createSadhanaGoalSchema` / `patchSadhanaGoalSchema` | Sadhana doelen |
