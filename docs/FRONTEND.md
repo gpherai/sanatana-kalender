@@ -1,6 +1,7 @@
 # Dharma Calendar — Frontend Architecture
 
 > Onderdeel van de technische documentatie. Zie [ARCHITECTURE.md](ARCHITECTURE.md) voor het overzicht.
+> **Laatst bijgewerkt:** 7 juni 2026
 
 ---
 
@@ -10,8 +11,8 @@
 |-------|-------------|----------------------|
 | Root layout | `src/app/layout.tsx` | Fonts, global providers, theme init script, globale documentstructuur |
 | Page shell | `src/components/layout/PageLayout.tsx` | Consistente pagina-achtergrond, containerbreedtes, verticale spacing |
-| Shared UI | `src/components/ui/` | `Header`, `Section`, `Toast`, `TodayHero`, `MoonPhase` |
-| Feature UI | `src/components/{feature}/` | Almanac, Calendar, Events, Kundali, Sadhana, Weather, Settings, etc. |
+| Shared UI | `src/components/ui/` | `Header`, `Section`, `Toast`, `TodayHero`, `MoonPhase`, `PlanetIcon`, `ScrollToTop`, `ThemedFooter` |
+| Feature UI | `src/components/{feature}/` | `almanac`, `calendar`, `encyclopedia`, `events`, `filters`, `home`, `kundali`, `sadhana`, `settings`, `theme`, `weather` |
 | Feature routes | `src/app/{route}/` | Data orchestration + compositie; zo dun mogelijk |
 
 ---
@@ -28,6 +29,7 @@ Data-fetching logica is gescheiden van UI-logica via hooks in `src/hooks/`.
 | `useFetch` | Generieke loading/error/data state voor REST-calls |
 | `useDebounce` | Debounce voor input-gedreven API calls |
 | `useOverlayHistory` | Browser history integratie voor modals/overlays |
+| `useAutoSave` | Debounced auto-save naar een async `saveFn`. Retourneert `SaveStatus` (`idle`/`saving`/`saved`/`error`). |
 
 **Patroon**: hooks retourneren data + callbacks. Componenten ontvangen deze als props of via de hook. Nooit directe `fetch()` in componenten.
 

@@ -1,7 +1,7 @@
 # 🚀 Dharma Calendar - Deployment Guide
 
-> **Versie:** 1.6<br>
-> **Laatst bijgewerkt:** 30 mei 2026
+> **Versie:** 1.7<br>
+> **Laatst bijgewerkt:** 7 juni 2026
 
 Dit document beschrijft hoe je Dharma Calendar deployt op een VPS met Docker.
 
@@ -208,7 +208,7 @@ docker compose --env-file .env.production --profile seed run --rm seeder \
 curl http://localhost:${APP_PORT:-3000}/api/health
 
 # Expected response:
-# {"status":"ok"}
+# {"status":"healthy","checks":{"database":{"status":"up"}},"version":"0.10.0"}
 ```
 
 ---

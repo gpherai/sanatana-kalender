@@ -2,6 +2,7 @@
 
 > Onderdeel van de technische documentatie. Zie [ARCHITECTURE.md](ARCHITECTURE.md) voor het overzicht.
 > Deployment-specifieke instructies: [DEPLOYMENT.md](DEPLOYMENT.md)
+> **Laatst bijgewerkt:** 7 juni 2026
 
 ---
 
@@ -99,7 +100,8 @@ Tests staan co-located als `__tests__/` in de module die ze testen.
 | `lint` / `lint:fix` | ESLint |
 | `type-check` | `tsc --noEmit` |
 | `format` / `format:check` | Prettier |
-| `validate` | format:check + lint + type-check |
+| `validate` | format:check + lint + type-check + knip |
+| `ci` | validate + test (volledige CI suite) |
 
 ### 3.2 Database
 
@@ -124,10 +126,10 @@ Tests staan co-located als `__tests__/` in de module die ze testen.
 
 | Script | Beschrijving |
 |--------|--------------|
-| `deploy:prod` | Deploy naar VPS |
-| `backup` | Database backup (Linux/Mac) |
-| `backup:db` | Backup via Docker compose backup profile |
-| `backup:windows` | Backup (Windows PowerShell) |
+| `deploy:prod` | Backup + rebuild + restart op VPS |
+| `deploy:prod:pull` | Zelfde als deploy:prod maar met --pull (image refresh) |
+| `backup` | Broncode backup als tar.gz (excl. node_modules/.next) |
+| `backup:db` | Database backup via Docker compose backup profile |
 
 ### 3.4 Tests
 
