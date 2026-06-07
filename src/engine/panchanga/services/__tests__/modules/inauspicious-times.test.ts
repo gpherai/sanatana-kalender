@@ -111,8 +111,9 @@ describe("Abhijit Muhurta", () => {
       1,
       nextSunrise
     );
-    expect(abhijitMuhurta.startLocal).toBe("09:44");
-    expect(abhijitMuhurta.endLocal).toBe("10:16");
+    expect(abhijitMuhurta).toBeDefined();
+    expect(abhijitMuhurta!.startLocal).toBe("09:44");
+    expect(abhijitMuhurta!.endLocal).toBe("10:16");
   });
 });
 
