@@ -40,7 +40,7 @@ Gebruik op productie `./scripts/deploy-prod.sh` in plaats van direct `docker com
 
 ### Optie 2: Lokale Development
 
-**Vereisten:** Node.js 24.x+, PostgreSQL 17+
+**Vereisten:** Node.js 26+, PostgreSQL 15+
 
 ```bash
 git clone <repo-url>
@@ -85,7 +85,7 @@ npm run dev          # Start dev server op http://localhost:3000
 npm run build        # Production build
 npm run start        # Start production server
 npm run test         # Run unit tests
-npm run validate     # Format check + lint + type check
+npm run validate     # Format check + lint + type check + knip
 npm run deploy:prod  # Productie deploy met verplichte DB-backup vooraf
 npm run backup:db    # Handmatige PostgreSQL backup via Docker Compose
 ```
@@ -133,7 +133,7 @@ Elke laag is onafhankelijk uitvoerbaar. Geen HTTP-server nodig.
 
 ### Recurrence Engine
 
-`src/services/recurrence.service.ts` genereert `EventOccurrence` records op basis van een event's `recurrenceType` en `ruleConfig`:
+`src/services/recurrence/` genereert `EventOccurrence` records op basis van een event's `recurrenceType` en `ruleConfig`:
 
 - `YEARLY_LUNAR` — jaarlijks op een specifieke tithi (bijv. Krishna Chaturdashi)
 - `MONTHLY_LUNAR` — maandelijks op een tithi (bijv. alle Ekadashi's = 24x per jaar)
@@ -174,6 +174,8 @@ Voeg theme styling direct toe in `src/styles/**` en hou metadata in `src/config/
 | `useFilters` | `src/hooks/useFilters.ts` | Filterstate voor de kalender en events pagina |
 | `useFetch` | `src/hooks/useFetch.ts` | Generieke data-fetching hook met loading/error state |
 | `useDebounce` | `src/hooks/useDebounce.ts` | Debounce voor zoekopdrachten |
+| `useAutoSave` | `src/hooks/useAutoSave.ts` | Debounced auto-save naar async `saveFn`; retourneert `SaveStatus` |
+| `useOverlayHistory` | `src/hooks/useOverlayHistory.ts` | Browser history integratie voor modals/overlays |
 
 ## Project Structuur
 
@@ -207,18 +209,24 @@ sanatana-kalender/
 │   │   ├── calendar/        # DharmaCalendar, EventDetailModal
 │   │   ├── encyclopedia/    # EncyclopediaOverview, TableOfContents, category-config
 │   │   ├── events/          # EventCard, EventForm
+│   │   ├── filters/         # Gedeelde filtercomponenten (kalender + events)
+│   │   ├── home/            # Home-pagina componenten
+│   │   ├── kundali/         # Jyotisha geboortehoroscoop componenten
+│   │   ├── layout/          # PageLayout
 │   │   ├── sadhana/         # SadhanaTracker + tabs (tracker, dashboard, analytics, instellingen)
-│   │   ├── weather/         # 16 componenten: CurrentWeatherCard, TemperatureChart, WeatherMap, ...
-│   │   └── ui/              # TodayHero, MoonPhase, gedeelde componenten
+│   │   ├── settings/        # Instellingen componenten
+│   │   ├── theme/           # ThemeProvider + theme-specifieke componenten
+│   │   ├── weather/         # CurrentWeatherCard, TemperatureChart, WeatherMap, ...
+│   │   └── ui/              # Header, TodayHero, MoonPhase, PlanetIcon, Toast, ScrollToTop, ThemedFooter
 │   ├── config/              # Configuratie (events, categorieën, thema's)
 │   ├── content/
 │   │   └── encyclopedia/    # 273 MDX-artikelen (Devatās, Astronomie, Tijd, Speciale dagen, ...)
 │   ├── engine/              # Swiss Ephemeris engine + pure recurrence helpers (geen DB, unit-testbaar)
-│   ├── hooks/               # useSadhanaData, useWeather, useFilters, useFetch, useDebounce
+│   ├── hooks/               # useSadhanaData, useWeather, useFilters, useFetch, useDebounce, useAutoSave, useOverlayHistory
 │   ├── lib/                 # Utilities, api-response helpers, validations, mdx-headings
 │   ├── repositories/        # Data access layer: event, sadhana, category, daily-info, preference
 │   ├── scripts/             # TypeScript scripts (seed, generate, check)
-│   ├── services/            # Business logic: panchanga, recurrence, event, sadhana, weather, sadhana-formatters
+│   ├── services/            # Business logic: panchanga, recurrence/ (submodule), event, category, sadhana, sadhana-dashboard, preference, weather
 │   ├── styles/              # Tailwind v4 native theme CSS modules
 │   └── types/               # TypeScript types
 ├── docker-compose.yml
@@ -230,9 +238,10 @@ sanatana-kalender/
 
 | Endpoint | Methode | Beschrijving |
 |----------|---------|--------------|
-| `/api/health` | GET | Health check + DB latency |
+| `/api/health` | GET | Health check + DB status + versie |
 | `/api/events` | GET | Alle events met occurrences |
 | `/api/events/[id]` | GET/PUT/DELETE | Individueel event |
+| `/api/events/[id]/occurrences/[occurrenceId]` | GET/PATCH/DELETE | Individuele occurrence |
 | `/api/events/generate-occurrences` | POST | Genereer/vervang occurrences |
 | `/api/categories` | GET | Alle categorieën |
 | `/api/daily-info` | GET | Dagelijkse panchanga data |
@@ -261,10 +270,10 @@ sanatana-kalender/
 |-------------|--------|------|
 | Next.js | 16.x | Framework |
 | React | 19.x | UI Library |
-| TypeScript | 5.x | Type Safety |
+| TypeScript | 6.x | Type Safety |
 | Tailwind CSS | 4.x | Styling |
 | Prisma | 7.x | ORM |
-| PostgreSQL | 17+ | Database |
+| PostgreSQL | 15+ (prod: 18) | Database |
 | Swiss Ephemeris | 0.5.x | Astronomische berekeningen |
 | react-big-calendar | 1.x | Kalenderweergave |
 | Zod | 4.x | Validatie |
@@ -272,10 +281,14 @@ sanatana-kalender/
 ## Documentatie
 
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — Technische architectuur
+- [docs/BACKEND.md](docs/BACKEND.md) — Backend API, services, repositories
+- [docs/FRONTEND.md](docs/FRONTEND.md) — Frontend architectuur, hooks, SSR patterns
 - [docs/DATABASE_PROCEDURES.md](docs/DATABASE_PROCEDURES.md) — Database procedures (seed, reset, generate)
+- [docs/DEPENDENCIES.md](docs/DEPENDENCIES.md) — Packages, versies, setup
 - [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) — VPS deployment guide
+- [docs/OPERATIONS.md](docs/OPERATIONS.md) — Scripts, code quality, testing
+- [docs/THEME-SYSTEM.md](docs/THEME-SYSTEM.md) — Thema-systeem, tokens, CSS structuur
 - [docs/CHANGELOG.md](docs/CHANGELOG.md) — Ontwikkelingsgeschiedenis
-- [docs/TODO.md](docs/TODO.md) — Roadmap
 
 ## Licentie
 
@@ -283,4 +296,4 @@ Private project — Alle rechten voorbehouden.
 
 ---
 
-**Versie:** 0.10.0 | **Laatst bijgewerkt:** 12 mei 2026
+**Versie:** 0.10.0 | **Laatst bijgewerkt:** 7 juni 2026
