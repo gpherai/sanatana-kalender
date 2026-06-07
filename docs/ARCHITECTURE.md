@@ -99,7 +99,7 @@ Dharma Calendar is een persoonlijke web applicatie voor het bijhouden van Sanata
 | **Database** | PostgreSQL | 17+ | Data opslag |
 | **ORM** | Prisma (+ adapter-pg) | 7.7.x | Database toegang |
 | **Validatie** | Zod | 4.4.x | Schema validatie |
-| **Datum/Tijd** | date-fns, luxon | 4.1.x, 3.7.x | Datum manipulatie |
+| **Datum/Tijd** | date-fns, luxon | 4.2.x, 3.7.x | Datum manipulatie |
 | **Astronomie** | Swiss Ephemeris (swisseph) | 0.5.x | Vedische astronomie (Tithi, Nakshatra, Yoga, Karana, Kundali) |
 | **iCal export** | ical-generator | 10.1.x | .ics export |
 | **MDX** | next-mdx-remote, gray-matter | 6.x, 4.x | Encyclopedie artikelen |
@@ -210,6 +210,7 @@ dharma-calendar/
     │   ├── moon-phases.ts
     │   ├── panchanga-client.ts  # Client-side panchanga helpers
     │   ├── panchanga-helpers.ts
+    │   ├── panchanga-timing-constants.ts  # Empirisch afgestelde timing-drempelwaarden (gedeeld door recurrence + timing-utils)
     │   ├── patterns.ts
     │   ├── sadhana-api.ts     # Client-side fetch helpers voor sadhana API
     │   ├── sadhana-formatters.ts  # DTO formatters (Prisma → service types)
