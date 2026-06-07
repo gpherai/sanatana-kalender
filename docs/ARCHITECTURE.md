@@ -1,6 +1,6 @@
 # Dharma Calendar — Architecture Overview
 
-> **Versie:** 6.1 | **Bijgewerkt:** 30 mei 2026
+> **Versie:** 6.2 | **Bijgewerkt:** 7 juni 2026
 >
 > Dit document is het startpunt. Gedetailleerde documentatie per domein:
 > - [BACKEND.md](BACKEND.md) — API routes, services, repositories, validatie
@@ -21,7 +21,7 @@ Dharma Calendar is een persoonlijke web applicatie voor het bijhouden van Sanata
 - Persoonlijke spirituele kalender voor dagelijks gebruik
 - Bijhouden van festivals, puja's, ekadashi en andere belangrijke dagen
 - Visualisatie van maanfasen en zon/maan tijden
-- Panchang Almanac met speciale lunaire dagen
+- Panchang Almanac met speciale lunaire dagen, maanfasen en muhurtas (Rahu Kalam, Yamagandam, Gulika Kalam, Abhijit, Vijay, Brahma Muhurta)
 - Eenvoudig events beheren (toevoegen, bewerken, verwijderen)
 - Sadhana tracker voor mantra japa, parayana, meditatie sessies en gepersonaliseerde routines
 - Encyclopedie van Sanatana Dharma met MDX-artikelen en zoekmogelijkheid
@@ -169,6 +169,7 @@ dharma-calendar/
     ├── engine/                # Pure computation engines (geen DB, geen HTTP)
     │   ├── index.ts           # Barrel export voor recurrence helpers
     │   ├── types.ts
+    │   ├── tithi-helpers.ts   # Tithi helpers (gedeeld door recurrence + panchanga engine)
     │   └── panchanga/         # Swiss Ephemeris wrapper (server-only)
     │       ├── index.ts       # Runtime guard: gooit als client importeert
     │       ├── constants.ts
@@ -201,7 +202,6 @@ dharma-calendar/
     │   ├── category-styles.ts
     │   ├── date-utils.ts
     │   ├── db.ts              # Prisma client singleton
-    │   ├── default-location-date.ts
     │   ├── domain.ts          # DEFAULT_LOCATION + alle domein-constanten
     │   ├── encyclopedia.ts    # server-only (gebruikt Node.js fs)
     │   ├── env.ts             # Zod environment validatie
@@ -233,13 +233,11 @@ dharma-calendar/
     │   ├── recurrence/                # Recurrence engine (gesplitst in domein-modules)
     │   │   ├── index.ts
     │   │   ├── types.ts
-    │   │   ├── helpers.ts
+    │   │   ├── helpers.ts             # Gedeelde recurrence helpers
     │   │   ├── tithi.ts
     │   │   ├── nakshatra.ts
     │   │   ├── solar.ts
-    │   │   ├── special.ts
-    │   │   └── helpers/               # Gedeelde recurrence helpers
-    │   │       └── tithi-helpers.ts
+    │   │   └── special.ts
     │   ├── sadhana-dashboard.service.ts  # SSR aggregatie voor sadhana pagina
     │   ├── sadhana.service.ts
     │   └── weather.service.ts
@@ -248,7 +246,10 @@ dharma-calendar/
     │   ├── utilities.css
     │   └── themes/
     │       ├── standard.css
-    │       └── special/       # Bijzondere thema's (bhairava-nocturne, narasimha-jwala, shri-ganesha)
+    │       └── special/       # Bijzondere thema's (9): bhairava-nocturne, ganga-pravaha,
+    │                          #   jyotsna-purnima, krishna-mayura, narasimha-jwala,
+    │                          #   saraswati-shubhra, shri-ganesha (golden template),
+    │                          #   shri-lakshmi, vasanta-ritu
     └── types/
         ├── index.ts      # Barrel
         ├── api.ts        # DailyInfoData + DailyInfoResponse
