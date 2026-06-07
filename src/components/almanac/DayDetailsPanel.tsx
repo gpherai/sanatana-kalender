@@ -62,7 +62,7 @@ function MuhurtaCard({
         };
   return (
     <div className={styles.wrap}>
-      <h5 className={styles.heading}>{label}</h5>
+      <h4 className={styles.heading}>{label}</h4>
       <p className={styles.text}>
         {start} – {end}
       </p>
@@ -185,7 +185,7 @@ export function DayDetailsPanel({
           <div className="h-1.5 w-12 rounded-full bg-[var(--theme-fg-muted)]/30" />
         </div>
 
-        <div className="space-y-4 px-4 pb-8 lg:px-0 lg:pb-0">
+        <section aria-label="Dag details" className="space-y-4 px-4 pb-8 lg:px-0 lg:pb-0">
           {/* Selected Day Header */}
           <div
             data-testid="day-header"
@@ -208,12 +208,12 @@ export function DayDetailsPanel({
                 </>
               )}
               {isToday(selectedDate) && (
-                <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs">
+                <span className="rounded-full bg-[var(--theme-almanac-day-header-badge-bg)] px-2 py-0.5 text-xs">
                   Vandaag
                 </span>
               )}
             </div>
-            <h3 className="mt-1 text-xl font-bold">{formatLongDate(selectedDate)}</h3>
+            <h2 className="mt-1 text-xl font-bold">{formatLongDate(selectedDate)}</h2>
             <div className="mt-1 flex flex-wrap gap-2 text-sm text-[var(--theme-almanac-day-header-fg-muted)]">
               {selectedHinduMonth && <span>{selectedHinduMonth} Maas</span>}
               {selectedDayInfo?.tithi && (
@@ -332,10 +332,10 @@ export function DayDetailsPanel({
           {/* Special Lunar Days */}
           {showSpecialDays && selectedDaySpecial.length > 0 && (
             <div className="rounded-xl bg-[var(--theme-almanac-special-card-bg)] p-4 shadow">
-              <h4 className="mb-2 flex items-center gap-2 text-sm font-semibold text-[var(--theme-almanac-special-heading)]">
+              <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-[var(--theme-almanac-special-heading)]">
                 <Sparkles className="h-4 w-4" />
                 Speciale dag
-              </h4>
+              </h3>
               <div className="space-y-2">
                 {selectedDaySpecial.map((special) => (
                   <div key={special.type} className="flex items-start gap-2">
@@ -365,15 +365,15 @@ export function DayDetailsPanel({
               selectedDayInfo.vijayMuhurta ||
               selectedDayInfo.brahmaMuhurta) && (
               <div className="bg-theme-surface-raised rounded-xl p-4 shadow">
-                <h4 className="text-theme-fg mb-3 text-sm font-semibold">
+                <h3 className="text-theme-fg mb-3 text-sm font-semibold">
                   Panchanga Details
-                </h4>
+                </h3>
                 <div className="space-y-3">
                   {selectedDayInfo.yoga && (
                     <div className="panchanga-yoga-card bg-theme-surface-hover rounded-lg p-3">
-                      <h5 className="panchanga-yoga-label text-theme-fg-muted mb-1 text-xs font-medium">
+                      <h4 className="panchanga-yoga-label text-theme-fg-muted mb-1 text-xs font-medium">
                         Yoga
-                      </h5>
+                      </h4>
                       <p className="text-theme-fg text-sm font-medium">
                         {selectedDayInfo.yoga.name}
                       </p>
@@ -388,9 +388,9 @@ export function DayDetailsPanel({
 
                   {selectedDayInfo.karana && (
                     <div className="panchanga-karana-card bg-theme-surface-hover rounded-lg p-3">
-                      <h5 className="panchanga-karana-label text-theme-fg-muted mb-1 text-xs font-medium">
+                      <h4 className="panchanga-karana-label text-theme-fg-muted mb-1 text-xs font-medium">
                         Karana
-                      </h5>
+                      </h4>
                       <p className="text-theme-fg text-sm font-medium">
                         {selectedDayInfo.karana.name} ({selectedDayInfo.karana.type})
                       </p>
@@ -463,10 +463,10 @@ export function DayDetailsPanel({
           {/* Events */}
           {showEvents && (
             <div className="bg-theme-surface-raised rounded-xl p-4 shadow">
-              <h4 className="text-theme-fg mb-3 flex items-center gap-2 text-sm font-semibold">
+              <h3 className="text-theme-fg mb-3 flex items-center gap-2 text-sm font-semibold">
                 <Star className="h-4 w-4 text-[var(--theme-almanac-event-icon)]" />
                 Events
-              </h4>
+              </h3>
               {selectedDayEvents.length > 0 ? (
                 <div className="space-y-2">
                   {selectedDayEvents.map((event) => {
@@ -557,7 +557,7 @@ export function DayDetailsPanel({
               )}
             </div>
           )}
-        </div>
+        </section>
       </div>
     </>
   );

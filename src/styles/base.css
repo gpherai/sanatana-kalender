@@ -290,6 +290,7 @@
   --theme-almanac-day-header-fg: white;
   --theme-almanac-day-header-fg-muted: oklch(1 0 0 / 0.7);
   --theme-almanac-day-header-fg-subtle: oklch(1 0 0 / 0.4);
+  --theme-almanac-day-header-badge-bg: oklch(1 0 0 / 0.2);
 
   /* Almanac - MoonPhasesTimeline background */
   --theme-almanac-moon-timeline-bg: linear-gradient(
@@ -511,6 +512,7 @@
   --theme-almanac-day-header-fg: white;
   --theme-almanac-day-header-fg-muted: oklch(1 0 0 / 0.7);
   --theme-almanac-day-header-fg-subtle: oklch(1 0 0 / 0.4);
+  --theme-almanac-day-header-badge-bg: oklch(1 0 0 / 0.2);
 
   /* Almanac - MoonPhasesTimeline (dark mode) */
   --theme-almanac-moon-timeline-bg: linear-gradient(
