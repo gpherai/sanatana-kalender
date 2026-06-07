@@ -10,6 +10,7 @@ import {
   deleteEventOccurrence,
   EventNotFoundError,
   getEventForUpdate,
+  LastOccurrenceError,
   OccurrenceNotFoundError,
   OccurrenceOwnershipError,
   updateEvent,
@@ -186,6 +187,12 @@ export async function deleteOccurrenceAction(
     }
     if (error instanceof OccurrenceOwnershipError) {
       return { success: false, error: "Herhaling behoort niet tot dit event" };
+    }
+    if (error instanceof LastOccurrenceError) {
+      return {
+        success: false,
+        error: "Kan het laatste voorkomen niet verwijderen. Verwijder het hele event.",
+      };
     }
     return {
       success: false,

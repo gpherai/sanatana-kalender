@@ -306,6 +306,7 @@ describe("DELETE /api/events/[id]/occurrences/[occurrenceId]", () => {
       createdAt: new Date(),
       updatedAt: new Date(),
     } as any);
+    // event.findUnique not mocked → undefined → last-occurrence guard skips
     prismaMock.eventOccurrence.delete.mockResolvedValue({
       id: VALID_OCCURRENCE_ID,
     } as any);
@@ -317,5 +318,36 @@ describe("DELETE /api/events/[id]/occurrences/[occurrenceId]", () => {
       params: Promise.resolve({ id: VALID_ID, occurrenceId: VALID_OCCURRENCE_ID }),
     });
     expect(res.status).toBe(204);
+  });
+
+  it("returns 409 when deleting the last occurrence of a recurring event", async () => {
+    prismaMock.eventOccurrence.findUnique.mockResolvedValue({
+      id: VALID_OCCURRENCE_ID,
+      eventId: VALID_ID,
+      date: new Date("2025-01-01"),
+      endDate: null,
+      startTime: null,
+      endTime: null,
+      notes: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as any);
+    prismaMock.event.findUnique.mockResolvedValue({
+      id: VALID_ID,
+      recurrenceType: "YEARLY_LUNAR",
+    } as any);
+    prismaMock.eventOccurrence.count.mockResolvedValue(1);
+
+    const req = new NextRequest(
+      `http://localhost/api/events/${VALID_ID}/occurrences/${VALID_OCCURRENCE_ID}`,
+      { method: "DELETE" }
+    );
+    const res = await DELETE(req, {
+      params: Promise.resolve({ id: VALID_ID, occurrenceId: VALID_OCCURRENCE_ID }),
+    });
+    const json = await res.json();
+
+    expect(res.status).toBe(409);
+    expect(json.message).toContain("laatste voorkomen");
   });
 });

@@ -195,6 +195,7 @@ export async function findEventOccurrences(params: EventQueryParams) {
       },
     },
     orderBy,
+    take: 5000,
   });
 }
 
@@ -334,6 +335,8 @@ export async function createEventWithInitialOccurrence(input: CreateEventRecordI
         maas: input.maas,
         sankranti: input.sankranti,
         tags: input.tags,
+        startTime: strToDbTime(input.startTime ?? null),
+        endTime: strToDbTime(input.endTime ?? null),
       },
     });
 
@@ -384,6 +387,8 @@ export async function updateEventWithPrimaryOccurrence(
         ...(input.maas !== undefined && { maas: input.maas }),
         ...(input.sankranti !== undefined && { sankranti: input.sankranti }),
         ...(input.tags !== undefined && { tags: input.tags }),
+        ...(input.startTime !== undefined && { startTime: strToDbTime(input.startTime) }),
+        ...(input.endTime !== undefined && { endTime: strToDbTime(input.endTime) }),
       },
       include: {
         categories: eventCategoryInclude,
@@ -463,20 +468,33 @@ export async function deleteOccurrenceById(id: string) {
 }
 
 /**
- * Check if an event already has another occurrence on the target date.
+ * Check if an event already has another occurrence whose date range overlaps [date, endDate].
+ * endDate=null means single-day (treated as same as date).
  */
 export async function findOccurrenceConflict(
   eventId: string,
   date: Date,
+  endDate: Date | null | undefined,
   excludeOccurrenceId: string
 ) {
+  const rangeEnd = endDate ?? date;
   return prisma.eventOccurrence.findFirst({
     where: {
       eventId,
-      date,
       NOT: { id: excludeOccurrenceId },
+      OR: [
+        { endDate: null, date: { gte: date, lte: rangeEnd } },
+        { endDate: { gte: date }, date: { lte: rangeEnd } },
+      ],
     },
   });
+}
+
+/**
+ * Count occurrences belonging to an event.
+ */
+export async function countOccurrencesByEventId(eventId: string) {
+  return prisma.eventOccurrence.count({ where: { eventId } });
 }
 
 /**

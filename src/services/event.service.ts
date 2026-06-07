@@ -11,6 +11,7 @@ import {
 import { parseCalendarDate } from "@/lib/date-utils";
 import { findCategoryById } from "@/repositories/category.repository";
 import {
+  countOccurrencesByEventId,
   createEventWithInitialOccurrence,
   deleteEventById,
   deleteOccurrenceById,
@@ -47,6 +48,7 @@ export class CategoryNotFoundError extends EventServiceError {}
 export class OccurrenceNotFoundError extends EventServiceError {}
 export class OccurrenceOwnershipError extends EventServiceError {}
 export class OccurrenceConflictError extends EventServiceError {}
+export class LastOccurrenceError extends EventServiceError {}
 
 // ============================================================================
 // TYPES
@@ -257,10 +259,20 @@ export async function updateEventOccurrence(
     throw new OccurrenceOwnershipError("Occurrence behoort niet tot dit event");
   }
 
-  if (input.date !== undefined) {
+  if (input.date !== undefined || input.endDate !== undefined) {
+    const effectiveDate =
+      input.date !== undefined ? parseCalendarDate(input.date) : occurrence.date;
+    const effectiveEndDate =
+      input.endDate !== undefined
+        ? input.endDate
+          ? parseCalendarDate(input.endDate)
+          : null
+        : occurrence.endDate;
+
     const conflict = await findOccurrenceConflict(
       eventId,
-      parseCalendarDate(input.date),
+      effectiveDate,
+      effectiveEndDate,
       occurrenceId
     );
 
@@ -291,6 +303,16 @@ export async function deleteEventOccurrence(eventId: string, occurrenceId: strin
 
   if (occurrence.eventId !== eventId) {
     throw new OccurrenceOwnershipError("Occurrence behoort niet tot dit event");
+  }
+
+  const event = await findEventByIdBasic(eventId);
+  if (event && event.recurrenceType !== "NONE") {
+    const count = await countOccurrencesByEventId(eventId);
+    if (count <= 1) {
+      throw new LastOccurrenceError(
+        "Kan het laatste voorkomen van een terugkerend event niet verwijderen"
+      );
+    }
   }
 
   await deleteOccurrenceById(occurrenceId);

@@ -9,6 +9,7 @@ import {
 } from "@/lib/api-response";
 import { logError } from "@/lib/utils";
 import {
+  LastOccurrenceError,
   OccurrenceConflictError,
   OccurrenceNotFoundError,
   OccurrenceOwnershipError,
@@ -45,6 +46,13 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
 
     if (error instanceof OccurrenceOwnershipError) {
       return errorResponse("Occurrence behoort niet tot dit event", 403);
+    }
+
+    if (error instanceof LastOccurrenceError) {
+      return errorResponse(
+        "Kan het laatste voorkomen van een terugkerend event niet verwijderen",
+        409
+      );
     }
 
     logError("[API] DELETE /api/events/[id]/occurrences/[occurrenceId] error:", error);
