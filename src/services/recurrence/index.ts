@@ -22,9 +22,9 @@ export type { GeneratedOccurrence, RecurrenceOptions };
 // STRATEGY REGISTRY
 // =============================================================================
 
-// Keys are either ruleType or recurrenceType values — no overlap exists between
-// the two sets, so a single table suffices. ruleType takes precedence: the
-// dispatch resolves `event.ruleType ?? event.recurrenceType` as the lookup key.
+// Keys are ruleType or recurrenceType values. Dispatch uses ruleType when set,
+// except ruleType "TITHI" + MONTHLY_* recurrenceType: recurrenceType wins because
+// TITHI is a generic date-calc rule shared by both yearly and monthly generators.
 const STRATEGIES: Record<string, RecurrenceStrategy> = {
   // by ruleType
   SOLAR: generateSolarRuleOccurrences,
