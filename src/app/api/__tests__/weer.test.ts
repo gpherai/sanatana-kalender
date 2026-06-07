@@ -372,3 +372,71 @@ describe("GET /api/weer", () => {
     expect(json.air_quality).toBeNull();
   });
 });
+
+describe("GET /api/weer/map/[layer]/[z]/[x]/[y]", () => {
+  const originalEnv = { ...process.env };
+
+  beforeEach(() => {
+    vi.resetModules();
+    vi.clearAllMocks();
+    process.env = {
+      ...originalEnv,
+      DATABASE_URL:
+        originalEnv.DATABASE_URL ?? "postgresql://user:pass@localhost:5432/test",
+      OPENWEATHER_API_KEY: "test-key",
+    };
+    global.fetch = mockFetch;
+  });
+
+  async function getTileResponse(layer: string, z: string, x: string, y: string) {
+    const { GET } = await import("../weer/map/[layer]/[z]/[x]/[y]/route");
+    const { NextRequest } = await import("next/server");
+    const req = new NextRequest(`http://localhost/api/weer/map/${layer}/${z}/${x}/${y}`);
+    return GET(req, { params: Promise.resolve({ layer, z, x, y }) });
+  }
+
+  it("rejects an unknown layer", async () => {
+    const res = await getTileResponse("unknown_layer", "5", "10", "10");
+    expect(res.status).toBe(400);
+  });
+
+  it("rejects a zoom level above MAX_ZOOM (18)", async () => {
+    const res = await getTileResponse("clouds_new", "19", "0", "0");
+    expect(res.status).toBe(400);
+  });
+
+  it("rejects x coordinate out of bounds for zoom level", async () => {
+    // zoom=2 → max coord = 4 (0-3 valid); x=4 is out of bounds
+    const res = await getTileResponse("clouds_new", "2", "4", "0");
+    expect(res.status).toBe(400);
+  });
+
+  it("rejects y coordinate out of bounds for zoom level", async () => {
+    const res = await getTileResponse("clouds_new", "2", "0", "4");
+    expect(res.status).toBe(400);
+  });
+
+  it("rejects syntactically invalid coord (non-digit)", async () => {
+    const res = await getTileResponse("clouds_new", "5", "abc", "10");
+    expect(res.status).toBe(400);
+  });
+
+  it("returns 503 when API key is missing", async () => {
+    delete process.env.OPENWEATHER_API_KEY;
+    const res = await getTileResponse("clouds_new", "5", "10", "10");
+    expect(res.status).toBe(503);
+  });
+
+  it("proxies a valid tile and returns PNG", async () => {
+    const fakeBuffer = new ArrayBuffer(8);
+    mockFetch.mockResolvedValue({
+      ok: true,
+      status: 200,
+      arrayBuffer: () => Promise.resolve(fakeBuffer),
+    });
+    // zoom=5, max coord = 32; x=10, y=10 are valid
+    const res = await getTileResponse("clouds_new", "5", "10", "10");
+    expect(res.status).toBe(200);
+    expect(res.headers.get("Content-Type")).toBe("image/png");
+  });
+});

@@ -12,6 +12,8 @@ import {
   updateEventSchema,
   eventFormSchema,
   EventFormData,
+  createSadhanaSessionSchema,
+  sadhanaCalendarQuerySchema,
 } from "../validations";
 
 describe("Validations", () => {
@@ -256,6 +258,80 @@ describe("Validations", () => {
       if (!result.success) {
         expect(result.error.flatten().fieldErrors.description).toBeDefined();
       }
+    });
+  });
+
+  // =============================================================================
+  // Sadhana session — startedAt
+  // =============================================================================
+  describe("createSadhanaSessionSchema — startedAt", () => {
+    const base = {
+      date: "2026-06-07",
+      items: [{ practiceId: "ckl9z5rte0000s6m1gj8h3x7d", quantity: 108 }],
+    };
+
+    it("accepts a valid ISO datetime", () => {
+      const result = createSadhanaSessionSchema.safeParse({
+        ...base,
+        startedAt: "2026-06-07T07:30:00.000Z",
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("accepts null startedAt", () => {
+      const result = createSadhanaSessionSchema.safeParse({
+        ...base,
+        startedAt: null,
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("rejects a non-datetime string", () => {
+      const result = createSadhanaSessionSchema.safeParse({
+        ...base,
+        startedAt: "niet-een-datum",
+      });
+      expect(result.success).toBe(false);
+    });
+
+    it("rejects a time-only string", () => {
+      const result = createSadhanaSessionSchema.safeParse({
+        ...base,
+        startedAt: "07:30",
+      });
+      expect(result.success).toBe(false);
+    });
+  });
+
+  // =============================================================================
+  // sadhanaCalendarQuerySchema — max range
+  // =============================================================================
+  describe("sadhanaCalendarQuerySchema — max range", () => {
+    it("accepts a range within 366 days", () => {
+      const result = sadhanaCalendarQuerySchema.safeParse({
+        start: "2026-01-01",
+        end: "2026-12-31",
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("rejects a range exceeding 366 days", () => {
+      const result = sadhanaCalendarQuerySchema.safeParse({
+        start: "2025-01-01",
+        end: "2026-12-31",
+      });
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.flatten().fieldErrors.end).toBeDefined();
+      }
+    });
+
+    it("rejects end before start", () => {
+      const result = sadhanaCalendarQuerySchema.safeParse({
+        start: "2026-06-07",
+        end: "2026-01-01",
+      });
+      expect(result.success).toBe(false);
     });
   });
 });

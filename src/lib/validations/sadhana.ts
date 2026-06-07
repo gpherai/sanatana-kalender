@@ -19,7 +19,7 @@ const sadhanaSessionItemSchema = z
 export const createSadhanaSessionSchema = z
   .object({
     date: dateStringSchema,
-    startedAt: z.string().nullable().optional(),
+    startedAt: z.string().datetime().nullable().optional(),
     durationMinutes: z.number().int().positive().nullable().optional(),
     notes: z.string().max(1000).nullable().optional(),
     items: z.array(sadhanaSessionItemSchema).min(1),
@@ -29,7 +29,7 @@ export const createSadhanaSessionSchema = z
 export const patchSadhanaSessionSchema = z
   .object({
     date: dateStringSchema.optional(),
-    startedAt: z.string().nullable().optional(),
+    startedAt: z.string().datetime().nullable().optional(),
     durationMinutes: z.number().int().positive().nullable().optional(),
     notes: z.string().max(1000).nullable().optional(),
     items: z.array(sadhanaSessionItemSchema).min(1).optional(),
@@ -42,12 +42,25 @@ export const sadhanaCalendarQuerySchema = z
     end: dateStringSchema.optional(),
   })
   .superRefine((data, ctx) => {
-    if (data.start && data.end && data.end < data.start) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["end"],
-        message: "end moet op of na start liggen",
-      });
+    if (data.start && data.end) {
+      if (data.end < data.start) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["end"],
+          message: "end moet op of na start liggen",
+        });
+        return;
+      }
+      const spanDays =
+        (new Date(data.end).getTime() - new Date(data.start).getTime()) /
+        (1000 * 60 * 60 * 24);
+      if (spanDays > 366) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["end"],
+          message: "Tijdspanne mag maximaal 366 dagen zijn",
+        });
+      }
     }
   });
 

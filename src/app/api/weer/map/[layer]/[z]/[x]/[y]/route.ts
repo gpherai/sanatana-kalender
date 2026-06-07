@@ -11,6 +11,7 @@ const VALID_LAYERS = new Set([
   "temp_new",
 ]);
 const TILE_COORD_RE = /^\d{1,6}$/;
+const MAX_ZOOM = 18;
 
 export async function GET(
   _request: NextRequest,
@@ -25,6 +26,12 @@ export async function GET(
       !TILE_COORD_RE.test(x) ||
       !TILE_COORD_RE.test(y)
     ) {
+      return errorResponse("Ongeldige tegel parameters", 400);
+    }
+
+    const zNum = parseInt(z, 10);
+    const maxCoord = 2 ** zNum;
+    if (zNum > MAX_ZOOM || parseInt(x, 10) >= maxCoord || parseInt(y, 10) >= maxCoord) {
       return errorResponse("Ongeldige tegel parameters", 400);
     }
 
