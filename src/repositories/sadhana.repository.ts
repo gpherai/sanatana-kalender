@@ -29,7 +29,11 @@ export async function findAllSessions(opts?: { take?: number; skip?: number }) {
   });
 }
 
-export async function findSessionsByDateRange(start: Date, end: Date) {
+export async function findSessionsByDateRange(
+  start: Date,
+  end: Date,
+  opts?: { take?: number; skip?: number }
+) {
   return prisma.sadhanaSession.findMany({
     where: {
       date: { gte: start, lte: end },
@@ -41,6 +45,8 @@ export async function findSessionsByDateRange(start: Date, end: Date) {
       },
     },
     orderBy: { date: "desc" },
+    ...(opts?.take !== undefined && { take: opts.take }),
+    ...(opts?.skip !== undefined && { skip: opts.skip }),
   });
 }
 
@@ -197,7 +203,7 @@ export async function updateSessionWithItems(
 
     for (const item of items) {
       if (item.id) {
-        await tx.sadhanaSessionItem.updateMany({
+        const updateResult = await tx.sadhanaSessionItem.updateMany({
           where: { id: item.id, sessionId: id },
           data: {
             practiceId: item.practiceId,
@@ -207,6 +213,9 @@ export async function updateSessionWithItems(
             notes: item.notes ?? null,
           },
         });
+        if (updateResult.count !== 1) {
+          throw new Error(`Sadhana session item ${item.id} kon niet worden bijgewerkt`);
+        }
       } else {
         await tx.sadhanaSessionItem.create({
           data: {
@@ -319,7 +328,7 @@ export async function updateRoutineWithItems(
 
     for (const item of items) {
       if (item.id) {
-        await tx.sadhanaRoutineItem.updateMany({
+        const updateResult = await tx.sadhanaRoutineItem.updateMany({
           where: { id: item.id, routineId: id },
           data: {
             practiceId: item.practiceId,
@@ -328,6 +337,9 @@ export async function updateRoutineWithItems(
             sortOrder: item.sortOrder,
           },
         });
+        if (updateResult.count !== 1) {
+          throw new Error(`Sadhana routine item ${item.id} kon niet worden bijgewerkt`);
+        }
       } else {
         await tx.sadhanaRoutineItem.create({
           data: {

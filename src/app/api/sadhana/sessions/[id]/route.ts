@@ -11,6 +11,7 @@ import { logError } from "@/lib/utils";
 import { cuidSchema, patchSadhanaSessionSchema } from "@/lib/validations";
 import {
   deleteSadhanaSession,
+  SadhanaItemOwnershipError,
   SadhanaNotFoundError,
   updateSadhanaSession,
 } from "@/services/sadhana.service";
@@ -32,6 +33,8 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     return NextResponse.json(session);
   } catch (error) {
     if (error instanceof SadhanaNotFoundError) return notFoundError("Sessie");
+    if (error instanceof SadhanaItemOwnershipError)
+      return errorResponse("Item behoort niet tot deze sessie", 400);
 
     const prismaError = handlePrismaError(error, {
       foreignKey: "Beoefening niet gevonden",

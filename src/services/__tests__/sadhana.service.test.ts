@@ -4,6 +4,10 @@ const repo = vi.hoisted(() => ({
   findAllSessions: vi.fn(),
   findSessionsByDateRange: vi.fn(),
   findGoalsWithPractices: vi.fn(),
+  findSessionById: vi.fn(),
+  updateSessionWithItems: vi.fn(),
+  findRoutineById: vi.fn(),
+  updateRoutineWithItems: vi.fn(),
 }));
 
 vi.mock("@/repositories/sadhana.repository", () => repo);
@@ -12,6 +16,9 @@ import {
   getSadhanaCalendar,
   getSadhanaOverview,
   getGoalsWithProgress,
+  SadhanaItemOwnershipError,
+  updateSadhanaRoutine,
+  updateSadhanaSession,
 } from "@/services/sadhana.service";
 
 const createdAt = new Date("2026-04-01T00:00:00.000Z");
@@ -68,6 +75,30 @@ function goal(id: string, type: "daily" | "weekly" | "lifetime", practiceIds: st
     createdAt,
     updatedAt: createdAt,
     practices: practiceIds.map((pid) => practice(pid, "mantra_japa")),
+  };
+}
+
+function routine(id: string) {
+  return {
+    id,
+    name: id,
+    active: true,
+    sortOrder: 0,
+    createdAt,
+    updatedAt: createdAt,
+    items: [
+      {
+        id: `${id}-item-1`,
+        routineId: id,
+        practiceId: "practice-1",
+        quantity: 1,
+        unit: "malas",
+        sortOrder: 0,
+        createdAt,
+        updatedAt: createdAt,
+        practice: practice("practice-1", "mantra_japa"),
+      },
+    ],
   };
 }
 
@@ -209,5 +240,51 @@ describe("sadhana service", () => {
     // No per-item minutes, but the whole session is goal g1's practice → 20 min.
     expect(goals[0]!.progressMinutes).toBe(20);
     vi.useRealTimers();
+  });
+
+  it("rejects session updates with item IDs from another session", async () => {
+    repo.findSessionById.mockResolvedValue(
+      session("session-1", "2026-04-25", [
+        {
+          practiceId: "practice-1",
+          practice: practice("practice-1", "mantra_japa"),
+          quantity: 1,
+          unit: "malas",
+        },
+      ])
+    );
+
+    await expect(
+      updateSadhanaSession("session-1", {
+        items: [
+          {
+            id: "other-session-item",
+            practiceId: "practice-1",
+            quantity: 1,
+            unit: "malas",
+          },
+        ],
+      })
+    ).rejects.toBeInstanceOf(SadhanaItemOwnershipError);
+    expect(repo.updateSessionWithItems).not.toHaveBeenCalled();
+  });
+
+  it("rejects routine updates with item IDs from another routine", async () => {
+    repo.findRoutineById.mockResolvedValue(routine("routine-1"));
+
+    await expect(
+      updateSadhanaRoutine("routine-1", {
+        items: [
+          {
+            id: "other-routine-item",
+            practiceId: "practice-1",
+            quantity: 1,
+            unit: "malas",
+            sortOrder: 0,
+          },
+        ],
+      })
+    ).rejects.toBeInstanceOf(SadhanaItemOwnershipError);
+    expect(repo.updateRoutineWithItems).not.toHaveBeenCalled();
   });
 });

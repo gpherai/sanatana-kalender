@@ -16,7 +16,7 @@ export async function GET() {
 
     calendar.timezone({ name: timezone });
 
-    const occurrences = await getOccurrencesForIcalExport();
+    const occurrences = await getOccurrencesForIcalExport({ take: 2500 });
 
     for (const occ of occurrences) {
       const { event, date, endDate: occEndDate, notes } = occ;

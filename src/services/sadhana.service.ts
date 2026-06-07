@@ -26,6 +26,7 @@ import {
 
 export class SadhanaNotFoundError extends Error {}
 export class GoalPracticeNotFoundError extends Error {}
+export class SadhanaItemOwnershipError extends Error {}
 
 function isOnOrBefore(date: Date, end: Date) {
   return date.getTime() <= end.getTime();
@@ -108,7 +109,7 @@ export async function getSadhanaOverview() {
     Date.UTC(todayDate.getUTCFullYear(), todayDate.getUTCMonth(), 1)
   );
 
-  const allSessions = await sadhanaRepo.findAllSessions();
+  const allSessions = await sadhanaRepo.findAllSessions({ take: 10_000 });
   const completedSessions = allSessions.filter((s) =>
     isOnOrBefore(s.date as Date, todayDate)
   );
@@ -319,7 +320,9 @@ export async function getSadhanaCalendar(opts: { start?: string; end?: string } 
 export async function listSadhanaSessions(opts: { from?: string; to?: string }) {
   const fromDate = opts.from ? utcDate(opts.from) : new Date(0);
   const toDate = opts.to ? utcDate(opts.to) : utcDate(todayStr());
-  const sessions = await sadhanaRepo.findSessionsByDateRange(fromDate, toDate);
+  const sessions = await sadhanaRepo.findSessionsByDateRange(fromDate, toDate, {
+    take: 10_000,
+  });
   return sessions.map(formatSession);
 }
 
@@ -371,6 +374,17 @@ export async function updateSadhanaSession(
 ) {
   const existing = await sadhanaRepo.findSessionById(id);
   if (!existing) throw new SadhanaNotFoundError("Sessie niet gevonden");
+
+  if (data.items) {
+    const existingItemIds = new Set(existing.items.map((i) => i.id));
+    for (const item of data.items) {
+      if (item.id && !existingItemIds.has(item.id)) {
+        throw new SadhanaItemOwnershipError(
+          `Item ${item.id} behoort niet tot sessie ${id}`
+        );
+      }
+    }
+  }
 
   const session = await sadhanaRepo.updateSessionWithItems(
     id,
@@ -531,6 +545,17 @@ export async function updateSadhanaRoutine(
     }[];
   };
 
+  if (Array.isArray(routineData.items)) {
+    const existingItemIds = new Set(existing.items.map((i) => i.id));
+    for (const item of routineData.items) {
+      if (item.id && !existingItemIds.has(item.id)) {
+        throw new SadhanaItemOwnershipError(
+          `Item ${item.id} behoort niet tot routine ${id}`
+        );
+      }
+    }
+  }
+
   const routine = Array.isArray(routineData.items)
     ? await sadhanaRepo.updateRoutineWithItems(
         id,
@@ -576,7 +601,7 @@ export async function getGoalsWithProgress() {
   // Pre-fetch all needed sessions once
   const sessions = minDate
     ? await sadhanaRepo.findSessionsByDateRange(minDate, todayDate)
-    : await sadhanaRepo.findAllSessions();
+    : await sadhanaRepo.findAllSessions({ take: 10_000 });
 
   const completedSessions = sessions.filter((s) =>
     isOnOrBefore(s.date as Date, todayDate)

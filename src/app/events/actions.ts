@@ -15,6 +15,8 @@ import {
   updateEvent,
 } from "@/services/event.service";
 import { logError } from "@/lib/utils";
+import { formatDateLocal } from "@/lib/date-utils";
+import { dbTimeToStr } from "@/lib/timing-utils";
 
 export type ActionResult<T = void> =
   | { success: true; data?: T }
@@ -87,6 +89,42 @@ export async function updateEventAction(
     if (!existing) {
       return { success: false, error: "Event niet gevonden" };
     }
+
+    const data = result.data;
+    const firstOccurrence = existing.occurrences[0];
+    const mergedStateCheck = createEventSchema.safeParse({
+      name: data.name ?? existing.name,
+      description:
+        data.description !== undefined ? data.description : existing.description,
+      eventType: data.eventType ?? existing.eventType,
+      categoryId: data.categoryId !== undefined ? data.categoryId : undefined,
+      recurrenceType: data.recurrenceType ?? existing.recurrenceType,
+      tithi: data.tithi !== undefined ? data.tithi : existing.tithi,
+      nakshatra: data.nakshatra !== undefined ? data.nakshatra : existing.nakshatra,
+      maas: data.maas !== undefined ? data.maas : existing.maas,
+      sankranti: data.sankranti !== undefined ? data.sankranti : existing.sankranti,
+      tags: data.tags ?? existing.tags,
+      date: data.date ?? (firstOccurrence ? formatDateLocal(firstOccurrence.date) : ""),
+      endDate:
+        data.endDate !== undefined
+          ? data.endDate
+          : firstOccurrence?.endDate
+            ? formatDateLocal(firstOccurrence.endDate)
+            : null,
+      startTime:
+        data.startTime !== undefined
+          ? data.startTime
+          : (dbTimeToStr(firstOccurrence?.startTime) ?? null),
+      endTime:
+        data.endTime !== undefined
+          ? data.endTime
+          : (dbTimeToStr(firstOccurrence?.endTime) ?? null),
+      notes: data.notes !== undefined ? data.notes : (firstOccurrence?.notes ?? null),
+    });
+    if (!mergedStateCheck.success) {
+      return { success: false, error: "Ongeldige invoer" };
+    }
+
     await updateEvent(id, result.data, existing.occurrences[0]?.id);
     revalidateEventPaths(id);
     return { success: true };

@@ -11,6 +11,7 @@ import { logError } from "@/lib/utils";
 import { cuidSchema, patchSadhanaRoutineSchema } from "@/lib/validations";
 import {
   deleteSadhanaRoutine,
+  SadhanaItemOwnershipError,
   SadhanaNotFoundError,
   updateSadhanaRoutine,
 } from "@/services/sadhana.service";
@@ -44,6 +45,8 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     return NextResponse.json(routine);
   } catch (error) {
     if (error instanceof SadhanaNotFoundError) return notFoundError("Routine");
+    if (error instanceof SadhanaItemOwnershipError)
+      return errorResponse("Item behoort niet tot deze routine", 400);
 
     const prismaError = handlePrismaError(error, {
       foreignKey: "Beoefening niet gevonden",

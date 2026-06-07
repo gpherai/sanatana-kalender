@@ -5,6 +5,8 @@ import { GET, PUT } from "../preferences/route";
 import { Prisma } from "@/generated/prisma/client";
 import { DEFAULT_THEME_NAME } from "@/config/themes";
 
+const VALID_THEME_NAME = "shri-ganesha";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 describe("API Preferences", () => {
@@ -64,7 +66,7 @@ describe("API Preferences", () => {
   it("updates preferences with valid payload", async () => {
     prismaMock.userPreference.upsert.mockResolvedValue({
       id: "default",
-      currentTheme: "forest-green",
+      currentTheme: VALID_THEME_NAME,
       createdAt: new Date(),
       updatedAt: new Date(),
       defaultView: "month" as never,
@@ -76,7 +78,7 @@ describe("API Preferences", () => {
 
     const request = new NextRequest("http://localhost/api/preferences", {
       method: "PUT",
-      body: JSON.stringify({ currentTheme: "forest-green" }),
+      body: JSON.stringify({ currentTheme: VALID_THEME_NAME }),
       headers: { "Content-Type": "application/json" },
     });
 
@@ -85,14 +87,29 @@ describe("API Preferences", () => {
 
     expect(prismaMock.userPreference.upsert).toHaveBeenCalled();
     expect(response.status).toBe(200);
-    expect(json.currentTheme).toBe("forest-green");
+    expect(json.currentTheme).toBe(VALID_THEME_NAME);
+  });
+
+  it("rejects unknown theme names", async () => {
+    const request = new NextRequest("http://localhost/api/preferences", {
+      method: "PUT",
+      body: JSON.stringify({ currentTheme: "forest-green" }),
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const response = await PUT(request);
+    const json = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(json.error).toBe("VALIDATION_ERROR");
+    expect(prismaMock.userPreference.upsert).not.toHaveBeenCalled();
   });
 
   it("rejects payloads with unknown legacy location fields", async () => {
     const request = new NextRequest("http://localhost/api/preferences", {
       method: "PUT",
       body: JSON.stringify({
-        currentTheme: "forest-green",
+        currentTheme: VALID_THEME_NAME,
         timezone: "Asia/Kolkata",
         locationName: "Mumbai",
         locationLat: 19.076,
@@ -144,7 +161,7 @@ describe("API Preferences", () => {
 
     const request = new NextRequest("http://localhost/api/preferences", {
       method: "PUT",
-      body: JSON.stringify({ currentTheme: "forest-green" }),
+      body: JSON.stringify({ currentTheme: VALID_THEME_NAME }),
     });
 
     const response = await PUT(request);
@@ -158,7 +175,7 @@ describe("API Preferences", () => {
 
     const request = new NextRequest("http://localhost/api/preferences", {
       method: "PUT",
-      body: JSON.stringify({ currentTheme: "forest-green" }),
+      body: JSON.stringify({ currentTheme: VALID_THEME_NAME }),
     });
 
     const response = await PUT(request);

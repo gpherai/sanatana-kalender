@@ -189,7 +189,7 @@ model DailyInfo {
 /// User preferences (single-user for now)
 model UserPreference {
   id                     String       @id @default("default")
-  currentTheme           String       @default("spiritual-minimal")
+  currentTheme           String       @default("shri-ganesha")
   defaultView            CalendarView @default(month)
   visibleEventTypes      EventType[]  @default([])
   visibleCategories      String[]     @default([])
