@@ -138,6 +138,17 @@ export async function deleteGoal(id: string) {
   });
 }
 
+export async function deactivateActiveDailyGoals(excludeId?: string) {
+  return prisma.sadhanaGoal.updateMany({
+    where: {
+      type: "daily",
+      active: true,
+      ...(excludeId && { id: { not: excludeId } }),
+    },
+    data: { active: false },
+  });
+}
+
 export async function createSessionWithItems(
   date: string,
   startedAt: string | null | undefined,

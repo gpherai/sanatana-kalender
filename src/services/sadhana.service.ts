@@ -451,6 +451,11 @@ export async function createSadhanaGoal(data: {
         throw new GoalPracticeNotFoundError(`Beoefening niet gevonden: ${pid}`);
     }
   }
+
+  if (data.type === "daily") {
+    await sadhanaRepo.deactivateActiveDailyGoals();
+  }
+
   const goal = await sadhanaRepo.createGoal({
     type: data.type as "daily" | "weekly" | "lifetime",
     name: data.name ?? null,
@@ -484,6 +489,10 @@ export async function updateSadhanaGoal(
       if (!practice)
         throw new GoalPracticeNotFoundError(`Beoefening niet gevonden: ${pid}`);
     }
+  }
+
+  if (data.active === true && existing.type === "daily") {
+    await sadhanaRepo.deactivateActiveDailyGoals(id);
   }
 
   const goal = await sadhanaRepo.updateGoal(id, {
