@@ -28,11 +28,6 @@ describe("Header Component", () => {
     });
   });
 
-  it('renders "New Event" button', () => {
-    render(<Header />);
-    expect(screen.getByText("Nieuw")).toBeInTheDocument();
-  });
-
   it("renders theme toggle", () => {
     render(<Header />);
     expect(screen.getByTestId("theme-toggle")).toBeInTheDocument();

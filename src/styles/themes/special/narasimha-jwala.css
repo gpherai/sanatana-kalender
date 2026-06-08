@@ -53,11 +53,7 @@
   --theme-surface-raised-shadow:
     0 8px 32px oklch(0.68 0.22 52 / 0.16), 0 0 0 1px oklch(0.74 0.24 38 / 0.1),
     inset 0 1px 0 oklch(1 0 0 / 0.6);
-  --theme-primary-action-background: linear-gradient(
-    145deg,
-    oklch(0.68 0.22 52) 0%,
-    oklch(0.62 0.2 42) 100%
-  );
+  --theme-primary-action-background: var(--theme-primary);
   --theme-primary-action-color: oklch(0.12 0.04 42);
   --theme-primary-action-border-rule: 1px solid oklch(0.74 0.24 38 / 0.4);
   --theme-primary-action-shadow:
@@ -331,11 +327,7 @@
   --theme-surface-raised-border-rule: 1px solid oklch(0.68 0.22 52 / 0.24);
   --theme-surface-raised-shadow:
     0 8px 36px oklch(0 0 0 / 0.6), 0 0 24px oklch(0.68 0.22 52 / 0.14);
-  --theme-primary-action-background: linear-gradient(
-    145deg,
-    oklch(0.65 0.22 52) 0%,
-    oklch(0.58 0.2 42) 100%
-  );
+  --theme-primary-action-background: var(--theme-primary);
   --theme-primary-action-border-rule: 1px solid oklch(0.68 0.22 52 / 0.3);
   --theme-primary-action-shadow:
     0 4px 22px oklch(0 0 0 / 0.55), 0 0 22px oklch(0.68 0.22 52 / 0.22);

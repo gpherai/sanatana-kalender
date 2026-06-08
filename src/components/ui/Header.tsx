@@ -7,7 +7,6 @@ import {
   Home,
   ListTodo,
   Settings,
-  Plus,
   BookOpen,
   BookMarked,
   CloudSun,
@@ -85,16 +84,6 @@ export function Header() {
 
           {/* Actions */}
           <div className="flex shrink-0 items-center gap-2">
-            {/* New Event Button - uses theme color */}
-            <Link
-              href="/events/new"
-              className="bg-theme-primary flex items-center gap-1.5 rounded-lg px-3 py-3 text-sm font-medium text-white shadow-lg transition-all hover:opacity-90 sm:py-1.5"
-            >
-              <Plus className="h-4 w-4" />
-              <span className="hidden sm:inline">Nieuw</span>
-            </Link>
-
-            {/* Color Mode Toggle */}
             <ColorModeToggle />
           </div>
         </div>
