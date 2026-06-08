@@ -435,6 +435,28 @@ describe("POST /api/events/generate-occurrences", () => {
     expect(prismaMock.eventOccurrence.deleteMany).toHaveBeenCalled();
   });
 
+  it("returns 422 when batch generation has partial failures", async () => {
+    prismaMock.event.findMany.mockResolvedValue([
+      { id: "evt_1", recurrenceType: "YEARLY_LUNAR", tags: [], aliases: [] } as any,
+    ]);
+    generateOccurrencesForEvents.mockResolvedValue({
+      results: new Map(),
+      failedCount: 3,
+    });
+
+    const request = new NextRequest("http://localhost/api/events/generate-occurrences", {
+      method: "POST",
+      body: JSON.stringify({ startDate: "2025-01-01", endDate: "2025-01-05" }),
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const response = await POST(request);
+    const json = await response.json();
+    expect(response.status).toBe(422);
+    expect(json.message).toMatch(/3 event/);
+    expect(prismaMock.eventOccurrence.createMany).not.toHaveBeenCalled();
+  });
+
   it("returns server error when generation fails", async () => {
     prismaMock.event.findMany.mockRejectedValue(new Error("DB error"));
 

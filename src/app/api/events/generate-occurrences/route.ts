@@ -34,7 +34,11 @@ import {
   serverError,
 } from "@/lib/api-response";
 import { logError } from "@/lib/utils";
-import { EventNotFoundError, generateEventOccurrences } from "@/services/event.service";
+import {
+  BatchGenerationError,
+  EventNotFoundError,
+  generateEventOccurrences,
+} from "@/services/event.service";
 
 export async function POST(request: NextRequest) {
   try {
@@ -72,6 +76,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(response);
   } catch (error) {
     logError("[API] POST /api/events/generate-occurrences error:", error);
+
+    if (error instanceof BatchGenerationError) {
+      return errorResponse(
+        `Generation failed for ${error.failedCount} event(s) — no occurrences written`,
+        422
+      );
+    }
 
     if (error instanceof EventNotFoundError) {
       return notFoundError("Event");

@@ -49,6 +49,11 @@ export class OccurrenceNotFoundError extends EventServiceError {}
 export class OccurrenceOwnershipError extends EventServiceError {}
 export class OccurrenceConflictError extends EventServiceError {}
 export class LastOccurrenceError extends EventServiceError {}
+export class BatchGenerationError extends EventServiceError {
+  constructor(public readonly failedCount: number) {
+    super(`Generation failed for ${failedCount} event(s)`);
+  }
+}
 
 // ============================================================================
 // TYPES
@@ -386,6 +391,10 @@ export async function generateEventOccurrences(input: GenerateEventOccurrencesIn
     }
   );
 
+  if (failedCount > 0) {
+    throw new BatchGenerationError(failedCount);
+  }
+
   const { deletedCount, generatedCount } = await persistGeneratedOccurrencesForEvents(
     occurrencesMap,
     {
@@ -400,7 +409,6 @@ export async function generateEventOccurrences(input: GenerateEventOccurrencesIn
     eventsProcessed: eventsWithRecurrence.length,
     generated: generatedCount,
     deleted: deletedCount,
-    ...(failedCount > 0 && { failed: failedCount }),
   };
 }
 

@@ -63,12 +63,22 @@ async function main() {
 
   console.log(`📋 Found ${events.length} events with recurrence rules`);
 
-  const { results: occurrencesMap } = await generateOccurrencesForEvents(events, {
-    startDate,
-    endDate,
-    location: DEFAULT_LOCATION,
-    timezone: DEFAULT_LOCATION.timezone,
-  });
+  const { results: occurrencesMap, failedCount } = await generateOccurrencesForEvents(
+    events,
+    {
+      startDate,
+      endDate,
+      location: DEFAULT_LOCATION,
+      timezone: DEFAULT_LOCATION.timezone,
+    }
+  );
+
+  if (failedCount > 0) {
+    console.error(
+      `\n❌ Generation failed for ${failedCount} event(s). Aborting — nothing written.`
+    );
+    process.exit(1);
+  }
 
   let totalDeleted = 0;
   let totalGenerated = 0;
