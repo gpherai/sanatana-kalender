@@ -15,7 +15,7 @@ export async function GET() {
             status: "up",
           },
         },
-        version: process.env.npm_package_version ?? "unknown",
+        version: process.env.APP_VERSION ?? "unknown",
       },
       { status: 200 }
     );

@@ -1,4 +1,17 @@
 import type { NextConfig } from "next";
+import { readFileSync } from "fs";
+import { join } from "path";
+
+const pkgVersion = (() => {
+  try {
+    const pkg = JSON.parse(readFileSync(join(process.cwd(), "package.json"), "utf8")) as {
+      version?: string;
+    };
+    return pkg.version ?? "unknown";
+  } catch {
+    return "unknown";
+  }
+})();
 
 // =============================================================================
 // Security Headers
@@ -62,6 +75,12 @@ const securityHeaders = [
 // =============================================================================
 
 const nextConfig: NextConfig = {
+  // Bake the package version into the bundle at build time so it's available
+  // in standalone Docker where npm lifecycle vars like npm_package_version are absent.
+  env: {
+    APP_VERSION: pkgVersion,
+  },
+
   // OWM weather icons
   images: {
     remotePatterns: [
