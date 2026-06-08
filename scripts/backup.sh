@@ -53,7 +53,11 @@ EXCLUDE_PATTERNS=(
     "_dev"
     "_spike"
     "*.log"
+    ".env"
     ".env.local"
+    ".env.development.local"
+    ".env.test.local"
+    ".env.production.local"
     "*.tsbuildinfo"
     "backups"
 )
@@ -146,7 +150,9 @@ else
     # Kopieer met find en exclude
     find "$PROJECT_DIR" -type f \
         ! \( -path "*/node_modules/*" -o -path "*/.next/*" -o -path "*/.git/*" \
-             -o -path "*/_dev/*" -o -path "*/src/generated/*" -o -name "*.log" \) \
+             -o -path "*/_dev/*" -o -path "*/src/generated/*" -o -name "*.log" \
+             -o -name ".env" -o -name ".env.local" -o -name ".env.development.local" \
+             -o -name ".env.test.local" -o -name ".env.production.local" \) \
         -exec cp --parents {} "$TEMP_BACKUP_DIR/" \; 2>/dev/null
 fi
 
