@@ -57,10 +57,11 @@ vi.mock("@/components/almanac", () => ({
 }));
 
 vi.mock("@/components/calendar/EventDetailModal", () => ({
-  EventDetailModal: ({ isOpen, onClose }: any) =>
+  EventDetailModal: ({ isOpen, onClose, onDeleted }: any) =>
     isOpen ? (
       <div data-testid="modal">
         <button onClick={onClose}>Close</button>
+        <button onClick={onDeleted}>Delete</button>
       </div>
     ) : null,
 }));
@@ -138,5 +139,27 @@ describe("AlmanacPage 100% Coverage", () => {
     act(() => {
       fireEvent.click(screen.getByText("Close"));
     });
+  });
+
+  it("clears event cache and refetches after delete in modal", async () => {
+    const mockRefetch = vi.fn();
+    mockUseFetch.mockImplementation((url: string) => {
+      if (url.includes("events"))
+        return { data: [], loading: false, refetch: mockRefetch };
+      return { data: [], loading: false, refetch: vi.fn() };
+    });
+
+    render(<AlmanacPage />);
+
+    act(() => {
+      fireEvent.click(screen.getByTestId("details"));
+    });
+    expect(screen.getByTestId("modal")).toBeInTheDocument();
+
+    act(() => {
+      fireEvent.click(screen.getByText("Delete"));
+    });
+
+    expect(mockRefetch).toHaveBeenCalled();
   });
 });

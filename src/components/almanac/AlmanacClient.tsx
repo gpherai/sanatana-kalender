@@ -354,6 +354,11 @@ export function AlmanacClient({
     setSelectedEvent(null);
   }, []);
 
+  const handleDeleted = useCallback(() => {
+    eventsDataCache.delete(cacheKey);
+    refetchEvents();
+  }, [cacheKey, refetchEvents]);
+
   return (
     <PageLayout>
       <AlmanacHeader location={location} />
@@ -445,6 +450,7 @@ export function AlmanacClient({
           event={selectedEvent}
           isOpen={true}
           onClose={handleCloseModal}
+          onDeleted={handleDeleted}
         />
       )}
     </PageLayout>
