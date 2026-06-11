@@ -319,7 +319,7 @@ export function EventDetailModal({
 
             {/* Relative date badge - theme colored */}
             {relativeLabel && (
-              <div className="bg-theme-primary mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium text-white">
+              <div className="bg-theme-primary text-theme-primary-fg mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium">
                 <Sparkles className="h-3.5 w-3.5" />
                 {relativeLabel}
               </div>
@@ -582,7 +582,7 @@ export function EventDetailModal({
                   onClick={handleEdit}
                   className={cn(
                     "flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium",
-                    "bg-theme-primary text-white hover:opacity-90",
+                    "bg-theme-primary text-theme-primary-fg hover:opacity-90",
                     "shadow-theme-primary shadow-lg",
                     "transition-all duration-200"
                   )}

@@ -107,7 +107,7 @@ export default function RootLayout({
           <ToastProvider>
             <a
               href="#main-content"
-              className="focus-visible:ring-theme-primary bg-theme-primary sr-only text-white focus-visible:not-sr-only focus-visible:absolute focus-visible:top-4 focus-visible:left-4 focus-visible:z-50 focus-visible:rounded-lg focus-visible:px-4 focus-visible:py-2 focus-visible:ring-2 focus-visible:outline-none"
+              className="focus-visible:ring-theme-primary bg-theme-primary text-theme-primary-fg sr-only focus-visible:not-sr-only focus-visible:absolute focus-visible:top-4 focus-visible:left-4 focus-visible:z-50 focus-visible:rounded-lg focus-visible:px-4 focus-visible:py-2 focus-visible:ring-2 focus-visible:outline-none"
             >
               Ga naar inhoud
             </a>

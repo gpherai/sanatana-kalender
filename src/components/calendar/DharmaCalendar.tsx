@@ -74,7 +74,7 @@ function DateHeader({ date }: DateHeaderProps) {
   return (
     <div className="flex w-full items-center justify-between px-1">
       <span
-        className={`text-sm font-medium ${isToday ? "bg-theme-primary rounded-full px-2 py-0.5 text-white" : ""} `}
+        className={`text-sm font-medium ${isToday ? "bg-theme-primary text-theme-primary-fg rounded-full px-2 py-0.5" : ""} `}
       >
         {date.getDate()}
       </span>

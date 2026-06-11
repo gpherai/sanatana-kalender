@@ -750,8 +750,7 @@ body.app-body::after {
     animation: var(--theme-primary-text-animation);
   }
 
-  h1:not(.theme-heading-reset),
-  h2:not(.theme-heading-reset) {
+  .display-heading {
     background: var(--theme-heading-background);
     background-clip: text;
     -webkit-background-clip: text;

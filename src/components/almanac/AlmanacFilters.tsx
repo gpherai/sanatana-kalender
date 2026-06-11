@@ -81,7 +81,7 @@ export function AlmanacFilters({
                 className={cn(
                   "focus-visible:ring-theme-primary flex min-h-[44px] flex-shrink-0 items-center rounded-lg px-3 py-1.5 text-sm font-medium transition-all focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none",
                   isSelected
-                    ? "bg-theme-primary text-white shadow-md"
+                    ? "bg-theme-primary text-theme-primary-fg shadow-md"
                     : isCurrent
                       ? "bg-theme-primary-15 text-theme-primary"
                       : "text-theme-fg-muted hover:bg-theme-surface-hover"

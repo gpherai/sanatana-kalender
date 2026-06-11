@@ -19,7 +19,7 @@ export function WeatherErrorState({ error, onRetry }: WeatherErrorStateProps) {
         <p className="text-theme-fg-muted mb-6 text-sm">{error}</p>
         <button
           onClick={onRetry}
-          className="bg-theme-primary cursor-pointer rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none"
+          className="bg-theme-primary text-theme-primary-fg cursor-pointer rounded-xl px-5 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none"
         >
           Opnieuw proberen
         </button>

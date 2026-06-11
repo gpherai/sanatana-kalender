@@ -149,6 +149,7 @@ function SearchInput({
       <Search className="text-theme-fg-subtle absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
       <input
         type="text"
+        aria-label="Zoeken"
         placeholder="Zoeken..."
         value={value}
         onChange={(e) => handleChange(e.target.value)}
@@ -164,6 +165,7 @@ function SearchInput({
         <button
           type="button"
           onClick={handleClear}
+          aria-label="Zoekopdracht wissen"
           className="text-theme-fg-subtle hover:text-theme-fg-secondary absolute top-1/2 right-3 -translate-y-1/2"
         >
           <X className="h-4 w-4" />
@@ -244,6 +246,7 @@ export function FilterSidebar({
           <div className="flex flex-col gap-2">
             <input
               type="date"
+              aria-label="Datum van"
               value={filters.dateFrom}
               onChange={(e) => onFilterChange("dateFrom", e.target.value)}
               className={cn(
@@ -253,9 +256,15 @@ export function FilterSidebar({
                 "ring-theme-primary-50 focus:border-theme-primary focus:ring-2 focus:outline-none"
               )}
             />
-            <span className="text-theme-fg-muted text-center text-xs select-none">→</span>
+            <span
+              className="text-theme-fg-muted text-center text-xs select-none"
+              aria-hidden="true"
+            >
+              →
+            </span>
             <input
               type="date"
+              aria-label="Datum tot"
               value={filters.dateTo}
               onChange={(e) => onFilterChange("dateTo", e.target.value)}
               min={filters.dateFrom || undefined}

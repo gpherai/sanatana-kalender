@@ -122,6 +122,10 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
         fieldErrors[field] = issue.message;
       });
       setErrors(fieldErrors);
+      const firstKey = Object.keys(fieldErrors)[0];
+      if (firstKey) {
+        document.getElementById(firstKey)?.focus();
+      }
       return;
     }
 
@@ -188,15 +192,22 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
           <input
             type="text"
             id="name"
+            required
             value={formData.name}
             onChange={(e) => updateField("name", e.target.value)}
+            aria-invalid={errors.name ? true : undefined}
+            aria-describedby={errors.name ? "name-error" : undefined}
             className={cn(
               inputClasses,
               errors.name ? "border-theme-error" : "border-theme-border"
             )}
             placeholder="Bijv. Maha Shivaratri"
           />
-          {errors.name && <p className="text-theme-error mt-1 text-sm">{errors.name}</p>}
+          {errors.name && (
+            <p id="name-error" role="alert" className="text-theme-error mt-1 text-sm">
+              {errors.name}
+            </p>
+          )}
         </div>
 
         {/* Description */}
@@ -294,15 +305,20 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
             <input
               type="date"
               id="date"
+              required
               value={formData.date}
               onChange={(e) => updateField("date", e.target.value)}
+              aria-invalid={errors.date ? true : undefined}
+              aria-describedby={errors.date ? "date-error" : undefined}
               className={cn(
                 inputClasses,
                 errors.date ? "border-theme-error" : "border-theme-border"
               )}
             />
             {errors.date && (
-              <p className="text-theme-error mt-1 text-sm">{errors.date}</p>
+              <p id="date-error" role="alert" className="text-theme-error mt-1 text-sm">
+                {errors.date}
+              </p>
             )}
           </div>
 
@@ -424,8 +440,14 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
             </label>
             <select
               id="tithi"
+              required={
+                formData.recurrenceType === "YEARLY_LUNAR" ||
+                formData.recurrenceType === "MONTHLY_LUNAR"
+              }
               value={formData.tithi}
               onChange={(e) => updateField("tithi", e.target.value)}
+              aria-invalid={errors.tithi ? true : undefined}
+              aria-describedby={errors.tithi ? "tithi-error" : undefined}
               className={cn(
                 inputClasses,
                 errors.tithi ? "border-theme-error" : "border-theme-border"
@@ -448,7 +470,9 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
               </optgroup>
             </select>
             {errors.tithi && (
-              <p className="text-theme-error mt-1 text-sm">{errors.tithi}</p>
+              <p id="tithi-error" role="alert" className="text-theme-error mt-1 text-sm">
+                {errors.tithi}
+              </p>
             )}
           </div>
 
@@ -515,8 +539,11 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
             </label>
             <select
               id="sankranti"
+              required
               value={formData.sankranti}
               onChange={(e) => updateField("sankranti", e.target.value)}
+              aria-invalid={errors.sankranti ? true : undefined}
+              aria-describedby={errors.sankranti ? "sankranti-error" : "sankranti-hint"}
               className={cn(
                 inputClasses,
                 errors.sankranti ? "border-theme-error" : "border-theme-border"
@@ -529,11 +556,17 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
                 </option>
               ))}
             </select>
-            <p className="text-theme-fg-subtle mt-1 text-xs">
+            <p id="sankranti-hint" className="text-theme-fg-subtle mt-1 text-xs">
               Welke Sankranti (zonsovergang) valt dit evenement op?
             </p>
             {errors.sankranti && (
-              <p className="text-theme-error mt-1 text-sm">{errors.sankranti}</p>
+              <p
+                id="sankranti-error"
+                role="alert"
+                className="text-theme-error mt-1 text-sm"
+              >
+                {errors.sankranti}
+              </p>
             )}
           </div>
         </div>
@@ -623,7 +656,7 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
           disabled={isSubmitting}
           className={cn(
             "flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium",
-            "bg-theme-primary text-white hover:opacity-90",
+            "bg-theme-primary text-theme-primary-fg hover:opacity-90",
             "disabled:cursor-not-allowed disabled:opacity-50",
             "shadow-theme-primary transition-colors",
             "focus-visible:ring-theme-primary focus-visible:ring-2 focus-visible:outline-none"

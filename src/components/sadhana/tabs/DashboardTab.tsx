@@ -90,7 +90,7 @@ export const DashboardTab = memo(function DashboardTab({
                 className={cn(
                   "min-h-[32px] cursor-pointer rounded px-3 text-xs font-medium transition-colors",
                   selectedYear === year
-                    ? "bg-theme-primary text-white shadow-sm"
+                    ? "bg-theme-primary text-theme-primary-fg shadow-sm"
                     : "text-theme-fg-muted hover:bg-theme-hover"
                 )}
               >

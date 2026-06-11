@@ -13,7 +13,9 @@ export function AlmanacHeader({ location }: AlmanacHeaderProps) {
         <p className="text-theme-primary mb-1 text-sm font-medium tracking-wide">
           पञ्चाङ्ग · Pañcāṅga
         </p>
-        <h1 className="text-theme-fg text-3xl font-bold">Panchang Almanac</h1>
+        <h1 className="display-heading text-theme-fg text-3xl font-bold">
+          Panchang Almanac
+        </h1>
         <p className="text-theme-fg-muted mt-1 text-sm">
           Astronomische kalender met zon- en maanstanden
         </p>

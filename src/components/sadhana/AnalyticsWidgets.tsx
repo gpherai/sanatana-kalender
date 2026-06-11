@@ -62,7 +62,7 @@ export function WeekdayPattern({ sessions }: { sessions: SessionData[] }) {
               className={[
                 "cursor-pointer rounded-full px-3 py-1.5 text-[10px] font-medium transition-colors",
                 metric === m
-                  ? "bg-theme-primary text-white"
+                  ? "bg-theme-primary text-theme-primary-fg"
                   : "text-theme-fg-muted hover:text-theme-fg hover:bg-theme-hover bg-transparent",
               ].join(" ")}
             >

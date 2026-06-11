@@ -51,8 +51,8 @@ function ThemeCard({
         "relative rounded-xl border-2 p-4 text-left transition-all",
         isSpecial
           ? isSelected
-            ? "border-amber-500 bg-gradient-to-br from-amber-500/10 to-orange-500/10 shadow-lg ring-2 ring-amber-500/30"
-            : "border-theme-border hover:border-amber-500/50 hover:shadow-md hover:shadow-amber-500/10"
+            ? "border-theme-primary bg-theme-primary-10 ring-theme-primary-30 shadow-lg ring-2"
+            : "border-theme-border hover:border-theme-primary/50 hover:shadow-theme-primary-10 hover:shadow-md"
           : cn(
               "theme-interactive theme-focus-ring",
               isSelected
@@ -65,9 +65,7 @@ function ThemeCard({
         <div
           className={cn(
             "absolute top-2 right-2 rounded-full p-1 text-white",
-            isSpecial
-              ? "bg-gradient-to-r from-amber-500 to-orange-500 shadow-lg"
-              : "bg-theme-primary"
+            isSpecial ? "bg-theme-primary shadow-lg" : "bg-theme-primary"
           )}
         >
           <Check className="h-3 w-3" />
@@ -107,7 +105,7 @@ function ThemeCard({
 
       {isSpecial && (
         <div className="mt-2">
-          <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-2 py-0.5 text-xs font-medium text-white shadow-sm">
+          <span className="bg-theme-primary text-theme-primary-fg inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium shadow-sm">
             ✨ Speciaal
           </span>
         </div>
@@ -152,7 +150,7 @@ export function ThemeSection({
                 className={cn(
                   "flex min-h-[44px] items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all",
                   isSelected
-                    ? "bg-theme-primary text-white shadow-md"
+                    ? "bg-theme-primary text-theme-primary-fg shadow-md"
                     : "bg-theme-surface-raised text-theme-fg-secondary hover:bg-theme-hover"
                 )}
               >
@@ -202,12 +200,12 @@ export function ThemeSection({
         {themes.some((t) => t.category === "special") && (
           <div>
             <div className="mb-4 flex items-center gap-2">
-              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
-              <h3 className="flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-sm font-semibold tracking-wider text-transparent uppercase">
+              <div className="bg-theme-primary/30 h-px flex-1" />
+              <h3 className="text-theme-primary flex items-center gap-1.5 text-sm font-semibold tracking-wider uppercase">
                 <span className="text-base">✨</span>
                 {" Speciale thema's"}
               </h3>
-              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
+              <div className="bg-theme-primary/30 h-px flex-1" />
             </div>
             <p className="text-theme-fg-muted mb-4 text-center text-xs">
               Premium thema&apos;s met verbeterde visuele effecten

@@ -242,7 +242,7 @@ export function EventsContent({ initialEvents }: EventsContentProps) {
           >
             <SlidersHorizontal className="h-4 w-4" />
             {activeFilterCount > 0 && (
-              <span className="bg-theme-primary flex h-5 w-5 items-center justify-center rounded-full text-xs text-white">
+              <span className="bg-theme-primary text-theme-primary-fg flex h-5 w-5 items-center justify-center rounded-full text-xs">
                 {activeFilterCount}
               </span>
             )}
@@ -251,7 +251,7 @@ export function EventsContent({ initialEvents }: EventsContentProps) {
           {/* New Event Button */}
           <Link
             href="/events/new"
-            className="bg-theme-primary shadow-theme-primary flex items-center gap-2 rounded-xl px-4 py-2 font-medium text-white shadow-lg transition-all hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none"
+            className="bg-theme-primary shadow-theme-primary text-theme-primary-fg flex items-center gap-2 rounded-xl px-4 py-2 font-medium shadow-lg transition-all hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none"
           >
             <Plus className="h-4 w-4" />
             <span className="hidden sm:inline">Nieuw Event</span>
@@ -353,7 +353,7 @@ export function EventsContent({ initialEvents }: EventsContentProps) {
               ) : (
                 <Link
                   href="/events/new"
-                  className="bg-theme-primary shadow-theme-primary inline-flex items-center gap-2 rounded-xl px-6 py-2.5 font-medium text-white shadow-lg transition-colors hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none"
+                  className="bg-theme-primary shadow-theme-primary text-theme-primary-fg inline-flex items-center gap-2 rounded-xl px-6 py-2.5 font-medium shadow-lg transition-colors hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none"
                 >
                   <Plus className="h-4 w-4" />
                   Eerste Event Toevoegen

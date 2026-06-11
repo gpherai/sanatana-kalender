@@ -79,11 +79,14 @@ export function MonthGrid({
               key={dateStr}
               type="button"
               onClick={() => onSelectDate(date)}
+              aria-label={`${date.getDate()} ${MONTHS_LONG[month]} ${year}`}
+              aria-current={isTodayDate ? "date" : undefined}
+              aria-pressed={isSelected}
               style={{ touchAction: "manipulation" }}
               className={cn(
                 "group focus-visible:ring-theme-primary relative flex min-h-[44px] flex-col rounded-lg p-1.5 text-left transition-all focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none active:opacity-75",
                 isSelected
-                  ? "bg-theme-primary ring-theme-primary text-white shadow-lg ring-2 ring-offset-2 ring-offset-[var(--theme-surface)]"
+                  ? "bg-theme-primary ring-theme-primary text-theme-primary-fg shadow-lg ring-2 ring-offset-2 ring-offset-[var(--theme-surface)]"
                   : isTodayDate
                     ? "bg-theme-primary-15 ring-theme-primary ring-1"
                     : hasEvents && showEvents
@@ -101,7 +104,7 @@ export function MonthGrid({
                   className={cn(
                     "text-sm font-semibold",
                     isSelected
-                      ? "text-white"
+                      ? "text-theme-primary-fg"
                       : isTodayDate
                         ? "text-theme-primary"
                         : "text-theme-fg"
@@ -121,7 +124,7 @@ export function MonthGrid({
                 <div
                   className={cn(
                     "mt-0.5 hidden text-[10px] leading-tight lg:block",
-                    isSelected ? "text-white/80" : "text-theme-fg-muted"
+                    isSelected ? "text-theme-primary-fg/80" : "text-theme-fg-muted"
                   )}
                 >
                   <div className="flex items-center gap-0.5">
@@ -160,8 +163,8 @@ export function MonthGrid({
                     className={cn(
                       "flex h-4 min-w-[1rem] items-center justify-center rounded-full px-1 text-[10px] font-bold",
                       isSelected
-                        ? "bg-white/30 text-white"
-                        : "bg-theme-primary text-white"
+                        ? "bg-theme-primary-fg/30 text-theme-primary-fg"
+                        : "bg-theme-primary text-theme-primary-fg"
                     )}
                   >
                     {dayEvents.length}

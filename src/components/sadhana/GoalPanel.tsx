@@ -156,7 +156,7 @@ export function GoalPanel({
           )}
           <button
             onClick={() => setShowAdd((v) => !v)}
-            className="bg-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1 rounded-lg px-3 py-2 text-xs font-medium text-white hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none"
+            className="bg-theme-primary text-theme-primary-fg flex min-h-[44px] cursor-pointer items-center gap-1 rounded-lg px-3 py-2 text-xs font-medium hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none"
           >
             <Plus className="h-3.5 w-3.5" /> Toevoegen
           </button>
@@ -243,7 +243,7 @@ export function GoalPanel({
                       className={cn(
                         "focus-visible:ring-theme-primary cursor-pointer rounded-full px-3 py-1 text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none",
                         isSelected
-                          ? "bg-theme-primary text-white"
+                          ? "bg-theme-primary text-theme-primary-fg"
                           : "bg-theme-surface-raised text-theme-fg hover:bg-theme-border"
                       )}
                     >
@@ -266,7 +266,7 @@ export function GoalPanel({
             <button
               type="submit"
               disabled={adding}
-              className="bg-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm text-white hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+              className="bg-theme-primary text-theme-primary-fg flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             >
               {adding && <Loader2 className="h-3.5 w-3.5 animate-spin" />} Opslaan
             </button>
@@ -336,7 +336,7 @@ export function GoalPanel({
                           className={cn(
                             "cursor-pointer rounded-full px-3 py-1 text-xs font-medium transition-colors",
                             isSelected
-                              ? "bg-theme-primary text-white"
+                              ? "bg-theme-primary text-theme-primary-fg"
                               : "bg-theme-surface-raised text-theme-fg hover:bg-theme-border"
                           )}
                         >
@@ -358,7 +358,7 @@ export function GoalPanel({
                 <button
                   onClick={() => handleSave(g)}
                   disabled={saving}
-                  className="bg-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm text-white hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                  className="bg-theme-primary text-theme-primary-fg flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {saving && <Loader2 className="h-3.5 w-3.5 animate-spin" />} Opslaan
                 </button>
