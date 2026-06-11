@@ -1,4 +1,10 @@
 import "@testing-library/jest-dom";
+import { vi } from "vitest";
+
+vi.mock("next/cache", () => ({
+  revalidatePath: vi.fn(),
+  revalidateTag: vi.fn(),
+}));
 
 process.env.DATABASE_URL ??= "postgresql://user:pass@localhost:5432/test";
 
