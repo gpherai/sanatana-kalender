@@ -292,6 +292,33 @@ export const THEME_CATALOG: readonly ThemeDefinition[] = [
       accent: "oklch(0.55 0.158 8)",
     },
   },
+  {
+    name: "shri-ganesha-shanta",
+    displayName: "🪔 Ganesha Shanta",
+    description: "Serene dawn variant of Shri Ganesha — calm gradient, quiet surfaces",
+    isDefault: false,
+    category: "special" as const,
+    isSpecial: true,
+    colors: {
+      primary: "oklch(0.55 0.22 25)",
+      secondary: "oklch(0.75 0.14 85)",
+      accent: "oklch(0.55 0.15 145)",
+    },
+  },
+  {
+    name: "bhairava-sandhya",
+    displayName: "🌒 Bhairava Sandhya",
+    description:
+      "Tranquil twilight variant of Bhairava — subdued indigo, restful surfaces",
+    isDefault: false,
+    category: "special" as const,
+    isSpecial: true,
+    colors: {
+      primary: "oklch(0.62 0.22 275)",
+      secondary: "oklch(0.72 0.10 210)",
+      accent: "oklch(0.74 0.18 45)",
+    },
+  },
 ] as const;
 
 // =============================================================================
