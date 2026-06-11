@@ -11,7 +11,6 @@ import {
   THEME_STORAGE_KEY,
   THEME_NAMES,
 } from "@/config/themes";
-import "leaflet/dist/leaflet.css";
 import "./globals.css";
 
 // =============================================================================

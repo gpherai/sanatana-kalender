@@ -557,7 +557,7 @@
 body {
   background: transparent;
   color: var(--foreground);
-  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 /* Fixed pseudo-layer — one GPU paint instead of repaint-per-scroll-frame.

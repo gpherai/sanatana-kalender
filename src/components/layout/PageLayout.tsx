@@ -102,9 +102,9 @@ export function PageLayout({
   className,
 }: PageLayoutProps) {
   return (
-    <div className="app-page-shell min-h-screen">
+    <div className="app-page-shell min-h-dvh">
       {loading ? (
-        <div className="flex min-h-screen items-center justify-center">
+        <div className="flex min-h-dvh items-center justify-center">
           <div className="text-center">
             <Loader2 className="text-theme-primary mx-auto mb-2 h-8 w-8 animate-spin" />
             <p className="text-theme-fg-muted text-sm">{loadingMessage}</p>
