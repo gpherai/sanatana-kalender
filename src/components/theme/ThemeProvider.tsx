@@ -151,27 +151,29 @@ export function ThemeProvider({
   defaultTheme = DEFAULT_THEME_NAME,
   defaultColorMode = DEFAULT_COLOR_MODE,
 }: ThemeProviderProps) {
-  // Use state for system color mode to avoid useSyncExternalStore during prerendering
-  const [systemColorMode, setSystemColorMode] = useState<ResolvedColorMode>("light");
+  // Lazy init from system pref — avoids "light" default for system-dark users
+  const [systemColorMode, setSystemColorMode] = useState<ResolvedColorMode>(() => {
+    if (typeof window === "undefined") return "light";
+    return getSystemColorMode();
+  });
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setSystemColorMode(getSystemColorMode()); // sync on mount; intentional (avoids SSR hydration mismatch)
     return subscribeToSystemColorMode(() => setSystemColorMode(getSystemColorMode()));
   }, []);
 
-  // Initialize state with defaults to prevent SSR hydration mismatch
-  const [themeName, setThemeNameState] = useState<string>(defaultTheme);
-  const [colorMode, setColorModeState] = useState<ColorMode>(defaultColorMode);
-
-  // Load from storage after mount
-  useEffect(() => {
+  // Lazy init from storage — prevents persist-before-load race that overwrites stored prefs
+  const [themeName, setThemeNameState] = useState<string>(() => {
+    if (typeof window === "undefined") return defaultTheme;
     const stored = loadFromStorage();
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (stored?.themeName) setThemeNameState(stored.themeName);
-
-    if (stored?.colorMode) setColorModeState(stored.colorMode);
-  }, []);
+    return stored?.themeName && isValidThemeName(stored.themeName)
+      ? stored.themeName
+      : defaultTheme;
+  });
+  const [colorMode, setColorModeState] = useState<ColorMode>(() => {
+    if (typeof window === "undefined") return defaultColorMode;
+    const stored = loadFromStorage();
+    return (stored?.colorMode as ColorMode | null) ?? defaultColorMode;
+  });
 
   // Resolved color mode (never "system")
   const resolvedColorMode: ResolvedColorMode =

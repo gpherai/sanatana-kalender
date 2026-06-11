@@ -109,7 +109,6 @@
     0 24px 54px oklch(0.18 0.08 275 / 0.16), 0 0 24px oklch(0.62 0.22 275 / 0.12);
   --theme-focus-ring-shadow:
     0 0 0 3px oklch(0.62 0.22 275 / 0.24), 0 0 14px oklch(0.74 0.18 45 / 0.12);
-  --theme-app-background-attachment: fixed;
 
   --theme-app-background:
     radial-gradient(

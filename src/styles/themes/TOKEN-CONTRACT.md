@@ -9,7 +9,7 @@ Every theme in the **`special`** category must drive the full design-system iden
 - **Rule 1 — light completeness:** a theme's light block (`[data-theme="<name>"]`) must define every `--theme-*` token that Ganesha's light block defines (`LIGHT_REQ`, 171 tokens).
 - **Rule 2 — dark completeness:** a theme's dark block (`.dark[data-theme="<name>"], [data-theme="<name>"].dark`) must define every `--theme-*` token that Ganesha's dark block defines (`DARK_REQ`, 147 tokens).
 
-`DARK_REQ ⊂ LIGHT_REQ`: the ~24 tokens Ganesha sets only in light are **mode-agnostic** (body-decoration glyph, header-accent geometry, `*-animation` names, `app-background-attachment`, `ring`, `primary-fg`, `page-shell-background`, `*-focus`, etc.). They are inherited into dark on purpose, so dark is not required to redeclare them. Every *color/background* token Ganesha changes for dark must be redeclared by every theme — this is what prevents light values leaking into dark (`feedback-css-dark-mode-specificity`).
+`DARK_REQ ⊂ LIGHT_REQ`: the ~24 tokens Ganesha sets only in light are **mode-agnostic** (body-decoration glyph, header-accent geometry, `*-animation` names, `ring`, `primary-fg`, `page-shell-background`, `*-focus`, etc.). They are inherited into dark on purpose, so dark is not required to redeclare them. Every *color/background* token Ganesha changes for dark must be redeclared by every theme — this is what prevents light values leaking into dark (`feedback-css-dark-mode-specificity`).
 
 The required sets are derived at test time from `shri-ganesha.css`, so they self-track: improving the golden template raises the bar for all.
 

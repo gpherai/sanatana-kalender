@@ -17,7 +17,6 @@
   --theme-border: oklch(1 0 0 / 0.3);
   --theme-border-subtle: oklch(1 0 0 / 0.2);
   --theme-page-shell-background: transparent;
-  --theme-app-background-attachment: fixed;
   --theme-surface-backdrop-filter: blur(12px);
   --theme-surface-raised-backdrop-filter: blur(16px);
   --theme-app-background:
@@ -66,7 +65,6 @@
   --theme-border: oklch(1 0 0 / 0.3);
   --theme-border-subtle: oklch(1 0 0 / 0.2);
   --theme-page-shell-background: transparent;
-  --theme-app-background-attachment: fixed;
   --theme-surface-backdrop-filter: blur(12px);
   --theme-surface-raised-backdrop-filter: blur(16px);
   --theme-app-background:
@@ -117,7 +115,6 @@
   --theme-border: oklch(1 0 0 / 0.3);
   --theme-border-subtle: oklch(1 0 0 / 0.2);
   --theme-page-shell-background: transparent;
-  --theme-app-background-attachment: fixed;
   --theme-surface-backdrop-filter: blur(12px);
   --theme-surface-raised-backdrop-filter: blur(16px);
   --theme-app-background:
@@ -166,7 +163,6 @@
   --theme-border: oklch(1 0 0 / 0.3);
   --theme-border-subtle: oklch(1 0 0 / 0.2);
   --theme-page-shell-background: transparent;
-  --theme-app-background-attachment: fixed;
   --theme-surface-backdrop-filter: blur(12px);
   --theme-surface-raised-backdrop-filter: blur(16px);
   --theme-app-background:
@@ -215,7 +211,6 @@
   --theme-border: oklch(1 0 0 / 0.3);
   --theme-border-subtle: oklch(1 0 0 / 0.2);
   --theme-page-shell-background: transparent;
-  --theme-app-background-attachment: fixed;
   --theme-surface-backdrop-filter: blur(12px);
   --theme-surface-raised-backdrop-filter: blur(16px);
   --theme-app-background:

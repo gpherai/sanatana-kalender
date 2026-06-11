@@ -83,7 +83,6 @@
   /* App-level theme hooks.
      Theme files set these variables instead of targeting body/header/etc. */
   --theme-app-background: var(--theme-bg);
-  --theme-app-background-attachment: scroll;
   --theme-page-shell-background: var(--theme-bg-subtle);
   --theme-header-background: var(--theme-surface-overlay);
   --theme-header-border: var(--theme-border);
@@ -554,10 +553,21 @@
    BASE STYLES
    ============================================================================= */
 body {
-  background: var(--theme-app-background);
-  background-attachment: var(--theme-app-background-attachment);
+  background: transparent;
   color: var(--foreground);
   min-height: 100vh;
+}
+
+/* Fixed pseudo-layer — one GPU paint instead of repaint-per-scroll-frame.
+   background-attachment:fixed on multi-layer radials causes jank on mobile
+   and is silently ignored on iOS; this achieves the same visual with a
+   single composited layer. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--theme-app-background);
 }
 
 body.app-body::after {

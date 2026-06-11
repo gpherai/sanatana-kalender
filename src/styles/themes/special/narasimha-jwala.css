@@ -33,7 +33,6 @@
   --theme-glass-border: oklch(0.74 0.24 38 / 0.28);
   --theme-stat-value: var(--theme-fg);
   --theme-heatmap-4: var(--theme-accent);
-  --theme-app-background-attachment: fixed;
 
   --theme-surface-background: linear-gradient(
     145deg,

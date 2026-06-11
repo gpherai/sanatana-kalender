@@ -60,7 +60,8 @@ export function Header() {
           <div className="order-3 w-full min-w-0 [scrollbar-width:none] overflow-x-auto sm:order-none sm:w-auto sm:flex-1 [&::-webkit-scrollbar]:hidden">
             <nav className="flex min-w-max items-center justify-start gap-1 pb-1 sm:min-w-0 sm:justify-center sm:pb-0">
               {navItems.map(({ href, label, icon: Icon }) => {
-                const isActive = pathname === href;
+                const isActive =
+                  href === "/" ? pathname === href : pathname.startsWith(href);
                 return (
                   <Link
                     key={href}
