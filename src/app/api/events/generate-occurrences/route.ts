@@ -23,6 +23,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateEventPaths } from "@/lib/revalidate";
 import { DEFAULT_LOCATION } from "@/lib/domain";
 import { parseCalendarDate } from "@/lib/date-utils";
 import { generateOccurrencesSchema } from "@/lib/validations";
@@ -72,6 +73,8 @@ export async function POST(request: NextRequest) {
       maxOccurrences,
       replace,
     });
+
+    revalidateEventPaths(data.eventId);
 
     return NextResponse.json(response);
   } catch (error) {

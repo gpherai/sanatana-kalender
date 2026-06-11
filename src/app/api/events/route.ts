@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateEventPaths } from "@/lib/revalidate";
 import { createEventSchema, eventQuerySchema } from "@/lib/validations";
 import {
   errorResponse,
@@ -32,6 +33,8 @@ function parseQueryParams(searchParams: URLSearchParams) {
     tithis: searchParams.get("tithis")?.split(",").filter(Boolean),
     sortBy: searchParams.get("sortBy") ?? undefined,
     order: searchParams.get("order") ?? undefined,
+    limit: searchParams.has("limit") ? searchParams.get("limit") : undefined,
+    skip: searchParams.has("skip") ? searchParams.get("skip") : undefined,
   };
 
   return eventQuerySchema.safeParse(raw);
@@ -83,6 +86,8 @@ export async function POST(request: NextRequest) {
       endTime: data.endTime ?? null,
       notes: data.notes ?? null,
     });
+
+    revalidateEventPaths();
 
     return NextResponse.json(event, { status: 201 });
   } catch (error) {

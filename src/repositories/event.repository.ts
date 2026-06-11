@@ -195,7 +195,8 @@ export async function findEventOccurrences(params: EventQueryParams) {
       },
     },
     orderBy,
-    take: 5000,
+    take: params.limit ?? 5000,
+    skip: params.skip ?? 0,
   });
 }
 

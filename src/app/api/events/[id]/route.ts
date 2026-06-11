@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateEventPaths } from "@/lib/revalidate";
 import { createEventSchema, updateEventSchema, cuidSchema } from "@/lib/validations";
 import {
   errorResponse,
@@ -120,6 +121,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
     const event = await updateEvent(id, data, firstOccurrence?.id);
 
+    revalidateEventPaths(id);
+
     return NextResponse.json(event);
   } catch (error) {
     logError("[API] PUT /api/events/[id] error:", error);
@@ -154,6 +157,8 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
     }
 
     await deleteEvent(id);
+
+    revalidateEventPaths(id);
 
     return new NextResponse(null, { status: 204 });
   } catch (error) {

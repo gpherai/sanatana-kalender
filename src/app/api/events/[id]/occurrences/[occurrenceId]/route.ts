@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateEventPaths } from "@/lib/revalidate";
 import { updateOccurrenceSchema, cuidSchema } from "@/lib/validations";
 import {
   errorResponse,
@@ -37,6 +38,8 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
     }
 
     await deleteEventOccurrence(id, occurrenceId);
+
+    revalidateEventPaths(id);
 
     return new NextResponse(null, { status: 204 });
   } catch (error) {
@@ -86,6 +89,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     }
 
     const updated = await updateEventOccurrence(id, occurrenceId, result.data);
+
+    revalidateEventPaths(id);
 
     return NextResponse.json(updated);
   } catch (error) {

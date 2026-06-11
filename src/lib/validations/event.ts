@@ -205,6 +205,8 @@ export const eventQuerySchema = z
     tithis: z.array(tithiEnum).max(20).optional(),
     sortBy: z.enum(["date", "name"]).optional(),
     order: z.enum(["asc", "desc"]).optional(),
+    limit: z.coerce.number().min(1).max(5000).default(5000),
+    skip: z.coerce.number().min(0).default(0),
   })
   .superRefine((data, ctx) => {
     if ((data.start && !data.end) || (!data.start && data.end)) {

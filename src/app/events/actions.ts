@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { revalidateEventPaths } from "@/lib/revalidate";
 import { Prisma } from "@/generated/prisma/client";
 import { createEventSchema, updateEventSchema, cuidSchema } from "@/lib/validations";
 import {
@@ -35,12 +36,6 @@ function prismaErrorMessage(error: unknown): string | null {
     default:
       return null;
   }
-}
-
-function revalidateEventPaths(eventId?: string) {
-  revalidatePath("/events");
-  revalidatePath("/");
-  if (eventId) revalidatePath(`/events/${eventId}`);
 }
 
 export async function createEventAction(
