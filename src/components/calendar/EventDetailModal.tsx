@@ -36,6 +36,7 @@ import { MoonPhase } from "@/components/ui/MoonPhase";
 import { resolveCategoryColor } from "@/lib/category-styles";
 import { useTheme } from "@/components/theme/ThemeProvider";
 import { useOverlayHistory } from "@/hooks/useOverlayHistory";
+import { useScrollLock } from "@/hooks/useScrollLock";
 // Note: Inline color-mix styles used here for edge cases (gradients, mixing with white)
 
 interface EventDetailModalProps {
@@ -75,6 +76,7 @@ export function EventDetailModal({
     onClose,
     stateKey: "event-detail-modal",
   });
+  useScrollLock(isOpen);
   const { data: eventRelationsData, loading: relationsLoading } =
     useFetch<EventRelations>(isOpen ? `/api/events/${event.eventId}` : null);
   const { data: dayInfo, loading: dayInfoLoading } = useFetch<DailyInfoResponse>(

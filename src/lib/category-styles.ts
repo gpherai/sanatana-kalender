@@ -121,6 +121,20 @@ export function getDynamicCategoryClass(opacity: OpacityLevel): string {
 }
 
 /**
+ * Returns a readable foreground color for a given oklch background.
+ * Uses lightness threshold: L > 0.62 → dark text, otherwise white.
+ * Handles inline styles where CSS-class overrides aren't available
+ * (e.g. React Big Calendar eventStyleGetter).
+ */
+export function getContrastTextColor(backgroundColor: string): string {
+  const match = /oklch\(\s*([\d.]+)/.exec(backgroundColor);
+  if (match?.[1]) {
+    return parseFloat(match[1]) > 0.62 ? "oklch(0.15 0 0)" : "white";
+  }
+  return "white";
+}
+
+/**
  * Resolve the correct category color for the current color mode.
  * Use this for inline styles where CSS-class dark-mode overrides aren't possible
  * (e.g. React Big Calendar eventStyleGetter, dynamic gradients).

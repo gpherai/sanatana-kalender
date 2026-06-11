@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useEffect } from "react";
+import { FocusTrap } from "focus-trap-react";
 import {
   Sun,
   Sunrise,
@@ -21,6 +22,7 @@ import type { SpecialDay } from "@/lib/panchanga-helpers";
 import type { DailyInfoResponse } from "@/types";
 import type { CalendarEventResponse } from "@/types/calendar";
 import { useOverlayHistory } from "@/hooks/useOverlayHistory";
+import { useScrollLock } from "@/hooks/useScrollLock";
 
 interface DayDetailsPanelProps {
   selectedDate: Date;
@@ -135,11 +137,25 @@ export function DayDetailsPanel({
     : undefined;
   const selectedHinduMonth = selectedDayInfo?.maas?.name;
   const selectedDateStr = formatDateLocal(selectedDate);
+  const panelRef = useRef<HTMLDivElement>(null);
   const { requestClose } = useOverlayHistory({
     isOpen,
     onClose: onClose ?? (() => {}),
     stateKey: "almanac-day-details",
   });
+
+  // ESC to close (mobile sheet only)
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") requestClose();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, requestClose]);
+
+  // Body scroll-lock while mobile sheet is open
+  useScrollLock(isOpen);
 
   // Swipe down to dismiss
   const touchStartY = useRef(0);
@@ -165,400 +181,424 @@ export function DayDetailsPanel({
         onClick={() => requestClose()}
       />
 
-      {/* Panel */}
-      <div
-        className={cn(
-          "fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-y-auto overscroll-contain rounded-t-2xl transition-transform duration-300 ease-out",
-          "bg-[var(--theme-surface)]",
-          "lg:static lg:z-auto lg:max-h-none lg:overflow-visible lg:rounded-none lg:bg-transparent lg:transition-none",
-          "lg:sticky lg:top-20 lg:w-72 lg:flex-shrink-0 lg:self-start",
-          isOpen ? "translate-y-0" : "translate-y-full lg:translate-y-0"
-        )}
+      {/* Panel — bottom sheet on mobile, static sidebar on lg+ */}
+      <FocusTrap
+        active={isOpen}
+        focusTrapOptions={{
+          escapeDeactivates: false,
+          allowOutsideClick: true,
+          fallbackFocus: () => panelRef.current ?? document.body,
+        }}
       >
-        {/* Drag handle — only this zone triggers swipe-to-dismiss */}
         <div
-          data-testid="swipe-handle"
-          className="flex touch-none justify-center px-4 pt-3 pb-4 lg:hidden"
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
+          ref={panelRef}
+          role="dialog"
+          aria-modal={isOpen ? "true" : undefined}
+          aria-labelledby="day-details-title"
+          tabIndex={-1}
+          className={cn(
+            "fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-y-auto overscroll-contain rounded-t-2xl transition-transform duration-300 ease-out outline-none",
+            "bg-[var(--theme-surface)]",
+            "lg:static lg:z-auto lg:max-h-none lg:overflow-visible lg:rounded-none lg:bg-transparent lg:transition-none",
+            "lg:sticky lg:top-20 lg:w-72 lg:flex-shrink-0 lg:self-start",
+            isOpen ? "translate-y-0" : "translate-y-full lg:translate-y-0"
+          )}
         >
-          <div className="h-1.5 w-12 rounded-full bg-[var(--theme-fg-muted)]/30" />
-        </div>
-
-        <section aria-label="Dag details" className="space-y-4 px-4 pb-8 lg:px-0 lg:pb-0">
-          {/* Selected Day Header */}
+          {/* Drag handle — only this zone triggers swipe-to-dismiss */}
           <div
-            data-testid="day-header"
-            className="rounded-2xl p-4 shadow-lg lg:cursor-default"
-            style={{
-              background: `var(--theme-almanac-day-header-bg)`,
-              color: "var(--theme-almanac-day-header-fg)",
-            }}
+            data-testid="swipe-handle"
+            className="flex touch-none justify-center px-4 pt-3 pb-4 lg:hidden"
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
-            <div className="flex items-center gap-2 text-sm text-[var(--theme-almanac-day-header-fg-muted)]">
-              {selectedSanskritDay && (
-                <>
-                  <PlanetIcon
-                    planet={selectedSanskritDay.planet}
-                    className={`h-4 w-4 shrink-0 ${selectedSanskritDay.color}`}
-                  />
-                  <span>{selectedSanskritDay.name}</span>
-                </>
-              )}
-              {isToday(selectedDate) && (
-                <span className="rounded-full bg-[var(--theme-almanac-day-header-badge-bg)] px-2 py-0.5 text-xs">
-                  Vandaag
-                </span>
-              )}
-            </div>
-            <h2 className="mt-1 text-xl font-bold">{formatLongDate(selectedDate)}</h2>
-            <div className="mt-1 flex flex-wrap gap-2 text-sm text-[var(--theme-almanac-day-header-fg-muted)]">
-              {selectedHinduMonth && <span>{selectedHinduMonth} Maas</span>}
-              {selectedDayInfo?.tithi && (
-                <>
-                  <span className="text-[var(--theme-almanac-day-header-fg-subtle)]">
-                    •
-                  </span>
-                  <span>
-                    {selectedDayInfo.tithi.paksha} {selectedDayInfo.tithi.name}
-                    {selectedDayInfo.tithi.endTime && (
-                      <span className="ml-1 text-xs text-[var(--theme-almanac-day-header-fg-subtle)]">
-                        (eindigt {selectedDayInfo.tithi.endTime})
-                      </span>
-                    )}
-                  </span>
-                </>
-              )}
-              {selectedDayInfo?.nakshatra && (
-                <>
-                  <span className="text-[var(--theme-almanac-day-header-fg-subtle)]">
-                    •
-                  </span>
-                  <span>
-                    {selectedDayInfo.nakshatra.name}
-                    {selectedDayInfo.nakshatra.endTime && (
-                      <span className="ml-1 text-xs text-[var(--theme-almanac-day-header-fg-subtle)]">
-                        (eindigt {selectedDayInfo.nakshatra.endTime})
-                      </span>
-                    )}
-                  </span>
-                </>
-              )}
-            </div>
+            <div className="h-1.5 w-12 rounded-full bg-[var(--theme-fg-muted)]/30" />
           </div>
 
-          {/* Sun & Moon Times */}
-          {selectedDayInfo && (
-            <div className="grid grid-cols-2 gap-3">
-              {/* Sun */}
-              <div
-                className="rounded-xl p-4 shadow"
-                style={{
-                  background: `linear-gradient(135deg, var(--theme-almanac-sun-card-from), var(--theme-almanac-sun-card-to))`,
-                }}
-              >
-                <div className="mb-3 flex items-center gap-2">
-                  <Sun className="h-4 w-4 text-[var(--theme-almanac-sun-icon)]" />
-                  <span className="text-theme-fg text-xs font-semibold">Zon</span>
-                </div>
-                <div className="space-y-2.5">
-                  <div className="flex items-center gap-2" title="Opkomst">
-                    <Sunrise className="h-3.5 w-3.5 shrink-0 text-[var(--theme-almanac-sun-rise-icon)]" />
-                    <span className="text-theme-fg text-sm font-semibold tabular-nums">
-                      {selectedDayInfo.sunrise || "—"}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2" title="Ondergang">
-                    <Sunset className="h-3.5 w-3.5 shrink-0 text-[var(--theme-almanac-sun-set-icon)]" />
-                    <span className="text-theme-fg text-sm font-semibold tabular-nums">
-                      {selectedDayInfo.sunset || "—"}
-                    </span>
-                  </div>
-                </div>
+          <section
+            aria-label="Dag details"
+            className="space-y-4 px-4 pb-8 lg:px-0 lg:pb-0"
+          >
+            {/* Selected Day Header */}
+            <div
+              data-testid="day-header"
+              className="rounded-2xl p-4 shadow-lg lg:cursor-default"
+              style={{
+                background: `var(--theme-almanac-day-header-bg)`,
+                color: "var(--theme-almanac-day-header-fg)",
+              }}
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+            >
+              <div className="flex items-center gap-2 text-sm text-[var(--theme-almanac-day-header-fg-muted)]">
+                {selectedSanskritDay && (
+                  <>
+                    <PlanetIcon
+                      planet={selectedSanskritDay.planet}
+                      className={`h-4 w-4 shrink-0 ${selectedSanskritDay.color}`}
+                    />
+                    <span>{selectedSanskritDay.name}</span>
+                  </>
+                )}
+                {isToday(selectedDate) && (
+                  <span className="rounded-full bg-[var(--theme-almanac-day-header-badge-bg)] px-2 py-0.5 text-xs">
+                    Vandaag
+                  </span>
+                )}
               </div>
-
-              {/* Moon */}
-              <div
-                className="rounded-xl p-4 shadow"
-                style={{
-                  background: `linear-gradient(135deg, var(--theme-almanac-moon-card-from), var(--theme-almanac-moon-card-to))`,
-                }}
-              >
-                <div className="mb-3 flex items-center gap-2">
-                  <Moon className="h-4 w-4 text-[var(--theme-almanac-moon-icon)]" />
-                  <span className="text-theme-fg text-xs font-semibold">Maan</span>
-                </div>
-                <div className="space-y-2.5">
-                  <div className="flex items-center gap-2" title="Opkomst">
-                    <MoonStar className="h-3.5 w-3.5 shrink-0 text-[var(--theme-almanac-moon-rise-icon)]" />
-                    <span className="text-theme-fg text-sm font-semibold tabular-nums">
-                      {selectedDayInfo.moonrise || "—"}
+              <h2 id="day-details-title" className="mt-1 text-xl font-bold">
+                {formatLongDate(selectedDate)}
+              </h2>
+              <div className="mt-1 flex flex-wrap gap-2 text-sm text-[var(--theme-almanac-day-header-fg-muted)]">
+                {selectedHinduMonth && <span>{selectedHinduMonth} Maas</span>}
+                {selectedDayInfo?.tithi && (
+                  <>
+                    <span className="text-[var(--theme-almanac-day-header-fg-subtle)]">
+                      •
                     </span>
-                  </div>
-                  <div className="flex items-center gap-2" title="Ondergang">
-                    <Moon className="h-3.5 w-3.5 shrink-0 text-[var(--theme-almanac-moon-set-icon)]" />
-                    <span className="text-theme-fg text-sm font-semibold tabular-nums">
-                      {selectedDayInfo.moonset || "—"}
+                    <span>
+                      {selectedDayInfo.tithi.paksha} {selectedDayInfo.tithi.name}
+                      {selectedDayInfo.tithi.endTime && (
+                        <span className="ml-1 text-xs text-[var(--theme-almanac-day-header-fg-subtle)]">
+                          (eindigt {selectedDayInfo.tithi.endTime})
+                        </span>
+                      )}
                     </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Moon Phase Visual */}
-          {selectedDayInfo && (
-            <div className="bg-theme-surface-raised flex items-center gap-4 rounded-xl p-4 shadow">
-              <MoonPhase
-                percent={selectedDayInfo.moonPhasePercent}
-                isWaxing={selectedDayInfo.isWaxing}
-                size={56}
-                glow={true}
-              />
-              <div>
-                <div className="text-theme-fg font-semibold">
-                  {selectedDayInfo.moonPhaseName}
-                </div>
-                <div className="text-theme-fg-muted text-sm">
-                  {selectedDayInfo.moonPhasePercent}% •{" "}
-                  {selectedDayInfo.isWaxing ? "Wassend ↑" : "Afnemend ↓"}
-                </div>
+                  </>
+                )}
+                {selectedDayInfo?.nakshatra && (
+                  <>
+                    <span className="text-[var(--theme-almanac-day-header-fg-subtle)]">
+                      •
+                    </span>
+                    <span>
+                      {selectedDayInfo.nakshatra.name}
+                      {selectedDayInfo.nakshatra.endTime && (
+                        <span className="ml-1 text-xs text-[var(--theme-almanac-day-header-fg-subtle)]">
+                          (eindigt {selectedDayInfo.nakshatra.endTime})
+                        </span>
+                      )}
+                    </span>
+                  </>
+                )}
               </div>
             </div>
-          )}
 
-          {/* Special Lunar Days */}
-          {showSpecialDays && selectedDaySpecial.length > 0 && (
-            <div className="rounded-xl bg-[var(--theme-almanac-special-card-bg)] p-4 shadow">
-              <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-[var(--theme-almanac-special-heading)]">
-                <Sparkles className="h-4 w-4" />
-                Speciale dag
-              </h3>
-              <div className="space-y-2">
-                {selectedDaySpecial.map((special) => (
-                  <div key={special.type} className="flex items-start gap-2">
-                    <span className="text-lg" aria-hidden="true">
-                      {special.emoji}
-                    </span>
-                    <div>
-                      <div className="text-theme-fg font-medium">{special.name}</div>
-                      <div className="text-theme-fg-muted text-xs">
-                        {special.description}
-                      </div>
+            {/* Sun & Moon Times */}
+            {selectedDayInfo && (
+              <div className="grid grid-cols-2 gap-3">
+                {/* Sun */}
+                <div
+                  className="rounded-xl p-4 shadow"
+                  style={{
+                    background: `linear-gradient(135deg, var(--theme-almanac-sun-card-from), var(--theme-almanac-sun-card-to))`,
+                  }}
+                >
+                  <div className="mb-3 flex items-center gap-2">
+                    <Sun className="h-4 w-4 text-[var(--theme-almanac-sun-icon)]" />
+                    <span className="text-theme-fg text-xs font-semibold">Zon</span>
+                  </div>
+                  <div className="space-y-2.5">
+                    <div className="flex items-center gap-2" title="Opkomst">
+                      <Sunrise className="h-3.5 w-3.5 shrink-0 text-[var(--theme-almanac-sun-rise-icon)]" />
+                      <span className="text-theme-fg text-sm font-semibold tabular-nums">
+                        {selectedDayInfo.sunrise || "—"}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2" title="Ondergang">
+                      <Sunset className="h-3.5 w-3.5 shrink-0 text-[var(--theme-almanac-sun-set-icon)]" />
+                      <span className="text-theme-fg text-sm font-semibold tabular-nums">
+                        {selectedDayInfo.sunset || "—"}
+                      </span>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
+                </div>
 
-          {/* Panchanga Details */}
-          {selectedDayInfo &&
-            (selectedDayInfo.yoga ||
-              selectedDayInfo.karana ||
-              selectedDayInfo.rahuKalam ||
-              selectedDayInfo.yamagandam ||
-              selectedDayInfo.gulikaKalam ||
-              selectedDayInfo.abhijitMuhurta ||
-              selectedDayInfo.vijayMuhurta ||
-              selectedDayInfo.brahmaMuhurta) && (
-              <div className="bg-theme-surface-raised rounded-xl p-4 shadow">
-                <h3 className="text-theme-fg mb-3 text-sm font-semibold">
-                  Panchanga Details
-                </h3>
-                <div className="space-y-3">
-                  {selectedDayInfo.yoga && (
-                    <div className="panchanga-yoga-card bg-theme-surface-hover rounded-lg p-3">
-                      <h4 className="panchanga-yoga-label text-theme-fg-muted mb-1 text-xs font-medium">
-                        Yoga
-                      </h4>
-                      <p className="text-theme-fg text-sm font-medium">
-                        {selectedDayInfo.yoga.name}
-                      </p>
-                      <div className="text-theme-fg-muted mt-1 space-y-0.5 text-xs">
-                        {yogaStartTime && <p>Begint om {yogaStartTime}</p>}
-                        {selectedDayInfo.yoga.endTime && (
-                          <p>Eindigt om {selectedDayInfo.yoga.endTime}</p>
-                        )}
-                      </div>
+                {/* Moon */}
+                <div
+                  className="rounded-xl p-4 shadow"
+                  style={{
+                    background: `linear-gradient(135deg, var(--theme-almanac-moon-card-from), var(--theme-almanac-moon-card-to))`,
+                  }}
+                >
+                  <div className="mb-3 flex items-center gap-2">
+                    <Moon className="h-4 w-4 text-[var(--theme-almanac-moon-icon)]" />
+                    <span className="text-theme-fg text-xs font-semibold">Maan</span>
+                  </div>
+                  <div className="space-y-2.5">
+                    <div className="flex items-center gap-2" title="Opkomst">
+                      <MoonStar className="h-3.5 w-3.5 shrink-0 text-[var(--theme-almanac-moon-rise-icon)]" />
+                      <span className="text-theme-fg text-sm font-semibold tabular-nums">
+                        {selectedDayInfo.moonrise || "—"}
+                      </span>
                     </div>
-                  )}
-
-                  {selectedDayInfo.karana && (
-                    <div className="panchanga-karana-card bg-theme-surface-hover rounded-lg p-3">
-                      <h4 className="panchanga-karana-label text-theme-fg-muted mb-1 text-xs font-medium">
-                        Karana
-                      </h4>
-                      <p className="text-theme-fg text-sm font-medium">
-                        {selectedDayInfo.karana.name} ({selectedDayInfo.karana.type})
-                      </p>
-                      <div className="text-theme-fg-muted mt-1 space-y-0.5 text-xs">
-                        {karanaStartTime && <p>Begint om {karanaStartTime}</p>}
-                        {selectedDayInfo.karana.endTime && (
-                          <p>Eindigt om {selectedDayInfo.karana.endTime}</p>
-                        )}
-                      </div>
+                    <div className="flex items-center gap-2" title="Ondergang">
+                      <Moon className="h-3.5 w-3.5 shrink-0 text-[var(--theme-almanac-moon-set-icon)]" />
+                      <span className="text-theme-fg text-sm font-semibold tabular-nums">
+                        {selectedDayInfo.moonset || "—"}
+                      </span>
                     </div>
-                  )}
-
-                  {selectedDayInfo.rahuKalam && (
-                    <MuhurtaCard
-                      label="Rahu Kalam (Ongunstig)"
-                      start={selectedDayInfo.rahuKalam.start}
-                      end={selectedDayInfo.rahuKalam.end}
-                      variant="warning"
-                    />
-                  )}
-
-                  {selectedDayInfo.yamagandam && (
-                    <MuhurtaCard
-                      label="Yamagandam (Ongunstig)"
-                      start={selectedDayInfo.yamagandam.start}
-                      end={selectedDayInfo.yamagandam.end}
-                      variant="warning"
-                    />
-                  )}
-
-                  {selectedDayInfo.gulikaKalam && (
-                    <MuhurtaCard
-                      label="Gulika Kalam (Ongunstig)"
-                      start={selectedDayInfo.gulikaKalam.start}
-                      end={selectedDayInfo.gulikaKalam.end}
-                      variant="warning"
-                    />
-                  )}
-
-                  {selectedDayInfo.abhijitMuhurta && (
-                    <MuhurtaCard
-                      label="Abhijit Muhurta (Gunstig)"
-                      start={selectedDayInfo.abhijitMuhurta.start}
-                      end={selectedDayInfo.abhijitMuhurta.end}
-                      variant="success"
-                    />
-                  )}
-
-                  {selectedDayInfo.vijayMuhurta && (
-                    <MuhurtaCard
-                      label="Vijay Muhurta (Gunstig)"
-                      start={selectedDayInfo.vijayMuhurta.start}
-                      end={selectedDayInfo.vijayMuhurta.end}
-                      variant="success"
-                    />
-                  )}
-
-                  {selectedDayInfo.brahmaMuhurta && (
-                    <MuhurtaCard
-                      label="Brahma Muhurta (Gunstig)"
-                      start={selectedDayInfo.brahmaMuhurta.start}
-                      end={selectedDayInfo.brahmaMuhurta.end}
-                      variant="success"
-                    />
-                  )}
+                  </div>
                 </div>
               </div>
             )}
 
-          {/* Events */}
-          {showEvents && (
-            <div className="bg-theme-surface-raised rounded-xl p-4 shadow">
-              <h3 className="text-theme-fg mb-3 flex items-center gap-2 text-sm font-semibold">
-                <Star className="h-4 w-4 text-[var(--theme-almanac-event-icon)]" />
-                Events
-              </h3>
-              {selectedDayEvents.length > 0 ? (
+            {/* Moon Phase Visual */}
+            {selectedDayInfo && (
+              <div className="bg-theme-surface-raised flex items-center gap-4 rounded-xl p-4 shadow">
+                <MoonPhase
+                  percent={selectedDayInfo.moonPhasePercent}
+                  isWaxing={selectedDayInfo.isWaxing}
+                  size={56}
+                  glow={true}
+                />
+                <div>
+                  <div className="text-theme-fg font-semibold">
+                    {selectedDayInfo.moonPhaseName}
+                  </div>
+                  <div className="text-theme-fg-muted text-sm">
+                    {selectedDayInfo.moonPhasePercent}% •{" "}
+                    {selectedDayInfo.isWaxing ? "Wassend ↑" : "Afnemend ↓"}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Special Lunar Days */}
+            {showSpecialDays && selectedDaySpecial.length > 0 && (
+              <div className="rounded-xl bg-[var(--theme-almanac-special-card-bg)] p-4 shadow">
+                <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-[var(--theme-almanac-special-heading)]">
+                  <Sparkles className="h-4 w-4" />
+                  Speciale dag
+                </h3>
                 <div className="space-y-2">
-                  {selectedDayEvents.map((event) => {
-                    const eventStartKey = event.start.slice(0, 10);
-                    const isStartDay = eventStartKey === selectedDateStr;
-                    const isSpanning =
-                      event.resource.originalEndDate !== null &&
-                      event.resource.originalEndDate !== eventStartKey;
+                  {selectedDaySpecial.map((special) => (
+                    <div key={special.type} className="flex items-start gap-2">
+                      <span className="text-lg" aria-hidden="true">
+                        {special.emoji}
+                      </span>
+                      <div>
+                        <div className="text-theme-fg font-medium">{special.name}</div>
+                        <div className="text-theme-fg-muted text-xs">
+                          {special.description}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
-                    const cat = event.resource.categories[0];
-                    const categoryColor = cat
-                      ? resolveCategoryColor(cat.color, cat.colorDark, isDark)
-                      : FALLBACK_CATEGORY_COLOR;
-
-                    return (
-                      <button
-                        key={event.id}
-                        type="button"
-                        onClick={() => onEventClick(event)}
-                        className="group border-theme-border bg-theme-surface focus-visible:ring-theme-primary relative w-full overflow-hidden rounded-xl border text-left shadow-sm transition-all duration-200 hover:shadow-md focus-visible:ring-2 focus-visible:outline-none"
-                      >
-                        {/* Category color strip */}
-                        <div
-                          className="absolute top-0 left-0 h-full w-1.5"
-                          style={{ backgroundColor: categoryColor }}
-                        />
-
-                        <div className="py-3 pr-3 pl-5">
-                          <div className="flex items-center gap-2">
-                            <span className="flex-shrink-0 text-base" aria-hidden="true">
-                              {event.resource.categories[0]?.icon ?? "📅"}
-                            </span>
-                            <span className="text-theme-fg group-hover:text-theme-primary flex-1 truncate text-sm font-medium transition-colors">
-                              {event.title}
-                            </span>
-                            <ChevronRight className="text-theme-primary h-3.5 w-3.5 flex-shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
-                          </div>
-
-                          {/* Time badges + spanning indicator */}
-                          {(event.resource.startTime ||
-                            event.resource.endTime ||
-                            isSpanning ||
-                            event.resource.notes) && (
-                            <div className="mt-1.5 flex flex-wrap items-center gap-1 text-xs">
-                              {event.resource.startTime && isStartDay && (
-                                <span className="rounded bg-[var(--theme-almanac-event-time-start-bg)] px-2 py-0.5 text-[var(--theme-almanac-event-time-start-fg)]">
-                                  Begint om {event.resource.startTime}
-                                </span>
-                              )}
-                              {event.resource.endTime && (
-                                <span className="rounded bg-[var(--theme-almanac-event-time-end-bg)] px-2 py-0.5 text-[var(--theme-almanac-event-time-end-fg)]">
-                                  Eindigt om {event.resource.endTime}
-                                </span>
-                              )}
-                              {isSpanning && !event.resource.endTime && (
-                                <span className="rounded bg-[var(--theme-almanac-event-time-end-bg)] px-2 py-0.5 text-[var(--theme-almanac-event-time-end-fg)]">
-                                  Loopt door
-                                </span>
-                              )}
-                              {event.resource.notes && (
-                                <span className="text-theme-fg-muted">
-                                  {event.resource.notes}
-                                </span>
-                              )}
-                            </div>
-                          )}
-
-                          {event.resource.description && (
-                            <p className="text-theme-fg-muted mt-1 line-clamp-1 text-xs">
-                              {event.resource.description}
-                            </p>
+            {/* Panchanga Details */}
+            {selectedDayInfo &&
+              (selectedDayInfo.yoga ||
+                selectedDayInfo.karana ||
+                selectedDayInfo.rahuKalam ||
+                selectedDayInfo.yamagandam ||
+                selectedDayInfo.gulikaKalam ||
+                selectedDayInfo.abhijitMuhurta ||
+                selectedDayInfo.vijayMuhurta ||
+                selectedDayInfo.brahmaMuhurta) && (
+                <div className="bg-theme-surface-raised rounded-xl p-4 shadow">
+                  <h3 className="text-theme-fg mb-3 text-sm font-semibold">
+                    Panchanga Details
+                  </h3>
+                  <div className="space-y-3">
+                    {selectedDayInfo.yoga && (
+                      <div className="panchanga-yoga-card bg-theme-surface-hover rounded-lg p-3">
+                        <h4 className="panchanga-yoga-label text-theme-fg-muted mb-1 text-xs font-medium">
+                          Yoga
+                        </h4>
+                        <p className="text-theme-fg text-sm font-medium">
+                          {selectedDayInfo.yoga.name}
+                        </p>
+                        <div className="text-theme-fg-muted mt-1 space-y-0.5 text-xs">
+                          {yogaStartTime && <p>Begint om {yogaStartTime}</p>}
+                          {selectedDayInfo.yoga.endTime && (
+                            <p>Eindigt om {selectedDayInfo.yoga.endTime}</p>
                           )}
                         </div>
+                      </div>
+                    )}
 
-                        {/* Bottom gradient on hover */}
-                        <div
-                          className="absolute right-0 bottom-0 left-0 h-0.5 opacity-0 transition-opacity group-hover:opacity-100"
-                          style={{
-                            background: `linear-gradient(90deg, ${categoryColor}, transparent)`,
-                          }}
-                        />
-                      </button>
-                    );
-                  })}
+                    {selectedDayInfo.karana && (
+                      <div className="panchanga-karana-card bg-theme-surface-hover rounded-lg p-3">
+                        <h4 className="panchanga-karana-label text-theme-fg-muted mb-1 text-xs font-medium">
+                          Karana
+                        </h4>
+                        <p className="text-theme-fg text-sm font-medium">
+                          {selectedDayInfo.karana.name} ({selectedDayInfo.karana.type})
+                        </p>
+                        <div className="text-theme-fg-muted mt-1 space-y-0.5 text-xs">
+                          {karanaStartTime && <p>Begint om {karanaStartTime}</p>}
+                          {selectedDayInfo.karana.endTime && (
+                            <p>Eindigt om {selectedDayInfo.karana.endTime}</p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedDayInfo.rahuKalam && (
+                      <MuhurtaCard
+                        label="Rahu Kalam (Ongunstig)"
+                        start={selectedDayInfo.rahuKalam.start}
+                        end={selectedDayInfo.rahuKalam.end}
+                        variant="warning"
+                      />
+                    )}
+
+                    {selectedDayInfo.yamagandam && (
+                      <MuhurtaCard
+                        label="Yamagandam (Ongunstig)"
+                        start={selectedDayInfo.yamagandam.start}
+                        end={selectedDayInfo.yamagandam.end}
+                        variant="warning"
+                      />
+                    )}
+
+                    {selectedDayInfo.gulikaKalam && (
+                      <MuhurtaCard
+                        label="Gulika Kalam (Ongunstig)"
+                        start={selectedDayInfo.gulikaKalam.start}
+                        end={selectedDayInfo.gulikaKalam.end}
+                        variant="warning"
+                      />
+                    )}
+
+                    {selectedDayInfo.abhijitMuhurta && (
+                      <MuhurtaCard
+                        label="Abhijit Muhurta (Gunstig)"
+                        start={selectedDayInfo.abhijitMuhurta.start}
+                        end={selectedDayInfo.abhijitMuhurta.end}
+                        variant="success"
+                      />
+                    )}
+
+                    {selectedDayInfo.vijayMuhurta && (
+                      <MuhurtaCard
+                        label="Vijay Muhurta (Gunstig)"
+                        start={selectedDayInfo.vijayMuhurta.start}
+                        end={selectedDayInfo.vijayMuhurta.end}
+                        variant="success"
+                      />
+                    )}
+
+                    {selectedDayInfo.brahmaMuhurta && (
+                      <MuhurtaCard
+                        label="Brahma Muhurta (Gunstig)"
+                        start={selectedDayInfo.brahmaMuhurta.start}
+                        end={selectedDayInfo.brahmaMuhurta.end}
+                        variant="success"
+                      />
+                    )}
+                  </div>
                 </div>
-              ) : (
-                <p className="text-theme-fg-muted text-center text-sm">Geen events</p>
               )}
-            </div>
-          )}
-        </section>
-      </div>
+
+            {/* Events */}
+            {showEvents && (
+              <div className="bg-theme-surface-raised rounded-xl p-4 shadow">
+                <h3 className="text-theme-fg mb-3 flex items-center gap-2 text-sm font-semibold">
+                  <Star className="h-4 w-4 text-[var(--theme-almanac-event-icon)]" />
+                  Events
+                </h3>
+                {selectedDayEvents.length > 0 ? (
+                  <div className="space-y-2">
+                    {selectedDayEvents.map((event) => {
+                      const eventStartKey = event.start.slice(0, 10);
+                      const isStartDay = eventStartKey === selectedDateStr;
+                      const isSpanning =
+                        event.resource.originalEndDate !== null &&
+                        event.resource.originalEndDate !== eventStartKey;
+
+                      const cat = event.resource.categories[0];
+                      const categoryColor = cat
+                        ? resolveCategoryColor(cat.color, cat.colorDark, isDark)
+                        : FALLBACK_CATEGORY_COLOR;
+
+                      return (
+                        <button
+                          key={event.id}
+                          type="button"
+                          onClick={() => onEventClick(event)}
+                          className="group border-theme-border bg-theme-surface focus-visible:ring-theme-primary relative w-full overflow-hidden rounded-xl border text-left shadow-sm transition-all duration-200 hover:shadow-md focus-visible:ring-2 focus-visible:outline-none"
+                        >
+                          {/* Category color strip */}
+                          <div
+                            className="absolute top-0 left-0 h-full w-1.5"
+                            suppressHydrationWarning
+                            style={{ backgroundColor: categoryColor }}
+                          />
+
+                          <div className="py-3 pr-3 pl-5">
+                            <div className="flex items-center gap-2">
+                              <span
+                                className="flex-shrink-0 text-base"
+                                aria-hidden="true"
+                              >
+                                {event.resource.categories[0]?.icon ?? "📅"}
+                              </span>
+                              <span className="text-theme-fg group-hover:text-theme-primary flex-1 truncate text-sm font-medium transition-colors">
+                                {event.title}
+                              </span>
+                              <ChevronRight className="text-theme-primary h-3.5 w-3.5 flex-shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
+                            </div>
+
+                            {/* Time badges + spanning indicator */}
+                            {(event.resource.startTime ||
+                              event.resource.endTime ||
+                              isSpanning ||
+                              event.resource.notes) && (
+                              <div className="mt-1.5 flex flex-wrap items-center gap-1 text-xs">
+                                {event.resource.startTime && isStartDay && (
+                                  <span className="rounded bg-[var(--theme-almanac-event-time-start-bg)] px-2 py-0.5 text-[var(--theme-almanac-event-time-start-fg)]">
+                                    Begint om {event.resource.startTime}
+                                  </span>
+                                )}
+                                {event.resource.endTime && (
+                                  <span className="rounded bg-[var(--theme-almanac-event-time-end-bg)] px-2 py-0.5 text-[var(--theme-almanac-event-time-end-fg)]">
+                                    Eindigt om {event.resource.endTime}
+                                  </span>
+                                )}
+                                {isSpanning && !event.resource.endTime && (
+                                  <span className="rounded bg-[var(--theme-almanac-event-time-end-bg)] px-2 py-0.5 text-[var(--theme-almanac-event-time-end-fg)]">
+                                    Loopt door
+                                  </span>
+                                )}
+                                {event.resource.notes && (
+                                  <span className="text-theme-fg-muted">
+                                    {event.resource.notes}
+                                  </span>
+                                )}
+                              </div>
+                            )}
+
+                            {event.resource.description && (
+                              <p className="text-theme-fg-muted mt-1 line-clamp-1 text-xs">
+                                {event.resource.description}
+                              </p>
+                            )}
+                          </div>
+
+                          {/* Bottom gradient on hover */}
+                          <div
+                            className="absolute right-0 bottom-0 left-0 h-0.5 opacity-0 transition-opacity group-hover:opacity-100"
+                            suppressHydrationWarning
+                            style={{
+                              background: `linear-gradient(90deg, ${categoryColor}, transparent)`,
+                            }}
+                          />
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-theme-fg-muted text-center text-sm">Geen events</p>
+                )}
+              </div>
+            )}
+          </section>
+        </div>
+      </FocusTrap>
     </>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo, useCallback, useRef } from "react";
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
+import { FocusTrap } from "focus-trap-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -22,6 +23,7 @@ import { parseCalendarEvent } from "@/types/calendar";
 import { parseLocalDate } from "@/lib/date-utils";
 import { cn } from "@/lib/utils";
 import { useOverlayHistory } from "@/hooks/useOverlayHistory";
+import { useScrollLock } from "@/hooks/useScrollLock";
 import { groupChildrenUnderParents } from "@/lib/events";
 
 type ViewMode = "grid" | "list";
@@ -112,6 +114,21 @@ export function EventsContent({ initialEvents }: EventsContentProps) {
     },
     [requestCloseFilters]
   );
+
+  const filterSheetRef = useRef<HTMLDivElement>(null);
+
+  // ESC to close filter sheet
+  useEffect(() => {
+    if (!showFilters) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") requestCloseFilters();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [showFilters, requestCloseFilters]);
+
+  // Body scroll-lock while filter sheet is open
+  useScrollLock(showFilters);
 
   const { filters, setFilter, toggleFilter, clearFilters, activeFilterCount } =
     useFilters();
@@ -252,29 +269,43 @@ export function EventsContent({ initialEvents }: EventsContentProps) {
         )}
         onClick={() => requestCloseFilters()}
       />
-      <div
-        className={cn(
-          "fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-y-auto overscroll-contain rounded-t-2xl transition-transform duration-300 ease-out lg:hidden",
-          "bg-theme-surface",
-          showFilters ? "translate-y-0" : "translate-y-full"
-        )}
+      <FocusTrap
+        active={showFilters}
+        focusTrapOptions={{
+          escapeDeactivates: false,
+          allowOutsideClick: true,
+          fallbackFocus: () => filterSheetRef.current ?? document.body,
+        }}
       >
         <div
-          className="flex touch-none justify-center px-4 pt-3 pb-4"
-          onTouchStart={handleFilterTouchStart}
-          onTouchEnd={handleFilterTouchEnd}
+          ref={filterSheetRef}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Filters"
+          tabIndex={-1}
+          className={cn(
+            "fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-y-auto overscroll-contain rounded-t-2xl transition-transform duration-300 ease-out outline-none lg:hidden",
+            "bg-theme-surface",
+            showFilters ? "translate-y-0" : "translate-y-full"
+          )}
         >
-          <div className="h-1.5 w-12 rounded-full bg-[var(--theme-fg-muted)]/30" />
+          <div
+            className="flex touch-none justify-center px-4 pt-3 pb-4"
+            onTouchStart={handleFilterTouchStart}
+            onTouchEnd={handleFilterTouchEnd}
+          >
+            <div className="h-1.5 w-12 rounded-full bg-[var(--theme-fg-muted)]/30" />
+          </div>
+          <FilterSidebar
+            filters={filters}
+            onFilterChange={setFilter}
+            onToggleFilter={toggleFilter}
+            onClearFilters={clearFilters}
+            activeFilterCount={activeFilterCount}
+            className="relative max-h-none overflow-visible rounded-none bg-transparent shadow-none"
+          />
         </div>
-        <FilterSidebar
-          filters={filters}
-          onFilterChange={setFilter}
-          onToggleFilter={toggleFilter}
-          onClearFilters={clearFilters}
-          activeFilterCount={activeFilterCount}
-          className="relative max-h-none overflow-visible rounded-none bg-transparent shadow-none"
-        />
-      </div>
+      </FocusTrap>
 
       {/* Main Layout: Sidebar + Events */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">

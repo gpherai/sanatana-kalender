@@ -28,7 +28,11 @@ import {
 } from "@/types/calendar";
 import { getEventType } from "@/lib/domain";
 import { logError } from "@/lib/utils";
-import { FALLBACK_CATEGORY_COLOR, resolveCategoryColor } from "@/lib/category-styles";
+import {
+  FALLBACK_CATEGORY_COLOR,
+  getContrastTextColor,
+  resolveCategoryColor,
+} from "@/lib/category-styles";
 import { useTheme } from "@/components/theme/ThemeProvider";
 import { formatDateLocal } from "@/lib/date-utils";
 import type { DailyInfoResponse } from "@/types";
@@ -205,7 +209,7 @@ export function DharmaCalendar() {
         backgroundColor,
         borderRadius: "999px",
         opacity: 1,
-        color: "white",
+        color: getContrastTextColor(backgroundColor),
         border: "none",
         display: "block",
         fontSize: "0.75rem",
