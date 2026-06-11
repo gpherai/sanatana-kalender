@@ -446,40 +446,56 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
 
           if (muhurtas.length === 0) return null;
 
+          const currentHHMM = currentTime ? currentTime.toTimeString().slice(0, 5) : "";
+          const nextMuhurta = currentHHMM
+            ? muhurtas.find((m) => m.start >= currentHHMM)
+            : null;
+
           return (
             <div className="mt-6">
               <div className="mb-2 text-xs font-medium tracking-wider text-white/40 uppercase">
                 Muhurta
               </div>
               <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 sm:gap-3">
-                {muhurtas.map((m) => (
-                  <div
-                    key={m.name}
-                    className={
-                      m.auspicious
-                        ? "rounded-xl border border-white/20 bg-white/10 p-2.5 backdrop-blur-md sm:p-3"
-                        : "rounded-xl border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] p-2.5 backdrop-blur-md sm:p-3"
-                    }
-                  >
-                    <div
-                      className={`mb-1 flex items-center gap-1 text-xs ${m.auspicious ? "text-white/70" : "text-white/50"}`}
-                    >
-                      {m.auspicious ? (
-                        <Sparkles className="h-3 w-3 shrink-0" />
-                      ) : (
-                        <AlertTriangle className="h-3 w-3 shrink-0" />
-                      )}
-                      {m.name}
+                {muhurtas.map((m) => {
+                  const isActive = currentHHMM
+                    ? currentHHMM >= m.start && currentHHMM < m.end
+                    : false;
+                  const isNext =
+                    currentHHMM && !isActive ? nextMuhurta?.name === m.name : false;
+
+                  let containerClasses = m.auspicious
+                    ? "rounded-xl border border-white/20 bg-white/10 p-2.5 backdrop-blur-md sm:p-3"
+                    : "rounded-xl border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] p-2.5 backdrop-blur-md sm:p-3";
+
+                  if (isActive) {
+                    containerClasses += " ring-2 ring-theme-primary";
+                  } else if (isNext) {
+                    containerClasses += " ring-1 ring-white/40";
+                  }
+
+                  return (
+                    <div key={m.name} className={containerClasses}>
+                      <div
+                        className={`mb-1 flex items-center gap-1 text-xs ${m.auspicious ? "text-white/70" : "text-white/50"}`}
+                      >
+                        {m.auspicious ? (
+                          <Sparkles className="h-3 w-3 shrink-0" />
+                        ) : (
+                          <AlertTriangle className="h-3 w-3 shrink-0" />
+                        )}
+                        {m.name}
+                      </div>
+                      <div className="text-xs font-medium text-white sm:text-sm">
+                        <span className="block sm:hidden">{m.start}</span>
+                        <span className="block sm:hidden">– {m.end}</span>
+                        <span className="hidden sm:inline">
+                          {m.start} – {m.end}
+                        </span>
+                      </div>
                     </div>
-                    <div className="text-xs font-medium text-white sm:text-sm">
-                      <span className="block sm:hidden">{m.start}</span>
-                      <span className="block sm:hidden">– {m.end}</span>
-                      <span className="hidden sm:inline">
-                        {m.start} – {m.end}
-                      </span>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           );

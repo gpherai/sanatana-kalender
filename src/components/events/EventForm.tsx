@@ -626,7 +626,7 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
             "bg-theme-primary text-white hover:opacity-90",
             "disabled:cursor-not-allowed disabled:opacity-50",
             "shadow-theme-primary transition-colors",
-            "focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none"
+            "focus-visible:ring-theme-primary focus-visible:ring-2 focus-visible:outline-none"
           )}
         >
           {isSubmitting ? (

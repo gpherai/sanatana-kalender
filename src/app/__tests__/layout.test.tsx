@@ -24,6 +24,11 @@ vi.mock("@/components/theme/ThemeProvider", () => ({
   ThemeProvider: ({ children }: any) => (
     <div data-testid="theme-provider">{children}</div>
   ),
+  useTheme: () => ({ themeName: "shri-ganesha", resolvedColorMode: "light" }),
+}));
+
+vi.mock("@/components/ui/ThemedFooter", () => ({
+  ThemedFooter: () => <footer data-testid="themed-footer" />,
 }));
 
 describe("RootLayout", () => {

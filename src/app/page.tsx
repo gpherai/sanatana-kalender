@@ -19,7 +19,6 @@ import {
   UpcomingEventsSkeleton,
   CategoriesSkeleton,
 } from "@/components/home/HomeSkeletons";
-import { ThemedFooter } from "@/components/ui/ThemedFooter";
 
 export const dynamic = "force-dynamic";
 
@@ -65,8 +64,6 @@ export default function Home() {
       <Suspense fallback={<CategoriesSkeleton />}>
         <CategoriesSection categoriesPromise={categoriesPromise} />
       </Suspense>
-
-      <ThemedFooter />
     </PageLayout>
   );
 }

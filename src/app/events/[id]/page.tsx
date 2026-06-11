@@ -57,7 +57,7 @@ export default async function EventDetailPage({ params }: PageProps) {
   const hasLunarInfo = event.tithi || event.nakshatra || event.maas || event.sankranti;
 
   return (
-    <PageLayout width="narrow">
+    <PageLayout width="narrow" spacing>
       {/* Back Link */}
       <Link
         href="/events"

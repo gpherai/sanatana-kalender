@@ -129,3 +129,4 @@ __pycache__/
 .gitnexus
 # next-agents-md
 .next-docs/
+/designs/

@@ -11,6 +11,15 @@ const THEME_MANTRAS: Record<string, string> = {
   "cosmic-purple-revamped": "ॐ नमः शिवाय",
   "forest-green-revamped": "ॐ तत्सत्",
   "sunrise-orange-revamped": "ॐ सूर्याय नमः",
+  // Special themes — previously missing, fell back to Narayana default
+  "krishna-mayura": "ॐ नमो भगवते वासुदेवाय",
+  "shri-lakshmi": "ॐ श्रीं महालक्ष्म्यै नमः",
+  "saraswati-shubhra": "ॐ ऐं सरस्वत्यै नमः",
+  "jyotsna-purnima": "ॐ सों सोमाय नमः",
+  "ganga-pravaha": "ॐ गं गङ्गायै नमः",
+  "vasanta-ritu": "ॐ नमो नारायणाय",
+  "shri-ganesha-shanta": "ॐ गं गणपतये नमः",
+  "bhairava-sandhya": "ॐ भैरवाय नमः",
 };
 
 const DEFAULT_MANTRA = "ॐ नमो नारायणाय";

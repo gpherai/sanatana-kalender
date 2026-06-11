@@ -198,7 +198,7 @@ export function FilterSidebar({
   return (
     <aside
       className={cn(
-        "bg-theme-surface sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto rounded-xl p-4 shadow-md",
+        "bg-theme-surface sticky top-20 max-h-[calc(100vh-5rem)] overflow-y-auto rounded-xl p-4 shadow-md",
         className
       )}
     >

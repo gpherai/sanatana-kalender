@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight, Filter } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MONTHS_SHORT } from "@/lib/date-utils";
@@ -27,6 +27,20 @@ export function AlmanacFilters({
   onToggleFilter,
 }: AlmanacFiltersProps) {
   const currentDate = useMemo(() => new Date(), []);
+  const activeMonthRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (
+      activeMonthRef.current &&
+      typeof activeMonthRef.current.scrollIntoView === "function"
+    ) {
+      activeMonthRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "center",
+      });
+    }
+  }, [month, year]);
 
   return (
     <div className="bg-theme-surface-raised mb-6 rounded-2xl p-4 shadow-lg">
@@ -62,6 +76,7 @@ export function AlmanacFilters({
             return (
               <button
                 key={m}
+                ref={isSelected ? activeMonthRef : undefined}
                 onClick={() => onMonthChange(index)}
                 className={cn(
                   "focus-visible:ring-theme-primary flex min-h-[44px] flex-shrink-0 items-center rounded-lg px-3 py-1.5 text-sm font-medium transition-all focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none",

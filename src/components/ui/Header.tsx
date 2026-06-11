@@ -57,7 +57,7 @@ export function Header() {
           </Link>
 
           {/* Navigation */}
-          <div className="order-3 w-full min-w-0 [scrollbar-width:none] overflow-x-auto sm:order-none sm:w-auto sm:flex-1 [&::-webkit-scrollbar]:hidden">
+          <div className="order-3 w-full min-w-0 [scrollbar-width:none] overflow-x-auto [mask-image:linear-gradient(to_right,white_85%,transparent)] sm:order-none sm:w-auto sm:flex-1 sm:[mask-image:none] [&::-webkit-scrollbar]:hidden">
             <nav className="flex min-w-max items-center justify-start gap-1 pb-1 sm:min-w-0 sm:justify-center sm:pb-0">
               {navItems.map(({ href, label, icon: Icon }) => {
                 const isActive =

@@ -4,6 +4,7 @@ import { Header } from "@/components/ui/Header";
 import { ScrollToTop } from "@/components/ui/ScrollToTop";
 import { ToastProvider } from "@/components/ui/Toast";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
+import { ThemedFooter } from "@/components/ui/ThemedFooter";
 import {
   DEFAULT_THEME_NAME,
   DEFAULT_COLOR_MODE,
@@ -114,6 +115,7 @@ export default function RootLayout({
             <ScrollToTop />
             <Header />
             {children}
+            <ThemedFooter />
           </ToastProvider>
         </ThemeProvider>
       </body>

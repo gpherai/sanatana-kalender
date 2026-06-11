@@ -262,7 +262,9 @@ export function EventDetailModal({
               // Keep as inline: gradient with non-standard opacity levels (25%, 10%)
               background: categoryColor
                 ? `linear-gradient(135deg, color-mix(in oklch, ${categoryColor} 25%, transparent) 0%, color-mix(in oklch, ${categoryColor} 10%, transparent) 100%)`
-                : "linear-gradient(135deg, oklch(0.97 0.02 60) 0%, oklch(0.98 0.01 60) 100%)",
+                : isDark
+                  ? "linear-gradient(135deg, oklch(0.28 0.03 60) 0%, oklch(0.22 0.02 60) 100%)"
+                  : "linear-gradient(135deg, oklch(0.97 0.02 60) 0%, oklch(0.98 0.01 60) 100%)",
             }}
           >
             {/* Decorative circles */}

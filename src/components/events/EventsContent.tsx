@@ -280,7 +280,7 @@ export function EventsContent({ initialEvents }: EventsContentProps) {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
         {/* Filter Sidebar — desktop only, always visible */}
         <div className="hidden lg:col-span-1 lg:block">
-          <div className="sticky top-4">
+          <div className="sticky top-20">
             <FilterSidebar
               filters={filters}
               onFilterChange={setFilter}

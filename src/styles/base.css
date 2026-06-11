@@ -364,7 +364,9 @@
   /* Text colors */
   --theme-fg: oklch(0.968 0.003 286); /* Primary text (zinc-100) */
   --theme-fg-secondary: oklch(0.705 0.015 286); /* Secondary text (zinc-400) */
-  --theme-fg-muted: oklch(0.552 0.016 286); /* Muted text (zinc-500) */
+  --theme-fg-muted: oklch(
+    0.62 0.016 286
+  ); /* Muted text (zinc-500→~zinc-450) — AA contrast on dark bg */
   --theme-fg-subtle: oklch(0.442 0.017 285); /* Subtle text (zinc-600) */
 
   /* Borders & Dividers */
@@ -606,14 +608,12 @@ body.app-body::after {
   background: var(--theme-surface-background);
   border: var(--theme-surface-border-rule);
   box-shadow: var(--theme-surface-shadow);
-  backdrop-filter: var(--theme-surface-backdrop-filter);
 }
 
 .bg-theme-surface-raised {
   background: var(--theme-surface-raised-background);
   border: var(--theme-surface-raised-border-rule);
   box-shadow: var(--theme-surface-raised-shadow);
-  backdrop-filter: var(--theme-surface-raised-backdrop-filter);
 }
 
 .bg-theme-primary {
@@ -628,7 +628,6 @@ body.app-body::after {
   border: var(--theme-card-border-rule);
   border-radius: var(--theme-card-radius);
   box-shadow: var(--theme-card-shadow);
-  backdrop-filter: var(--theme-card-backdrop-filter);
 }
 
 .theme-card-raised {
@@ -636,7 +635,6 @@ body.app-body::after {
   border: var(--theme-card-raised-border-rule);
   border-radius: var(--theme-card-radius);
   box-shadow: var(--theme-card-raised-shadow);
-  backdrop-filter: var(--theme-card-raised-backdrop-filter);
 }
 
 .theme-interactive {
