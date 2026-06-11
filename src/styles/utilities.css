@@ -1734,12 +1734,16 @@
 /* =============================================================================
    FORM ELEMENTS
    ============================================================================= */
-input:focus,
-select:focus,
-textarea:focus {
-  outline: none;
-  border-color: var(--theme-primary);
-  box-shadow: 0 0 0 3px color-mix(in oklch, var(--theme-primary) 20%, transparent);
+@layer base {
+  /* Base-layer fallback for bare inputs without .form-control.
+     @layer components (.form-control:focus in base.css) wins over this. */
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--theme-primary);
+    box-shadow: 0 0 0 3px color-mix(in oklch, var(--theme-primary) 20%, transparent);
+  }
 }
 
 /* =============================================================================

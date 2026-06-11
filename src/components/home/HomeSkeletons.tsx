@@ -3,48 +3,46 @@ export function TodayHeroSkeleton() {
     <div
       aria-busy="true"
       aria-live="polite"
-      className="bg-theme-surface-raised animate-pulse rounded-3xl shadow-2xl"
+      className="animate-pulse rounded-3xl shadow-2xl"
+      style={{ background: "var(--theme-hero-bg)" }}
     >
       <div className="p-6 md:p-8">
         {/* Top row: date + time */}
         <div className="mb-3 flex items-start justify-between gap-4">
           <div className="min-w-0 flex-1">
-            <div className="bg-theme-border mb-2 h-4 w-48 rounded" />
-            <div className="bg-theme-border h-12 w-64 rounded-lg md:h-14" />
+            <div className="mb-2 h-4 w-48 rounded bg-white/20" />
+            <div className="h-12 w-64 rounded-lg bg-white/20 md:h-14" />
           </div>
           <div className="shrink-0 text-right">
-            <div className="bg-theme-border h-10 w-24 rounded-lg md:h-12" />
-            <div className="bg-theme-border mt-2 h-3 w-20 rounded" />
+            <div className="h-10 w-24 rounded-lg bg-white/20 md:h-12" />
+            <div className="mt-2 h-3 w-20 rounded bg-white/15" />
           </div>
         </div>
 
         {/* Panchanga grid */}
         <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="bg-theme-surface-hover rounded-xl p-3">
-              <div className="bg-theme-border mb-2 h-3 w-16 rounded" />
-              <div className="bg-theme-border h-5 w-24 rounded" />
+            <div key={i} className="rounded-xl bg-white/10 p-3">
+              <div className="mb-2 h-3 w-16 rounded bg-white/20" />
+              <div className="h-5 w-24 rounded bg-white/20" />
             </div>
           ))}
         </div>
 
         {/* Sun/moon row */}
         <div className="mt-4 flex gap-4">
-          <div className="bg-theme-border h-4 w-28 rounded" />
-          <div className="bg-theme-border h-4 w-28 rounded" />
+          <div className="h-4 w-28 rounded bg-white/20" />
+          <div className="h-4 w-28 rounded bg-white/20" />
         </div>
 
-        {/* Muhurta grid (added to match height of actual hero) */}
+        {/* Muhurta grid */}
         <div className="mt-6">
-          <div className="bg-theme-border mb-2 h-3 w-16 rounded" />
+          <div className="mb-2 h-3 w-16 rounded bg-white/15" />
           <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 sm:gap-3">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div
-                key={`m-${i}`}
-                className="bg-theme-surface-hover rounded-xl p-2.5 sm:p-3"
-              >
-                <div className="bg-theme-border mb-1 h-3 w-20 rounded" />
-                <div className="bg-theme-border h-4 w-24 rounded" />
+              <div key={`m-${i}`} className="rounded-xl bg-white/10 p-2.5 sm:p-3">
+                <div className="mb-1 h-3 w-20 rounded bg-white/20" />
+                <div className="h-4 w-24 rounded bg-white/20" />
               </div>
             ))}
           </div>
@@ -52,8 +50,8 @@ export function TodayHeroSkeleton() {
 
         {/* Events strip */}
         <div className="mt-5 flex gap-2">
-          <div className="bg-theme-surface-hover h-7 w-32 rounded-full" />
-          <div className="bg-theme-surface-hover h-7 w-24 rounded-full" />
+          <div className="h-7 w-32 rounded-full bg-white/15" />
+          <div className="h-7 w-24 rounded-full bg-white/15" />
         </div>
       </div>
     </div>
