@@ -1,26 +1,594 @@
 /* =============================================================================
-   CUSTOM NON-COLOR UTILITIES
-
-   Theme color, border, ring, text, opacity, and shadow utilities are generated
-   by Tailwind v4 from src/app/globals.css @theme inline tokens.
+   CATEGORY COLOR UTILITIES (Custom Properties)
    ============================================================================= */
 
-@utility bg-theme-gradient {
-  background: linear-gradient(135deg, var(--theme-primary), var(--theme-accent));
+@layer base {
+  :root {
+    --cat-ganesha: oklch(0.72 0.18 42);
+    --cat-shiva: oklch(0.65 0.1 215);
+    --cat-vishnu: oklch(0.5 0.22 240);
+    --cat-durga: oklch(0.65 0.22 2);
+    --cat-lakshmi: oklch(0.82 0.17 72);
+    --cat-saraswati: oklch(0.72 0.13 230);
+    --cat-hanuman: oklch(0.62 0.26 32);
+    --cat-krishna: oklch(0.45 0.18 250);
+    --cat-rama: oklch(0.52 0.16 245);
+    --cat-dattatreya: oklch(0.72 0.13 55);
+    --cat-skanda: oklch(0.6 0.22 18);
+    --cat-surya: oklch(0.78 0.22 62);
+    --cat-bhairava: oklch(0.22 0.08 280);
+    --cat-narasimha: oklch(0.65 0.24 45);
+    --cat-mahavidya: oklch(0.45 0.22 298);
+    --cat-kali: oklch(0.25 0.12 258);
+    --cat-tara: oklch(0.4 0.2 232);
+    --cat-lalita: oklch(0.6 0.24 12);
+    --cat-bhuvaneshvari: oklch(0.74 0.16 62);
+    --cat-bhairavi: oklch(0.5 0.26 18);
+    --cat-chhinnamasta: oklch(0.62 0.24 8);
+    --cat-dhumavati: oklch(0.42 0.08 225);
+    --cat-bagalamukhi: oklch(0.85 0.22 88);
+    --cat-matangi: oklch(0.55 0.22 148);
+    --cat-general: oklch(0.7 0.1 180);
+    --cat-dynamic: oklch(0.6 0.15 260);
+  }
+  .dark {
+    --cat-vishnu: oklch(0.72 0.2 240);
+    --cat-krishna: oklch(0.7 0.18 250);
+    --cat-rama: oklch(0.72 0.16 245);
+    --cat-bhairava: oklch(0.6 0.14 280);
+    --cat-mahavidya: oklch(0.7 0.2 298);
+    --cat-kali: oklch(0.6 0.18 258);
+    --cat-tara: oklch(0.7 0.18 232);
+    --cat-dhumavati: oklch(0.65 0.1 225);
+  }
 }
 
-@utility bg-theme-gradient-to-r {
-  background: linear-gradient(to right, var(--theme-primary), var(--theme-accent));
+@utility bg-category-ganesha-10 {
+  background-color: color-mix(in oklch, var(--cat-ganesha) 10%, transparent);
 }
-
-@utility bg-theme-gradient-subtle {
-  background: linear-gradient(
-    135deg,
-    color-mix(in oklch, var(--theme-primary) 10%, transparent),
-    color-mix(in oklch, var(--theme-accent) 10%, transparent)
-  );
+@utility bg-category-ganesha-15 {
+  background-color: color-mix(in oklch, var(--cat-ganesha) 15%, transparent);
 }
-
+@utility bg-category-ganesha-20 {
+  background-color: color-mix(in oklch, var(--cat-ganesha) 20%, transparent);
+}
+@utility bg-category-ganesha-30 {
+  background-color: color-mix(in oklch, var(--cat-ganesha) 30%, transparent);
+}
+@utility text-category-ganesha {
+  color: var(--cat-ganesha);
+}
+@utility border-category-ganesha {
+  border-color: color-mix(in oklch, var(--cat-ganesha) 40%, transparent);
+}
+@utility ring-category-ganesha {
+  --tw-ring-color: color-mix(in oklch, var(--cat-ganesha) 50%, transparent);
+}
+@utility bg-category-shiva-10 {
+  background-color: color-mix(in oklch, var(--cat-shiva) 10%, transparent);
+}
+@utility bg-category-shiva-15 {
+  background-color: color-mix(in oklch, var(--cat-shiva) 15%, transparent);
+}
+@utility bg-category-shiva-20 {
+  background-color: color-mix(in oklch, var(--cat-shiva) 20%, transparent);
+}
+@utility bg-category-shiva-30 {
+  background-color: color-mix(in oklch, var(--cat-shiva) 30%, transparent);
+}
+@utility text-category-shiva {
+  color: var(--cat-shiva);
+}
+@utility border-category-shiva {
+  border-color: color-mix(in oklch, var(--cat-shiva) 40%, transparent);
+}
+@utility ring-category-shiva {
+  --tw-ring-color: color-mix(in oklch, var(--cat-shiva) 50%, transparent);
+}
+@utility bg-category-vishnu-10 {
+  background-color: color-mix(in oklch, var(--cat-vishnu) 10%, transparent);
+}
+@utility bg-category-vishnu-15 {
+  background-color: color-mix(in oklch, var(--cat-vishnu) 15%, transparent);
+}
+@utility bg-category-vishnu-20 {
+  background-color: color-mix(in oklch, var(--cat-vishnu) 20%, transparent);
+}
+@utility bg-category-vishnu-30 {
+  background-color: color-mix(in oklch, var(--cat-vishnu) 30%, transparent);
+}
+@utility text-category-vishnu {
+  color: var(--cat-vishnu);
+}
+@utility border-category-vishnu {
+  border-color: color-mix(in oklch, var(--cat-vishnu) 40%, transparent);
+}
+@utility ring-category-vishnu {
+  --tw-ring-color: color-mix(in oklch, var(--cat-vishnu) 50%, transparent);
+}
+@utility bg-category-durga-10 {
+  background-color: color-mix(in oklch, var(--cat-durga) 10%, transparent);
+}
+@utility bg-category-durga-15 {
+  background-color: color-mix(in oklch, var(--cat-durga) 15%, transparent);
+}
+@utility bg-category-durga-20 {
+  background-color: color-mix(in oklch, var(--cat-durga) 20%, transparent);
+}
+@utility bg-category-durga-30 {
+  background-color: color-mix(in oklch, var(--cat-durga) 30%, transparent);
+}
+@utility text-category-durga {
+  color: var(--cat-durga);
+}
+@utility border-category-durga {
+  border-color: color-mix(in oklch, var(--cat-durga) 40%, transparent);
+}
+@utility ring-category-durga {
+  --tw-ring-color: color-mix(in oklch, var(--cat-durga) 50%, transparent);
+}
+@utility bg-category-lakshmi-10 {
+  background-color: color-mix(in oklch, var(--cat-lakshmi) 10%, transparent);
+}
+@utility bg-category-lakshmi-15 {
+  background-color: color-mix(in oklch, var(--cat-lakshmi) 15%, transparent);
+}
+@utility bg-category-lakshmi-20 {
+  background-color: color-mix(in oklch, var(--cat-lakshmi) 20%, transparent);
+}
+@utility bg-category-lakshmi-30 {
+  background-color: color-mix(in oklch, var(--cat-lakshmi) 30%, transparent);
+}
+@utility text-category-lakshmi {
+  color: var(--cat-lakshmi);
+}
+@utility border-category-lakshmi {
+  border-color: color-mix(in oklch, var(--cat-lakshmi) 40%, transparent);
+}
+@utility ring-category-lakshmi {
+  --tw-ring-color: color-mix(in oklch, var(--cat-lakshmi) 50%, transparent);
+}
+@utility bg-category-saraswati-10 {
+  background-color: color-mix(in oklch, var(--cat-saraswati) 10%, transparent);
+}
+@utility bg-category-saraswati-15 {
+  background-color: color-mix(in oklch, var(--cat-saraswati) 15%, transparent);
+}
+@utility bg-category-saraswati-20 {
+  background-color: color-mix(in oklch, var(--cat-saraswati) 20%, transparent);
+}
+@utility bg-category-saraswati-30 {
+  background-color: color-mix(in oklch, var(--cat-saraswati) 30%, transparent);
+}
+@utility text-category-saraswati {
+  color: var(--cat-saraswati);
+}
+@utility border-category-saraswati {
+  border-color: color-mix(in oklch, var(--cat-saraswati) 40%, transparent);
+}
+@utility ring-category-saraswati {
+  --tw-ring-color: color-mix(in oklch, var(--cat-saraswati) 50%, transparent);
+}
+@utility bg-category-hanuman-10 {
+  background-color: color-mix(in oklch, var(--cat-hanuman) 10%, transparent);
+}
+@utility bg-category-hanuman-15 {
+  background-color: color-mix(in oklch, var(--cat-hanuman) 15%, transparent);
+}
+@utility bg-category-hanuman-20 {
+  background-color: color-mix(in oklch, var(--cat-hanuman) 20%, transparent);
+}
+@utility bg-category-hanuman-30 {
+  background-color: color-mix(in oklch, var(--cat-hanuman) 30%, transparent);
+}
+@utility text-category-hanuman {
+  color: var(--cat-hanuman);
+}
+@utility border-category-hanuman {
+  border-color: color-mix(in oklch, var(--cat-hanuman) 40%, transparent);
+}
+@utility ring-category-hanuman {
+  --tw-ring-color: color-mix(in oklch, var(--cat-hanuman) 50%, transparent);
+}
+@utility bg-category-krishna-10 {
+  background-color: color-mix(in oklch, var(--cat-krishna) 10%, transparent);
+}
+@utility bg-category-krishna-15 {
+  background-color: color-mix(in oklch, var(--cat-krishna) 15%, transparent);
+}
+@utility bg-category-krishna-20 {
+  background-color: color-mix(in oklch, var(--cat-krishna) 20%, transparent);
+}
+@utility bg-category-krishna-30 {
+  background-color: color-mix(in oklch, var(--cat-krishna) 30%, transparent);
+}
+@utility text-category-krishna {
+  color: var(--cat-krishna);
+}
+@utility border-category-krishna {
+  border-color: color-mix(in oklch, var(--cat-krishna) 40%, transparent);
+}
+@utility ring-category-krishna {
+  --tw-ring-color: color-mix(in oklch, var(--cat-krishna) 50%, transparent);
+}
+@utility bg-category-rama-10 {
+  background-color: color-mix(in oklch, var(--cat-rama) 10%, transparent);
+}
+@utility bg-category-rama-15 {
+  background-color: color-mix(in oklch, var(--cat-rama) 15%, transparent);
+}
+@utility bg-category-rama-20 {
+  background-color: color-mix(in oklch, var(--cat-rama) 20%, transparent);
+}
+@utility bg-category-rama-30 {
+  background-color: color-mix(in oklch, var(--cat-rama) 30%, transparent);
+}
+@utility text-category-rama {
+  color: var(--cat-rama);
+}
+@utility border-category-rama {
+  border-color: color-mix(in oklch, var(--cat-rama) 40%, transparent);
+}
+@utility ring-category-rama {
+  --tw-ring-color: color-mix(in oklch, var(--cat-rama) 50%, transparent);
+}
+@utility bg-category-dattatreya-10 {
+  background-color: color-mix(in oklch, var(--cat-dattatreya) 10%, transparent);
+}
+@utility bg-category-dattatreya-15 {
+  background-color: color-mix(in oklch, var(--cat-dattatreya) 15%, transparent);
+}
+@utility bg-category-dattatreya-20 {
+  background-color: color-mix(in oklch, var(--cat-dattatreya) 20%, transparent);
+}
+@utility bg-category-dattatreya-30 {
+  background-color: color-mix(in oklch, var(--cat-dattatreya) 30%, transparent);
+}
+@utility text-category-dattatreya {
+  color: var(--cat-dattatreya);
+}
+@utility border-category-dattatreya {
+  border-color: color-mix(in oklch, var(--cat-dattatreya) 40%, transparent);
+}
+@utility ring-category-dattatreya {
+  --tw-ring-color: color-mix(in oklch, var(--cat-dattatreya) 50%, transparent);
+}
+@utility bg-category-skanda-10 {
+  background-color: color-mix(in oklch, var(--cat-skanda) 10%, transparent);
+}
+@utility bg-category-skanda-15 {
+  background-color: color-mix(in oklch, var(--cat-skanda) 15%, transparent);
+}
+@utility bg-category-skanda-20 {
+  background-color: color-mix(in oklch, var(--cat-skanda) 20%, transparent);
+}
+@utility bg-category-skanda-30 {
+  background-color: color-mix(in oklch, var(--cat-skanda) 30%, transparent);
+}
+@utility text-category-skanda {
+  color: var(--cat-skanda);
+}
+@utility border-category-skanda {
+  border-color: color-mix(in oklch, var(--cat-skanda) 40%, transparent);
+}
+@utility ring-category-skanda {
+  --tw-ring-color: color-mix(in oklch, var(--cat-skanda) 50%, transparent);
+}
+@utility bg-category-surya-10 {
+  background-color: color-mix(in oklch, var(--cat-surya) 10%, transparent);
+}
+@utility bg-category-surya-15 {
+  background-color: color-mix(in oklch, var(--cat-surya) 15%, transparent);
+}
+@utility bg-category-surya-20 {
+  background-color: color-mix(in oklch, var(--cat-surya) 20%, transparent);
+}
+@utility bg-category-surya-30 {
+  background-color: color-mix(in oklch, var(--cat-surya) 30%, transparent);
+}
+@utility text-category-surya {
+  color: var(--cat-surya);
+}
+@utility border-category-surya {
+  border-color: color-mix(in oklch, var(--cat-surya) 40%, transparent);
+}
+@utility ring-category-surya {
+  --tw-ring-color: color-mix(in oklch, var(--cat-surya) 50%, transparent);
+}
+@utility bg-category-bhairava-10 {
+  background-color: color-mix(in oklch, var(--cat-bhairava) 10%, transparent);
+}
+@utility bg-category-bhairava-15 {
+  background-color: color-mix(in oklch, var(--cat-bhairava) 15%, transparent);
+}
+@utility bg-category-bhairava-20 {
+  background-color: color-mix(in oklch, var(--cat-bhairava) 20%, transparent);
+}
+@utility bg-category-bhairava-30 {
+  background-color: color-mix(in oklch, var(--cat-bhairava) 30%, transparent);
+}
+@utility text-category-bhairava {
+  color: var(--cat-bhairava);
+}
+@utility border-category-bhairava {
+  border-color: color-mix(in oklch, var(--cat-bhairava) 40%, transparent);
+}
+@utility ring-category-bhairava {
+  --tw-ring-color: color-mix(in oklch, var(--cat-bhairava) 50%, transparent);
+}
+@utility bg-category-narasimha-10 {
+  background-color: color-mix(in oklch, var(--cat-narasimha) 10%, transparent);
+}
+@utility bg-category-narasimha-15 {
+  background-color: color-mix(in oklch, var(--cat-narasimha) 15%, transparent);
+}
+@utility bg-category-narasimha-20 {
+  background-color: color-mix(in oklch, var(--cat-narasimha) 20%, transparent);
+}
+@utility bg-category-narasimha-30 {
+  background-color: color-mix(in oklch, var(--cat-narasimha) 30%, transparent);
+}
+@utility text-category-narasimha {
+  color: var(--cat-narasimha);
+}
+@utility border-category-narasimha {
+  border-color: color-mix(in oklch, var(--cat-narasimha) 40%, transparent);
+}
+@utility ring-category-narasimha {
+  --tw-ring-color: color-mix(in oklch, var(--cat-narasimha) 50%, transparent);
+}
+@utility bg-category-mahavidya-10 {
+  background-color: color-mix(in oklch, var(--cat-mahavidya) 10%, transparent);
+}
+@utility bg-category-mahavidya-15 {
+  background-color: color-mix(in oklch, var(--cat-mahavidya) 15%, transparent);
+}
+@utility bg-category-mahavidya-20 {
+  background-color: color-mix(in oklch, var(--cat-mahavidya) 20%, transparent);
+}
+@utility bg-category-mahavidya-30 {
+  background-color: color-mix(in oklch, var(--cat-mahavidya) 30%, transparent);
+}
+@utility text-category-mahavidya {
+  color: var(--cat-mahavidya);
+}
+@utility border-category-mahavidya {
+  border-color: color-mix(in oklch, var(--cat-mahavidya) 40%, transparent);
+}
+@utility ring-category-mahavidya {
+  --tw-ring-color: color-mix(in oklch, var(--cat-mahavidya) 50%, transparent);
+}
+@utility bg-category-kali-10 {
+  background-color: color-mix(in oklch, var(--cat-kali) 10%, transparent);
+}
+@utility bg-category-kali-15 {
+  background-color: color-mix(in oklch, var(--cat-kali) 15%, transparent);
+}
+@utility bg-category-kali-20 {
+  background-color: color-mix(in oklch, var(--cat-kali) 20%, transparent);
+}
+@utility bg-category-kali-30 {
+  background-color: color-mix(in oklch, var(--cat-kali) 30%, transparent);
+}
+@utility text-category-kali {
+  color: var(--cat-kali);
+}
+@utility border-category-kali {
+  border-color: color-mix(in oklch, var(--cat-kali) 40%, transparent);
+}
+@utility ring-category-kali {
+  --tw-ring-color: color-mix(in oklch, var(--cat-kali) 50%, transparent);
+}
+@utility bg-category-tara-10 {
+  background-color: color-mix(in oklch, var(--cat-tara) 10%, transparent);
+}
+@utility bg-category-tara-15 {
+  background-color: color-mix(in oklch, var(--cat-tara) 15%, transparent);
+}
+@utility bg-category-tara-20 {
+  background-color: color-mix(in oklch, var(--cat-tara) 20%, transparent);
+}
+@utility bg-category-tara-30 {
+  background-color: color-mix(in oklch, var(--cat-tara) 30%, transparent);
+}
+@utility text-category-tara {
+  color: var(--cat-tara);
+}
+@utility border-category-tara {
+  border-color: color-mix(in oklch, var(--cat-tara) 40%, transparent);
+}
+@utility ring-category-tara {
+  --tw-ring-color: color-mix(in oklch, var(--cat-tara) 50%, transparent);
+}
+@utility bg-category-lalita-10 {
+  background-color: color-mix(in oklch, var(--cat-lalita) 10%, transparent);
+}
+@utility bg-category-lalita-15 {
+  background-color: color-mix(in oklch, var(--cat-lalita) 15%, transparent);
+}
+@utility bg-category-lalita-20 {
+  background-color: color-mix(in oklch, var(--cat-lalita) 20%, transparent);
+}
+@utility bg-category-lalita-30 {
+  background-color: color-mix(in oklch, var(--cat-lalita) 30%, transparent);
+}
+@utility text-category-lalita {
+  color: var(--cat-lalita);
+}
+@utility border-category-lalita {
+  border-color: color-mix(in oklch, var(--cat-lalita) 40%, transparent);
+}
+@utility ring-category-lalita {
+  --tw-ring-color: color-mix(in oklch, var(--cat-lalita) 50%, transparent);
+}
+@utility bg-category-bhuvaneshvari-10 {
+  background-color: color-mix(in oklch, var(--cat-bhuvaneshvari) 10%, transparent);
+}
+@utility bg-category-bhuvaneshvari-15 {
+  background-color: color-mix(in oklch, var(--cat-bhuvaneshvari) 15%, transparent);
+}
+@utility bg-category-bhuvaneshvari-20 {
+  background-color: color-mix(in oklch, var(--cat-bhuvaneshvari) 20%, transparent);
+}
+@utility bg-category-bhuvaneshvari-30 {
+  background-color: color-mix(in oklch, var(--cat-bhuvaneshvari) 30%, transparent);
+}
+@utility text-category-bhuvaneshvari {
+  color: var(--cat-bhuvaneshvari);
+}
+@utility border-category-bhuvaneshvari {
+  border-color: color-mix(in oklch, var(--cat-bhuvaneshvari) 40%, transparent);
+}
+@utility ring-category-bhuvaneshvari {
+  --tw-ring-color: color-mix(in oklch, var(--cat-bhuvaneshvari) 50%, transparent);
+}
+@utility bg-category-bhairavi-10 {
+  background-color: color-mix(in oklch, var(--cat-bhairavi) 10%, transparent);
+}
+@utility bg-category-bhairavi-15 {
+  background-color: color-mix(in oklch, var(--cat-bhairavi) 15%, transparent);
+}
+@utility bg-category-bhairavi-20 {
+  background-color: color-mix(in oklch, var(--cat-bhairavi) 20%, transparent);
+}
+@utility bg-category-bhairavi-30 {
+  background-color: color-mix(in oklch, var(--cat-bhairavi) 30%, transparent);
+}
+@utility text-category-bhairavi {
+  color: var(--cat-bhairavi);
+}
+@utility border-category-bhairavi {
+  border-color: color-mix(in oklch, var(--cat-bhairavi) 40%, transparent);
+}
+@utility ring-category-bhairavi {
+  --tw-ring-color: color-mix(in oklch, var(--cat-bhairavi) 50%, transparent);
+}
+@utility bg-category-chhinnamasta-10 {
+  background-color: color-mix(in oklch, var(--cat-chhinnamasta) 10%, transparent);
+}
+@utility bg-category-chhinnamasta-15 {
+  background-color: color-mix(in oklch, var(--cat-chhinnamasta) 15%, transparent);
+}
+@utility bg-category-chhinnamasta-20 {
+  background-color: color-mix(in oklch, var(--cat-chhinnamasta) 20%, transparent);
+}
+@utility bg-category-chhinnamasta-30 {
+  background-color: color-mix(in oklch, var(--cat-chhinnamasta) 30%, transparent);
+}
+@utility text-category-chhinnamasta {
+  color: var(--cat-chhinnamasta);
+}
+@utility border-category-chhinnamasta {
+  border-color: color-mix(in oklch, var(--cat-chhinnamasta) 40%, transparent);
+}
+@utility ring-category-chhinnamasta {
+  --tw-ring-color: color-mix(in oklch, var(--cat-chhinnamasta) 50%, transparent);
+}
+@utility bg-category-dhumavati-10 {
+  background-color: color-mix(in oklch, var(--cat-dhumavati) 10%, transparent);
+}
+@utility bg-category-dhumavati-15 {
+  background-color: color-mix(in oklch, var(--cat-dhumavati) 15%, transparent);
+}
+@utility bg-category-dhumavati-20 {
+  background-color: color-mix(in oklch, var(--cat-dhumavati) 20%, transparent);
+}
+@utility bg-category-dhumavati-30 {
+  background-color: color-mix(in oklch, var(--cat-dhumavati) 30%, transparent);
+}
+@utility text-category-dhumavati {
+  color: var(--cat-dhumavati);
+}
+@utility border-category-dhumavati {
+  border-color: color-mix(in oklch, var(--cat-dhumavati) 40%, transparent);
+}
+@utility ring-category-dhumavati {
+  --tw-ring-color: color-mix(in oklch, var(--cat-dhumavati) 50%, transparent);
+}
+@utility bg-category-bagalamukhi-10 {
+  background-color: color-mix(in oklch, var(--cat-bagalamukhi) 10%, transparent);
+}
+@utility bg-category-bagalamukhi-15 {
+  background-color: color-mix(in oklch, var(--cat-bagalamukhi) 15%, transparent);
+}
+@utility bg-category-bagalamukhi-20 {
+  background-color: color-mix(in oklch, var(--cat-bagalamukhi) 20%, transparent);
+}
+@utility bg-category-bagalamukhi-30 {
+  background-color: color-mix(in oklch, var(--cat-bagalamukhi) 30%, transparent);
+}
+@utility text-category-bagalamukhi {
+  color: var(--cat-bagalamukhi);
+}
+@utility border-category-bagalamukhi {
+  border-color: color-mix(in oklch, var(--cat-bagalamukhi) 40%, transparent);
+}
+@utility ring-category-bagalamukhi {
+  --tw-ring-color: color-mix(in oklch, var(--cat-bagalamukhi) 50%, transparent);
+}
+@utility bg-category-matangi-10 {
+  background-color: color-mix(in oklch, var(--cat-matangi) 10%, transparent);
+}
+@utility bg-category-matangi-15 {
+  background-color: color-mix(in oklch, var(--cat-matangi) 15%, transparent);
+}
+@utility bg-category-matangi-20 {
+  background-color: color-mix(in oklch, var(--cat-matangi) 20%, transparent);
+}
+@utility bg-category-matangi-30 {
+  background-color: color-mix(in oklch, var(--cat-matangi) 30%, transparent);
+}
+@utility text-category-matangi {
+  color: var(--cat-matangi);
+}
+@utility border-category-matangi {
+  border-color: color-mix(in oklch, var(--cat-matangi) 40%, transparent);
+}
+@utility ring-category-matangi {
+  --tw-ring-color: color-mix(in oklch, var(--cat-matangi) 50%, transparent);
+}
+@utility bg-category-general-10 {
+  background-color: color-mix(in oklch, var(--cat-general) 10%, transparent);
+}
+@utility bg-category-general-15 {
+  background-color: color-mix(in oklch, var(--cat-general) 15%, transparent);
+}
+@utility bg-category-general-20 {
+  background-color: color-mix(in oklch, var(--cat-general) 20%, transparent);
+}
+@utility bg-category-general-30 {
+  background-color: color-mix(in oklch, var(--cat-general) 30%, transparent);
+}
+@utility text-category-general {
+  color: var(--cat-general);
+}
+@utility border-category-general {
+  border-color: color-mix(in oklch, var(--cat-general) 40%, transparent);
+}
+@utility ring-category-general {
+  --tw-ring-color: color-mix(in oklch, var(--cat-general) 50%, transparent);
+}
+@utility bg-category-dynamic-10 {
+  background-color: color-mix(in oklch, var(--cat-dynamic) 10%, transparent);
+}
+@utility bg-category-dynamic-15 {
+  background-color: color-mix(in oklch, var(--cat-dynamic) 15%, transparent);
+}
+@utility bg-category-dynamic-20 {
+  background-color: color-mix(in oklch, var(--cat-dynamic) 20%, transparent);
+}
+@utility bg-category-dynamic-30 {
+  background-color: color-mix(in oklch, var(--cat-dynamic) 30%, transparent);
+}
+@utility text-category-dynamic {
+  color: var(--cat-dynamic);
+}
+@utility border-category-dynamic {
+  border-color: color-mix(in oklch, var(--cat-dynamic) 40%, transparent);
+}
+@utility ring-category-dynamic {
+  --tw-ring-color: color-mix(in oklch, var(--cat-dynamic) 50%, transparent);
+}
 /* =============================================================================
    CATEGORY COLOR UTILITIES (Hybrid Approach)
 
@@ -1136,15 +1704,6 @@
 }
 .animate-pulse-glow {
   animation: pulse-glow 2s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .animate-in,
-  .animate-pulse-glow {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
 }
 
 /* =============================================================================

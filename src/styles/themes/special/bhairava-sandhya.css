@@ -557,11 +557,3 @@
     filter: drop-shadow(0 0 10px oklch(0.74 0.18 45 / 0.55));
   }
 }
-
-@media (prefers-reduced-motion: reduce) {
-  [data-theme="bhairava-sandhya"] {
-    --theme-brand-mark-animation: none;
-    --theme-brand-label-animation: none;
-    --theme-primary-text-animation: none;
-  }
-}
