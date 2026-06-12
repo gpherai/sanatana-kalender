@@ -105,7 +105,7 @@ export default async function EventDetailPage({ params }: PageProps) {
           <div className="flex shrink-0 items-center gap-2">
             <Link
               href={`/events/${id}/edit`}
-              className="bg-theme-primary text-theme-primary-fg flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none"
+              className="bg-theme-primary text-theme-primary-fg hover:bg-theme-primary/80 flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none"
             >
               <Pencil className="h-4 w-4" />
               Bewerken

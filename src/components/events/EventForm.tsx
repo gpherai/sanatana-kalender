@@ -656,7 +656,7 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
           disabled={isSubmitting}
           className={cn(
             "flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium",
-            "bg-theme-primary text-theme-primary-fg hover:opacity-90",
+            "bg-theme-primary text-theme-primary-fg hover:bg-theme-primary/80",
             "disabled:cursor-not-allowed disabled:opacity-50",
             "shadow-theme-primary transition-colors",
             "focus-visible:ring-theme-primary focus-visible:ring-2 focus-visible:outline-none"

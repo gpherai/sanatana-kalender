@@ -32,7 +32,7 @@ export async function UpcomingEventsSection({ eventsPromise, todayYear }: Props)
           </p>
           <Link
             href="/events/new"
-            className="bg-theme-primary focus-visible:ring-theme-primary text-theme-primary-fg inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold shadow-md transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+            className="bg-theme-primary focus-visible:ring-theme-primary text-theme-primary-fg hover:bg-theme-primary/80 inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold shadow-md transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
           >
             <Plus className="h-4 w-4" />
             Event toevoegen

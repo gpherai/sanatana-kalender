@@ -194,7 +194,7 @@ export function SessionCard({
                 type="button"
                 onClick={handleDelete}
                 disabled={deleting}
-                className="text-theme-error flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors hover:opacity-70 focus-visible:ring-2 focus-visible:ring-[var(--theme-error-fg)] focus-visible:outline-none"
+                className="text-theme-error hover:text-theme-error/70 flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded transition-colors focus-visible:ring-2 focus-visible:ring-[var(--theme-error-fg)] focus-visible:outline-none"
                 aria-label="Verwijderen bevestigen"
                 title="Bevestig verwijderen"
               >

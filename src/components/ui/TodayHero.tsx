@@ -538,7 +538,7 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
                 <Link
                   key={event.id}
                   href={`/events/${event.id}`}
-                  className="flex items-center gap-2 rounded-full border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] px-4 py-3 text-white/70 backdrop-blur-sm transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none active:opacity-60"
+                  className="flex items-center gap-2 rounded-full border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] px-4 py-3 text-white/70 backdrop-blur-sm transition-colors hover:bg-white/15 hover:text-white focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none active:opacity-60"
                   style={{ touchAction: "manipulation" }}
                 >
                   {event.category?.icon && (

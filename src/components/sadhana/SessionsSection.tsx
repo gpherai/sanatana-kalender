@@ -110,7 +110,7 @@ export function SessionsSection({
           <h2 className="text-theme-fg font-semibold">Sessies</h2>
           <button
             onClick={() => setShowAddSession(!showAddSession)}
-            className="bg-theme-primary text-theme-primary-fg flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium shadow hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none active:scale-[0.98]"
+            className="bg-theme-primary text-theme-primary-fg hover:bg-theme-primary/80 flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium shadow transition-colors focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none active:scale-[0.98]"
           >
             <Plus className="h-4 w-4" />
             Toevoegen

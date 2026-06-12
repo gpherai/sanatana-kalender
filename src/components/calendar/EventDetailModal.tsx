@@ -558,7 +558,7 @@ export function EventDetailModal({
                     <button
                       onClick={handleDeleteOccurrence}
                       disabled={isDeleting}
-                      className="flex-1 rounded-xl bg-[var(--theme-error-bg)] px-4 py-2.5 text-sm font-medium text-[var(--theme-error-fg)] transition-colors hover:opacity-90 disabled:opacity-50"
+                      className="flex-1 rounded-xl bg-[var(--theme-error-bg)] px-4 py-2.5 text-sm font-medium text-[var(--theme-error-fg)] transition-colors hover:bg-[var(--theme-error-bg)]/80 disabled:opacity-50"
                     >
                       {isDeleting ? "Verwijderen..." : "Alleen deze dag"}
                     </button>
@@ -566,7 +566,7 @@ export function EventDetailModal({
                   <button
                     onClick={handleDelete}
                     disabled={isDeleting}
-                    className="flex-1 rounded-xl bg-[var(--theme-error)] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:opacity-90 disabled:opacity-50"
+                    className="flex-1 rounded-xl bg-[var(--theme-error)] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[var(--theme-error)]/90 disabled:opacity-50"
                   >
                     {isDeleting
                       ? "Verwijderen..."
@@ -582,9 +582,9 @@ export function EventDetailModal({
                   onClick={handleEdit}
                   className={cn(
                     "flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium",
-                    "bg-theme-primary text-theme-primary-fg hover:opacity-90",
+                    "bg-theme-primary text-theme-primary-fg hover:bg-theme-primary/80",
                     "shadow-theme-primary shadow-lg",
-                    "transition-opacity duration-200"
+                    "transition-colors duration-200"
                   )}
                 >
                   <Pencil className="h-4 w-4" />

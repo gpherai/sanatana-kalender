@@ -159,7 +159,7 @@ export function SadhanaTracker({ initialData }: { initialData?: SadhanaInitialDa
         <button
           type="button"
           onClick={loadAll}
-          className="text-theme-primary focus-visible:ring-theme-primary mt-3 inline-flex cursor-pointer items-center gap-2 rounded text-sm hover:opacity-70 focus-visible:ring-2 focus-visible:outline-none"
+          className="text-theme-primary focus-visible:ring-theme-primary mt-3 inline-flex cursor-pointer items-center gap-2 rounded text-sm hover:underline focus-visible:ring-2 focus-visible:outline-none"
         >
           <RefreshCw className="h-4 w-4" /> Opnieuw proberen
         </button>
