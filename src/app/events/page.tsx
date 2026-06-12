@@ -7,7 +7,7 @@ import { EventsContent } from "@/components/events/EventsContent";
 export const dynamic = "force-dynamic";
 
 export default async function EventsPage() {
-  const occurrences = await getEventOccurrences({});
+  const occurrences = await getEventOccurrences({ limit: 5000, skip: 0 });
   const initialEvents = occurrences.map(transformOccurrenceToCalendarEvent);
 
   return (

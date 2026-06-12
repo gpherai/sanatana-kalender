@@ -26,7 +26,7 @@ export default async function AlmanacPage() {
       DEFAULT_LOCATION,
       timezone
     ),
-    getEventOccurrences({ start: startStr, end: endStr }),
+    getEventOccurrences({ start: startStr, end: endStr, limit: 5000, skip: 0 }),
   ]);
 
   const initialMonthData = panchangas.map(transformToApiResponse);

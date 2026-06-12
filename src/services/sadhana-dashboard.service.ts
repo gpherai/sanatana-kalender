@@ -46,6 +46,8 @@ export async function getSadhanaDashboardInit() {
       end: heatmapEnd,
       sortBy: "date",
       order: "asc",
+      limit: 5000,
+      skip: 0,
     }),
     findDailyInfoHeatmapData(
       utcDateFromDateOnly(heatmapStart),

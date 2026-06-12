@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { revalidateEventPaths } from "@/lib/revalidate";
 import { Prisma } from "@/generated/prisma/client";
 import { createEventSchema, updateEventSchema, cuidSchema } from "@/lib/validations";
