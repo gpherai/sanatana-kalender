@@ -47,12 +47,6 @@
   background-color: var(--theme-calendar-off-range-bg);
 }
 
-/* Weekend styling */
-.dharma-calendar .rbc-day-bg:nth-child(6),
-.dharma-calendar .rbc-day-bg:nth-child(7) {
-  background-color: var(--theme-calendar-weekend-bg);
-}
-
 /* ============================================
    MOON PHASE DAY STYLING
    ============================================ */
@@ -170,6 +164,16 @@
   padding: 8px 12px;
 }
 
+.dharma-calendar .rbc-agenda-view {
+  color: var(--theme-calendar-agenda-text);
+}
+
+.dharma-calendar .rbc-agenda-date-cell,
+.dharma-calendar .rbc-agenda-time-cell,
+.dharma-calendar .rbc-agenda-event-cell {
+  border-color: var(--theme-calendar-border);
+}
+
 /* Popup overlay */
 .dharma-calendar .rbc-overlay {
   background-color: var(--theme-calendar-popup-bg);
@@ -185,96 +189,6 @@
   font-weight: 600;
   border-bottom: 1px solid var(--theme-calendar-border);
   margin-bottom: 8px;
-}
-
-/* ============================================
-   DARK MODE OVERRIDES
-   ============================================ */
-
-.dark .dharma-calendar .rbc-header {
-  color: var(--theme-calendar-header-text);
-  border-bottom-color: var(--theme-calendar-border);
-}
-
-.dark .dharma-calendar .rbc-date-cell > a {
-  color: var(--theme-calendar-date-text);
-}
-
-.dark .dharma-calendar .rbc-today {
-  background-color: var(--theme-calendar-today-bg) !important;
-}
-
-.dark .dharma-calendar .rbc-off-range {
-  color: var(--theme-calendar-off-range-text);
-}
-
-.dark .dharma-calendar .rbc-off-range-bg {
-  background-color: var(--theme-calendar-off-range-bg);
-}
-
-.dark .dharma-calendar .rbc-day-bg:nth-child(6),
-.dark .dharma-calendar .rbc-day-bg:nth-child(7) {
-  background-color: var(--theme-calendar-weekend-bg);
-}
-
-/* Full Moon - Dark Mode */
-.dark .dharma-calendar .full-moon-day {
-  background: linear-gradient(
-    135deg,
-    var(--theme-calendar-full-moon-bg-start) 0%,
-    var(--theme-calendar-full-moon-bg-end) 100%
-  ) !important;
-}
-
-.dark .dharma-calendar .full-moon-day::before {
-  background: radial-gradient(
-    ellipse at 70% 30%,
-    var(--theme-calendar-full-moon-glow) 0%,
-    transparent 50%
-  );
-}
-
-/* New Moon - Dark Mode */
-.dark .dharma-calendar .new-moon-day {
-  background: linear-gradient(
-    135deg,
-    var(--theme-calendar-new-moon-bg-start) 0%,
-    var(--theme-calendar-new-moon-bg-end) 100%
-  ) !important;
-}
-
-.dark .dharma-calendar .rbc-month-view,
-.dark .dharma-calendar .rbc-time-view {
-  border-color: var(--theme-calendar-border);
-}
-
-.dark .dharma-calendar .rbc-day-bg + .rbc-day-bg,
-.dark .dharma-calendar .rbc-month-row + .rbc-month-row {
-  border-color: var(--theme-calendar-border-subtle);
-}
-
-.dark .dharma-calendar .rbc-time-content {
-  border-top-color: var(--theme-calendar-border);
-}
-
-.dark .dharma-calendar .rbc-overlay {
-  background-color: var(--theme-calendar-popup-bg);
-  border-color: var(--theme-calendar-border);
-}
-
-.dark .dharma-calendar .rbc-overlay-header {
-  border-bottom-color: var(--theme-calendar-border);
-}
-
-/* Agenda view dark mode */
-.dark .dharma-calendar .rbc-agenda-view {
-  color: var(--theme-calendar-agenda-text);
-}
-
-.dark .dharma-calendar .rbc-agenda-date-cell,
-.dark .dharma-calendar .rbc-agenda-time-cell,
-.dark .dharma-calendar .rbc-agenda-event-cell {
-  border-color: var(--theme-calendar-border);
 }
 
 /* ============================================

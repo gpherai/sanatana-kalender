@@ -57,6 +57,7 @@ export function HourlyCard({
             alt={h.weather[0].description}
             width={42}
             height={42}
+            unoptimized
           />
         )}
         <div>
@@ -179,6 +180,7 @@ export function HourlySlot({
             alt={h.weather[0].description}
             width={30}
             height={30}
+            unoptimized
           />
         )}
       </div>

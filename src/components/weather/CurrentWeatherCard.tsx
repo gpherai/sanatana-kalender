@@ -42,6 +42,7 @@ export function CurrentWeatherCard({ current: c, today }: CurrentWeatherCardProp
             loading="eager"
             fetchPriority="high"
             className="-mt-3 -ml-3 shrink-0 drop-shadow-sm"
+            unoptimized
           />
         )}
         <div>

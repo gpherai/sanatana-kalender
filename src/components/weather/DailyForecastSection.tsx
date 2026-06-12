@@ -94,6 +94,7 @@ function ForecastRow({
             width={32}
             height={32}
             className="shrink-0"
+            unoptimized
           />
         )}
         <span className="text-theme-fg-secondary flex-1 truncate text-sm capitalize">
@@ -133,7 +134,13 @@ function ForecastRow({
           {fmtDayLabel(day.dt, tz, nowUnix)}
         </span>
         {day.weather[0] ? (
-          <Image src={owmIcon(day.weather[0].icon)} alt="" width={32} height={32} />
+          <Image
+            src={owmIcon(day.weather[0].icon)}
+            alt=""
+            width={32}
+            height={32}
+            unoptimized
+          />
         ) : (
           <span />
         )}
