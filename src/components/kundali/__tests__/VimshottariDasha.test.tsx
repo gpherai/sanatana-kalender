@@ -79,7 +79,7 @@ describe("VimshottariDasha Component", () => {
 
     // In 2024, we should be in Chandra (as calculated from 1990 birth)
     const chandraRow = screen.getByTestId("dasha-moon");
-    expect(chandraRow).toHaveClass("bg-theme-primary-10");
+    expect(chandraRow).toHaveClass("bg-theme-primary/10");
     expect(chandraRow).toHaveAttribute("aria-expanded", "true");
 
     // Check if antardashas are visible for the current mahadasha

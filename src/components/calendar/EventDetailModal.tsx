@@ -353,7 +353,7 @@ export function EventDetailModal({
                     <div className="text-theme-fg-muted mt-0.5 text-sm capitalize">
                       tot {endDate}
                     </div>
-                    <div className="bg-theme-primary-15 text-theme-primary mt-1.5 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium">
+                    <div className="bg-theme-primary/15 text-theme-primary mt-1.5 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium">
                       {durationDays} dagen
                     </div>
                   </>

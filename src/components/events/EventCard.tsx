@@ -171,12 +171,12 @@ export function EventCard({
         {(tithi || nakshatra) && (
           <div className="mb-3 flex flex-wrap items-center gap-2 pl-16">
             {tithi && (
-              <span className="bg-theme-secondary-10 text-theme-secondary inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs">
+              <span className="bg-theme-secondary/10 text-theme-secondary inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs">
                 <span aria-hidden="true">🌙</span> {tithi}
               </span>
             )}
             {nakshatra && (
-              <span className="bg-theme-accent-10 text-theme-accent inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs">
+              <span className="bg-theme-accent/10 text-theme-accent inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs">
                 <span aria-hidden="true">⭐</span> {nakshatra}
               </span>
             )}

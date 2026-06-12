@@ -49,7 +49,7 @@ export function CalendarSection({
             id="defaultView"
             value={defaultView}
             onChange={(e) => onFieldChange("defaultView", e.target.value)}
-            className="focus:ring-theme-primary-50 focus:border-theme-primary border-theme-border bg-theme-surface text-theme-fg w-8/12 rounded-lg border px-3 py-2 focus:ring-2"
+            className="focus:ring-theme-primary/50 focus:border-theme-primary border-theme-border bg-theme-surface text-theme-fg w-8/12 rounded-lg border px-3 py-2 focus:ring-2"
           >
             {VIEW_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>

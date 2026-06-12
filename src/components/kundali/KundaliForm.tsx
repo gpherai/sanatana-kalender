@@ -137,7 +137,7 @@ export function KundaliForm({
         <button
           type="submit"
           disabled={loading}
-          className="bg-theme-primary text-theme-primary-fg hover:bg-theme-primary-80 cursor-pointer rounded-lg px-6 py-2.5 text-sm font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+          className="bg-theme-primary text-theme-primary-fg hover:bg-theme-primary/80 cursor-pointer rounded-lg px-6 py-2.5 text-sm font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading ? "Berekenen..." : "Bereken Kundali"}
         </button>

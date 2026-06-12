@@ -88,7 +88,7 @@ export function MonthGrid({
                 isSelected
                   ? "bg-theme-primary ring-theme-primary text-theme-primary-fg shadow-lg ring-2 ring-offset-2 ring-offset-[var(--theme-surface)]"
                   : isTodayDate
-                    ? "bg-theme-primary-15 ring-theme-primary ring-1"
+                    ? "bg-theme-primary/15 ring-theme-primary ring-1"
                     : hasEvents && showEvents
                       ? "bg-[var(--theme-almanac-event-cell-bg)] hover:bg-[var(--theme-almanac-event-cell-bg-hover)]"
                       : moonPhase && showMoonPhases

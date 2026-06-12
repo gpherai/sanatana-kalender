@@ -140,7 +140,7 @@ export function MalasChart({
       {/* Lege staat */}
       {isEmpty && (
         <div
-          className="bg-theme-fg-4 flex items-center justify-center rounded-xl text-center"
+          className="bg-theme-fg/4 flex items-center justify-center rounded-xl text-center"
           style={{ height: BAR_H + 28 }}
         >
           <p className="text-theme-fg-muted text-sm">Nog geen sessies geregistreerd.</p>
@@ -218,7 +218,7 @@ export function MalasChart({
                   <div
                     className={[
                       "w-full rounded-t-md motion-safe:transition-[height] motion-safe:duration-150",
-                      val === 0 ? "bg-theme-fg-8" : "",
+                      val === 0 ? "bg-theme-fg/8" : "",
                       m.isCurrentMonth && val > 0 ? "bg-theme-accent" : "",
                       isHovered && val > 0 ? "opacity-80" : "",
                     ].join(" ")}

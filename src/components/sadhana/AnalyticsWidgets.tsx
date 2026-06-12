@@ -49,7 +49,7 @@ export function WeekdayPattern({ sessions }: { sessions: SessionData[] }) {
   return (
     <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
       <div className="mb-4 flex items-center gap-2">
-        <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
+        <div className="bg-theme-primary/10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
           <Calendar className="h-4 w-4" />
         </div>
         <h2 className="text-theme-fg text-sm font-semibold">Weekpatroon</h2>
@@ -143,12 +143,12 @@ export function WeekdayPattern({ sessions }: { sessions: SessionData[] }) {
                   className={[
                     "w-full rounded-t-md motion-safe:transition-[height] motion-safe:duration-150",
                     count === 0
-                      ? "bg-theme-fg-8"
+                      ? "bg-theme-fg/8"
                       : isBest
                         ? "bg-theme-primary"
                         : isHovered
-                          ? "bg-theme-primary-50"
-                          : "bg-theme-primary-30",
+                          ? "bg-theme-primary/50"
+                          : "bg-theme-primary/30",
                   ].join(" ")}
                   style={{ height: barH }}
                 />
@@ -215,7 +215,7 @@ export function ConsistencyRing({ calDays }: { calDays: CalendarDay[] }) {
   return (
     <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
       <div className="mb-4 flex items-center gap-2">
-        <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
+        <div className="bg-theme-primary/10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
           <Flame className="h-4 w-4" />
         </div>
         <h2 className="text-theme-fg text-sm font-semibold">Consistentie</h2>
@@ -314,7 +314,7 @@ export function PracticeDonut({ practices }: { practices: PracticeStat[] }) {
   return (
     <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
       <div className="mb-4 flex items-center gap-2">
-        <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
+        <div className="bg-theme-primary/10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
           <PieChart className="h-4 w-4" />
         </div>
         <h2 className="text-theme-fg text-sm font-semibold">Per beoefening</h2>
@@ -413,7 +413,7 @@ export function TimeOfDayPattern({ sessions }: { sessions: SessionData[] }) {
     return (
       <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
         <div className="mb-4 flex items-center gap-2">
-          <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
+          <div className="bg-theme-primary/10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
             <Clock className="h-4 w-4" />
           </div>
           <h2 className="text-theme-fg text-sm font-semibold">Tijdstip</h2>
@@ -439,7 +439,7 @@ export function TimeOfDayPattern({ sessions }: { sessions: SessionData[] }) {
   return (
     <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
       <div className="mb-4 flex items-center gap-2">
-        <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
+        <div className="bg-theme-primary/10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
           <Clock className="h-4 w-4" />
         </div>
         <h2 className="text-theme-fg text-sm font-semibold">Tijdstip</h2>
@@ -494,12 +494,12 @@ export function TimeOfDayPattern({ sessions }: { sessions: SessionData[] }) {
                   className={[
                     "w-full rounded-t-md motion-safe:transition-[height] motion-safe:duration-150",
                     count === 0
-                      ? "bg-theme-fg-8"
+                      ? "bg-theme-fg/8"
                       : isBest
                         ? "bg-theme-primary"
                         : isHovered
-                          ? "bg-theme-primary-50"
-                          : "bg-theme-primary-30",
+                          ? "bg-theme-primary/50"
+                          : "bg-theme-primary/30",
                   ].join(" ")}
                   style={{ height: barH }}
                 />
@@ -643,7 +643,7 @@ export function PracticeTrend({ sessions }: { sessions: SessionData[] }) {
   return (
     <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
       <div className="mb-4 flex items-center gap-2">
-        <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
+        <div className="bg-theme-primary/10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
           <Layers className="h-4 w-4" />
         </div>
         <h2 className="text-theme-fg text-sm font-semibold">Per beoefening — trend</h2>
@@ -715,7 +715,7 @@ export function PracticeTrend({ sessions }: { sessions: SessionData[] }) {
                       </div>
                     ) : (
                       <div
-                        className="bg-theme-fg-8 w-full rounded-t-sm"
+                        className="bg-theme-fg/8 w-full rounded-t-sm"
                         style={{ height: 2 }}
                       />
                     )}

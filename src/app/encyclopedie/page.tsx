@@ -89,8 +89,8 @@ export default function DictionaryPage() {
           )`,
         }}
       >
-        <div className="bg-theme-primary-20 absolute -top-32 -right-32 h-96 w-96 rounded-full opacity-50 blur-[100px]" />
-        <div className="bg-theme-secondary-20 absolute -bottom-32 -left-32 h-96 w-96 rounded-full opacity-50 blur-[100px]" />
+        <div className="bg-theme-primary/20 absolute -top-32 -right-32 h-96 w-96 rounded-full opacity-50 blur-[100px]" />
+        <div className="bg-theme-secondary/20 absolute -bottom-32 -left-32 h-96 w-96 rounded-full opacity-50 blur-[100px]" />
 
         <div className="relative z-10 flex flex-col items-center text-center">
           <p className="text-theme-primary mb-3 font-serif text-sm font-medium tracking-wide opacity-80">

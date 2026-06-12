@@ -61,7 +61,7 @@ export function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
       {...props}
       className={
         "border-theme-border bg-theme-surface text-theme-fg rounded-lg border px-3 py-2 text-sm " +
-        "focus:border-theme-primary focus:ring-theme-primary-20 focus:ring-2 focus:outline-none " +
+        "focus:border-theme-primary focus:ring-theme-primary/20 focus:ring-2 focus:outline-none " +
         (props.className ?? "")
       }
     />

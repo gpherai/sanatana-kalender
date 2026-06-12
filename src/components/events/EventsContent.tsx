@@ -200,7 +200,7 @@ export function EventsContent({ initialEvents }: EventsContentProps) {
               className={cn(
                 "focus-visible:ring-theme-primary flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-md transition-colors focus-visible:ring-2 focus-visible:outline-none",
                 viewMode === "grid"
-                  ? "bg-theme-primary-15 text-theme-primary"
+                  ? "bg-theme-primary/15 text-theme-primary"
                   : "text-theme-fg-muted hover:text-theme-fg"
               )}
               title="Grid weergave"
@@ -214,7 +214,7 @@ export function EventsContent({ initialEvents }: EventsContentProps) {
               className={cn(
                 "focus-visible:ring-theme-primary flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-md transition-colors focus-visible:ring-2 focus-visible:outline-none",
                 viewMode === "list"
-                  ? "bg-theme-primary-15 text-theme-primary"
+                  ? "bg-theme-primary/15 text-theme-primary"
                   : "text-theme-fg-muted hover:text-theme-fg"
               )}
               title="Lijst weergave"
@@ -236,7 +236,7 @@ export function EventsContent({ initialEvents }: EventsContentProps) {
             className={cn(
               "focus-visible:ring-theme-primary flex min-h-[44px] cursor-pointer items-center gap-2 rounded-lg px-3 py-2 transition-colors focus-visible:ring-2 focus-visible:outline-none lg:hidden",
               showFilters
-                ? "bg-theme-primary-15 text-theme-primary"
+                ? "bg-theme-primary/15 text-theme-primary"
                 : "bg-theme-surface-raised text-theme-fg-muted"
             )}
           >
@@ -327,7 +327,7 @@ export function EventsContent({ initialEvents }: EventsContentProps) {
           {/* Empty State */}
           {events.length === 0 && (
             <div className="py-24 text-center">
-              <div className="bg-theme-gradient-subtle mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full">
+              <div className="bg-theme-primary/10 mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full">
                 {activeFilterCount > 0 ? (
                   <CalendarOff className="text-theme-fg-muted h-11 w-11" />
                 ) : (
@@ -346,7 +346,7 @@ export function EventsContent({ initialEvents }: EventsContentProps) {
                 <button
                   type="button"
                   onClick={clearFilters}
-                  className="border-theme-primary text-theme-primary hover:bg-theme-primary-10 focus-visible:ring-theme-primary cursor-pointer rounded-xl border-2 px-6 py-2.5 font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none"
+                  className="border-theme-primary text-theme-primary hover:bg-theme-primary/10 focus-visible:ring-theme-primary cursor-pointer rounded-xl border-2 px-6 py-2.5 font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none"
                 >
                   Filters wissen
                 </button>

@@ -129,7 +129,7 @@ describe("MonthGrid", () => {
 
     const dayNumber = screen.getByText(String(today.getDate()));
     const dayButton = dayNumber.closest("button");
-    expect(dayButton).toHaveClass("bg-theme-primary-15");
+    expect(dayButton).toHaveClass("bg-theme-primary/15");
     expect(dayNumber).toHaveClass("text-theme-primary");
   });
 

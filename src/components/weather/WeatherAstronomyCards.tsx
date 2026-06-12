@@ -67,7 +67,7 @@ export function WeatherAstronomyCards({
 
       <div className="theme-card col-span-2 p-4 sm:col-span-1">
         <div className="mb-3 flex items-center gap-2">
-          <div className="bg-theme-primary-10 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg">
+          <div className="bg-theme-primary/10 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg">
             <Gauge className="text-theme-primary h-4 w-4" />
           </div>
           <span className="text-theme-fg text-sm font-semibold">Lucht</span>

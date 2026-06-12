@@ -70,7 +70,7 @@ export function Header() {
                     className={cn(
                       "flex items-center gap-1.5 rounded-lg px-3 py-3 text-sm font-medium transition-colors sm:py-1.5",
                       isActive
-                        ? "bg-theme-primary-15 text-theme-primary shadow-sm"
+                        ? "bg-theme-primary/15 text-theme-primary shadow-sm"
                         : "text-theme-fg-secondary hover:bg-theme-hover hover:text-theme-fg"
                     )}
                   >

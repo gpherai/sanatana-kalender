@@ -83,7 +83,7 @@ export function AlmanacFilters({
                   isSelected
                     ? "bg-theme-primary text-theme-primary-fg shadow-md"
                     : isCurrent
-                      ? "bg-theme-primary-15 text-theme-primary"
+                      ? "bg-theme-primary/15 text-theme-primary"
                       : "text-theme-fg-muted hover:bg-theme-surface-hover"
                 )}
               >

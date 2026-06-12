@@ -31,15 +31,15 @@ interface SectionProps {
 
 const ICON_COLOR_CLASSES: Record<IconColor, { bg: string; text: string }> = {
   primary: {
-    bg: "bg-theme-primary-15",
+    bg: "bg-theme-primary/15",
     text: "text-theme-primary",
   },
   secondary: {
-    bg: "bg-theme-secondary-15",
+    bg: "bg-theme-secondary/15",
     text: "text-theme-secondary",
   },
   accent: {
-    bg: "bg-theme-accent-15",
+    bg: "bg-theme-accent/15",
     text: "text-theme-accent",
   },
   muted: {

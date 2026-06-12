@@ -91,6 +91,6 @@ export const DIGNITY_LABEL: Record<NonNullable<Dignity>, string> = {
 export const DIGNITY_STYLE: Record<NonNullable<Dignity>, string> = {
   uchcha: "bg-amber-500/15 text-amber-600 dark:text-amber-400",
   neecha: "bg-red-500/15 text-red-600 dark:text-red-400",
-  moolatrikona: "bg-theme-primary-10 text-theme-primary",
+  moolatrikona: "bg-theme-primary/10 text-theme-primary",
   swarashi: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
 };

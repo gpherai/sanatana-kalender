@@ -38,7 +38,7 @@ function SidebarStat({
     <div
       className={cn(
         "flex flex-col gap-1 rounded-xl p-3",
-        accent ? "bg-theme-accent-10" : "bg-theme-surface"
+        accent ? "bg-theme-accent/10" : "bg-theme-surface"
       )}
     >
       <div className="flex items-center gap-1.5">
@@ -135,7 +135,7 @@ export const TrackerTab = memo(function TrackerTab({
         {todayStats && (
           <div className="bg-theme-surface-raised rounded-2xl p-4 shadow-lg">
             <div className="mb-3 flex items-center gap-2">
-              <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
+              <div className="bg-theme-primary/10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
                 <Sparkles className="h-4 w-4" />
               </div>
               <h2 className="text-theme-fg text-sm font-semibold">Vandaag</h2>
@@ -170,7 +170,7 @@ export const TrackerTab = memo(function TrackerTab({
         {/* Compact stats — 2×2 grid */}
         <div className="bg-theme-surface-raised rounded-2xl p-4 shadow-lg">
           <div className="mb-3 flex items-center gap-2">
-            <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
+            <div className="bg-theme-primary/10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
               <Activity className="h-4 w-4" />
             </div>
             <h2 className="text-theme-fg text-sm font-semibold">Overzicht</h2>

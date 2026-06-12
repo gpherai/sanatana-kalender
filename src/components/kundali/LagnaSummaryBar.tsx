@@ -38,7 +38,7 @@ function TabButton({
       className={cn(
         "focus-visible:ring-theme-primary flex cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none",
         current === view
-          ? "bg-theme-primary-15 text-theme-primary"
+          ? "bg-theme-primary/15 text-theme-primary"
           : "text-theme-fg-muted hover:text-theme-fg"
       )}
     >

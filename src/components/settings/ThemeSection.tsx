@@ -51,8 +51,8 @@ function ThemeCard({
         "relative rounded-xl border-2 p-4 text-left transition-[border-color,box-shadow]",
         isSpecial
           ? isSelected
-            ? "border-theme-primary bg-theme-primary-10 ring-theme-primary-30 shadow-lg ring-2"
-            : "border-theme-border hover:border-theme-primary/50 hover:shadow-theme-primary-10 hover:shadow-md"
+            ? "border-theme-primary bg-theme-primary/10 ring-theme-primary/30 shadow-lg ring-2"
+            : "border-theme-border hover:border-theme-primary/50 hover:shadow-theme-primary hover:shadow-md"
           : cn(
               "theme-interactive theme-focus-ring",
               isSelected

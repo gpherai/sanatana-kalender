@@ -51,9 +51,9 @@ export function DashboardKPIs({ streak, overview, calDays }: DashboardKPIsProps)
   return (
     <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
       {/* Streak */}
-      <div className="bg-theme-accent-10 rounded-2xl p-4 shadow-lg">
+      <div className="bg-theme-accent/10 rounded-2xl p-4 shadow-lg">
         <div className="mb-2 flex items-center gap-1.5">
-          <span className="bg-theme-accent-15 text-theme-accent flex items-center justify-center rounded-lg p-1">
+          <span className="bg-theme-accent/15 text-theme-accent flex items-center justify-center rounded-lg p-1">
             <Flame className="h-3.5 w-3.5" />
           </span>
           <span className="text-theme-fg-muted text-xs font-medium">Huidige streak</span>
@@ -72,7 +72,7 @@ export function DashboardKPIs({ streak, overview, calDays }: DashboardKPIsProps)
       {/* Malas deze maand */}
       <div className="bg-theme-surface-raised rounded-2xl p-4 shadow-lg">
         <div className="mb-2 flex items-center gap-1.5">
-          <span className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1">
+          <span className="bg-theme-primary/10 text-theme-primary flex items-center justify-center rounded-lg p-1">
             <Sparkles className="h-3.5 w-3.5" />
           </span>
           <span className="text-theme-fg-muted text-xs font-medium">
@@ -90,7 +90,7 @@ export function DashboardKPIs({ streak, overview, calDays }: DashboardKPIsProps)
       {/* Actieve dagen */}
       <div className="bg-theme-surface-raised rounded-2xl p-4 shadow-lg">
         <div className="mb-2 flex items-center gap-1.5">
-          <span className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1">
+          <span className="bg-theme-primary/10 text-theme-primary flex items-center justify-center rounded-lg p-1">
             <Calendar className="h-3.5 w-3.5" />
           </span>
           <span className="text-theme-fg-muted text-xs font-medium">Actieve dagen</span>
@@ -112,7 +112,7 @@ export function DashboardKPIs({ streak, overview, calDays }: DashboardKPIsProps)
       {/* Gem. per actieve dag */}
       <div className="bg-theme-surface-raised rounded-2xl p-4 shadow-lg">
         <div className="mb-2 flex items-center gap-1.5">
-          <span className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1">
+          <span className="bg-theme-primary/10 text-theme-primary flex items-center justify-center rounded-lg p-1">
             <TrendingUp className="h-3.5 w-3.5" />
           </span>
           <span className="text-theme-fg-muted text-xs font-medium">Gem. per dag</span>

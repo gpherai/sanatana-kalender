@@ -334,9 +334,9 @@ export default async function TermPage({
                     <Link
                       href={`/encyclopedie/${child.slug}`}
                       key={child.slug}
-                      className="theme-card theme-focus-ring group hover:border-theme-primary-30 relative flex flex-col p-6 transition duration-300 hover:shadow-md motion-safe:hover:-translate-y-1"
+                      className="theme-card theme-focus-ring group hover:border-theme-primary/30 relative flex flex-col p-6 transition duration-300 hover:shadow-md motion-safe:hover:-translate-y-1"
                     >
-                      <div className="bg-theme-primary-20 group-hover:bg-theme-primary-40 absolute top-0 left-0 h-1.5 w-full rounded-t-2xl transition-colors duration-300" />
+                      <div className="bg-theme-primary/20 group-hover:bg-theme-primary/40 absolute top-0 left-0 h-1.5 w-full rounded-t-2xl transition-colors duration-300" />
                       <h3 className="text-theme-fg mb-2 text-xl font-bold tracking-tight">
                         {child.title}
                       </h3>
@@ -370,9 +370,9 @@ export default async function TermPage({
                         <Link
                           href={`/encyclopedie/${member.slug}`}
                           key={member.slug}
-                          className="theme-card theme-focus-ring group hover:border-theme-primary-30 relative flex flex-col p-6 transition duration-300 hover:shadow-md motion-safe:hover:-translate-y-1"
+                          className="theme-card theme-focus-ring group hover:border-theme-primary/30 relative flex flex-col p-6 transition duration-300 hover:shadow-md motion-safe:hover:-translate-y-1"
                         >
-                          <div className="bg-theme-primary-20 group-hover:bg-theme-primary-40 absolute top-0 left-0 h-1.5 w-full rounded-t-2xl transition-colors duration-300" />
+                          <div className="bg-theme-primary/20 group-hover:bg-theme-primary/40 absolute top-0 left-0 h-1.5 w-full rounded-t-2xl transition-colors duration-300" />
                           <h3 className="text-theme-fg mb-2 text-xl font-bold tracking-tight">
                             {member.title}
                           </h3>
@@ -397,9 +397,9 @@ export default async function TermPage({
                     <Link
                       href={`/encyclopedie/${sibling.slug}`}
                       key={sibling.slug}
-                      className="theme-card theme-focus-ring group hover:border-theme-secondary-30 relative flex flex-col p-6 transition duration-300 hover:shadow-md motion-safe:hover:-translate-y-1"
+                      className="theme-card theme-focus-ring group hover:border-theme-secondary/30 relative flex flex-col p-6 transition duration-300 hover:shadow-md motion-safe:hover:-translate-y-1"
                     >
-                      <div className="bg-theme-secondary-20 group-hover:bg-theme-secondary-40 absolute top-0 left-0 h-1.5 w-full rounded-t-2xl transition-colors duration-300" />
+                      <div className="bg-theme-secondary/20 group-hover:bg-theme-secondary/40 absolute top-0 left-0 h-1.5 w-full rounded-t-2xl transition-colors duration-300" />
                       <h3 className="text-theme-fg mb-2 text-xl font-bold tracking-tight">
                         {sibling.title}
                       </h3>
@@ -423,9 +423,9 @@ export default async function TermPage({
                     <Link
                       href={`/encyclopedie/${related.slug}`}
                       key={related.slug}
-                      className="theme-card theme-focus-ring group hover:border-theme-accent-20 relative flex flex-col p-6 transition duration-300 hover:shadow-md motion-safe:hover:-translate-y-1"
+                      className="theme-card theme-focus-ring group hover:border-theme-accent/20 relative flex flex-col p-6 transition duration-300 hover:shadow-md motion-safe:hover:-translate-y-1"
                     >
-                      <div className="bg-theme-accent-15 group-hover:bg-theme-accent-20 absolute top-0 left-0 h-1.5 w-full rounded-t-2xl transition-colors duration-300" />
+                      <div className="bg-theme-accent/15 group-hover:bg-theme-accent/20 absolute top-0 left-0 h-1.5 w-full rounded-t-2xl transition-colors duration-300" />
                       <h3 className="text-theme-fg mb-2 text-xl font-bold tracking-tight">
                         {related.title}
                       </h3>

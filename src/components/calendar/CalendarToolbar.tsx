@@ -32,7 +32,7 @@ export function CalendarToolbar({
           onClick={goToToday}
           className={cn(
             "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium",
-            "bg-theme-primary-15 text-theme-primary hover:bg-theme-primary-25",
+            "bg-theme-primary/15 text-theme-primary hover:bg-theme-primary/25",
             "transition-colors"
           )}
         >
@@ -90,7 +90,7 @@ export function CalendarToolbar({
           download="sanatana-kalender.ics"
           className={cn(
             "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium",
-            "bg-theme-primary-15 text-theme-primary hover:bg-theme-primary-25",
+            "bg-theme-primary/15 text-theme-primary hover:bg-theme-primary/25",
             "transition-colors"
           )}
           title="Exporteer kalender (iCal)"

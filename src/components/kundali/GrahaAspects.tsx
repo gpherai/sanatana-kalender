@@ -25,7 +25,7 @@ function AspectedPill({ asp }: { asp: GrahaAspect }) {
       className={cn(
         "inline-flex items-center gap-1 rounded px-2 py-0.5 text-xs",
         asp.isSpecial
-          ? "bg-theme-primary-10 text-theme-primary"
+          ? "bg-theme-primary/10 text-theme-primary"
           : "bg-theme-surface text-theme-fg-secondary"
       )}
     >
@@ -61,7 +61,7 @@ export function GrahaAspects({ chart }: { chart: BirthChart }) {
   return (
     <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
       <div className="mb-4 flex items-center gap-2">
-        <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
+        <div className="bg-theme-primary/10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
           <Eye className="h-4 w-4" />
         </div>
         <div>

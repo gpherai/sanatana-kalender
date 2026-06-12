@@ -199,7 +199,7 @@ export function SadhanaTracker({ initialData }: { initialData?: SadhanaInitialDa
               className={cn(
                 "focus-visible:ring-theme-primary flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none",
                 activeTab === id
-                  ? "bg-theme-primary-15 text-theme-primary"
+                  ? "bg-theme-primary/15 text-theme-primary"
                   : "text-theme-fg-muted hover:text-theme-fg"
               )}
             >

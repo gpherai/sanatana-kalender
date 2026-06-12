@@ -157,7 +157,7 @@ function SearchInput({
           "w-full rounded-lg py-2 pr-8 pl-9 text-sm",
           "bg-theme-surface-raised",
           "border-theme-border border",
-          "ring-theme-primary-50 focus:border-theme-primary focus:ring-2 focus:outline-none",
+          "ring-theme-primary/50 focus:border-theme-primary focus:ring-2 focus:outline-none",
           "placeholder:text-theme-fg-subtle"
         )}
       />
@@ -210,7 +210,7 @@ export function FilterSidebar({
           <Filter className="h-4 w-4" />
           Filters
           {activeFilterCount > 0 && (
-            <span className="bg-theme-primary-15 text-theme-primary ml-1 rounded-full px-2 py-0.5 text-xs font-medium">
+            <span className="bg-theme-primary/15 text-theme-primary ml-1 rounded-full px-2 py-0.5 text-xs font-medium">
               {activeFilterCount}
             </span>
           )}
@@ -253,7 +253,7 @@ export function FilterSidebar({
                 "w-full rounded-lg px-2 py-1.5 text-sm",
                 "bg-theme-surface-raised",
                 "border-theme-border border",
-                "ring-theme-primary-50 focus:border-theme-primary focus:ring-2 focus:outline-none"
+                "ring-theme-primary/50 focus:border-theme-primary focus:ring-2 focus:outline-none"
               )}
             />
             <span
@@ -272,7 +272,7 @@ export function FilterSidebar({
                 "w-full rounded-lg px-2 py-1.5 text-sm",
                 "bg-theme-surface-raised",
                 "border-theme-border border",
-                "ring-theme-primary-50 focus:border-theme-primary focus:ring-2 focus:outline-none"
+                "ring-theme-primary/50 focus:border-theme-primary focus:ring-2 focus:outline-none"
               )}
             />
             {(filters.dateFrom || filters.dateTo) && (

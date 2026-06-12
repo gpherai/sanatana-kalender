@@ -126,7 +126,7 @@ export function PracticesPanel({
     <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
+          <div className="bg-theme-primary/10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
             <Sparkles className="h-4 w-4" />
           </div>
           <h2 className="text-theme-fg text-sm font-semibold">Beoefeningen</h2>

@@ -149,7 +149,7 @@ export function SessionCard({
           className="hover:bg-theme-hover focus-visible:ring-theme-primary -m-2 flex flex-1 cursor-pointer items-start gap-3 rounded-xl p-2 text-left transition-colors focus-visible:ring-2 focus-visible:outline-none"
           onClick={() => setOpen((v) => !v)}
         >
-          <div className="bg-theme-primary-15 text-theme-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold tabular-nums">
+          <div className="bg-theme-primary/15 text-theme-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold tabular-nums">
             {bubbleValue}
           </div>
           <div className="min-w-0 flex-1">

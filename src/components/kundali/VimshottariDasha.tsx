@@ -54,7 +54,7 @@ export function VimshottariDasha({ chart }: { chart: BirthChart }) {
   return (
     <div className="bg-theme-surface-raised rounded-2xl p-5 shadow-lg">
       <div className="mb-4 flex items-center gap-2">
-        <div className="bg-theme-primary-10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
+        <div className="bg-theme-primary/10 text-theme-primary flex items-center justify-center rounded-lg p-1.5">
           <Clock className="h-4 w-4" />
         </div>
         <div>
@@ -97,7 +97,7 @@ export function VimshottariDasha({ chart }: { chart: BirthChart }) {
                 onClick={() => toggle(idx)}
                 className={cn(
                   "focus-visible:ring-theme-primary relative flex w-full cursor-pointer items-center gap-2 overflow-hidden rounded-lg px-3 py-2 text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none",
-                  isCurrent && "bg-theme-primary-10",
+                  isCurrent && "bg-theme-primary/10",
                   !isCurrent && "hover:bg-theme-hover",
                   isPast && "opacity-50"
                 )}
@@ -164,7 +164,7 @@ export function VimshottariDasha({ chart }: { chart: BirthChart }) {
                         key={antar.lord + String(ai)}
                         className={cn(
                           "flex items-center gap-2 rounded px-2 py-1 text-xs",
-                          isCurrentAntar && "bg-theme-primary-10",
+                          isCurrentAntar && "bg-theme-primary/10",
                           isAntarPast && "opacity-40"
                         )}
                       >
