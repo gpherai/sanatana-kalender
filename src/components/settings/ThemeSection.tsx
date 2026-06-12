@@ -74,7 +74,7 @@ function ThemeCard({
 
       {theme.category === "revamped" && (
         <div className="absolute top-2 left-2">
-          <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-br from-white/20 to-white/5 px-2 py-0.5 text-[10px] font-medium text-white/90 ring-1 ring-white/20 backdrop-blur-sm">
+          <span className="bg-theme-primary/15 text-theme-primary ring-theme-primary/20 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ring-1">
             🎨 Gradient
           </span>
         </div>
