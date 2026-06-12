@@ -51,7 +51,7 @@ export function DeleteEventButton({ eventId, eventName }: DeleteEventButtonProps
         <button
           onClick={handleDelete}
           disabled={isDeleting}
-          className="flex cursor-pointer items-center gap-1.5 rounded-lg bg-[var(--theme-error)] px-3 py-1.5 text-sm font-medium text-white transition-all hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex cursor-pointer items-center gap-1.5 rounded-lg bg-[var(--theme-error)] px-3 py-1.5 text-sm font-medium text-white transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isDeleting ? (
             <Loader2 className="h-3.5 w-3.5 animate-spin" />

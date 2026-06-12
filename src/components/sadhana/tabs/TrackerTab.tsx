@@ -62,7 +62,7 @@ function SidebarStat({
         <div className="bg-theme-hover mt-1 h-1.5 overflow-hidden rounded-full">
           <div
             className={cn(
-              "h-full rounded-full motion-safe:transition-all motion-safe:duration-500",
+              "h-full rounded-full motion-safe:transition-[width] motion-safe:duration-500",
               accent ? "bg-theme-accent" : "bg-theme-primary"
             )}
             style={{ width: `${Math.min(100, Math.round(progress * 100))}%` }}

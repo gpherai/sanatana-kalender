@@ -141,7 +141,7 @@ export function WeekdayPattern({ sessions }: { sessions: SessionData[] }) {
               >
                 <div
                   className={[
-                    "w-full rounded-t-md motion-safe:transition-all motion-safe:duration-150",
+                    "w-full rounded-t-md motion-safe:transition-[height] motion-safe:duration-150",
                     count === 0
                       ? "bg-theme-fg-8"
                       : isBest
@@ -246,7 +246,7 @@ export function ConsistencyRing({ calDays }: { calDays: CalendarDay[] }) {
               strokeDasharray={`${dash} ${C}`}
               strokeDashoffset={0}
               transform="rotate(-90 52 52)"
-              className="motion-safe:transition-all motion-safe:duration-700"
+              className="motion-safe:transition-[stroke-dasharray] motion-safe:duration-700"
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -492,7 +492,7 @@ export function TimeOfDayPattern({ sessions }: { sessions: SessionData[] }) {
               >
                 <div
                   className={[
-                    "w-full rounded-t-md motion-safe:transition-all motion-safe:duration-150",
+                    "w-full rounded-t-md motion-safe:transition-[height] motion-safe:duration-150",
                     count === 0
                       ? "bg-theme-fg-8"
                       : isBest

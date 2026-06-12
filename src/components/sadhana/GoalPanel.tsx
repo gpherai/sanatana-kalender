@@ -407,7 +407,7 @@ export function GoalPanel({
                   <div className="bg-theme-surface-raised h-2 w-20 overflow-hidden rounded-full lg:w-32">
                     <div
                       className={cn(
-                        "h-full rounded-full transition-all duration-500",
+                        "h-full rounded-full transition-[width] duration-500",
                         g.type === "daily"
                           ? "bg-theme-primary"
                           : g.type === "weekly"

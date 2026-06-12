@@ -287,7 +287,7 @@ export default async function TermPage({
               {prevTerm ? (
                 <Link
                   href={`/encyclopedie/${prevTerm.slug}`}
-                  className="theme-card theme-focus-ring group flex flex-col gap-1 p-4 transition-all duration-200 hover:shadow-md motion-safe:hover:-translate-y-0.5"
+                  className="theme-card theme-focus-ring group flex flex-col gap-1 p-4 transition-[box-shadow,transform] duration-200 hover:shadow-md motion-safe:hover:-translate-y-0.5"
                 >
                   <span className="text-theme-fg-muted flex items-center gap-1 text-xs font-medium tracking-wide uppercase">
                     <ArrowLeft className="h-3 w-3 transition-transform duration-200 motion-safe:group-hover:-translate-x-1" />
@@ -304,7 +304,7 @@ export default async function TermPage({
               {nextTerm ? (
                 <Link
                   href={`/encyclopedie/${nextTerm.slug}`}
-                  className="theme-card theme-focus-ring group flex flex-col items-end gap-1 p-4 text-right transition-all duration-200 hover:shadow-md motion-safe:hover:-translate-y-0.5"
+                  className="theme-card theme-focus-ring group flex flex-col items-end gap-1 p-4 text-right transition-[box-shadow,transform] duration-200 hover:shadow-md motion-safe:hover:-translate-y-0.5"
                 >
                   <span className="text-theme-fg-muted flex items-center gap-1 text-xs font-medium tracking-wide uppercase">
                     Volgende

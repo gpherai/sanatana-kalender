@@ -251,7 +251,7 @@ export function EventsContent({ initialEvents }: EventsContentProps) {
           {/* New Event Button */}
           <Link
             href="/events/new"
-            className="bg-theme-primary shadow-theme-primary text-theme-primary-fg flex items-center gap-2 rounded-xl px-4 py-2 font-medium shadow-lg transition-all hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none"
+            className="bg-theme-primary shadow-theme-primary text-theme-primary-fg flex items-center gap-2 rounded-xl px-4 py-2 font-medium shadow-lg transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none"
           >
             <Plus className="h-4 w-4" />
             <span className="hidden sm:inline">Nieuw Event</span>

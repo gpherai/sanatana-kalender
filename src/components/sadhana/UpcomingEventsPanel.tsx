@@ -95,7 +95,7 @@ export function UpcomingEventsPanel() {
                 <button
                   key={event.id}
                   onClick={() => setSelectedEvent(parseCalendarEvent(event))}
-                  className="w-full cursor-pointer rounded-xl p-4 text-left transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]"
+                  className="w-full cursor-pointer rounded-xl p-4 text-left transition-transform duration-200 hover:scale-[1.01] active:scale-[0.99]"
                   style={{
                     background: color
                       ? `linear-gradient(135deg, color-mix(in oklch, ${color} 22%, var(--theme-surface-raised)) 0%, color-mix(in oklch, ${color} 8%, var(--theme-surface-raised)) 100%)`

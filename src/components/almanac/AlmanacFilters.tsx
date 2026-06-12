@@ -79,7 +79,7 @@ export function AlmanacFilters({
                 ref={isSelected ? activeMonthRef : undefined}
                 onClick={() => onMonthChange(index)}
                 className={cn(
-                  "focus-visible:ring-theme-primary flex min-h-[44px] flex-shrink-0 items-center rounded-lg px-3 py-1.5 text-sm font-medium transition-all focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none",
+                  "focus-visible:ring-theme-primary flex min-h-[44px] flex-shrink-0 items-center rounded-lg px-3 py-1.5 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none",
                   isSelected
                     ? "bg-theme-primary text-theme-primary-fg shadow-md"
                     : isCurrent
@@ -99,7 +99,7 @@ export function AlmanacFilters({
           <button
             onClick={() => onToggleFilter("moonPhases")}
             className={cn(
-              "flex min-h-[44px] items-center rounded-full px-3 py-1 text-xs font-medium transition-all focus-visible:ring-2 focus-visible:ring-[var(--theme-almanac-moon-focus)] focus-visible:ring-offset-1 focus-visible:outline-none",
+              "flex min-h-[44px] items-center rounded-full px-3 py-1 text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:ring-[var(--theme-almanac-moon-focus)] focus-visible:ring-offset-1 focus-visible:outline-none",
               showMoonPhases
                 ? "bg-[var(--theme-almanac-moon-bg)] text-[var(--theme-almanac-moon-fg)]"
                 : "bg-theme-surface-hover text-theme-fg-muted"
@@ -110,7 +110,7 @@ export function AlmanacFilters({
           <button
             onClick={() => onToggleFilter("specialDays")}
             className={cn(
-              "flex min-h-[44px] items-center rounded-full px-3 py-1 text-xs font-medium transition-all focus-visible:ring-2 focus-visible:ring-[var(--theme-almanac-special-focus)] focus-visible:ring-offset-1 focus-visible:outline-none",
+              "flex min-h-[44px] items-center rounded-full px-3 py-1 text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:ring-[var(--theme-almanac-special-focus)] focus-visible:ring-offset-1 focus-visible:outline-none",
               showSpecialDays
                 ? "bg-[var(--theme-almanac-special-pill-bg,var(--theme-almanac-special-bg))] text-[var(--theme-almanac-special-fg)]"
                 : "bg-theme-surface-hover text-theme-fg-muted"
@@ -121,7 +121,7 @@ export function AlmanacFilters({
           <button
             onClick={() => onToggleFilter("events")}
             className={cn(
-              "flex min-h-[44px] items-center rounded-full px-3 py-1 text-xs font-medium transition-all focus-visible:ring-2 focus-visible:ring-[var(--theme-almanac-event-focus)] focus-visible:ring-offset-1 focus-visible:outline-none",
+              "flex min-h-[44px] items-center rounded-full px-3 py-1 text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:ring-[var(--theme-almanac-event-focus)] focus-visible:ring-offset-1 focus-visible:outline-none",
               showEvents
                 ? "bg-[var(--theme-almanac-event-pill-bg,var(--theme-almanac-event-bg))] text-[var(--theme-almanac-event-fg)]"
                 : "bg-theme-surface-hover text-theme-fg-muted"

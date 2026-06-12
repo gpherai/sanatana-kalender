@@ -83,7 +83,7 @@ export async function UpcomingEventsSection({ eventsPromise, todayYear }: Props)
                     )}
                   </div>
                 </div>
-                <ArrowRight className="group-hover:text-theme-primary text-theme-fg-muted h-4 w-4 transition-all duration-200 motion-safe:group-hover:translate-x-1" />
+                <ArrowRight className="group-hover:text-theme-primary text-theme-fg-muted h-4 w-4 transition-[color,transform] duration-200 motion-safe:group-hover:translate-x-1" />
               </Link>
             );
           })}

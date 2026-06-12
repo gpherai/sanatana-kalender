@@ -23,7 +23,7 @@ export async function CategoriesSection({ categoriesPromise }: Props) {
           <Link
             key={cat.id}
             href={`/events?categories=${encodeURIComponent(cat.name)}`}
-            className="focus-visible:ring-theme-primary flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none active:opacity-70 motion-safe:hover:scale-105"
+            className="focus-visible:ring-theme-primary flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1 transition-transform duration-200 focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none active:opacity-70 motion-safe:hover:scale-105"
             style={{
               borderColor: `color-mix(in oklch, ${cat.color} 50%, transparent)`,
               background: `color-mix(in oklch, ${cat.color} 12%, transparent)`,

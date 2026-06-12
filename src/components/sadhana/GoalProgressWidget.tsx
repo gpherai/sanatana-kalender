@@ -78,7 +78,7 @@ export function GoalProgressWidget({
               {/* Progress bar */}
               <div className="bg-theme-hover h-1.5 overflow-hidden rounded-full">
                 <div
-                  className={`h-full rounded-full motion-safe:transition-all motion-safe:duration-500 ${done ? "bg-theme-success" : "bg-theme-primary"}`}
+                  className={`h-full rounded-full motion-safe:transition-[width] motion-safe:duration-500 ${done ? "bg-theme-success" : "bg-theme-primary"}`}
                   style={{ width: `${pct}%` }}
                 />
               </div>

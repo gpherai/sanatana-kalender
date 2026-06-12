@@ -520,7 +520,7 @@ export function DayDetailsPanel({
                           key={event.id}
                           type="button"
                           onClick={() => onEventClick(event)}
-                          className="group border-theme-border bg-theme-surface focus-visible:ring-theme-primary relative w-full overflow-hidden rounded-xl border text-left shadow-sm transition-all duration-200 hover:shadow-md focus-visible:ring-2 focus-visible:outline-none"
+                          className="group border-theme-border bg-theme-surface focus-visible:ring-theme-primary relative w-full overflow-hidden rounded-xl border text-left shadow-sm transition-shadow duration-200 hover:shadow-md focus-visible:ring-2 focus-visible:outline-none"
                         >
                           {/* Category color strip */}
                           <div

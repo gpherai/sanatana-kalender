@@ -217,7 +217,7 @@ export function MalasChart({
                 >
                   <div
                     className={[
-                      "w-full rounded-t-md motion-safe:transition-all motion-safe:duration-150",
+                      "w-full rounded-t-md motion-safe:transition-[height] motion-safe:duration-150",
                       val === 0 ? "bg-theme-fg-8" : "",
                       m.isCurrentMonth && val > 0 ? "bg-theme-accent" : "",
                       isHovered && val > 0 ? "opacity-80" : "",

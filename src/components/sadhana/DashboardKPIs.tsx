@@ -103,7 +103,7 @@ export function DashboardKPIs({ streak, overview, calDays }: DashboardKPIsProps)
         </div>
         <div className="bg-theme-hover mt-2 h-1.5 overflow-hidden rounded-full">
           <div
-            className="bg-theme-primary h-full rounded-full motion-safe:transition-all motion-safe:duration-500"
+            className="bg-theme-primary h-full rounded-full motion-safe:transition-[width] motion-safe:duration-500"
             style={{ width: `${consistencyPct}%` }}
           />
         </div>

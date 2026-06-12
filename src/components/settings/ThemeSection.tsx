@@ -48,7 +48,7 @@ function ThemeCard({
       type="button"
       onClick={onSelect}
       className={cn(
-        "relative rounded-xl border-2 p-4 text-left transition-all",
+        "relative rounded-xl border-2 p-4 text-left transition-[border-color,box-shadow]",
         isSpecial
           ? isSelected
             ? "border-theme-primary bg-theme-primary-10 ring-theme-primary-30 shadow-lg ring-2"
@@ -148,7 +148,7 @@ export function ThemeSection({
                 type="button"
                 onClick={() => onColorModeChange(option.value)}
                 className={cn(
-                  "flex min-h-[44px] items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all",
+                  "flex min-h-[44px] items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors",
                   isSelected
                     ? "bg-theme-primary text-theme-primary-fg shadow-md"
                     : "bg-theme-surface-raised text-theme-fg-secondary hover:bg-theme-hover"

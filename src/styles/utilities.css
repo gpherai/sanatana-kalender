@@ -1709,6 +1709,20 @@
 /* =============================================================================
    SCROLLBAR STYLING
    ============================================================================= */
+
+/* Firefox (scrollbar-width/color are inherited — set on :root and .dark) */
+:root {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklch, var(--theme-primary) 30%, oklch(0.7 0 0))
+    transparent;
+}
+
+.dark {
+  scrollbar-color: color-mix(in oklch, var(--theme-primary) 30%, oklch(0.4 0 0))
+    transparent;
+}
+
+/* WebKit (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -1773,7 +1787,7 @@
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
   font-weight: 500;
-  transition: all 0.2s;
+  transition: background-color 0.2s;
 }
 .btn-theme-secondary:hover {
   background-color: color-mix(in oklch, var(--theme-primary) 25%, transparent);

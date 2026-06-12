@@ -246,7 +246,7 @@ export function EventDetailModal({
             "theme-overlay relative w-full outline-none",
             "rounded-t-3xl sm:max-w-lg sm:rounded-3xl",
             "max-h-[90vh] overflow-hidden",
-            "transition-all duration-300",
+            "transition-[transform,opacity] duration-300",
             isVisible
               ? "translate-y-0 scale-100 opacity-100"
               : "translate-y-full scale-100 opacity-0 sm:translate-y-4 sm:scale-95"
@@ -279,7 +279,7 @@ export function EventDetailModal({
               className={cn(
                 "absolute top-4 right-4 rounded-full p-2.5",
                 "bg-theme-surface-hover/60 hover:bg-theme-surface-hover",
-                "backdrop-blur-sm transition-all duration-200",
+                "backdrop-blur-sm transition-[background-color,transform] duration-200",
                 "motion-safe:hover:scale-105",
                 "focus-visible:ring-theme-primary focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
               )}
@@ -584,7 +584,7 @@ export function EventDetailModal({
                     "flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium",
                     "bg-theme-primary text-theme-primary-fg hover:opacity-90",
                     "shadow-theme-primary shadow-lg",
-                    "transition-all duration-200"
+                    "transition-opacity duration-200"
                   )}
                 >
                   <Pencil className="h-4 w-4" />
