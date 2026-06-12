@@ -391,10 +391,25 @@ export function AlmanacClient({
           </div>
         </div>
       ) : loading ? (
-        <div className="flex h-64 items-center justify-center">
-          <div className="flex flex-col items-center gap-3">
-            <div className="border-theme-primary/20 border-t-theme-primary h-12 w-12 animate-spin rounded-full border-4" />
-            <span className="text-theme-fg-muted text-sm">Laden...</span>
+        <div className="flex flex-col gap-6 lg:flex-row">
+          <div className="flex-[2]">
+            <div className="bg-theme-surface-raised rounded-2xl p-4 shadow-lg">
+              <div className="bg-theme-surface mb-4 h-7 w-40 animate-pulse rounded-lg" />
+              <div className="grid grid-cols-7 gap-1">
+                {Array.from({ length: 7 }).map((_, i) => (
+                  <div key={i} className="bg-theme-surface h-8 animate-pulse rounded" />
+                ))}
+                {Array.from({ length: 42 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="bg-theme-surface min-h-[44px] animate-pulse rounded-lg"
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="lg:w-72 lg:flex-shrink-0">
+            <div className="bg-theme-surface-raised h-64 animate-pulse rounded-2xl shadow-lg" />
           </div>
         </div>
       ) : (

@@ -21,7 +21,7 @@ export function TemperatureChart({
   const gradId = `weerTempGrad${useId().replace(/:/g, "")}`;
   const W = 800;
   const H = 188;
-  const PAD = { l: 36, r: 14, t: 22, b: 32 };
+  const PAD = { l: 42, r: 14, t: 22, b: 32 };
   const pw = W - PAD.l - PAD.r;
   const ph = H - PAD.t - PAD.b;
   const n = hourly.length;
@@ -92,137 +92,139 @@ export function TemperatureChart({
     <div>
       <SectionTitle>Temperatuurverloop · komende 5 dagen</SectionTitle>
       <div className="theme-card overflow-hidden">
-        <svg
-          viewBox={`0 0 ${W} ${H}`}
-          className="w-full"
-          style={{ display: "block", height: "auto" }}
-          aria-label="Temperatuurverloop grafiek"
-          role="img"
-        >
-          <defs>
-            <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-              <stop
-                offset="0%"
-                stopColor="var(--theme-weather-temp)"
-                stopOpacity="0.22"
-              />
-              <stop
-                offset="100%"
-                stopColor="var(--theme-weather-temp)"
-                stopOpacity="0.02"
-              />
-            </linearGradient>
-          </defs>
+        <div className="overflow-x-auto">
+          <svg
+            viewBox={`0 0 ${W} ${H}`}
+            className="w-full"
+            style={{ display: "block", height: "auto", minWidth: "560px" }}
+            aria-label="Temperatuurverloop grafiek"
+            role="img"
+          >
+            <defs>
+              <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="0%"
+                  stopColor="var(--theme-weather-temp)"
+                  stopOpacity="0.22"
+                />
+                <stop
+                  offset="100%"
+                  stopColor="var(--theme-weather-temp)"
+                  stopOpacity="0.02"
+                />
+              </linearGradient>
+            </defs>
 
-          {gridLines.map((t) => (
-            <g key={t}>
-              <line
-                x1={PAD.l}
-                y1={yOf(t).toFixed(1)}
-                x2={W - PAD.r}
-                y2={yOf(t).toFixed(1)}
-                stroke="currentColor"
-                strokeWidth="0.5"
-                strokeDasharray="4 4"
-                className="text-theme-border-subtle"
-              />
-              <text
-                x={PAD.l - 5}
-                y={yOf(t).toFixed(1)}
-                textAnchor="end"
-                dominantBaseline="middle"
-                fill="currentColor"
-                style={{ fontSize: 9, fontVariantNumeric: "tabular-nums" }}
-                className="text-theme-fg-muted"
-              >
-                {t}°
-              </text>
-            </g>
-          ))}
+            {gridLines.map((t) => (
+              <g key={t}>
+                <line
+                  x1={PAD.l}
+                  y1={yOf(t).toFixed(1)}
+                  x2={W - PAD.r}
+                  y2={yOf(t).toFixed(1)}
+                  stroke="currentColor"
+                  strokeWidth="0.5"
+                  strokeDasharray="4 4"
+                  className="text-theme-border-subtle"
+                />
+                <text
+                  x={PAD.l - 5}
+                  y={yOf(t).toFixed(1)}
+                  textAnchor="end"
+                  dominantBaseline="middle"
+                  fill="currentColor"
+                  style={{ fontSize: 11, fontVariantNumeric: "tabular-nums" }}
+                  className="text-theme-fg-muted"
+                >
+                  {t}°
+                </text>
+              </g>
+            ))}
 
-          {separators.map(({ xi, label }) => (
-            <g key={xi}>
-              <line
-                x1={xi.toFixed(1)}
-                y1={PAD.t}
-                x2={xi.toFixed(1)}
-                y2={PAD.t + ph}
-                stroke="currentColor"
-                strokeWidth="0.75"
-                className="text-theme-border-subtle"
-              />
-              <text
-                x={(xi + 5).toFixed(1)}
-                y={(PAD.t + ph + 18).toFixed(1)}
-                fill="currentColor"
-                style={{ fontSize: 9 }}
-                className="text-theme-fg-muted"
-              >
-                {label}
-              </text>
-            </g>
-          ))}
+            {separators.map(({ xi, label }) => (
+              <g key={xi}>
+                <line
+                  x1={xi.toFixed(1)}
+                  y1={PAD.t}
+                  x2={xi.toFixed(1)}
+                  y2={PAD.t + ph}
+                  stroke="currentColor"
+                  strokeWidth="0.75"
+                  className="text-theme-border-subtle"
+                />
+                <text
+                  x={(xi + 5).toFixed(1)}
+                  y={(PAD.t + ph + 18).toFixed(1)}
+                  fill="currentColor"
+                  style={{ fontSize: 11 }}
+                  className="text-theme-fg-muted"
+                >
+                  {label}
+                </text>
+              </g>
+            ))}
 
-          <path d={areaD} fill={`url(#${gradId})`} />
+            <path d={areaD} fill={`url(#${gradId})`} />
 
-          <polyline
-            points={feelsPts}
-            fill="none"
-            stroke="var(--theme-weather-feels)"
-            strokeWidth="1.5"
-            strokeDasharray="5 3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
+            <polyline
+              points={feelsPts}
+              fill="none"
+              stroke="var(--theme-weather-feels)"
+              strokeWidth="1.5"
+              strokeDasharray="5 3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
 
-          <polyline
-            points={tempPts}
-            fill="none"
-            stroke="var(--theme-weather-temp)"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
+            <polyline
+              points={tempPts}
+              fill="none"
+              stroke="var(--theme-weather-temp)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
 
-          {dailyMarkers.map(({ xi, yMax, yMin, tMax, tMin }) => (
-            <g key={xi}>
-              <circle
-                cx={xi.toFixed(1)}
-                cy={yMax.toFixed(1)}
-                r="3"
-                fill="var(--theme-weather-temp)"
-                opacity="0.7"
-              />
-              <text
-                x={xi.toFixed(1)}
-                y={(yMax - 7).toFixed(1)}
-                textAnchor="middle"
-                fill="var(--theme-weather-temp)"
-                style={{ fontSize: 10, fontWeight: 600 }}
-                opacity="0.85"
-              >
-                {tMax}°
-              </text>
-              <circle
-                cx={xi.toFixed(1)}
-                cy={yMin.toFixed(1)}
-                r="3"
-                fill="var(--theme-weather-cold)"
-                opacity="0.7"
-              />
-              <text
-                x={xi.toFixed(1)}
-                y={(yMin + 13).toFixed(1)}
-                textAnchor="middle"
-                fill="var(--theme-weather-cold)"
-                style={{ fontSize: 10, fontWeight: 600 }}
-                opacity="0.85"
-              >
-                {tMin}°
-              </text>
-            </g>
-          ))}
-        </svg>
+            {dailyMarkers.map(({ xi, yMax, yMin, tMax, tMin }) => (
+              <g key={xi}>
+                <circle
+                  cx={xi.toFixed(1)}
+                  cy={yMax.toFixed(1)}
+                  r="3"
+                  fill="var(--theme-weather-temp)"
+                  opacity="0.7"
+                />
+                <text
+                  x={xi.toFixed(1)}
+                  y={(yMax - 7).toFixed(1)}
+                  textAnchor="middle"
+                  fill="var(--theme-weather-temp)"
+                  style={{ fontSize: 12, fontWeight: 600 }}
+                  opacity="0.85"
+                >
+                  {tMax}°
+                </text>
+                <circle
+                  cx={xi.toFixed(1)}
+                  cy={yMin.toFixed(1)}
+                  r="3"
+                  fill="var(--theme-weather-cold)"
+                  opacity="0.7"
+                />
+                <text
+                  x={xi.toFixed(1)}
+                  y={(yMin + 13).toFixed(1)}
+                  textAnchor="middle"
+                  fill="var(--theme-weather-cold)"
+                  style={{ fontSize: 12, fontWeight: 600 }}
+                  opacity="0.85"
+                >
+                  {tMin}°
+                </text>
+              </g>
+            ))}
+          </svg>
+        </div>
 
         <div className="border-theme-border text-theme-fg-muted flex flex-wrap gap-x-5 gap-y-1 border-t px-4 py-2.5 text-xs">
           <span className="flex items-center gap-2">

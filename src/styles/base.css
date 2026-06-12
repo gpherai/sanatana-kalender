@@ -698,6 +698,14 @@ body.app-body::after {
     box-shadow: var(--theme-focus-ring-shadow);
   }
 
+  @media (forced-colors: active) {
+    .theme-focus-ring:focus-visible {
+      outline: 2px solid ButtonText;
+      outline-offset: 2px;
+      box-shadow: none;
+    }
+  }
+
   .panchanga-yoga-card {
     background: var(--theme-panchanga-yoga-bg);
   }
