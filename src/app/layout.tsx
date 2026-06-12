@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Header } from "@/components/ui/Header";
 import { ScrollToTop } from "@/components/ui/ScrollToTop";
@@ -34,6 +34,7 @@ const geistMono = Geist_Mono({
 // =============================================================================
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000"),
   title: {
     default: "Dharma Calendar",
     template: "%s | Dharma Calendar",
@@ -48,6 +49,13 @@ export const metadata: Metadata = {
     type: "website",
     locale: "nl_NL",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f7f5f1" },
+    { media: "(prefers-color-scheme: dark)", color: "#1a1920" },
+  ],
 };
 
 // =============================================================================
