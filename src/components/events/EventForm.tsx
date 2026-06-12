@@ -177,9 +177,9 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Basic Info Section */}
       <div className="space-y-4">
-        <h3 className="text-theme-fg-muted text-sm font-medium tracking-wide uppercase">
+        <h2 className="text-theme-fg-muted text-sm font-medium tracking-wide uppercase">
           Basis Informatie
-        </h3>
+        </h2>
 
         {/* Name */}
         <div>
@@ -289,9 +289,9 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
 
       {/* Date Section */}
       <div className="space-y-4">
-        <h3 className="text-theme-fg-muted text-sm font-medium tracking-wide uppercase">
+        <h2 className="text-theme-fg-muted text-sm font-medium tracking-wide uppercase">
           Datum & Tijd
-        </h3>
+        </h2>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {/* Start Date */}
@@ -378,9 +378,9 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
 
       {/* Recurrence Section */}
       <div className="space-y-4">
-        <h3 className="text-theme-fg-muted text-sm font-medium tracking-wide uppercase">
+        <h2 className="text-theme-fg-muted text-sm font-medium tracking-wide uppercase">
           Herhaling
-        </h3>
+        </h2>
         <div>
           <label
             htmlFor="recurrenceType"
@@ -421,9 +421,9 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
 
       {/* Lunar Info Section */}
       <div className="space-y-4">
-        <h3 className="text-theme-fg-muted text-sm font-medium tracking-wide uppercase">
+        <h2 className="text-theme-fg-muted text-sm font-medium tracking-wide uppercase">
           Lunaire Informatie <span className="text-xs font-normal">(optioneel)</span>
-        </h3>
+        </h2>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           {/* Tithi */}
@@ -527,9 +527,9 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
       {/* Solar Info Section — only for YEARLY_SOLAR */}
       {formData.recurrenceType === "YEARLY_SOLAR" && (
         <div className="space-y-4">
-          <h3 className="text-theme-fg-muted text-sm font-medium tracking-wide uppercase">
+          <h2 className="text-theme-fg-muted text-sm font-medium tracking-wide uppercase">
             Solaire Informatie
-          </h3>
+          </h2>
           <div>
             <label
               htmlFor="sankranti"
@@ -574,9 +574,9 @@ export function EventForm({ mode, initialData, onSuccess }: EventFormProps) {
 
       {/* Tags Section */}
       <div className="space-y-4">
-        <h3 className="text-theme-fg-muted text-sm font-medium tracking-wide uppercase">
+        <h2 className="text-theme-fg-muted text-sm font-medium tracking-wide uppercase">
           Tags <span className="text-xs font-normal">(optioneel)</span>
-        </h3>
+        </h2>
 
         <div>
           <div className="flex gap-2">

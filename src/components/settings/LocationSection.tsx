@@ -71,9 +71,9 @@ export function LocationSection({
       {/* Sun/Moon preview */}
       {dailyInfo && (
         <div className="bg-theme-primary/10 border-theme-primary/30 mt-6 rounded-xl border p-4">
-          <h3 className="text-theme-fg-secondary mb-3 text-sm font-medium">
+          <h2 className="text-theme-fg-secondary mb-3 text-sm font-medium">
             📍 Vandaag in {locationName}
-          </h3>
+          </h2>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <div className="flex items-center gap-2">
               <Sun className="text-theme-icon-mode-sun h-5 w-5" />

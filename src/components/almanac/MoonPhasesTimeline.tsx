@@ -28,10 +28,10 @@ export function MoonPhasesTimeline({
 
   return (
     <div className="almanac-moon-timeline rounded-2xl p-4 shadow-lg">
-      <h3 className="text-theme-fg mb-3 flex items-center gap-2 text-sm font-semibold">
+      <h2 className="text-theme-fg mb-3 flex items-center gap-2 text-sm font-semibold">
         <Moon className="h-4 w-4" />
         Maanfases in {MONTHS_LONG[month]}
-      </h3>
+      </h2>
       <div className="flex flex-wrap items-center justify-center gap-6">
         {moonPhases.map((phase) => (
           <button

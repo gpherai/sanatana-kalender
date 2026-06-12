@@ -173,10 +173,10 @@ export function ThemeSection({
           <div>
             <div className="mb-4 flex items-center gap-2">
               <div className="bg-theme-border h-px flex-1" />
-              <h3 className="text-theme-fg-muted flex items-center gap-1.5 text-sm font-semibold tracking-wider uppercase">
+              <h2 className="text-theme-fg-muted flex items-center gap-1.5 text-sm font-semibold tracking-wider uppercase">
                 <span className="text-base">✨</span>
                 <span>Vernieuwde thema&apos;s</span>
-              </h3>
+              </h2>
               <div className="bg-theme-border h-px flex-1" />
             </div>
             <p className="text-theme-fg-muted mb-4 text-center text-xs">
@@ -201,10 +201,10 @@ export function ThemeSection({
           <div>
             <div className="mb-4 flex items-center gap-2">
               <div className="bg-theme-primary/30 h-px flex-1" />
-              <h3 className="text-theme-primary flex items-center gap-1.5 text-sm font-semibold tracking-wider uppercase">
+              <h2 className="text-theme-primary flex items-center gap-1.5 text-sm font-semibold tracking-wider uppercase">
                 <span className="text-base">✨</span>
                 {" Speciale thema's"}
-              </h3>
+              </h2>
               <div className="bg-theme-primary/30 h-px flex-1" />
             </div>
             <p className="text-theme-fg-muted mb-4 text-center text-xs">

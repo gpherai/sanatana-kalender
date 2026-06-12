@@ -224,7 +224,7 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
           <div className="rounded-2xl border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] p-5 backdrop-blur-md">
             <div className="mb-4 flex items-center gap-2">
               <Sun className="text-theme-icon-sun h-5 w-5" />
-              <h3 className="font-semibold text-white">Zon</h3>
+              <h2 className="font-semibold text-white">Zon</h2>
               {dailyInfo?.sunSign && (
                 <span className="ml-auto text-xs text-white/50">
                   {dailyInfo.sunSign.name}
@@ -285,7 +285,7 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
           <div className="flex flex-col items-center justify-center rounded-2xl border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] p-5 backdrop-blur-md">
             <div className="mb-4 flex items-center gap-2">
               <MoonStar className="text-theme-icon-moon h-5 w-5" />
-              <h3 className="font-semibold text-white">Maan</h3>
+              <h2 className="font-semibold text-white">Maan</h2>
             </div>
 
             {dailyInfo && (
@@ -313,7 +313,7 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
           <div className="rounded-2xl border border-[var(--theme-glass-border)] bg-[var(--theme-glass-bg)] p-5 backdrop-blur-md">
             <div className="mb-4 flex items-center gap-2">
               <Moon className="text-theme-icon-moon h-5 w-5" />
-              <h3 className="font-semibold text-white">Maantijden</h3>
+              <h2 className="font-semibold text-white">Maantijden</h2>
               {dailyInfo?.moonSign && (
                 <span className="ml-auto text-xs text-white/50">
                   {dailyInfo.moonSign.name}
@@ -530,7 +530,7 @@ export function TodayHero({ dailyInfo, todayEvents, currentWeather }: TodayHeroP
           <div className="mt-6 border-t border-[var(--theme-glass-border)] pt-6">
             <div className="mb-4 flex items-center gap-2">
               <Sparkles className="text-theme-icon-event-special h-5 w-5" />
-              <h3 className="font-semibold text-white">Vandaag</h3>
+              <h2 className="font-semibold text-white">Vandaag</h2>
             </div>
 
             <div className="flex flex-wrap gap-3">

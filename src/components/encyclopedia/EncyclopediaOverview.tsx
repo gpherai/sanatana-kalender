@@ -71,12 +71,12 @@ function TermCard({
             {item.category}
           </span>
         )}
-        <h3 className="text-theme-fg text-xl font-bold tracking-tight transition-colors duration-300">
+        <h2 className="text-theme-fg text-xl font-bold tracking-tight transition-colors duration-300">
           {item.title}
           <span className="text-theme-fg-muted ml-1 text-sm font-normal opacity-80">
             {sanskritPart}
           </span>
-        </h3>
+        </h2>
         <p className="text-theme-fg-secondary line-clamp-3 text-[0.9375rem] leading-relaxed transition-colors duration-300">
           {item.shortDescription}
         </p>
