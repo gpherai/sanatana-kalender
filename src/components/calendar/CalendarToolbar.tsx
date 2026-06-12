@@ -1,8 +1,7 @@
 "use client";
 
 import { ToolbarProps, View } from "react-big-calendar";
-import { format } from "date-fns";
-import { nl } from "date-fns/locale";
+import { DateTime } from "luxon";
 import { ChevronLeft, ChevronRight, Calendar, Download } from "lucide-react";
 import type { CalendarEvent } from "@/types/calendar";
 import { cn } from "@/lib/utils";
@@ -62,7 +61,7 @@ export function CalendarToolbar({
 
       {/* Current Date */}
       <h2 className="text-theme-fg text-xl font-semibold capitalize">
-        {format(date, "MMMM yyyy", { locale: nl })}
+        {DateTime.fromJSDate(date).setLocale("nl").toFormat("MMMM yyyy")}
       </h2>
 
       {/* View Buttons & Export */}

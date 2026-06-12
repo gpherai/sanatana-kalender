@@ -9,18 +9,8 @@ import {
   useContext,
 } from "react";
 import { useFetch } from "@/hooks/useFetch";
-import { Calendar, dateFnsLocalizer, View, DateHeaderProps } from "react-big-calendar";
-import {
-  format,
-  parse,
-  startOfWeek,
-  getDay,
-  startOfMonth,
-  endOfMonth,
-  endOfWeek,
-  addMonths,
-} from "date-fns";
-import { nl } from "date-fns/locale";
+import { Calendar, luxonLocalizer, View, DateHeaderProps } from "react-big-calendar";
+import { DateTime } from "luxon";
 import {
   CalendarEvent,
   CalendarEventResponse,
@@ -42,15 +32,8 @@ import { CalendarToolbar } from "./CalendarToolbar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "./calendar.css";
 
-// date-fns localizer setup
-const locales = { nl };
-const localizer = dateFnsLocalizer({
-  format,
-  parse,
-  startOfWeek: () => startOfWeek(new Date(), { weekStartsOn: 1 }), // Monday
-  getDay,
-  locales,
-});
+// Luxon localizer — firstDayOfWeek: 1 = Monday (ISO default)
+const localizer = luxonLocalizer(DateTime, { firstDayOfWeek: 1 });
 
 type MoonCellData = { emoji: string; isSpecial: "full" | "new" | null };
 const MoonDataContext = createContext<Map<string, MoonCellData>>(new Map());
@@ -130,15 +113,17 @@ export function DharmaCalendar() {
 
   // Build URL for current month range (with ±1 month buffer for multi-day events)
   const eventsUrl = useMemo(() => {
-    const start = startOfMonth(addMonths(currentDate, -1));
-    const end = endOfMonth(addMonths(currentDate, 1));
+    const dt = DateTime.fromJSDate(currentDate);
+    const start = dt.minus({ months: 1 }).startOf("month").toJSDate();
+    const end = dt.plus({ months: 1 }).endOf("month").toJSDate();
     return `/api/events?start=${formatDateLocal(start)}&end=${formatDateLocal(end)}`;
   }, [currentDate]);
 
   // Daily-info for the full calendar grid (including overflow days from adjacent months)
   const dailyInfoUrl = useMemo(() => {
-    const start = startOfWeek(startOfMonth(currentDate), { weekStartsOn: 1 });
-    const end = endOfWeek(endOfMonth(currentDate), { weekStartsOn: 1 });
+    const dt = DateTime.fromJSDate(currentDate);
+    const start = dt.startOf("month").startOf("week").toJSDate();
+    const end = dt.endOf("month").endOf("week").toJSDate();
     return `/api/daily-info?start=${formatDateLocal(start)}&end=${formatDateLocal(end)}`;
   }, [currentDate]);
 
