@@ -77,8 +77,9 @@ describe("EventForm", () => {
 
   it("shows validation errors and handles field updates", async () => {
     render(<EventForm mode="create" />);
-    await userEvent.click(screen.getByRole("button", { name: "Aanmaken" }));
-    expect(screen.getByText(ERROR_MESSAGES.REQUIRED_NAME)).toBeInTheDocument();
+    const form = screen.getByRole("button", { name: "Aanmaken" }).closest("form");
+    if (form) fireEvent.submit(form);
+    expect(await screen.findByText(ERROR_MESSAGES.REQUIRED_NAME)).toBeInTheDocument();
 
     const nameInput = screen.getByLabelText(/Naam/i);
     await userEvent.type(nameInput, "Fixed name");

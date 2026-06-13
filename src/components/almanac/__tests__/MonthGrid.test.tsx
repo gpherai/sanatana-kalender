@@ -371,7 +371,7 @@ describe("MonthGrid", () => {
 
     // Event badge on selected day has white variant
     const badge = screen.getByText("1");
-    expect(badge).toHaveClass("bg-white/30");
-    expect(badge).toHaveClass("text-white");
+    expect(badge).toHaveClass("bg-theme-primary-fg/30");
+    expect(badge).toHaveClass("text-theme-primary-fg");
   });
 });

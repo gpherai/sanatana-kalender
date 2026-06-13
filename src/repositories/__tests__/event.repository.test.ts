@@ -32,12 +32,12 @@ describe("findEventOccurrences", () => {
   }
 
   it("calls findMany with empty where when no params given", async () => {
-    await findEventOccurrences({});
+    await findEventOccurrences({ limit: 100, skip: 0 });
     expect(getWhereArg()).toEqual({});
   });
 
   it("applies search as OR filter on name, description, and tags", async () => {
-    await findEventOccurrences({ search: "diwali" });
+    await findEventOccurrences({ limit: 100, skip: 0, search: "diwali" });
     const where = getWhereArg();
     expect(where.event).toMatchObject({
       OR: [
@@ -49,7 +49,7 @@ describe("findEventOccurrences", () => {
   });
 
   it("applies categories filter as name.in", async () => {
-    await findEventOccurrences({ categories: ["Shakti", "Vishnu"] });
+    await findEventOccurrences({ limit: 100, skip: 0, categories: ["Shakti", "Vishnu"] });
     const where = getWhereArg();
     expect(where.event).toMatchObject({
       categories: { some: { category: { name: { in: ["Shakti", "Vishnu"] } } } },
@@ -57,7 +57,7 @@ describe("findEventOccurrences", () => {
   });
 
   it("applies valid event types filter", async () => {
-    await findEventOccurrences({ types: ["FESTIVAL", "PUJA"] });
+    await findEventOccurrences({ limit: 100, skip: 0, types: ["FESTIVAL", "PUJA"] });
     const where = getWhereArg();
     expect(where.event).toMatchObject({
       eventType: { in: ["FESTIVAL", "PUJA"] },
@@ -65,12 +65,16 @@ describe("findEventOccurrences", () => {
   });
 
   it("omits eventType filter when all types are invalid", async () => {
-    await findEventOccurrences({ types: ["INVALID_TYPE", "GARBAGE"] });
+    await findEventOccurrences({
+      limit: 100,
+      skip: 0,
+      types: ["INVALID_TYPE", "GARBAGE"],
+    });
     expect(getWhereArg()).toEqual({});
   });
 
   it("filters out invalid types, keeps valid ones", async () => {
-    await findEventOccurrences({ types: ["FESTIVAL", "INVALID"] });
+    await findEventOccurrences({ limit: 100, skip: 0, types: ["FESTIVAL", "INVALID"] });
     const where = getWhereArg();
     expect(where.event).toMatchObject({
       eventType: { in: ["FESTIVAL"] },
@@ -78,7 +82,7 @@ describe("findEventOccurrences", () => {
   });
 
   it("applies valid tithi filter", async () => {
-    await findEventOccurrences({ tithis: ["PURNIMA", "AMAVASYA"] });
+    await findEventOccurrences({ limit: 100, skip: 0, tithis: ["PURNIMA", "AMAVASYA"] });
     const where = getWhereArg();
     expect(where.event).toMatchObject({
       tithi: { in: ["PURNIMA", "AMAVASYA"] },
@@ -86,12 +90,17 @@ describe("findEventOccurrences", () => {
   });
 
   it("omits tithi filter when all values are invalid", async () => {
-    await findEventOccurrences({ tithis: ["INVALID_TITHI"] });
+    await findEventOccurrences({ limit: 100, skip: 0, tithis: ["INVALID_TITHI"] });
     expect(getWhereArg()).toEqual({});
   });
 
   it("applies date range filter when both start and end are given", async () => {
-    await findEventOccurrences({ start: "2025-01-01", end: "2025-01-31" });
+    await findEventOccurrences({
+      limit: 100,
+      skip: 0,
+      start: "2025-01-01",
+      end: "2025-01-31",
+    });
     const where = getWhereArg();
     // Date range uses OR to include spanning events (events whose endDate overlaps the range)
     expect(where.OR).toEqual([
@@ -104,13 +113,13 @@ describe("findEventOccurrences", () => {
   });
 
   it("omits date filter when only start is given", async () => {
-    await findEventOccurrences({ start: "2025-01-01" });
+    await findEventOccurrences({ limit: 100, skip: 0, start: "2025-01-01" });
     const where = getWhereArg();
     expect(where.date).toBeUndefined();
   });
 
   it("orders by event name when sortBy=name", async () => {
-    await findEventOccurrences({ sortBy: "name" });
+    await findEventOccurrences({ limit: 100, skip: 0, sortBy: "name" });
     expect(getOrderByArg()).toEqual([
       { event: { name: "asc" } },
       { date: "asc" },
@@ -119,12 +128,12 @@ describe("findEventOccurrences", () => {
   });
 
   it("orders by date by default", async () => {
-    await findEventOccurrences({});
+    await findEventOccurrences({ limit: 100, skip: 0 });
     expect(getOrderByArg()).toEqual([{ date: "asc" }, { id: "asc" }]);
   });
 
   it("applies desc order when order=desc", async () => {
-    await findEventOccurrences({ order: "desc" });
+    await findEventOccurrences({ limit: 100, skip: 0, order: "desc" });
     expect(getOrderByArg()).toEqual([{ date: "desc" }, { id: "desc" }]);
   });
 });

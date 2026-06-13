@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { NextRequest } from "next/server";
 import { GET as getEvents } from "../events/route";
 

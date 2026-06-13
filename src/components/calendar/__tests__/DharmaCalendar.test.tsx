@@ -53,6 +53,7 @@ vi.mock("react-big-calendar", () => ({
     );
   },
   dateFnsLocalizer: () => ({}),
+  luxonLocalizer: () => ({}),
 }));
 
 describe("DharmaCalendar", () => {

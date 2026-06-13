@@ -68,7 +68,7 @@ describe("FilterSidebar", () => {
         activeFilterCount={1}
       />
     );
-    const xButton = screen.getByRole("button", { name: "" });
+    const xButton = screen.getByRole("button", { name: /Zoekopdracht wissen/i });
 
     // Line 123 check: call handleClear when NOT empty
     fireEvent.click(xButton);
